@@ -1,0 +1,22 @@
+(load "~/.emacs.d/lisp/PG/generic/proof-site")
+(setq proof-splash-enable nil)
+
+(require 'package)
+;; (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3") ; see remark below
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(require 'proof-site "~/.emacs.d/lisp/PG/generic/proof-site")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(easycrypt-load-path
+   '("/home/easy/project/" "/home/easy/project/rewinding"  "/home/easy/project/misc" "/home/easy/project/misc/while_props" "/home/easy/project/generic")))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

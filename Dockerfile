@@ -27,6 +27,4 @@ RUN echo "export PATH=\$PATH:~/.local/bin/;" >> ~/.bashrc
 SHELL ["/bin/bash", "--login" , "-c"]
 RUN why3 config detect
 RUN git clone https://github.com/ProofGeneral/PG ~/.emacs.d/lisp/PG && cd ~/.emacs.d/lisp/PG && make
-RUN echo "(load \"~/.emacs.d/lisp/PG/generic/proof-site\")" > ~/.emacs
-RUN echo "(setq proof-splash-enable nil)" >> ~/.emacs
 ENTRYPOINT [ "bash" ]
