@@ -1,0 +1,2 @@
+(load "~/.emacs.d/lisp/PG/generic/proof-site")
+(setq proof-splash-enable nil)
