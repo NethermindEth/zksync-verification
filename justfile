@@ -20,6 +20,7 @@ xhost-docker:
 
 gui PROJECT: build xhost-docker
     docker run -h {{image}} -e DISPLAY=$DISPLAY \
+        --net=host \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         --env="QT_X11_NO_MITSHM=1" \
         --mount type=bind,source=$(readlink -f {{PROJECT}}),target={{project_dir}} \
@@ -29,6 +30,7 @@ gui PROJECT: build xhost-docker
 
 zk-code-shell PROJECT: build xhost-docker
     docker run -h {{image}} -e DISPLAY=$DISPLAY \
+        --net=host \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         --env="QT_X11_NO_MITSHM=1" \
         --mount type=bind,source=$(readlink -f {{PROJECT}}),target={{project_dir}} \
@@ -38,6 +40,7 @@ zk-code-shell PROJECT: build xhost-docker
 
 zk-code-emacs PROJECT: build xhost-docker
     docker run -h {{image}} -e DISPLAY=$DISPLAY \
+        --net=host \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         --env="QT_X11_NO_MITSHM=1" \
         --mount type=bind,source=$(readlink -f {{PROJECT}}),target={{project_dir}} \
