@@ -1,0 +1,11 @@
+{
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "\\.ec$",
+                "cmd": "cd easycrypt-wrapper; npx tsc; cd ..; node ./easycrypt-wrapper/index.js ${file}"
+            },
+        ]
+    },
+    
+}

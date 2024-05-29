@@ -1,0 +1,17 @@
+{
+  "name": "easycrypt-wrapper",
+  "version": "1.0.0",
+  "description": "A simple wrapper around easycrypt's interactive mode to produce useful output when passing a file",
+  "main": "index.js",
+  "bin": {
+    "easycrypt-wrapper": "easycrypt-wrapper.sh"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

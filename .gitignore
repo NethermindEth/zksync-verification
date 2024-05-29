@@ -46,3 +46,10 @@ time-of-build-pretty.log
 
 # Python virtual environment
 venv/
+
+# Node
+node_modules/
+
+# Vscode easycrypt interface files
+*.ec.log
+*.ec.temp
