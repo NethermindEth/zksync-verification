@@ -3,22 +3,38 @@ require import AllCore Group Ring Int IntDiv ZModP.
 const p : { int | prime p } as prime_p.
 const q : { int | prime q } as prime_q.
 
-clone ZModPCyclic as G1 with op order <- q.
-clone ZModPCyclic as G2 with op order <- q.
 
-type g1 = G1.zmod.
-type g2 = G2.zmod.
+clone include ZModPCyclic
+  with op order <- q
+  rename "zmod" as "g1"
+  rename "ge2_order" as "ge2_order_g1"
+  rename "ZModRing" as "ZModG1"
+  rename "ZModC" as "CyclicG1".
+  
+clone include ZModPCyclic
+  with op order <- q
+  rename "zmod" as "g2"
+  rename "ge2_order" as "ge2_order_g2"
+  rename "ZModRing" as "ZModG2"
+  rename "ZModC" as "CyclicG2".
 
-clone Group as Gt.
+type gt.
 
-type gt = Gt.group.
+op ( + ) = CyclicG1.( * ).
+op ( ** ) = CyclicG2.( * ).
+ 
+
+clone include CyclicGroup with type group <- gt.
 
 op pairing : g1 -> g2 -> gt.
 
-op test = G1.ZModRing.zero.
+axiom pairing_bilin (m : g1) (n : g2) : pairing m n = (pairing CyclicG1.g CyclicG2.g) ^ (CyclicG1.log m * CyclicG2.log n).
 
-axiom pairing_bilin (m : g1) (n : g2) : pairing m n = (pairing G1.ZModC.e G2.ZModC.e) ^ (G1.ZModC.log m * G2.ZModC.log n).
+axiom pairing_nondegenerate : pairing (CyclicG1.g) (CyclicG2.g) <> e.  
 
+(*Should it actually take uint256? *)
+op ec_add (x y : g1) : g1 = x + y.
+op ec_mul (s x : g1) : g1 = x ^ s.
 
 op coordinates: g1 -> fq*fq.
 
