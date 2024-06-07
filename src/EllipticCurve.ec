@@ -50,9 +50,12 @@ op unit : fq = G1Pow.ZModE.one.
 axiom pairing_nondeg : G1.g.[G2.g] <> e.
 axiom pairing_bilin (m n: fq) : (\1 m).[\2 n] = (\1 unit).[\2 unit] ^ (m * n).
 
+import G1Pow.
+
 lemma pairing_bilin_int (m n : int) : (G1.( ^ ) G1.g m).[G2.( ^ ) G2.g n] = Gt.( ^ ) (G1.g).[G2.g] (m*n).
 proof.
   have -> : G1.( ^ ) G1.g m = G1Pow.( ^ ) G1.g (inzmod m).
+  rewrite -G1.expE.
   rewrite - G1Pow.expE.
   apply G1Pow.log_bij.
 
