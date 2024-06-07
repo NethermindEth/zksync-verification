@@ -1,48 +1,52 @@
 require import AllCore Group Ring Int IntDiv ZModP. 
 
-const p : { int | prime p } as prime_p.
-const q : { int | prime q } as prime_q.
+type g1, g2.
 
+clone CyclicGroup as G1 with type group <- g1.
 
-clone include ZModPCyclic
-  with op order <- q
-  rename "zmod" as "g1"
-  rename "ge2_order" as "ge2_order_g1"
-  rename "ZModRing" as "ZModG1"
-  rename "ZModC" as "CyclicG1".
+abbrev q = G1.order.
+
+axiom prime_q : prime q.
+
+clone G1.PowZMod as G1Pow with
+  lemma prime_order <- prime_q
+  rename "exp" as "fq".
+
+type fq = G1Pow.fq.
   
-clone include ZModPCyclic
-  with op order <- q
-  rename "zmod" as "g2"
-  rename "ge2_order" as "ge2_order_g2"
-  rename "ZModRing" as "ZModG2"
-  rename "ZModC" as "CyclicG2".
+clone CyclicGroup as G2 with type group <- g2.
+
+clone G2.PowZMod as G2Pow with
+  type exp <- fq.
+
+import G1Pow.ZModE.
+
+(* The group operation in the group G1. *)
+op ( + ) = G1.( * ).
+(* The group operation in the group G2. *)
+op ( ++ ) = G2.( * ).
 
 type gt.
 
-op ( + ) = CyclicG1.( * ).
-op ( ** ) = CyclicG2.( * ).
- 
+clone CyclicGroup as Gt with
+  type group <- gt
+  rename "( * )" as "( ** )".
 
-clone include CyclicGroup with type group <- gt.
+import Gt.
 
-op pairing : g1 -> g2 -> gt.
+clone Gt.PowZMod as GtPow with
+  type exp <- fq.
 
-axiom pairing_bilin (m : g1) (n : g2) : pairing m n = (pairing CyclicG1.g CyclicG2.g) ^ (CyclicG1.log m * CyclicG2.log n).
+import GtPow.
 
-axiom pairing_nondegenerate : pairing (CyclicG1.g) (CyclicG2.g) <> e.  
+(* Bilinear pairing operation. *)
+op "_.[_]" : g1 -> g2 -> gt.
 
-(*Should it actually take uint256? *)
-op ec_add (x y : g1) : g1 = x + y.
-op ec_mul (s x : g1) : g1 = x ^ s.
+op [\1] (x : fq) = G1Pow.( ^ ) G1.g x.
+op [\2] (x : fq) = G2Pow.( ^ ) G2.g x.
 
-op coordinates: g1 -> fq*fq.
+op unit : fq = G1Pow.ZModE.one.
 
-op ( . ) : fq -> g1 -> 
+axiom pairing_nondeg : G1.g.[G2.g] <> e.
+axiom pairing_bilin (m n: fq) : (\1 m).[\2 n] = (\1 unit).[\2 unit] ^ (m * n).
 
-axiom injective_coord : injective coordinates.
-axiom coordinates_e : coordinates e = (Fq.zeror, Fq.zeror).
-
-axiom ec_equation (g : g1) (x y : fq) : x = fst (coordinates g) => y = snd (coordinates g) => y * y = x * x * x + Fq.oner + Fq.oner + Fq.oner.
-
-axiom 
