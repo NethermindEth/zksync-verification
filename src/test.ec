@@ -40,16 +40,16 @@ module Test = {
       tmp167 <- pY;
       if (tmp167 = 0)
       {
-        (* tmp168 <@ mload(m, point); *)
+        tmp168 <@ mload(m, point);
         _3 <- tmp168;
         if (_3 = 0)
         {
         }
-      
+        tmp170 <- m;
       } else {
           _6 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
           _7 <- _6 - pY;
-          (* tmp170 <@ mstore(m, _2, _7);*)
+          tmp170 <@ mstore(m, _2, _7);
       }
       return tmp170;
   }
@@ -67,15 +67,24 @@ lemma stupid_lemma :
     skip.
     progress.
     qed.
-
+    
 lemma pointNegate_lemma :
     forall (m : MemoryMap) (point_addr : int),
-      !(m(point_addr) = 0) \/ !(m(point_addr + 32) = 0) =>
+      m(point_addr) <> 0 \/ m(point_addr + 32) <> 0 =>
         hoare [ Test.pointNegate : arg = (m, point_addr) ==>
           (m(point_addr) = res(point_addr) /\ res(point_addr + 32) = (-m(point_addr + 32)) %% p)]. 
             progress.
             proc.
             simplify.
+            inline Test.mload.
+            inline Test.mstore.
+            wp.
+            skip.
+            progress.
+            smt.
+            admit.
+            admit.
+            qed.
             
         
         
