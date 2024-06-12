@@ -1,26 +1,65 @@
 (* Begin Verifier_1261 *)
+op cleanup_bytes32(value : uint256): uint256 = value.
+
 op zero_value_for_split_bool: uint256 = 0.
 
 op zero_value_for_split_bytes32: uint256 = 0.
 
-op cleanup_bytes32(value : uint256): uint256 = value.
-
 module Verifier_1261 = {
-  proc usr$updateAggregationChallenge(usr$queriesCommitmentPoint : uint256, usr$valueAtZ : uint256, usr$curAggregationChallenge : uint256, usr$curAggregatedOpeningAtZ : uint256, param_state_memory : mem): (uint256 * uint256 * mem) = {
-    var usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ, param_state_memory, _1, _2, _3, tmp370, _4, tmp371, _5, tmp372, _6;
+  proc usr$pointNegate(usr$point : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, _2, usr$pY, tmp88, _3, tmp90, _4, _5, tmp91, _6, _7;
       {
-      _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _2 <- 4000;
-      tmp370 <@ MLoad(_2, param_state_memory);
-      _3 <- tmp370;
-      usr$newAggregationChallenge <- mulmod(usr$curAggregationChallenge, _3, _1);
-      _4 <- 4480;
-      tmp371,param_state_memory <@ usr$pointMulAndAddIntoDest(usr$queriesCommitmentPoint, usr$newAggregationChallenge, _4, param_state_memory);
-      tmp372 <@ MLoad(usr$valueAtZ, param_state_memory);
-      _5 <- tmp372;
-      _6 <- mulmod(usr$newAggregationChallenge, _5, _1);
-      usr$newAggregatedOpeningAtZ <- addmod(usr$curAggregatedOpeningAtZ, _6, _1);
-      return (usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ, param_state_memory);
+      _1 <- 32;
+      _2 <- usr$point + _1;
+      tmp88 <@ MLoad(_2, param_state_memory);
+      usr$pY <- tmp88;
+      tmp89 <- usr$pY;
+      if (tmp89 = 0)
+        {
+        tmp90 <@ MLoad(usr$point, param_state_memory);
+        _3 <- tmp90;
+        if (_3)
+          {
+          _4 <- "pointNegate: invalid point";
+          _5 <- 26;
+          tmp91,param_state_memory <@ usr$revertWithMessage(_5, _4, param_state_memory);
+          
+          }
+        ;
+        
+        }
+      
+      else {
+        _6 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
+        _7 <- _6 - usr$pY;
+        param_state_memory <@ MStore(_2, _7, param_state_memory);
+        
+        }
+      ;
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc shift_right_unsigned(value : uint256): uint256 = {
+    var newValue, _1;
+      {
+      _1 <- 224;
+      newValue <- _1 >> value;
+      return newValue;
+      
+      }
+    }
+  
+  proc abi_encode_bool(headStart : uint256, value0 : uint256, param_state_memory : mem): (uint256 * mem) = {
+    var tail, param_state_memory, _1, _2, _3, tmp32;
+      {
+      _1 <- 32;
+      tail <- headStart + _1;
+      _2 <- 0;
+      _3 <- headStart + _2;
+      tmp32,param_state_memory <@ abi_encode_bool_to_bool(value0, _3, param_state_memory);
+      return (tail, param_state_memory);
       
       }
     }
@@ -67,30 +106,429 @@ module Verifier_1261 = {
       }
     }
   
-  proc BODY(): unit = {
+  proc usr$prepareAggregatedCommitment(param_state_memory : mem): mem = {
+    var param_state_memory, usr$aggregationChallenge, usr$firstDCoeff, usr$firstTCoeff, _1, _2, tmp377, _3, _4, _5, tmp378, _6, _7, usr$aggregatedOpeningAtZ, tmp379, _8, tmp380, _9, _10, _11, tmp381, _12, _13, tmp382, _14, _15, _16, tmp383, _17, _18, tmp384, _19, _20, tmp385, _21, tmp386, _22, _23, tmp387, _24, _25, _26, tmp388, _27, _28, tmp389, _29, _30, tmp390, _31, _32, tmp391, _33, tmp392, _34, _35, tmp393, _36, _37, _38, tmp394, _39, _40, tmp395, _41, _42, tmp396, _43, _44, tmp397, _45, _46, _47, tmp398, usr$copyPermutationCoeff, _48, _49, tmp399, _50, _51, tmp400, usr$aggregatedOpeningAtZOmega, _52, _53, tmp401, _54, _55, tmp402, _56, _57, tmp403, _58, _59, tmp404, _60, _61, tmp405, _62, _63, tmp406, _64, usr$u, tmp407, _65, tmp408, _66, tmp409, _67, tmp410, _68, usr$aggregatedValue, _69, _70, _71, _72, tmp411;
       {
-      tmp0 <@ MemoryGuard(128);
-      _1 <- tmp0;
+      usr$aggregationChallenge <- 1;
+      _1 <- 4288;
+      tmp377 <@ MLoad(_1, param_state_memory);
+      _2 <- tmp377;
+      _3 <- 4480;
+      param_state_memory <@ MStore(_3, _2, param_state_memory);
+      _4 <- 4320;
+      tmp378 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp378;
+      _6 <- 4512;
+      param_state_memory <@ MStore(_6, _5, param_state_memory);
+      _7 <- 3072;
+      tmp379 <@ MLoad(_7, param_state_memory);
+      usr$aggregatedOpeningAtZ <- tmp379;
+      _8 <- 4352;
+      tmp380,param_state_memory <@ usr$pointAddIntoDest(_3, _8, _3, param_state_memory);
+      _9 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _10 <- 4000;
+      tmp381 <@ MLoad(_10, param_state_memory);
+      _11 <- tmp381;
+      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _11, _9);
+      _12 <- 3104;
+      tmp382 <@ MLoad(_12, param_state_memory);
+      _13 <- tmp382;
+      _14 <- mulmod(usr$aggregationChallenge, _13, _9);
+      usr$aggregatedOpeningAtZ <- addmod(usr$aggregatedOpeningAtZ, _14, _9);
+      _15 <- 2560;
+      _16 <- 1856;
+      tmp383,param_state_memory <@ usr$updateAggregationChallenge(_16, _15, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp383;
+      _17 <- 2592;
+      _18 <- 1920;
+      tmp384,param_state_memory <@ usr$updateAggregationChallenge(_18, _17, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp384;
+      _19 <- 2624;
+      _20 <- 1984;
+      tmp385,param_state_memory <@ usr$updateAggregationChallenge(_20, _19, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp385;
+      tmp386 <@ MLoad(_10, param_state_memory);
+      _21 <- tmp386;
+      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _21, _9);
+      usr$firstDCoeff <- usr$aggregationChallenge;
+      _22 <- 2656;
+      tmp387 <@ MLoad(_22, param_state_memory);
+      _23 <- tmp387;
+      _24 <- mulmod(usr$aggregationChallenge, _23, _9);
+      usr$aggregatedOpeningAtZ <- addmod(usr$aggregatedOpeningAtZ, _24, _9);
+      _25 <- 2720;
+      _26 <- 1024;
+      tmp388,param_state_memory <@ usr$updateAggregationChallenge(_26, _25, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp388;
+      _27 <- 2752;
+      _28 <- 1152;
+      tmp389,param_state_memory <@ usr$updateAggregationChallenge(_28, _27, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp389;
+      _29 <- 2784;
+      _30 <- 1216;
+      tmp390,param_state_memory <@ usr$updateAggregationChallenge(_30, _29, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp390;
+      _31 <- 2816;
+      _32 <- 1280;
+      tmp391,param_state_memory <@ usr$updateAggregationChallenge(_32, _31, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp391;
+      tmp392 <@ MLoad(_10, param_state_memory);
+      _33 <- tmp392;
+      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _33, _9);
+      usr$firstTCoeff <- usr$aggregationChallenge;
+      _34 <- 2944;
+      tmp393 <@ MLoad(_34, param_state_memory);
+      _35 <- tmp393;
+      _36 <- mulmod(usr$aggregationChallenge, _35, _9);
+      usr$aggregatedOpeningAtZ <- addmod(usr$aggregatedOpeningAtZ, _36, _9);
+      _37 <- 3008;
+      _38 <- 1408;
+      tmp394,param_state_memory <@ usr$updateAggregationChallenge(_38, _37, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp394;
+      _39 <- 3040;
+      _40 <- 1728;
+      tmp395,param_state_memory <@ usr$updateAggregationChallenge(_40, _39, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp395;
+      _41 <- 4608;
+      param_state_memory <@ MStore(_41, usr$aggregatedOpeningAtZ, param_state_memory);
+      tmp396 <@ MLoad(_10, param_state_memory);
+      _42 <- tmp396;
+      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _42, _9);
+      _43 <- 4032;
+      tmp397 <@ MLoad(_43, param_state_memory);
+      _44 <- tmp397;
+      _45 <- mulmod(usr$aggregationChallenge, _44, _9);
+      _46 <- 4928;
+      tmp398 <@ MLoad(_46, param_state_memory);
+      _47 <- tmp398;
+      usr$copyPermutationCoeff <- addmod(_47, _45, _9);
+      _48 <- 4544;
+      _49 <- 2112;
+      tmp399,param_state_memory <@ usr$pointMulIntoDest(_49, usr$copyPermutationCoeff, _48, param_state_memory);
+      _50 <- 2848;
+      tmp400 <@ MLoad(_50, param_state_memory);
+      _51 <- tmp400;
+      usr$aggregatedOpeningAtZOmega <- mulmod(_51, usr$aggregationChallenge, _9);
+      _52 <- 2688;
+      _53 <- 2048;
+      tmp401,param_state_memory <@ usr$updateAggregationChallenge_105(_53, _52, usr$firstDCoeff, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp401;
+      _54 <- 4992;
+      tmp402 <@ MLoad(_54, param_state_memory);
+      _55 <- tmp402;
+      _56 <- 2880;
+      _57 <- 2176;
+      tmp403,param_state_memory <@ usr$updateAggregationChallenge_105(_57, _56, _55, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp403;
+      _58 <- 4960;
+      tmp404 <@ MLoad(_58, param_state_memory);
+      _59 <- tmp404;
+      _60 <- 2912;
+      _61 <- 2240;
+      tmp405,param_state_memory <@ usr$updateAggregationChallenge_105(_61, _60, _59, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp405;
+      _62 <- 2976;
+      _63 <- 4416;
+      tmp406,param_state_memory <@ usr$updateAggregationChallenge_105(_63, _62, usr$firstTCoeff, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
+      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp406;
+      _64 <- 4640;
+      param_state_memory <@ MStore(_64, usr$aggregatedOpeningAtZOmega, param_state_memory);
+      tmp407 <@ MLoad(_43, param_state_memory);
+      usr$u <- tmp407;
+      _65 <- 4736;
+      tmp408,param_state_memory <@ usr$pointAddIntoDest(_3, _48, _65, param_state_memory);
+      tmp409 <@ MLoad(_41, param_state_memory);
+      _66 <- tmp409;
+      tmp410 <@ MLoad(_64, param_state_memory);
+      _67 <- tmp410;
+      _68 <- mulmod(_67, usr$u, _9);
+      usr$aggregatedValue <- addmod(_68, _66, _9);
+      _69 <- 1;
+      _70 <- 4672;
+      param_state_memory <@ MStore(_70, _69, param_state_memory);
+      _71 <- 2;
+      _72 <- 4704;
+      param_state_memory <@ MStore(_72, _71, param_state_memory);
+      tmp411,param_state_memory <@ usr$pointMulIntoDest(_70, usr$aggregatedValue, _70, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490(): unit = {
+    var _1;
+      {
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc fun_verificationKeyHash(param_state_memory : mem): (uint256 * mem) = {
+    var var_vkHash, param_state_memory, tmp47, usr$start, usr$end, _1, _2, usr$length, tmp48;
+      {
+       <@ Pop(zero_value_for_split_bytes32);
+      tmp47,param_state_memory <@ fun_loadVerificationKey(param_state_memory);
+      usr$start <- 512;
+      usr$end <- 1792;
+      _1 <- 32;
+      _2 <- usr$end - usr$start;
+      usr$length <- _2 + _1;
+      tmp48 <@ Keccak256(usr$start, usr$length);
+      var_vkHash <- tmp48;
+      return (var_vkHash, param_state_memory);
+      
+      }
+    }
+  
+  proc usr$prepareQueries(param_state_memory : mem): mem = {
+    var param_state_memory, _1, usr$zInDomainSize, tmp350, usr$currentZ, _2, _3, tmp351, _4, _5, _6, tmp352, _7, _8, tmp353, _9, _10, tmp354, _11, tmp355, _12, usr$stateOpening0AtZ, tmp356, _13, usr$stateOpening1AtZ, tmp357, _14, usr$stateOpening2AtZ, tmp358, _15, usr$stateOpening3AtZ, tmp359, _16, tmp360, tmp361, tmp362, tmp363, _17, _18, tmp364, _19, _20, _21, tmp365, _22, _23, usr$eta, tmp366, usr$currentEta, _24, tmp367, _25, tmp368, _26, tmp369;
+      {
+      _1 <- 4192;
+      tmp350 <@ MLoad(_1, param_state_memory);
+      usr$zInDomainSize <- tmp350;
+      usr$currentZ <- usr$zInDomainSize;
+      _2 <- 2304;
+      tmp351 <@ MLoad(_2, param_state_memory);
+      _3 <- tmp351;
+      _4 <- 4288;
+      param_state_memory <@ MStore(_4, _3, param_state_memory);
+      _5 <- 2336;
+      tmp352 <@ MLoad(_5, param_state_memory);
+      _6 <- tmp352;
+      _7 <- 4320;
+      param_state_memory <@ MStore(_7, _6, param_state_memory);
+      _8 <- 2368;
+      tmp353,param_state_memory <@ usr$pointMulAndAddIntoDest(_8, usr$zInDomainSize, _4, param_state_memory);
+      _9 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      usr$currentZ <- mulmod(usr$zInDomainSize, usr$zInDomainSize, _9);
+      _10 <- 2432;
+      tmp354,param_state_memory <@ usr$pointMulAndAddIntoDest(_10, usr$currentZ, _4, param_state_memory);
+      usr$currentZ <- mulmod(usr$currentZ, usr$zInDomainSize, _9);
+      _11 <- 2496;
+      tmp355,param_state_memory <@ usr$pointMulAndAddIntoDest(_11, usr$currentZ, _4, param_state_memory);
+      _12 <- 2560;
+      tmp356 <@ MLoad(_12, param_state_memory);
+      usr$stateOpening0AtZ <- tmp356;
+      _13 <- 2592;
+      tmp357 <@ MLoad(_13, param_state_memory);
+      usr$stateOpening1AtZ <- tmp357;
+      _14 <- 2624;
+      tmp358 <@ MLoad(_14, param_state_memory);
+      usr$stateOpening2AtZ <- tmp358;
+      _15 <- 2656;
+      tmp359 <@ MLoad(_15, param_state_memory);
+      usr$stateOpening3AtZ <- tmp359;
+      _16 <- 4352;
+      tmp360,param_state_memory <@ usr$mainGateLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, usr$stateOpening3AtZ, param_state_memory);
+      tmp361,param_state_memory <@ usr$addAssignRescueCustomGateLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, usr$stateOpening3AtZ, param_state_memory);
+      tmp362,param_state_memory <@ usr$addAssignPermutationLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, usr$stateOpening3AtZ, param_state_memory);
+      tmp363,param_state_memory <@ usr$addAssignLookupLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, param_state_memory);
+      _17 <- 1472;
+      tmp364 <@ MLoad(_17, param_state_memory);
+      _18 <- tmp364;
+      _19 <- 4416;
+      param_state_memory <@ MStore(_19, _18, param_state_memory);
+      _20 <- 1504;
+      tmp365 <@ MLoad(_20, param_state_memory);
+      _21 <- tmp365;
+      _22 <- 4448;
+      param_state_memory <@ MStore(_22, _21, param_state_memory);
+      _23 <- 3840;
+      tmp366 <@ MLoad(_23, param_state_memory);
+      usr$eta <- tmp366;
+      usr$currentEta <- usr$eta;
+      _24 <- 1536;
+      tmp367,param_state_memory <@ usr$pointMulAndAddIntoDest(_24, usr$eta, _19, param_state_memory);
+      usr$currentEta <- mulmod(usr$eta, usr$eta, _9);
+      _25 <- 1600;
+      tmp368,param_state_memory <@ usr$pointMulAndAddIntoDest(_25, usr$currentEta, _19, param_state_memory);
+      usr$currentEta <- mulmod(usr$currentEta, usr$eta, _9);
+      _26 <- 1664;
+      tmp369,param_state_memory <@ usr$pointMulAndAddIntoDest(_26, usr$currentEta, _19, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc constructor_IVerifier(): unit = {
+      {
+      
+      }
+    }
+  
+  proc revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d(): unit = {
+    var _1;
+      {
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc abi_encode_bool_to_bool(value : uint256, pos : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp31;
+      {
+      tmp31 <@ cleanup_bool(value);
+      _1 <- tmp31;
+      param_state_memory <@ MStore(pos, _1, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$addAssignRescueCustomGateLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, usr$stateOpening3AtZ : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, usr$accumulator, usr$intermediateValue, _1, _2, _3, _4, tmp307, _5, _6, _7, tmp308, _8, _9, _10, tmp309, _11, _12, tmp310, _13, tmp311;
+      {
+      _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      usr$accumulator <- mulmod(usr$stateOpening0AtZ, usr$stateOpening0AtZ, _1);
+      _2 <- _1 - usr$stateOpening1AtZ;
+      usr$accumulator <- addmod(usr$accumulator, _2, _1);
+      _3 <- 3520;
+      tmp307 <@ MLoad(_3, param_state_memory);
+      _4 <- tmp307;
+      usr$accumulator <- mulmod(usr$accumulator, _4, _1);
+      usr$intermediateValue <- mulmod(usr$stateOpening1AtZ, usr$stateOpening1AtZ, _1);
+      _5 <- _1 - usr$stateOpening2AtZ;
+      usr$intermediateValue <- addmod(usr$intermediateValue, _5, _1);
+      _6 <- 3616;
+      tmp308 <@ MLoad(_6, param_state_memory);
+      _7 <- tmp308;
+      usr$intermediateValue <- mulmod(usr$intermediateValue, _7, _1);
+      usr$accumulator <- addmod(usr$accumulator, usr$intermediateValue, _1);
+      usr$intermediateValue <- mulmod(usr$stateOpening2AtZ, usr$stateOpening0AtZ, _1);
+      _8 <- _1 - usr$stateOpening3AtZ;
+      usr$intermediateValue <- addmod(usr$intermediateValue, _8, _1);
+      _9 <- 3648;
+      tmp309 <@ MLoad(_9, param_state_memory);
+      _10 <- tmp309;
+      usr$intermediateValue <- mulmod(usr$intermediateValue, _10, _1);
+      usr$accumulator <- addmod(usr$accumulator, usr$intermediateValue, _1);
+      _11 <- 4000;
+      tmp310 <@ MLoad(_11, param_state_memory);
+      _12 <- tmp310;
+      usr$accumulator <- mulmod(usr$accumulator, _12, _1);
+      _13 <- 1088;
+      tmp311,param_state_memory <@ usr$pointMulAndAddIntoDest(_13, usr$accumulator, usr$dest, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc BODY(): unit = {
+    var zero_bool, tmp434, tmp435, tmp436, tmp437, tmp438, tmp439, tmp440, _1, _2, _3;
+      {
+      _1 <- 128;
       _2 <- 64;
        <@ MStore(_2, _1);
-      tmp1 <@ CallValue();
-      _3 <- tmp1;
-      if (_3)
+      _3 <- 4;
+      tmp9 <@ CallDataSize();
+      _4 <- tmp9;
+      _5 <- lt(_4, _3);
+      _6 <- iszero(_5);
+      if (_6)
         {
-        tmp2 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
+        _7 <- 0;
+        tmp10 <@ CallDataLoad(_7);
+        _8 <- tmp10;
+        tmp11 <@ shift_right_unsigned(_8);
+        selector <- tmp11;
+        tmp12 <- selector;
+        if (tmp12 = 2279198755)
+          {
+          tmp13 <@ external_fun_verify();
+          
+          }
+        
+        else {
+          if (tmp12 = 2659796434)
+            {
+            tmp14 <@ external_fun_verificationKeyHash();
+            
+            }
+          ;
+          
+          }
+        ;
         
         }
       ;
-      tmp3 <@ constructor_Verifier();
-      tmp4 <@ allocate_unbounded();
-      _4 <- tmp4;
-      tmp5 <@ DataSize("Verifier_1261_deployed");
-      _5 <- tmp5;
-      tmp6 <@ DataOffset("Verifier_1261_deployed");
-      _6 <- tmp6;
-       <@ CodeCopy(_4, _6, _5);
-      _7 <- _5;
-      return (_4, _5);
+      tmp15 <@ revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74();
+      
+      }
+    }
+  
+  proc usr$updateAggregationChallenge(usr$queriesCommitmentPoint : uint256, usr$valueAtZ : uint256, usr$curAggregationChallenge : uint256, usr$curAggregatedOpeningAtZ : uint256, param_state_memory : mem): (uint256 * uint256 * mem) = {
+    var usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ, param_state_memory, _1, _2, _3, tmp370, _4, tmp371, _5, tmp372, _6;
+      {
+      _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _2 <- 4000;
+      tmp370 <@ MLoad(_2, param_state_memory);
+      _3 <- tmp370;
+      usr$newAggregationChallenge <- mulmod(usr$curAggregationChallenge, _3, _1);
+      _4 <- 4480;
+      tmp371,param_state_memory <@ usr$pointMulAndAddIntoDest(usr$queriesCommitmentPoint, usr$newAggregationChallenge, _4, param_state_memory);
+      tmp372 <@ MLoad(usr$valueAtZ, param_state_memory);
+      _5 <- tmp372;
+      _6 <- mulmod(usr$newAggregationChallenge, _5, _1);
+      usr$newAggregatedOpeningAtZ <- addmod(usr$curAggregatedOpeningAtZ, _6, _1);
+      return (usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ, param_state_memory);
+      
+      }
+    }
+  
+  proc allocate_unbounded(param_state_memory : mem): uint256 = {
+    var memPtr, _1, tmp7;
+      {
+      _1 <- 64;
+      tmp7 <@ MLoad(_1, param_state_memory);
+      memPtr <- tmp7;
+      return memPtr;
+      
+      }
+    }
+  
+  proc revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db(): unit = {
+    var _1;
+      {
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc usr$revertWithMessage(usr$len : uint256, usr$reason : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, _2, _3, _4, _5, _6, _7;
+      {
+      _1 <- 229 << 4594637;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      _3 <- 32;
+      _4 <- 4;
+      param_state_memory <@ MStore(_4, _3, param_state_memory);
+      _5 <- 36;
+      param_state_memory <@ MStore(_5, usr$len, param_state_memory);
+      _6 <- 68;
+      param_state_memory <@ MStore(_6, usr$reason, param_state_memory);
+      _7 <- 100;
+      return ();
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc abi_decode(headStart : uint256, dataEnd : uint256): unit = {
+    var _1, _2, _3, tmp38;
+      {
+      _1 <- 0;
+      _2 <- dataEnd - headStart;
+      _3 <- slt(_2, _1);
+      if (_3)
+        {
+        tmp38 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
+        
+        }
+      ;
       
       }
     }
@@ -333,645 +771,78 @@ module Verifier_1261 = {
       }
     }
   
-  proc abi_encode_bytes32(headStart : uint256, value0 : uint256, param_state_memory : mem): (uint256 * mem) = {
-    var tail, param_state_memory, _1, _2, _3, tmp39;
-      {
-      _1 <- 32;
-      tail <- headStart + _1;
-      _2 <- 0;
-      _3 <- headStart + _2;
-      tmp39,param_state_memory <@ abi_encode_bytes32_to_bytes32(value0, _3, param_state_memory);
-      return (tail, param_state_memory);
-      
-      }
-    }
-  
-  proc usr$finalPairing(param_state_memory : mem): mem = {
-    var param_state_memory, _1, usr$u, tmp412, _2, usr$z, tmp413, _3, _4, _5, tmp414, usr$zOmega, _6, _7, tmp415, _8, tmp416, _9, _10, tmp417, _11, tmp418, _12, _13, _14, tmp419, _15, tmp420, tmp421, _16, _17, tmp422, usr$uu, _18, tmp423, _19, tmp424, _20, tmp425, _21, _22, _23, tmp426, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, tmp427, _34, _35, tmp428, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, tmp429, usr$success, tmp430, _48, _49, tmp431, _50, tmp432, _51, _52, _53, tmp433;
-      {
-      _1 <- 4032;
-      tmp412 <@ MLoad(_1, param_state_memory);
-      usr$u <- tmp412;
-      _2 <- 4064;
-      tmp413 <@ MLoad(_2, param_state_memory);
-      usr$z <- tmp413;
-      _3 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _4 <- 13446667982376394161563610564587413125564757801019538732601045199901075958935;
-      tmp414 <@ MLoad(_2, param_state_memory);
-      _5 <- tmp414;
-      usr$zOmega <- mulmod(_5, _4, _3);
-      _6 <- 4672;
-      _7 <- 4736;
-      tmp415,param_state_memory <@ usr$pointSubAssign(_7, _6, param_state_memory);
-      _8 <- 3136;
-      tmp416,param_state_memory <@ usr$pointMulAndAddIntoDest(_8, usr$z, _7, param_state_memory);
-      _9 <- mulmod(usr$zOmega, usr$u, _3);
-      _10 <- 3200;
-      tmp417,param_state_memory <@ usr$pointMulAndAddIntoDest(_10, _9, _7, param_state_memory);
-      tmp418 <@ MLoad(_8, param_state_memory);
-      _11 <- tmp418;
-      _12 <- 4864;
-      param_state_memory <@ MStore(_12, _11, param_state_memory);
-      _13 <- 3168;
-      tmp419 <@ MLoad(_13, param_state_memory);
-      _14 <- tmp419;
-      _15 <- 4896;
-      param_state_memory <@ MStore(_15, _14, param_state_memory);
-      tmp420,param_state_memory <@ usr$pointMulAndAddIntoDest(_10, usr$u, _12, param_state_memory);
-      tmp421,param_state_memory <@ usr$pointNegate(_12, param_state_memory);
-      _16 <- 1792;
-      tmp422 <@ MLoad(_16, param_state_memory);
-      _17 <- tmp422;
-      if (_17)
-        {
-        usr$uu <- mulmod(usr$u, usr$u, _3);
-        _18 <- 3264;
-        tmp423,param_state_memory <@ usr$pointMulAndAddIntoDest(_18, usr$uu, _7, param_state_memory);
-        _19 <- 3328;
-        tmp424,param_state_memory <@ usr$pointMulAndAddIntoDest(_19, usr$uu, _12, param_state_memory);
-        
-        }
-      ;
-      tmp425 <@ MLoad(_7, param_state_memory);
-      _20 <- tmp425;
-      _21 <- 0;
-      param_state_memory <@ MStore(_21, _20, param_state_memory);
-      _22 <- 4768;
-      tmp426 <@ MLoad(_22, param_state_memory);
-      _23 <- tmp426;
-      _24 <- 32;
-      param_state_memory <@ MStore(_24, _23, param_state_memory);
-      _25 <- 11559732032986387107991004021392285783925812861821192530917403151452391805634;
-      _26 <- 64;
-      param_state_memory <@ MStore(_26, _25, param_state_memory);
-      _27 <- 10857046999023057135944570762232829481370756359578518086990519993285655852781;
-      _28 <- 96;
-      param_state_memory <@ MStore(_28, _27, param_state_memory);
-      _29 <- 4082367875863433681332203403145435568316851327593401208105741076214120093531;
-      _30 <- 128;
-      param_state_memory <@ MStore(_30, _29, param_state_memory);
-      _31 <- 8495653923123431417604973247489272438418190587263600148770280649306958101930;
-      _32 <- 160;
-      param_state_memory <@ MStore(_32, _31, param_state_memory);
-      tmp427 <@ MLoad(_12, param_state_memory);
-      _33 <- tmp427;
-      _34 <- 192;
-      param_state_memory <@ MStore(_34, _33, param_state_memory);
-      tmp428 <@ MLoad(_15, param_state_memory);
-      _35 <- tmp428;
-      _36 <- 224;
-      param_state_memory <@ MStore(_36, _35, param_state_memory);
-      _37 <- 17212635814319756364507010169094758005397460366678210664966334781961899574209;
-      _38 <- 256;
-      param_state_memory <@ MStore(_38, _37, param_state_memory);
-      _39 <- 496075682290949347282619629729389528669750910289829251317610107342504362928;
-      _40 <- 288;
-      param_state_memory <@ MStore(_40, _39, param_state_memory);
-      _41 <- 2255182984359105691812395885056400739448730162863181907784180250290003009508;
-      _42 <- 320;
-      param_state_memory <@ MStore(_42, _41, param_state_memory);
-      _43 <- 15828724851114720558251891430452666121603726704878231219287131634746610441813;
-      _44 <- 352;
-      param_state_memory <@ MStore(_44, _43, param_state_memory);
-      _45 <- 384;
-      _46 <- 8;
-      tmp429 <@ Gas();
-      _47 <- tmp429;
-      tmp430 <@ StaticCall(_47, _46, _21, _45, _21, _24);
-      usr$success <- tmp430;
-      _48 <- iszero(usr$success);
-      if (_48)
-        {
-        _49 <- "finalPairing: precompile failure";
-        tmp431,param_state_memory <@ usr$revertWithMessage(_24, _49, param_state_memory);
-        
-        }
-      ;
-      tmp432 <@ MLoad(_21, param_state_memory);
-      _50 <- tmp432;
-      _51 <- iszero(_50);
-      if (_51)
-        {
-        _52 <- "finalPairing: pairing failure";
-        _53 <- 29;
-        tmp433,param_state_memory <@ usr$revertWithMessage(_53, _52, param_state_memory);
-        
-        }
-      ;
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc BODY(): unit = {
-    var zero_bool, tmp434, tmp435, tmp436, tmp437, tmp438, tmp439, tmp440, _1, _2, _3;
-      {
-      _1 <- 128;
-      _2 <- 64;
-       <@ MStore(_2, _1);
-      _3 <- 4;
-      tmp9 <@ CallDataSize();
-      _4 <- tmp9;
-      _5 <- lt(_4, _3);
-      _6 <- iszero(_5);
-      if (_6)
-        {
-        _7 <- 0;
-        tmp10 <@ CallDataLoad(_7);
-        _8 <- tmp10;
-        tmp11 <@ shift_right_unsigned(_8);
-        selector <- tmp11;
-        tmp12 <- selector;
-        if (tmp12 = 2279198755)
-          {
-          tmp13 <@ external_fun_verify();
-          
-          }
-        
-        else {
-          if (tmp12 = 2659796434)
-            {
-            tmp14 <@ external_fun_verificationKeyHash();
-            
-            }
-          ;
-          
-          }
-        ;
-        
-        }
-      ;
-      tmp15 <@ revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74();
-      
-      }
-    }
-  
-  proc usr$pointAddAssign(usr$p1 : uint256, usr$p2 : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp72, _2, _3, _4, _5, tmp73, _6, tmp74, _7, _8, _9, tmp75, _10, _11, _12, _13, tmp76, _14, tmp77, _15, _16, _17, tmp78;
-      {
-      tmp72 <@ MLoad(usr$p1, param_state_memory);
-      _1 <- tmp72;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      _3 <- 32;
-      _4 <- usr$p1 + _3;
-      tmp73 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp73;
-      param_state_memory <@ MStore(_3, _5, param_state_memory);
-      tmp74 <@ MLoad(usr$p2, param_state_memory);
-      _6 <- tmp74;
-      _7 <- 64;
-      param_state_memory <@ MStore(_7, _6, param_state_memory);
-      _8 <- usr$p2 + _3;
-      tmp75 <@ MLoad(_8, param_state_memory);
-      _9 <- tmp75;
-      _10 <- 96;
-      param_state_memory <@ MStore(_10, _9, param_state_memory);
-      _11 <- 128;
-      _12 <- 6;
-      tmp76 <@ Gas();
-      _13 <- tmp76;
-      tmp77 <@ StaticCall(_13, _12, _2, _11, usr$p1, _7);
-      _14 <- tmp77;
-      _15 <- iszero(_14);
-      if (_15)
-        {
-        _16 <- "pointAddAssign: ecAdd failed";
-        _17 <- 28;
-        tmp78,param_state_memory <@ usr$revertWithMessage(_17, _16, param_state_memory);
-        
-        }
-      ;
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc abi_decode_array_uint256_dyn_calldata(offset : uint256, end : uint256): (uint256 * uint256) = {
-    var arrayPos, length, _1, _2, _3, _4, tmp17, tmp18, _5, _6, tmp19, _7, _8, _9, _10, tmp20;
-      {
-      _1 <- 31;
-      _2 <- offset + _1;
-      _3 <- slt(_2, end);
-      _4 <- iszero(_3);
-      if (_4)
-        {
-        tmp17 <@ revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d();
-        
-        }
-      ;
-      tmp18 <@ CallDataLoad(offset);
-      length <- tmp18;
-      _5 <- 18446744073709551615;
-      _6 <- gt(length, _5);
-      if (_6)
-        {
-        tmp19 <@ revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490();
-        
-        }
-      ;
-      _7 <- 32;
-      arrayPos <- offset + _7;
-      _8 <- length * _7;
-      _9 <- arrayPos + _8;
-      _10 <- gt(_9, end);
-      if (_10)
-        {
-        tmp20 <@ revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef();
-        
-        }
-      ;
-      return (arrayPos, length);
-      
-      }
-    }
-  
-  proc usr$updateTranscript(usr$value : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, _2, _3, _4, _5, usr$newState0, tmp92, _6, usr$newState1, tmp93, _7, _8;
-      {
-      _1 <- 0;
-      _2 <- 3395;
-      param_state_memory <@ MStore8(_2, _1, param_state_memory);
-      _3 <- 3460;
-      param_state_memory <@ MStore(_3, usr$value, param_state_memory);
-      _4 <- 100;
-      _5 <- 3392;
-      tmp92 <@ Keccak256(_5, _4);
-      usr$newState0 <- tmp92;
-      _6 <- 1;
-      param_state_memory <@ MStore8(_2, _6, param_state_memory);
-      tmp93 <@ Keccak256(_5, _4);
-      usr$newState1 <- tmp93;
-      _7 <- 3428;
-      param_state_memory <@ MStore(_7, usr$newState1, param_state_memory);
-      _8 <- 3396;
-      param_state_memory <@ MStore(_8, usr$newState0, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc external_fun_verify(param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp33, tmp34, _2, tmp35, _3, param, param_1, param_2, param_3, param_4, param_5, tmp36, tmp37;
-      {
-      tmp33 <@ CallValue();
-      _1 <- tmp33;
-      if (_1)
-        {
-        tmp34 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
-        
-        }
-      ;
-      tmp35 <@ CallDataSize();
-      _2 <- tmp35;
-      _3 <- 4;
-      tmp36 <@ abi_decode_array_uint256_dyn_calldatat_array_uint256_dyn_calldatat_array_uint256_dyn_calldata(_3, _2);
-      paramparam_1,param_2,param_3,param_4,param_5, <- tmp36;
-      tmp37,param_state_memory <@ fun_verify(param, param_1, param_2, param_3, param_4, param_5, param_state_memory);
-       <@ Pop(tmp37);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc abi_encode_bool(headStart : uint256, value0 : uint256, param_state_memory : mem): (uint256 * mem) = {
-    var tail, param_state_memory, _1, _2, _3, tmp32;
-      {
-      _1 <- 32;
-      tail <- headStart + _1;
-      _2 <- 0;
-      _3 <- headStart + _2;
-      tmp32,param_state_memory <@ abi_encode_bool_to_bool(value0, _3, param_state_memory);
-      return (tail, param_state_memory);
-      
-      }
-    }
-  
-  proc revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc usr$prepareAggregatedCommitment(param_state_memory : mem): mem = {
-    var param_state_memory, usr$aggregationChallenge, usr$firstDCoeff, usr$firstTCoeff, _1, _2, tmp377, _3, _4, _5, tmp378, _6, _7, usr$aggregatedOpeningAtZ, tmp379, _8, tmp380, _9, _10, _11, tmp381, _12, _13, tmp382, _14, _15, _16, tmp383, _17, _18, tmp384, _19, _20, tmp385, _21, tmp386, _22, _23, tmp387, _24, _25, _26, tmp388, _27, _28, tmp389, _29, _30, tmp390, _31, _32, tmp391, _33, tmp392, _34, _35, tmp393, _36, _37, _38, tmp394, _39, _40, tmp395, _41, _42, tmp396, _43, _44, tmp397, _45, _46, _47, tmp398, usr$copyPermutationCoeff, _48, _49, tmp399, _50, _51, tmp400, usr$aggregatedOpeningAtZOmega, _52, _53, tmp401, _54, _55, tmp402, _56, _57, tmp403, _58, _59, tmp404, _60, _61, tmp405, _62, _63, tmp406, _64, usr$u, tmp407, _65, tmp408, _66, tmp409, _67, tmp410, _68, usr$aggregatedValue, _69, _70, _71, _72, tmp411;
-      {
-      usr$aggregationChallenge <- 1;
-      _1 <- 4288;
-      tmp377 <@ MLoad(_1, param_state_memory);
-      _2 <- tmp377;
-      _3 <- 4480;
-      param_state_memory <@ MStore(_3, _2, param_state_memory);
-      _4 <- 4320;
-      tmp378 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp378;
-      _6 <- 4512;
-      param_state_memory <@ MStore(_6, _5, param_state_memory);
-      _7 <- 3072;
-      tmp379 <@ MLoad(_7, param_state_memory);
-      usr$aggregatedOpeningAtZ <- tmp379;
-      _8 <- 4352;
-      tmp380,param_state_memory <@ usr$pointAddIntoDest(_3, _8, _3, param_state_memory);
-      _9 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _10 <- 4000;
-      tmp381 <@ MLoad(_10, param_state_memory);
-      _11 <- tmp381;
-      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _11, _9);
-      _12 <- 3104;
-      tmp382 <@ MLoad(_12, param_state_memory);
-      _13 <- tmp382;
-      _14 <- mulmod(usr$aggregationChallenge, _13, _9);
-      usr$aggregatedOpeningAtZ <- addmod(usr$aggregatedOpeningAtZ, _14, _9);
-      _15 <- 2560;
-      _16 <- 1856;
-      tmp383,param_state_memory <@ usr$updateAggregationChallenge(_16, _15, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp383;
-      _17 <- 2592;
-      _18 <- 1920;
-      tmp384,param_state_memory <@ usr$updateAggregationChallenge(_18, _17, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp384;
-      _19 <- 2624;
-      _20 <- 1984;
-      tmp385,param_state_memory <@ usr$updateAggregationChallenge(_20, _19, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp385;
-      tmp386 <@ MLoad(_10, param_state_memory);
-      _21 <- tmp386;
-      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _21, _9);
-      usr$firstDCoeff <- usr$aggregationChallenge;
-      _22 <- 2656;
-      tmp387 <@ MLoad(_22, param_state_memory);
-      _23 <- tmp387;
-      _24 <- mulmod(usr$aggregationChallenge, _23, _9);
-      usr$aggregatedOpeningAtZ <- addmod(usr$aggregatedOpeningAtZ, _24, _9);
-      _25 <- 2720;
-      _26 <- 1024;
-      tmp388,param_state_memory <@ usr$updateAggregationChallenge(_26, _25, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp388;
-      _27 <- 2752;
-      _28 <- 1152;
-      tmp389,param_state_memory <@ usr$updateAggregationChallenge(_28, _27, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp389;
-      _29 <- 2784;
-      _30 <- 1216;
-      tmp390,param_state_memory <@ usr$updateAggregationChallenge(_30, _29, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp390;
-      _31 <- 2816;
-      _32 <- 1280;
-      tmp391,param_state_memory <@ usr$updateAggregationChallenge(_32, _31, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp391;
-      tmp392 <@ MLoad(_10, param_state_memory);
-      _33 <- tmp392;
-      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _33, _9);
-      usr$firstTCoeff <- usr$aggregationChallenge;
-      _34 <- 2944;
-      tmp393 <@ MLoad(_34, param_state_memory);
-      _35 <- tmp393;
-      _36 <- mulmod(usr$aggregationChallenge, _35, _9);
-      usr$aggregatedOpeningAtZ <- addmod(usr$aggregatedOpeningAtZ, _36, _9);
-      _37 <- 3008;
-      _38 <- 1408;
-      tmp394,param_state_memory <@ usr$updateAggregationChallenge(_38, _37, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp394;
-      _39 <- 3040;
-      _40 <- 1728;
-      tmp395,param_state_memory <@ usr$updateAggregationChallenge(_40, _39, usr$aggregationChallenge, usr$aggregatedOpeningAtZ, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZ, <- tmp395;
-      _41 <- 4608;
-      param_state_memory <@ MStore(_41, usr$aggregatedOpeningAtZ, param_state_memory);
-      tmp396 <@ MLoad(_10, param_state_memory);
-      _42 <- tmp396;
-      usr$aggregationChallenge <- mulmod(usr$aggregationChallenge, _42, _9);
-      _43 <- 4032;
-      tmp397 <@ MLoad(_43, param_state_memory);
-      _44 <- tmp397;
-      _45 <- mulmod(usr$aggregationChallenge, _44, _9);
-      _46 <- 4928;
-      tmp398 <@ MLoad(_46, param_state_memory);
-      _47 <- tmp398;
-      usr$copyPermutationCoeff <- addmod(_47, _45, _9);
-      _48 <- 4544;
-      _49 <- 2112;
-      tmp399,param_state_memory <@ usr$pointMulIntoDest(_49, usr$copyPermutationCoeff, _48, param_state_memory);
-      _50 <- 2848;
-      tmp400 <@ MLoad(_50, param_state_memory);
-      _51 <- tmp400;
-      usr$aggregatedOpeningAtZOmega <- mulmod(_51, usr$aggregationChallenge, _9);
-      _52 <- 2688;
-      _53 <- 2048;
-      tmp401,param_state_memory <@ usr$updateAggregationChallenge_105(_53, _52, usr$firstDCoeff, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp401;
-      _54 <- 4992;
-      tmp402 <@ MLoad(_54, param_state_memory);
-      _55 <- tmp402;
-      _56 <- 2880;
-      _57 <- 2176;
-      tmp403,param_state_memory <@ usr$updateAggregationChallenge_105(_57, _56, _55, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp403;
-      _58 <- 4960;
-      tmp404 <@ MLoad(_58, param_state_memory);
-      _59 <- tmp404;
-      _60 <- 2912;
-      _61 <- 2240;
-      tmp405,param_state_memory <@ usr$updateAggregationChallenge_105(_61, _60, _59, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp405;
-      _62 <- 2976;
-      _63 <- 4416;
-      tmp406,param_state_memory <@ usr$updateAggregationChallenge_105(_63, _62, usr$firstTCoeff, usr$aggregationChallenge, usr$aggregatedOpeningAtZOmega, param_state_memory);
-      usr$aggregationChallengeusr$aggregatedOpeningAtZOmega, <- tmp406;
-      _64 <- 4640;
-      param_state_memory <@ MStore(_64, usr$aggregatedOpeningAtZOmega, param_state_memory);
-      tmp407 <@ MLoad(_43, param_state_memory);
-      usr$u <- tmp407;
-      _65 <- 4736;
-      tmp408,param_state_memory <@ usr$pointAddIntoDest(_3, _48, _65, param_state_memory);
-      tmp409 <@ MLoad(_41, param_state_memory);
-      _66 <- tmp409;
-      tmp410 <@ MLoad(_64, param_state_memory);
-      _67 <- tmp410;
-      _68 <- mulmod(_67, usr$u, _9);
-      usr$aggregatedValue <- addmod(_68, _66, _9);
-      _69 <- 1;
-      _70 <- 4672;
-      param_state_memory <@ MStore(_70, _69, param_state_memory);
-      _71 <- 2;
-      _72 <- 4704;
-      param_state_memory <@ MStore(_72, _71, param_state_memory);
-      tmp411,param_state_memory <@ usr$pointMulIntoDest(_70, usr$aggregatedValue, _70, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc usr$revertWithMessage(usr$len : uint256, usr$reason : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, _2, _3, _4, _5, _6, _7;
-      {
-      _1 <- 229 << 4594637;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      _3 <- 32;
-      _4 <- 4;
-      param_state_memory <@ MStore(_4, _3, param_state_memory);
-      _5 <- 36;
-      param_state_memory <@ MStore(_5, usr$len, param_state_memory);
-      _6 <- 68;
-      param_state_memory <@ MStore(_6, usr$reason, param_state_memory);
-      _7 <- 100;
-      return ();
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$modexp(usr$value : uint256, usr$power : uint256, param_state_memory : mem): (uint256 * mem) = {
-    var usr$res, param_state_memory, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, tmp49, _11, tmp50, _12, _13, _14, tmp51, tmp52;
-      {
-      _1 <- 32;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      param_state_memory <@ MStore(_1, _1, param_state_memory);
-      _3 <- 64;
-      param_state_memory <@ MStore(_3, _1, param_state_memory);
-      _4 <- 96;
-      param_state_memory <@ MStore(_4, usr$value, param_state_memory);
-      _5 <- 128;
-      param_state_memory <@ MStore(_5, usr$power, param_state_memory);
-      _6 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _7 <- 160;
-      param_state_memory <@ MStore(_7, _6, param_state_memory);
-      _8 <- 192;
-      _9 <- 5;
-      tmp49 <@ Gas();
-      _10 <- tmp49;
-      tmp50 <@ StaticCall(_10, _9, _2, _8, _2, _1);
-      _11 <- tmp50;
-      _12 <- iszero(_11);
-      if (_12)
-        {
-        _13 <- "modexp precompile failed";
-        _14 <- 24;
-        tmp51,param_state_memory <@ usr$revertWithMessage(_14, _13, param_state_memory);
-        
-        }
-      ;
-      tmp52 <@ MLoad(_2, param_state_memory);
-      usr$res <- tmp52;
-      return (usr$res, param_state_memory);
-      
-      }
-    }
-  
-  proc usr$updateAggregationChallenge_105(usr$queriesCommitmentPoint : uint256, usr$valueAtZ_Omega : uint256, usr$previousCoeff : uint256, usr$curAggregationChallenge : uint256, usr$curAggregatedOpeningAtZ_Omega : uint256, param_state_memory : mem): (uint256 * uint256 * mem) = {
-    var usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ_Omega, param_state_memory, _1, _2, _3, tmp373, _4, _5, tmp374, _6, usr$finalCoeff, _7, tmp375, _8, tmp376, _9;
+  proc usr$permutationQuotientContribution(param_state_memory : mem): uint256 = {
+    var usr$res, _1, _2, _3, tmp270, _4, _5, tmp271, _6, usr$gamma, tmp272, _7, usr$beta, tmp273, usr$factorMultiplier, _8, _9, tmp274, _10, _11, tmp275, _12, _13, tmp276, _14, _15, tmp277, _16, _17, tmp278, _18, _19, tmp279, _20, _21, tmp280, _22, _23, usr$l0AtZ, tmp281, _24, _25, tmp282, _26;
       {
       _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _2 <- 4000;
-      tmp373 <@ MLoad(_2, param_state_memory);
-      _3 <- tmp373;
-      usr$newAggregationChallenge <- mulmod(usr$curAggregationChallenge, _3, _1);
-      _4 <- 4032;
-      tmp374 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp374;
-      _6 <- mulmod(usr$newAggregationChallenge, _5, _1);
-      usr$finalCoeff <- addmod(usr$previousCoeff, _6, _1);
-      _7 <- 4544;
-      tmp375,param_state_memory <@ usr$pointMulAndAddIntoDest(usr$queriesCommitmentPoint, usr$finalCoeff, _7, param_state_memory);
-      tmp376 <@ MLoad(usr$valueAtZ_Omega, param_state_memory);
-      _8 <- tmp376;
-      _9 <- mulmod(usr$newAggregationChallenge, _8, _1);
-      usr$newAggregatedOpeningAtZ_Omega <- addmod(usr$curAggregatedOpeningAtZ_Omega, _9, _1);
-      return (usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ_Omega, param_state_memory);
+      _2 <- 2848;
+      tmp270 <@ MLoad(_2, param_state_memory);
+      _3 <- tmp270;
+      _4 <- 3680;
+      tmp271 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp271;
+      usr$res <- mulmod(_5, _3, _1);
+      _6 <- 3584;
+      tmp272 <@ MLoad(_6, param_state_memory);
+      usr$gamma <- tmp272;
+      _7 <- 3552;
+      tmp273 <@ MLoad(_7, param_state_memory);
+      usr$beta <- tmp273;
+      _8 <- 2752;
+      tmp274 <@ MLoad(_8, param_state_memory);
+      _9 <- tmp274;
+      usr$factorMultiplier <- mulmod(_9, usr$beta, _1);
+      usr$factorMultiplier <- addmod(usr$factorMultiplier, usr$gamma, _1);
+      _10 <- 2560;
+      tmp275 <@ MLoad(_10, param_state_memory);
+      _11 <- tmp275;
+      usr$factorMultiplier <- addmod(usr$factorMultiplier, _11, _1);
+      usr$res <- mulmod(usr$res, usr$factorMultiplier, _1);
+      _12 <- 2784;
+      tmp276 <@ MLoad(_12, param_state_memory);
+      _13 <- tmp276;
+      usr$factorMultiplier <- mulmod(_13, usr$beta, _1);
+      usr$factorMultiplier <- addmod(usr$factorMultiplier, usr$gamma, _1);
+      _14 <- 2592;
+      tmp277 <@ MLoad(_14, param_state_memory);
+      _15 <- tmp277;
+      usr$factorMultiplier <- addmod(usr$factorMultiplier, _15, _1);
+      usr$res <- mulmod(usr$res, usr$factorMultiplier, _1);
+      _16 <- 2816;
+      tmp278 <@ MLoad(_16, param_state_memory);
+      _17 <- tmp278;
+      usr$factorMultiplier <- mulmod(_17, usr$beta, _1);
+      usr$factorMultiplier <- addmod(usr$factorMultiplier, usr$gamma, _1);
+      _18 <- 2624;
+      tmp279 <@ MLoad(_18, param_state_memory);
+      _19 <- tmp279;
+      usr$factorMultiplier <- addmod(usr$factorMultiplier, _19, _1);
+      usr$res <- mulmod(usr$res, usr$factorMultiplier, _1);
+      _20 <- 2656;
+      tmp280 <@ MLoad(_20, param_state_memory);
+      _21 <- tmp280;
+      _22 <- addmod(_21, usr$gamma, _1);
+      usr$res <- mulmod(usr$res, _22, _1);
+      usr$res <- _1 - usr$res;
+      _23 <- 4128;
+      tmp281 <@ MLoad(_23, param_state_memory);
+      usr$l0AtZ <- tmp281;
+      _24 <- 3712;
+      tmp282 <@ MLoad(_24, param_state_memory);
+      _25 <- tmp282;
+      usr$l0AtZ <- mulmod(usr$l0AtZ, _25, _1);
+      _26 <- _1 - usr$l0AtZ;
+      usr$res <- addmod(usr$res, _26, _1);
+      return usr$res;
       
       }
     }
   
-  proc allocate_unbounded(param_state_memory : mem): uint256 = {
-    var memPtr, _1, tmp7;
+  proc abi_encode_bytes32_to_bytes32(value : uint256, pos : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1;
       {
-      _1 <- 64;
-      tmp7 <@ MLoad(_1, param_state_memory);
-      memPtr <- tmp7;
-      return memPtr;
-      
-      }
-    }
-  
-  proc usr$prepareQueries(param_state_memory : mem): mem = {
-    var param_state_memory, _1, usr$zInDomainSize, tmp350, usr$currentZ, _2, _3, tmp351, _4, _5, _6, tmp352, _7, _8, tmp353, _9, _10, tmp354, _11, tmp355, _12, usr$stateOpening0AtZ, tmp356, _13, usr$stateOpening1AtZ, tmp357, _14, usr$stateOpening2AtZ, tmp358, _15, usr$stateOpening3AtZ, tmp359, _16, tmp360, tmp361, tmp362, tmp363, _17, _18, tmp364, _19, _20, _21, tmp365, _22, _23, usr$eta, tmp366, usr$currentEta, _24, tmp367, _25, tmp368, _26, tmp369;
-      {
-      _1 <- 4192;
-      tmp350 <@ MLoad(_1, param_state_memory);
-      usr$zInDomainSize <- tmp350;
-      usr$currentZ <- usr$zInDomainSize;
-      _2 <- 2304;
-      tmp351 <@ MLoad(_2, param_state_memory);
-      _3 <- tmp351;
-      _4 <- 4288;
-      param_state_memory <@ MStore(_4, _3, param_state_memory);
-      _5 <- 2336;
-      tmp352 <@ MLoad(_5, param_state_memory);
-      _6 <- tmp352;
-      _7 <- 4320;
-      param_state_memory <@ MStore(_7, _6, param_state_memory);
-      _8 <- 2368;
-      tmp353,param_state_memory <@ usr$pointMulAndAddIntoDest(_8, usr$zInDomainSize, _4, param_state_memory);
-      _9 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      usr$currentZ <- mulmod(usr$zInDomainSize, usr$zInDomainSize, _9);
-      _10 <- 2432;
-      tmp354,param_state_memory <@ usr$pointMulAndAddIntoDest(_10, usr$currentZ, _4, param_state_memory);
-      usr$currentZ <- mulmod(usr$currentZ, usr$zInDomainSize, _9);
-      _11 <- 2496;
-      tmp355,param_state_memory <@ usr$pointMulAndAddIntoDest(_11, usr$currentZ, _4, param_state_memory);
-      _12 <- 2560;
-      tmp356 <@ MLoad(_12, param_state_memory);
-      usr$stateOpening0AtZ <- tmp356;
-      _13 <- 2592;
-      tmp357 <@ MLoad(_13, param_state_memory);
-      usr$stateOpening1AtZ <- tmp357;
-      _14 <- 2624;
-      tmp358 <@ MLoad(_14, param_state_memory);
-      usr$stateOpening2AtZ <- tmp358;
-      _15 <- 2656;
-      tmp359 <@ MLoad(_15, param_state_memory);
-      usr$stateOpening3AtZ <- tmp359;
-      _16 <- 4352;
-      tmp360,param_state_memory <@ usr$mainGateLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, usr$stateOpening3AtZ, param_state_memory);
-      tmp361,param_state_memory <@ usr$addAssignRescueCustomGateLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, usr$stateOpening3AtZ, param_state_memory);
-      tmp362,param_state_memory <@ usr$addAssignPermutationLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, usr$stateOpening3AtZ, param_state_memory);
-      tmp363,param_state_memory <@ usr$addAssignLookupLinearisationContributionWithV(_16, usr$stateOpening0AtZ, usr$stateOpening1AtZ, usr$stateOpening2AtZ, param_state_memory);
-      _17 <- 1472;
-      tmp364 <@ MLoad(_17, param_state_memory);
-      _18 <- tmp364;
-      _19 <- 4416;
-      param_state_memory <@ MStore(_19, _18, param_state_memory);
-      _20 <- 1504;
-      tmp365 <@ MLoad(_20, param_state_memory);
-      _21 <- tmp365;
-      _22 <- 4448;
-      param_state_memory <@ MStore(_22, _21, param_state_memory);
-      _23 <- 3840;
-      tmp366 <@ MLoad(_23, param_state_memory);
-      usr$eta <- tmp366;
-      usr$currentEta <- usr$eta;
-      _24 <- 1536;
-      tmp367,param_state_memory <@ usr$pointMulAndAddIntoDest(_24, usr$eta, _19, param_state_memory);
-      usr$currentEta <- mulmod(usr$eta, usr$eta, _9);
-      _25 <- 1600;
-      tmp368,param_state_memory <@ usr$pointMulAndAddIntoDest(_25, usr$currentEta, _19, param_state_memory);
-      usr$currentEta <- mulmod(usr$currentEta, usr$eta, _9);
-      _26 <- 1664;
-      tmp369,param_state_memory <@ usr$pointMulAndAddIntoDest(_26, usr$currentEta, _19, param_state_memory);
+      _1 <- cleanup_bytes32(value);
+      param_state_memory <@ MStore(pos, _1, param_state_memory);
       return param_state_memory;
       
       }
@@ -984,16 +855,6 @@ module Verifier_1261 = {
       tmp16 <@ MLoad(_1, param_state_memory);
       memPtr <- tmp16;
       return memPtr;
-      
-      }
-    }
-  
-  proc revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
-    var _1, _2;
-      {
-      _1 <- 0;
-      _2 <- _1;
-      return ();
       
       }
     }
@@ -1485,6 +1346,578 @@ module Verifier_1261 = {
       }
     }
   
+  proc usr$pointAddIntoDest(usr$p1 : uint256, usr$p2 : uint256, usr$dest : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp58, _2, _3, _4, _5, tmp59, _6, tmp60, _7, _8, _9, tmp61, _10, _11, _12, _13, tmp62, _14, tmp63, _15, _16, _17, tmp64;
+      {
+      tmp58 <@ MLoad(usr$p1, param_state_memory);
+      _1 <- tmp58;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      _3 <- 32;
+      _4 <- usr$p1 + _3;
+      tmp59 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp59;
+      param_state_memory <@ MStore(_3, _5, param_state_memory);
+      tmp60 <@ MLoad(usr$p2, param_state_memory);
+      _6 <- tmp60;
+      _7 <- 64;
+      param_state_memory <@ MStore(_7, _6, param_state_memory);
+      _8 <- usr$p2 + _3;
+      tmp61 <@ MLoad(_8, param_state_memory);
+      _9 <- tmp61;
+      _10 <- 96;
+      param_state_memory <@ MStore(_10, _9, param_state_memory);
+      _11 <- 128;
+      _12 <- 6;
+      tmp62 <@ Gas();
+      _13 <- tmp62;
+      tmp63 <@ StaticCall(_13, _12, _2, _11, usr$dest, _7);
+      _14 <- tmp63;
+      _15 <- iszero(_14);
+      if (_15)
+        {
+        _16 <- "pointAddIntoDest: ecAdd failed";
+        _17 <- 30;
+        tmp64,param_state_memory <@ usr$revertWithMessage(_17, _16, param_state_memory);
+        
+        }
+      ;
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc cleanup_bool(value : uint256): uint256 = {
+    var cleaned, _1;
+      {
+      _1 <- iszero(value);
+      cleaned <- iszero(_1);
+      return cleaned;
+      
+      }
+    }
+  
+  proc constructor_Verifier(): unit = {
+    var tmp8;
+      {
+      tmp8 <@ constructor_IVerifier();
+      
+      }
+    }
+  
+  proc fun_verify(var__offset : uint256, var_length : uint256, var_offset : uint256, var__length : uint256, var_1250_offset : uint256, var_1250_length : uint256, param_state_memory : mem): (uint256 * mem) = {
+    var var, param_state_memory, zero_bool, tmp434, tmp435, tmp436, tmp437, tmp438, tmp439, tmp440, _1, _2, _3;
+      {
+      zero_bool <- zero_value_for_split_bool;
+      var <- zero_bool;
+      tmp434,param_state_memory <@ fun_loadVerificationKey(param_state_memory);
+      tmp435,param_state_memory <@ usr$loadProof(param_state_memory);
+      tmp436,param_state_memory <@ usr$initializeTranscript(param_state_memory);
+      tmp437,param_state_memory <@ usr$verifyQuotientEvaluation(param_state_memory);
+      tmp438,param_state_memory <@ usr$prepareQueries(param_state_memory);
+      tmp439,param_state_memory <@ usr$prepareAggregatedCommitment(param_state_memory);
+      tmp440,param_state_memory <@ usr$finalPairing(param_state_memory);
+      _1 <- true;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      _3 <- 32;
+      return (_2, _3);
+      return (var, param_state_memory);
+      
+      }
+    }
+  
+  proc abi_decode_array_uint256_dyn_calldatat_array_uint256_dyn_calldatat_array_uint256_dyn_calldata(headStart : uint256, dataEnd : uint256): (uint256 * uint256 * uint256 * uint256 * uint256 * uint256) = {
+    var value0, value1, value2, value3, value4, value5, _1, _2, _3, tmp21, _4, _5, offset, tmp22, _6, _7, tmp23, _8, tmp24, _9, _10, offset_1, tmp25, _11, tmp26, _12, tmp27, _13, _14, offset_2, tmp28, _15, tmp29, _16, tmp30;
+      {
+      _1 <- 96;
+      _2 <- dataEnd - headStart;
+      _3 <- slt(_2, _1);
+      if (_3)
+        {
+        tmp21 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
+        
+        }
+      ;
+      _4 <- 0;
+      _5 <- headStart + _4;
+      tmp22 <@ CallDataLoad(_5);
+      offset <- tmp22;
+      _6 <- 18446744073709551615;
+      _7 <- gt(offset, _6);
+      if (_7)
+        {
+        tmp23 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
+        
+        }
+      ;
+      _8 <- headStart + offset;
+      tmp24 <@ abi_decode_array_uint256_dyn_calldata(_8, dataEnd);
+      value0value1, <- tmp24;
+      _9 <- 32;
+      _10 <- headStart + _9;
+      tmp25 <@ CallDataLoad(_10);
+      offset_1 <- tmp25;
+      _11 <- gt(offset_1, _6);
+      if (_11)
+        {
+        tmp26 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
+        
+        }
+      ;
+      _12 <- headStart + offset_1;
+      tmp27 <@ abi_decode_array_uint256_dyn_calldata(_12, dataEnd);
+      value2value3, <- tmp27;
+      _13 <- 64;
+      _14 <- headStart + _13;
+      tmp28 <@ CallDataLoad(_14);
+      offset_2 <- tmp28;
+      _15 <- gt(offset_2, _6);
+      if (_15)
+        {
+        tmp29 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
+        
+        }
+      ;
+      _16 <- headStart + offset_2;
+      tmp30 <@ abi_decode_array_uint256_dyn_calldata(_16, dataEnd);
+      value4value5, <- tmp30;
+      return (value0, value1, value2, value3, value4, value5);
+      
+      }
+    }
+  
+  proc usr$getTranscriptChallenge(usr$numberOfChallenge : uint256, param_state_memory : mem): (uint256 * mem) = {
+    var usr$challenge, param_state_memory, _1, _2, _3, _4, _5, _6, _7, _8, _9, tmp94;
+      {
+      _1 <- 2;
+      _2 <- 3395;
+      param_state_memory <@ MStore8(_2, _1, param_state_memory);
+      _3 <- 224;
+      _4 <- _3 << usr$numberOfChallenge;
+      _5 <- 3460;
+      param_state_memory <@ MStore(_5, _4, param_state_memory);
+      _6 <- 253 << 1 - 1;
+      _7 <- 72;
+      _8 <- 3392;
+      tmp94 <@ Keccak256(_8, _7);
+      _9 <- tmp94;
+      usr$challenge <- _9 /\ _6;
+      return (usr$challenge, param_state_memory);
+      
+      }
+    }
+  
+  proc abi_encode_bytes32(headStart : uint256, value0 : uint256, param_state_memory : mem): (uint256 * mem) = {
+    var tail, param_state_memory, _1, _2, _3, tmp39;
+      {
+      _1 <- 32;
+      tail <- headStart + _1;
+      _2 <- 0;
+      _3 <- headStart + _2;
+      tmp39,param_state_memory <@ abi_encode_bytes32_to_bytes32(value0, _3, param_state_memory);
+      return (tail, param_state_memory);
+      
+      }
+    }
+  
+  proc usr$modexp(usr$value : uint256, usr$power : uint256, param_state_memory : mem): (uint256 * mem) = {
+    var usr$res, param_state_memory, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, tmp49, _11, tmp50, _12, _13, _14, tmp51, tmp52;
+      {
+      _1 <- 32;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      param_state_memory <@ MStore(_1, _1, param_state_memory);
+      _3 <- 64;
+      param_state_memory <@ MStore(_3, _1, param_state_memory);
+      _4 <- 96;
+      param_state_memory <@ MStore(_4, usr$value, param_state_memory);
+      _5 <- 128;
+      param_state_memory <@ MStore(_5, usr$power, param_state_memory);
+      _6 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _7 <- 160;
+      param_state_memory <@ MStore(_7, _6, param_state_memory);
+      _8 <- 192;
+      _9 <- 5;
+      tmp49 <@ Gas();
+      _10 <- tmp49;
+      tmp50 <@ StaticCall(_10, _9, _2, _8, _2, _1);
+      _11 <- tmp50;
+      _12 <- iszero(_11);
+      if (_12)
+        {
+        _13 <- "modexp precompile failed";
+        _14 <- 24;
+        tmp51,param_state_memory <@ usr$revertWithMessage(_14, _13, param_state_memory);
+        
+        }
+      ;
+      tmp52 <@ MLoad(_2, param_state_memory);
+      usr$res <- tmp52;
+      return (usr$res, param_state_memory);
+      
+      }
+    }
+  
+  proc usr$finalPairing(param_state_memory : mem): mem = {
+    var param_state_memory, _1, usr$u, tmp412, _2, usr$z, tmp413, _3, _4, _5, tmp414, usr$zOmega, _6, _7, tmp415, _8, tmp416, _9, _10, tmp417, _11, tmp418, _12, _13, _14, tmp419, _15, tmp420, tmp421, _16, _17, tmp422, usr$uu, _18, tmp423, _19, tmp424, _20, tmp425, _21, _22, _23, tmp426, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, tmp427, _34, _35, tmp428, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, tmp429, usr$success, tmp430, _48, _49, tmp431, _50, tmp432, _51, _52, _53, tmp433;
+      {
+      _1 <- 4032;
+      tmp412 <@ MLoad(_1, param_state_memory);
+      usr$u <- tmp412;
+      _2 <- 4064;
+      tmp413 <@ MLoad(_2, param_state_memory);
+      usr$z <- tmp413;
+      _3 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _4 <- 13446667982376394161563610564587413125564757801019538732601045199901075958935;
+      tmp414 <@ MLoad(_2, param_state_memory);
+      _5 <- tmp414;
+      usr$zOmega <- mulmod(_5, _4, _3);
+      _6 <- 4672;
+      _7 <- 4736;
+      tmp415,param_state_memory <@ usr$pointSubAssign(_7, _6, param_state_memory);
+      _8 <- 3136;
+      tmp416,param_state_memory <@ usr$pointMulAndAddIntoDest(_8, usr$z, _7, param_state_memory);
+      _9 <- mulmod(usr$zOmega, usr$u, _3);
+      _10 <- 3200;
+      tmp417,param_state_memory <@ usr$pointMulAndAddIntoDest(_10, _9, _7, param_state_memory);
+      tmp418 <@ MLoad(_8, param_state_memory);
+      _11 <- tmp418;
+      _12 <- 4864;
+      param_state_memory <@ MStore(_12, _11, param_state_memory);
+      _13 <- 3168;
+      tmp419 <@ MLoad(_13, param_state_memory);
+      _14 <- tmp419;
+      _15 <- 4896;
+      param_state_memory <@ MStore(_15, _14, param_state_memory);
+      tmp420,param_state_memory <@ usr$pointMulAndAddIntoDest(_10, usr$u, _12, param_state_memory);
+      tmp421,param_state_memory <@ usr$pointNegate(_12, param_state_memory);
+      _16 <- 1792;
+      tmp422 <@ MLoad(_16, param_state_memory);
+      _17 <- tmp422;
+      if (_17)
+        {
+        usr$uu <- mulmod(usr$u, usr$u, _3);
+        _18 <- 3264;
+        tmp423,param_state_memory <@ usr$pointMulAndAddIntoDest(_18, usr$uu, _7, param_state_memory);
+        _19 <- 3328;
+        tmp424,param_state_memory <@ usr$pointMulAndAddIntoDest(_19, usr$uu, _12, param_state_memory);
+        
+        }
+      ;
+      tmp425 <@ MLoad(_7, param_state_memory);
+      _20 <- tmp425;
+      _21 <- 0;
+      param_state_memory <@ MStore(_21, _20, param_state_memory);
+      _22 <- 4768;
+      tmp426 <@ MLoad(_22, param_state_memory);
+      _23 <- tmp426;
+      _24 <- 32;
+      param_state_memory <@ MStore(_24, _23, param_state_memory);
+      _25 <- 11559732032986387107991004021392285783925812861821192530917403151452391805634;
+      _26 <- 64;
+      param_state_memory <@ MStore(_26, _25, param_state_memory);
+      _27 <- 10857046999023057135944570762232829481370756359578518086990519993285655852781;
+      _28 <- 96;
+      param_state_memory <@ MStore(_28, _27, param_state_memory);
+      _29 <- 4082367875863433681332203403145435568316851327593401208105741076214120093531;
+      _30 <- 128;
+      param_state_memory <@ MStore(_30, _29, param_state_memory);
+      _31 <- 8495653923123431417604973247489272438418190587263600148770280649306958101930;
+      _32 <- 160;
+      param_state_memory <@ MStore(_32, _31, param_state_memory);
+      tmp427 <@ MLoad(_12, param_state_memory);
+      _33 <- tmp427;
+      _34 <- 192;
+      param_state_memory <@ MStore(_34, _33, param_state_memory);
+      tmp428 <@ MLoad(_15, param_state_memory);
+      _35 <- tmp428;
+      _36 <- 224;
+      param_state_memory <@ MStore(_36, _35, param_state_memory);
+      _37 <- 17212635814319756364507010169094758005397460366678210664966334781961899574209;
+      _38 <- 256;
+      param_state_memory <@ MStore(_38, _37, param_state_memory);
+      _39 <- 496075682290949347282619629729389528669750910289829251317610107342504362928;
+      _40 <- 288;
+      param_state_memory <@ MStore(_40, _39, param_state_memory);
+      _41 <- 2255182984359105691812395885056400739448730162863181907784180250290003009508;
+      _42 <- 320;
+      param_state_memory <@ MStore(_42, _41, param_state_memory);
+      _43 <- 15828724851114720558251891430452666121603726704878231219287131634746610441813;
+      _44 <- 352;
+      param_state_memory <@ MStore(_44, _43, param_state_memory);
+      _45 <- 384;
+      _46 <- 8;
+      tmp429 <@ Gas();
+      _47 <- tmp429;
+      tmp430 <@ StaticCall(_47, _46, _21, _45, _21, _24);
+      usr$success <- tmp430;
+      _48 <- iszero(usr$success);
+      if (_48)
+        {
+        _49 <- "finalPairing: precompile failure";
+        tmp431,param_state_memory <@ usr$revertWithMessage(_24, _49, param_state_memory);
+        
+        }
+      ;
+      tmp432 <@ MLoad(_21, param_state_memory);
+      _50 <- tmp432;
+      _51 <- iszero(_50);
+      if (_51)
+        {
+        _52 <- "finalPairing: pairing failure";
+        _53 <- 29;
+        tmp433,param_state_memory <@ usr$revertWithMessage(_53, _52, param_state_memory);
+        
+        }
+      ;
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b(): unit = {
+    var _1;
+      {
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc usr$updateAggregationChallenge_105(usr$queriesCommitmentPoint : uint256, usr$valueAtZ_Omega : uint256, usr$previousCoeff : uint256, usr$curAggregationChallenge : uint256, usr$curAggregatedOpeningAtZ_Omega : uint256, param_state_memory : mem): (uint256 * uint256 * mem) = {
+    var usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ_Omega, param_state_memory, _1, _2, _3, tmp373, _4, _5, tmp374, _6, usr$finalCoeff, _7, tmp375, _8, tmp376, _9;
+      {
+      _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _2 <- 4000;
+      tmp373 <@ MLoad(_2, param_state_memory);
+      _3 <- tmp373;
+      usr$newAggregationChallenge <- mulmod(usr$curAggregationChallenge, _3, _1);
+      _4 <- 4032;
+      tmp374 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp374;
+      _6 <- mulmod(usr$newAggregationChallenge, _5, _1);
+      usr$finalCoeff <- addmod(usr$previousCoeff, _6, _1);
+      _7 <- 4544;
+      tmp375,param_state_memory <@ usr$pointMulAndAddIntoDest(usr$queriesCommitmentPoint, usr$finalCoeff, _7, param_state_memory);
+      tmp376 <@ MLoad(usr$valueAtZ_Omega, param_state_memory);
+      _8 <- tmp376;
+      _9 <- mulmod(usr$newAggregationChallenge, _8, _1);
+      usr$newAggregatedOpeningAtZ_Omega <- addmod(usr$curAggregatedOpeningAtZ_Omega, _9, _1);
+      return (usr$newAggregationChallenge, usr$newAggregatedOpeningAtZ_Omega, param_state_memory);
+      
+      }
+    }
+  
+  proc external_fun_verify(param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp33, tmp34, _2, tmp35, _3, param, param_1, param_2, param_3, param_4, param_5, tmp36, tmp37;
+      {
+      tmp33 <@ CallValue();
+      _1 <- tmp33;
+      if (_1)
+        {
+        tmp34 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
+        
+        }
+      ;
+      tmp35 <@ CallDataSize();
+      _2 <- tmp35;
+      _3 <- 4;
+      tmp36 <@ abi_decode_array_uint256_dyn_calldatat_array_uint256_dyn_calldatat_array_uint256_dyn_calldata(_3, _2);
+      paramparam_1,param_2,param_3,param_4,param_5, <- tmp36;
+      tmp37,param_state_memory <@ fun_verify(param, param_1, param_2, param_3, param_4, param_5, param_state_memory);
+       <@ Pop(tmp37);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc BODY(): unit = {
+      {
+      tmp0 <@ MemoryGuard(128);
+      _1 <- tmp0;
+      _2 <- 64;
+       <@ MStore(_2, _1);
+      tmp1 <@ CallValue();
+      _3 <- tmp1;
+      if (_3)
+        {
+        tmp2 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
+        
+        }
+      ;
+      tmp3 <@ constructor_Verifier();
+      tmp4 <@ allocate_unbounded();
+      _4 <- tmp4;
+      tmp5 <@ DataSize("Verifier_1261_deployed");
+      _5 <- tmp5;
+      tmp6 <@ DataOffset("Verifier_1261_deployed");
+      _6 <- tmp6;
+       <@ CodeCopy(_4, _6, _5);
+      _7 <- _5;
+      return (_4, _5);
+      
+      }
+    }
+  
+  proc revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74(): unit = {
+    var _1;
+      {
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc abi_decode_array_uint256_dyn_calldata(offset : uint256, end : uint256): (uint256 * uint256) = {
+    var arrayPos, length, _1, _2, _3, _4, tmp17, tmp18, _5, _6, tmp19, _7, _8, _9, _10, tmp20;
+      {
+      _1 <- 31;
+      _2 <- offset + _1;
+      _3 <- slt(_2, end);
+      _4 <- iszero(_3);
+      if (_4)
+        {
+        tmp17 <@ revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d();
+        
+        }
+      ;
+      tmp18 <@ CallDataLoad(offset);
+      length <- tmp18;
+      _5 <- 18446744073709551615;
+      _6 <- gt(length, _5);
+      if (_6)
+        {
+        tmp19 <@ revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490();
+        
+        }
+      ;
+      _7 <- 32;
+      arrayPos <- offset + _7;
+      _8 <- length * _7;
+      _9 <- arrayPos + _8;
+      _10 <- gt(_9, end);
+      if (_10)
+        {
+        tmp20 <@ revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef();
+        
+        }
+      ;
+      return (arrayPos, length);
+      
+      }
+    }
+  
+  proc external_fun_verificationKeyHash(param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp40, tmp41, _2, tmp42, _3, tmp43, ret, tmp44, memPos, tmp45, memEnd, tmp46, _4;
+      {
+      tmp40 <@ CallValue();
+      _1 <- tmp40;
+      if (_1)
+        {
+        tmp41 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
+        
+        }
+      ;
+      tmp42 <@ CallDataSize();
+      _2 <- tmp42;
+      _3 <- 4;
+      tmp43 <@ abi_decode(_3, _2);
+      tmp44,param_state_memory <@ fun_verificationKeyHash(param_state_memory);
+      ret <- tmp44;
+      tmp45 <@ allocate_unbounded(param_state_memory);
+      memPos <- tmp45;
+      tmp46,param_state_memory <@ abi_encode_bytes32(memPos, ret, param_state_memory);
+      memEnd <- tmp46;
+      _4 <- memEnd - memPos;
+      return (memPos, _4);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$mainGateLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, usr$stateOpening3AtZ : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp295, _2, tmp296, _3, tmp297, _4, tmp298, _5, _6, _7, tmp299, _8, _9, tmp300, _10, tmp301, _11, _12, tmp302, _13, tmp303, _14, _15, tmp304, _16, _17, tmp305, usr$coeff, tmp306;
+      {
+      _1 <- 512;
+      tmp295,param_state_memory <@ usr$pointMulIntoDest(_1, usr$stateOpening0AtZ, usr$dest, param_state_memory);
+      _2 <- 576;
+      tmp296,param_state_memory <@ usr$pointMulAndAddIntoDest(_2, usr$stateOpening1AtZ, usr$dest, param_state_memory);
+      _3 <- 640;
+      tmp297,param_state_memory <@ usr$pointMulAndAddIntoDest(_3, usr$stateOpening2AtZ, usr$dest, param_state_memory);
+      _4 <- 704;
+      tmp298,param_state_memory <@ usr$pointMulAndAddIntoDest(_4, usr$stateOpening3AtZ, usr$dest, param_state_memory);
+      _5 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _6 <- mulmod(usr$stateOpening0AtZ, usr$stateOpening1AtZ, _5);
+      _7 <- 768;
+      tmp299,param_state_memory <@ usr$pointMulAndAddIntoDest(_7, _6, usr$dest, param_state_memory);
+      _8 <- mulmod(usr$stateOpening0AtZ, usr$stateOpening2AtZ, _5);
+      _9 <- 832;
+      tmp300,param_state_memory <@ usr$pointMulAndAddIntoDest(_9, _8, usr$dest, param_state_memory);
+      _10 <- 896;
+      tmp301,param_state_memory <@ usr$pointAddAssign(usr$dest, _10, param_state_memory);
+      _11 <- 2688;
+      tmp302 <@ MLoad(_11, param_state_memory);
+      _12 <- tmp302;
+      _13 <- 960;
+      tmp303,param_state_memory <@ usr$pointMulAndAddIntoDest(_13, _12, usr$dest, param_state_memory);
+      _14 <- 4000;
+      tmp304 <@ MLoad(_14, param_state_memory);
+      _15 <- tmp304;
+      _16 <- 2720;
+      tmp305 <@ MLoad(_16, param_state_memory);
+      _17 <- tmp305;
+      usr$coeff <- mulmod(_17, _15, _5);
+      tmp306,param_state_memory <@ usr$pointMulIntoDest(usr$dest, usr$coeff, usr$dest, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$pointMulIntoDest(usr$point : uint256, usr$s : uint256, usr$dest : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp53, _2, _3, _4, _5, tmp54, _6, _7, _8, _9, tmp55, _10, tmp56, _11, _12, _13, tmp57;
+      {
+      tmp53 <@ MLoad(usr$point, param_state_memory);
+      _1 <- tmp53;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      _3 <- 32;
+      _4 <- usr$point + _3;
+      tmp54 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp54;
+      param_state_memory <@ MStore(_3, _5, param_state_memory);
+      _6 <- 64;
+      param_state_memory <@ MStore(_6, usr$s, param_state_memory);
+      _7 <- 96;
+      _8 <- 7;
+      tmp55 <@ Gas();
+      _9 <- tmp55;
+      tmp56 <@ StaticCall(_9, _8, _2, _7, usr$dest, _6);
+      _10 <- tmp56;
+      _11 <- iszero(_10);
+      if (_11)
+        {
+        _12 <- "pointMulIntoDest: ecMul failed";
+        _13 <- 30;
+        tmp57,param_state_memory <@ usr$revertWithMessage(_13, _12, param_state_memory);
+        
+        }
+      ;
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
+    var _1, _2;
+      {
+      _1 <- 0;
+      _2 <- _1;
+      return ();
+      
+      }
+    }
+  
   proc usr$addAssignPermutationLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, usr$stateOpening3AtZ : uint256, param_state_memory : mem): mem = {
     var param_state_memory, usr$factor, tmp312, _1, tmp313, _2, _3, tmp314, usr$gamma, tmp315, _4, usr$intermediateValue, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, usr$l0AtZ, tmp316, _15, _16, tmp317, _17, _18, tmp318, _19, _20, tmp319, _21, tmp320, _22, _23, tmp321, usr$beta, tmp322, usr$gamma_1, tmp323, _24, _25, tmp324, _26, _27, usr$intermediateValue_1, _28, _29, tmp325, _30, _31, _32, _33, tmp326, _34, _35, _36, tmp327, _37, _38, tmp328, tmp329;
       {
@@ -1570,555 +2003,6 @@ module Verifier_1261 = {
       tmp328,param_state_memory <@ usr$pointMulIntoDest(_38, usr$factor, _37, param_state_memory);
       tmp329,param_state_memory <@ usr$pointSubAssign(usr$dest, _37, param_state_memory);
       return param_state_memory;
-      
-      }
-    }
-  
-  proc abi_decode_array_uint256_dyn_calldatat_array_uint256_dyn_calldatat_array_uint256_dyn_calldata(headStart : uint256, dataEnd : uint256): (uint256 * uint256 * uint256 * uint256 * uint256 * uint256) = {
-    var value0, value1, value2, value3, value4, value5, _1, _2, _3, tmp21, _4, _5, offset, tmp22, _6, _7, tmp23, _8, tmp24, _9, _10, offset_1, tmp25, _11, tmp26, _12, tmp27, _13, _14, offset_2, tmp28, _15, tmp29, _16, tmp30;
-      {
-      _1 <- 96;
-      _2 <- dataEnd - headStart;
-      _3 <- slt(_2, _1);
-      if (_3)
-        {
-        tmp21 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
-        
-        }
-      ;
-      _4 <- 0;
-      _5 <- headStart + _4;
-      tmp22 <@ CallDataLoad(_5);
-      offset <- tmp22;
-      _6 <- 18446744073709551615;
-      _7 <- gt(offset, _6);
-      if (_7)
-        {
-        tmp23 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
-        
-        }
-      ;
-      _8 <- headStart + offset;
-      tmp24 <@ abi_decode_array_uint256_dyn_calldata(_8, dataEnd);
-      value0value1, <- tmp24;
-      _9 <- 32;
-      _10 <- headStart + _9;
-      tmp25 <@ CallDataLoad(_10);
-      offset_1 <- tmp25;
-      _11 <- gt(offset_1, _6);
-      if (_11)
-        {
-        tmp26 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
-        
-        }
-      ;
-      _12 <- headStart + offset_1;
-      tmp27 <@ abi_decode_array_uint256_dyn_calldata(_12, dataEnd);
-      value2value3, <- tmp27;
-      _13 <- 64;
-      _14 <- headStart + _13;
-      tmp28 <@ CallDataLoad(_14);
-      offset_2 <- tmp28;
-      _15 <- gt(offset_2, _6);
-      if (_15)
-        {
-        tmp29 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
-        
-        }
-      ;
-      _16 <- headStart + offset_2;
-      tmp30 <@ abi_decode_array_uint256_dyn_calldata(_16, dataEnd);
-      value4value5, <- tmp30;
-      return (value0, value1, value2, value3, value4, value5);
-      
-      }
-    }
-  
-  proc revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc usr$permutationQuotientContribution(param_state_memory : mem): uint256 = {
-    var usr$res, _1, _2, _3, tmp270, _4, _5, tmp271, _6, usr$gamma, tmp272, _7, usr$beta, tmp273, usr$factorMultiplier, _8, _9, tmp274, _10, _11, tmp275, _12, _13, tmp276, _14, _15, tmp277, _16, _17, tmp278, _18, _19, tmp279, _20, _21, tmp280, _22, _23, usr$l0AtZ, tmp281, _24, _25, tmp282, _26;
-      {
-      _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _2 <- 2848;
-      tmp270 <@ MLoad(_2, param_state_memory);
-      _3 <- tmp270;
-      _4 <- 3680;
-      tmp271 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp271;
-      usr$res <- mulmod(_5, _3, _1);
-      _6 <- 3584;
-      tmp272 <@ MLoad(_6, param_state_memory);
-      usr$gamma <- tmp272;
-      _7 <- 3552;
-      tmp273 <@ MLoad(_7, param_state_memory);
-      usr$beta <- tmp273;
-      _8 <- 2752;
-      tmp274 <@ MLoad(_8, param_state_memory);
-      _9 <- tmp274;
-      usr$factorMultiplier <- mulmod(_9, usr$beta, _1);
-      usr$factorMultiplier <- addmod(usr$factorMultiplier, usr$gamma, _1);
-      _10 <- 2560;
-      tmp275 <@ MLoad(_10, param_state_memory);
-      _11 <- tmp275;
-      usr$factorMultiplier <- addmod(usr$factorMultiplier, _11, _1);
-      usr$res <- mulmod(usr$res, usr$factorMultiplier, _1);
-      _12 <- 2784;
-      tmp276 <@ MLoad(_12, param_state_memory);
-      _13 <- tmp276;
-      usr$factorMultiplier <- mulmod(_13, usr$beta, _1);
-      usr$factorMultiplier <- addmod(usr$factorMultiplier, usr$gamma, _1);
-      _14 <- 2592;
-      tmp277 <@ MLoad(_14, param_state_memory);
-      _15 <- tmp277;
-      usr$factorMultiplier <- addmod(usr$factorMultiplier, _15, _1);
-      usr$res <- mulmod(usr$res, usr$factorMultiplier, _1);
-      _16 <- 2816;
-      tmp278 <@ MLoad(_16, param_state_memory);
-      _17 <- tmp278;
-      usr$factorMultiplier <- mulmod(_17, usr$beta, _1);
-      usr$factorMultiplier <- addmod(usr$factorMultiplier, usr$gamma, _1);
-      _18 <- 2624;
-      tmp279 <@ MLoad(_18, param_state_memory);
-      _19 <- tmp279;
-      usr$factorMultiplier <- addmod(usr$factorMultiplier, _19, _1);
-      usr$res <- mulmod(usr$res, usr$factorMultiplier, _1);
-      _20 <- 2656;
-      tmp280 <@ MLoad(_20, param_state_memory);
-      _21 <- tmp280;
-      _22 <- addmod(_21, usr$gamma, _1);
-      usr$res <- mulmod(usr$res, _22, _1);
-      usr$res <- _1 - usr$res;
-      _23 <- 4128;
-      tmp281 <@ MLoad(_23, param_state_memory);
-      usr$l0AtZ <- tmp281;
-      _24 <- 3712;
-      tmp282 <@ MLoad(_24, param_state_memory);
-      _25 <- tmp282;
-      usr$l0AtZ <- mulmod(usr$l0AtZ, _25, _1);
-      _26 <- _1 - usr$l0AtZ;
-      usr$res <- addmod(usr$res, _26, _1);
-      return usr$res;
-      
-      }
-    }
-  
-  proc fun_verificationKeyHash(param_state_memory : mem): (uint256 * mem) = {
-    var var_vkHash, param_state_memory, tmp47, usr$start, usr$end, _1, _2, usr$length, tmp48;
-      {
-       <@ Pop(zero_value_for_split_bytes32);
-      tmp47,param_state_memory <@ fun_loadVerificationKey(param_state_memory);
-      usr$start <- 512;
-      usr$end <- 1792;
-      _1 <- 32;
-      _2 <- usr$end - usr$start;
-      usr$length <- _2 + _1;
-      tmp48 <@ Keccak256(usr$start, usr$length);
-      var_vkHash <- tmp48;
-      return (var_vkHash, param_state_memory);
-      
-      }
-    }
-  
-  proc constructor_Verifier(): unit = {
-    var tmp8;
-      {
-      tmp8 <@ constructor_IVerifier();
-      
-      }
-    }
-  
-  proc fun_verify(var__offset : uint256, var_length : uint256, var_offset : uint256, var__length : uint256, var_1250_offset : uint256, var_1250_length : uint256, param_state_memory : mem): (uint256 * mem) = {
-    var var, param_state_memory, zero_bool, tmp434, tmp435, tmp436, tmp437, tmp438, tmp439, tmp440, _1, _2, _3;
-      {
-      zero_bool <- zero_value_for_split_bool;
-      var <- zero_bool;
-      tmp434,param_state_memory <@ fun_loadVerificationKey(param_state_memory);
-      tmp435,param_state_memory <@ usr$loadProof(param_state_memory);
-      tmp436,param_state_memory <@ usr$initializeTranscript(param_state_memory);
-      tmp437,param_state_memory <@ usr$verifyQuotientEvaluation(param_state_memory);
-      tmp438,param_state_memory <@ usr$prepareQueries(param_state_memory);
-      tmp439,param_state_memory <@ usr$prepareAggregatedCommitment(param_state_memory);
-      tmp440,param_state_memory <@ usr$finalPairing(param_state_memory);
-      _1 <- true;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      _3 <- 32;
-      return (_2, _3);
-      return (var, param_state_memory);
-      
-      }
-    }
-  
-  proc revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc external_fun_verificationKeyHash(param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp40, tmp41, _2, tmp42, _3, tmp43, ret, tmp44, memPos, tmp45, memEnd, tmp46, _4;
-      {
-      tmp40 <@ CallValue();
-      _1 <- tmp40;
-      if (_1)
-        {
-        tmp41 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
-        
-        }
-      ;
-      tmp42 <@ CallDataSize();
-      _2 <- tmp42;
-      _3 <- 4;
-      tmp43 <@ abi_decode(_3, _2);
-      tmp44,param_state_memory <@ fun_verificationKeyHash(param_state_memory);
-      ret <- tmp44;
-      tmp45 <@ allocate_unbounded(param_state_memory);
-      memPos <- tmp45;
-      tmp46,param_state_memory <@ abi_encode_bytes32(memPos, ret, param_state_memory);
-      memEnd <- tmp46;
-      _4 <- memEnd - memPos;
-      return (memPos, _4);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$lookupQuotientContribution(param_state_memory : mem): (uint256 * mem) = {
-    var usr$res, param_state_memory, _1, usr$betaLookup, tmp283, _2, usr$gammaLookup, tmp284, _3, _4, usr$betaPlusOne, usr$betaGamma, _5, _6, _7, _8, tmp285, _9, _10, tmp286, _11, _12, tmp287, _13, _14, _15, usr$lastOmega, tmp288, _16, _17, _18, tmp289, usr$zMinusLastOmega, _19, _20, _21, tmp290, _22, _23, tmp291, usr$intermediateValue, _24, _25, usr$lnMinusOneAtZ, tmp292, usr$betaGammaPowered, tmp293, _26, usr$alphaPower8, tmp294, _27, usr$subtrahend, _28;
-      {
-      _1 <- 3872;
-      tmp283 <@ MLoad(_1, param_state_memory);
-      usr$betaLookup <- tmp283;
-      _2 <- 3904;
-      tmp284 <@ MLoad(_2, param_state_memory);
-      usr$gammaLookup <- tmp284;
-      _3 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _4 <- 1;
-      usr$betaPlusOne <- addmod(usr$betaLookup, _4, _3);
-      usr$betaGamma <- mulmod(usr$betaPlusOne, usr$gammaLookup, _3);
-      _5 <- 3936;
-      param_state_memory <@ MStore(_5, usr$betaPlusOne, param_state_memory);
-      _6 <- 3968;
-      param_state_memory <@ MStore(_6, usr$betaGamma, param_state_memory);
-      _7 <- 2880;
-      tmp285 <@ MLoad(_7, param_state_memory);
-      _8 <- tmp285;
-      usr$res <- mulmod(_8, usr$betaLookup, _3);
-      usr$res <- addmod(usr$res, usr$betaGamma, _3);
-      _9 <- 2912;
-      tmp286 <@ MLoad(_9, param_state_memory);
-      _10 <- tmp286;
-      usr$res <- mulmod(usr$res, _10, _3);
-      _11 <- 3744;
-      tmp287 <@ MLoad(_11, param_state_memory);
-      _12 <- tmp287;
-      usr$res <- mulmod(usr$res, _12, _3);
-      _13 <- 67108864;
-      _14 <- _13 - _4;
-      _15 <- 13446667982376394161563610564587413125564757801019538732601045199901075958935;
-      tmp288,param_state_memory <@ usr$modexp(_15, _14, param_state_memory);
-      usr$lastOmega <- tmp288;
-      _16 <- _3 - usr$lastOmega;
-      _17 <- 4064;
-      tmp289 <@ MLoad(_17, param_state_memory);
-      _18 <- tmp289;
-      usr$zMinusLastOmega <- addmod(_18, _16, _3);
-      _19 <- 4096;
-      param_state_memory <@ MStore(_19, usr$zMinusLastOmega, param_state_memory);
-      usr$res <- mulmod(usr$res, usr$zMinusLastOmega, _3);
-      _20 <- 3776;
-      tmp290 <@ MLoad(_20, param_state_memory);
-      _21 <- tmp290;
-      _22 <- 4128;
-      tmp291 <@ MLoad(_22, param_state_memory);
-      _23 <- tmp291;
-      usr$intermediateValue <- mulmod(_23, _21, _3);
-      _24 <- _3 - usr$intermediateValue;
-      usr$res <- addmod(usr$res, _24, _3);
-      _25 <- 4160;
-      tmp292 <@ MLoad(_25, param_state_memory);
-      usr$lnMinusOneAtZ <- tmp292;
-      tmp293,param_state_memory <@ usr$modexp(usr$betaGamma, _14, param_state_memory);
-      usr$betaGammaPowered <- tmp293;
-      _26 <- 3808;
-      tmp294 <@ MLoad(_26, param_state_memory);
-      usr$alphaPower8 <- tmp294;
-      _27 <- mulmod(usr$lnMinusOneAtZ, usr$betaGammaPowered, _3);
-      usr$subtrahend <- mulmod(_27, usr$alphaPower8, _3);
-      _28 <- _3 - usr$subtrahend;
-      usr$res <- addmod(usr$res, _28, _3);
-      return (usr$res, param_state_memory);
-      
-      }
-    }
-  
-  proc revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc abi_encode_bytes32_to_bytes32(value : uint256, pos : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1;
-      {
-      _1 <- cleanup_bytes32(value);
-      param_state_memory <@ MStore(pos, _1, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$pointAddIntoDest(usr$p1 : uint256, usr$p2 : uint256, usr$dest : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp58, _2, _3, _4, _5, tmp59, _6, tmp60, _7, _8, _9, tmp61, _10, _11, _12, _13, tmp62, _14, tmp63, _15, _16, _17, tmp64;
-      {
-      tmp58 <@ MLoad(usr$p1, param_state_memory);
-      _1 <- tmp58;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      _3 <- 32;
-      _4 <- usr$p1 + _3;
-      tmp59 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp59;
-      param_state_memory <@ MStore(_3, _5, param_state_memory);
-      tmp60 <@ MLoad(usr$p2, param_state_memory);
-      _6 <- tmp60;
-      _7 <- 64;
-      param_state_memory <@ MStore(_7, _6, param_state_memory);
-      _8 <- usr$p2 + _3;
-      tmp61 <@ MLoad(_8, param_state_memory);
-      _9 <- tmp61;
-      _10 <- 96;
-      param_state_memory <@ MStore(_10, _9, param_state_memory);
-      _11 <- 128;
-      _12 <- 6;
-      tmp62 <@ Gas();
-      _13 <- tmp62;
-      tmp63 <@ StaticCall(_13, _12, _2, _11, usr$dest, _7);
-      _14 <- tmp63;
-      _15 <- iszero(_14);
-      if (_15)
-        {
-        _16 <- "pointAddIntoDest: ecAdd failed";
-        _17 <- 30;
-        tmp64,param_state_memory <@ usr$revertWithMessage(_17, _16, param_state_memory);
-        
-        }
-      ;
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc shift_right_unsigned(value : uint256): uint256 = {
-    var newValue, _1;
-      {
-      _1 <- 224;
-      newValue <- _1 >> value;
-      return newValue;
-      
-      }
-    }
-  
-  proc constructor_IVerifier(): unit = {
-      {
-      
-      }
-    }
-  
-  proc revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
-    var _1;
-      {
-      _1 <- 0;
-      return ();
-      
-      }
-    }
-  
-  proc usr$pointMulAndAddIntoDest(usr$point : uint256, usr$s : uint256, usr$dest : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp79, _2, _3, _4, _5, tmp80, _6, _7, _8, _9, tmp81, usr$success, tmp82, _10, tmp83, _11, _12, tmp84, _13, _14, _15, tmp85, _16, tmp86, _17, _18, _19, tmp87;
-      {
-      tmp79 <@ MLoad(usr$point, param_state_memory);
-      _1 <- tmp79;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      _3 <- 32;
-      _4 <- usr$point + _3;
-      tmp80 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp80;
-      param_state_memory <@ MStore(_3, _5, param_state_memory);
-      _6 <- 64;
-      param_state_memory <@ MStore(_6, usr$s, param_state_memory);
-      _7 <- 96;
-      _8 <- 7;
-      tmp81 <@ Gas();
-      _9 <- tmp81;
-      tmp82 <@ StaticCall(_9, _8, _2, _7, _2, _6);
-      usr$success <- tmp82;
-      tmp83 <@ MLoad(usr$dest, param_state_memory);
-      _10 <- tmp83;
-      param_state_memory <@ MStore(_6, _10, param_state_memory);
-      _11 <- usr$dest + _3;
-      tmp84 <@ MLoad(_11, param_state_memory);
-      _12 <- tmp84;
-      param_state_memory <@ MStore(_7, _12, param_state_memory);
-      _13 <- 128;
-      _14 <- 6;
-      tmp85 <@ Gas();
-      _15 <- tmp85;
-      tmp86 <@ StaticCall(_15, _14, _2, _13, usr$dest, _6);
-      _16 <- tmp86;
-      usr$success <- usr$success /\ _16;
-      _17 <- iszero(usr$success);
-      if (_17)
-        {
-        _18 <- "pointMulAndAddIntoDest";
-        _19 <- 22;
-        tmp87,param_state_memory <@ usr$revertWithMessage(_19, _18, param_state_memory);
-        
-        }
-      ;
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$pointSubAssign(usr$p1 : uint256, usr$p2 : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp65, _2, _3, _4, _5, tmp66, _6, tmp67, _7, _8, _9, tmp68, _10, _11, _12, _13, _14, _15, tmp69, _16, tmp70, _17, _18, _19, tmp71;
-      {
-      tmp65 <@ MLoad(usr$p1, param_state_memory);
-      _1 <- tmp65;
-      _2 <- 0;
-      param_state_memory <@ MStore(_2, _1, param_state_memory);
-      _3 <- 32;
-      _4 <- usr$p1 + _3;
-      tmp66 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp66;
-      param_state_memory <@ MStore(_3, _5, param_state_memory);
-      tmp67 <@ MLoad(usr$p2, param_state_memory);
-      _6 <- tmp67;
-      _7 <- 64;
-      param_state_memory <@ MStore(_7, _6, param_state_memory);
-      _8 <- usr$p2 + _3;
-      tmp68 <@ MLoad(_8, param_state_memory);
-      _9 <- tmp68;
-      _10 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
-      _11 <- _10 - _9;
-      _12 <- 96;
-      param_state_memory <@ MStore(_12, _11, param_state_memory);
-      _13 <- 128;
-      _14 <- 6;
-      tmp69 <@ Gas();
-      _15 <- tmp69;
-      tmp70 <@ StaticCall(_15, _14, _2, _13, usr$p1, _7);
-      _16 <- tmp70;
-      _17 <- iszero(_16);
-      if (_17)
-        {
-        _18 <- "pointSubAssign: ecAdd failed";
-        _19 <- 28;
-        tmp71,param_state_memory <@ usr$revertWithMessage(_19, _18, param_state_memory);
-        
-        }
-      ;
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc abi_encode_bool_to_bool(value : uint256, pos : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp31;
-      {
-      tmp31 <@ cleanup_bool(value);
-      _1 <- tmp31;
-      param_state_memory <@ MStore(pos, _1, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$mainGateLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, usr$stateOpening3AtZ : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp295, _2, tmp296, _3, tmp297, _4, tmp298, _5, _6, _7, tmp299, _8, _9, tmp300, _10, tmp301, _11, _12, tmp302, _13, tmp303, _14, _15, tmp304, _16, _17, tmp305, usr$coeff, tmp306;
-      {
-      _1 <- 512;
-      tmp295,param_state_memory <@ usr$pointMulIntoDest(_1, usr$stateOpening0AtZ, usr$dest, param_state_memory);
-      _2 <- 576;
-      tmp296,param_state_memory <@ usr$pointMulAndAddIntoDest(_2, usr$stateOpening1AtZ, usr$dest, param_state_memory);
-      _3 <- 640;
-      tmp297,param_state_memory <@ usr$pointMulAndAddIntoDest(_3, usr$stateOpening2AtZ, usr$dest, param_state_memory);
-      _4 <- 704;
-      tmp298,param_state_memory <@ usr$pointMulAndAddIntoDest(_4, usr$stateOpening3AtZ, usr$dest, param_state_memory);
-      _5 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      _6 <- mulmod(usr$stateOpening0AtZ, usr$stateOpening1AtZ, _5);
-      _7 <- 768;
-      tmp299,param_state_memory <@ usr$pointMulAndAddIntoDest(_7, _6, usr$dest, param_state_memory);
-      _8 <- mulmod(usr$stateOpening0AtZ, usr$stateOpening2AtZ, _5);
-      _9 <- 832;
-      tmp300,param_state_memory <@ usr$pointMulAndAddIntoDest(_9, _8, usr$dest, param_state_memory);
-      _10 <- 896;
-      tmp301,param_state_memory <@ usr$pointAddAssign(usr$dest, _10, param_state_memory);
-      _11 <- 2688;
-      tmp302 <@ MLoad(_11, param_state_memory);
-      _12 <- tmp302;
-      _13 <- 960;
-      tmp303,param_state_memory <@ usr$pointMulAndAddIntoDest(_13, _12, usr$dest, param_state_memory);
-      _14 <- 4000;
-      tmp304 <@ MLoad(_14, param_state_memory);
-      _15 <- tmp304;
-      _16 <- 2720;
-      tmp305 <@ MLoad(_16, param_state_memory);
-      _17 <- tmp305;
-      usr$coeff <- mulmod(_17, _15, _5);
-      tmp306,param_state_memory <@ usr$pointMulIntoDest(usr$dest, usr$coeff, usr$dest, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc abi_decode(headStart : uint256, dataEnd : uint256): unit = {
-    var _1, _2, _3, tmp38;
-      {
-      _1 <- 0;
-      _2 <- dataEnd - headStart;
-      _3 <- slt(_2, _1);
-      if (_3)
-        {
-        tmp38 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
-        
-        }
-      ;
-      
-      }
-    }
-  
-  proc cleanup_bool(value : uint256): uint256 = {
-    var cleaned, _1;
-      {
-      _1 <- iszero(value);
-      cleaned <- iszero(_1);
-      return cleaned;
       
       }
     }
@@ -2210,32 +2094,337 @@ module Verifier_1261 = {
       }
     }
   
-  proc usr$pointMulIntoDest(usr$point : uint256, usr$s : uint256, usr$dest : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, tmp53, _2, _3, _4, _5, tmp54, _6, _7, _8, _9, tmp55, _10, tmp56, _11, _12, _13, tmp57;
+  proc revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef(): unit = {
+    var _1;
       {
-      tmp53 <@ MLoad(usr$point, param_state_memory);
-      _1 <- tmp53;
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc usr$updateTranscript(usr$value : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, _2, _3, _4, _5, usr$newState0, tmp92, _6, usr$newState1, tmp93, _7, _8;
+      {
+      _1 <- 0;
+      _2 <- 3395;
+      param_state_memory <@ MStore8(_2, _1, param_state_memory);
+      _3 <- 3460;
+      param_state_memory <@ MStore(_3, usr$value, param_state_memory);
+      _4 <- 100;
+      _5 <- 3392;
+      tmp92 <@ Keccak256(_5, _4);
+      usr$newState0 <- tmp92;
+      _6 <- 1;
+      param_state_memory <@ MStore8(_2, _6, param_state_memory);
+      tmp93 <@ Keccak256(_5, _4);
+      usr$newState1 <- tmp93;
+      _7 <- 3428;
+      param_state_memory <@ MStore(_7, usr$newState1, param_state_memory);
+      _8 <- 3396;
+      param_state_memory <@ MStore(_8, usr$newState0, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$pointSubAssign(usr$p1 : uint256, usr$p2 : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp65, _2, _3, _4, _5, tmp66, _6, tmp67, _7, _8, _9, tmp68, _10, _11, _12, _13, _14, _15, tmp69, _16, tmp70, _17, _18, _19, tmp71;
+      {
+      tmp65 <@ MLoad(usr$p1, param_state_memory);
+      _1 <- tmp65;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      _3 <- 32;
+      _4 <- usr$p1 + _3;
+      tmp66 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp66;
+      param_state_memory <@ MStore(_3, _5, param_state_memory);
+      tmp67 <@ MLoad(usr$p2, param_state_memory);
+      _6 <- tmp67;
+      _7 <- 64;
+      param_state_memory <@ MStore(_7, _6, param_state_memory);
+      _8 <- usr$p2 + _3;
+      tmp68 <@ MLoad(_8, param_state_memory);
+      _9 <- tmp68;
+      _10 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
+      _11 <- _10 - _9;
+      _12 <- 96;
+      param_state_memory <@ MStore(_12, _11, param_state_memory);
+      _13 <- 128;
+      _14 <- 6;
+      tmp69 <@ Gas();
+      _15 <- tmp69;
+      tmp70 <@ StaticCall(_15, _14, _2, _13, usr$p1, _7);
+      _16 <- tmp70;
+      _17 <- iszero(_16);
+      if (_17)
+        {
+        _18 <- "pointSubAssign: ecAdd failed";
+        _19 <- 28;
+        tmp71,param_state_memory <@ usr$revertWithMessage(_19, _18, param_state_memory);
+        
+        }
+      ;
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$lookupQuotientContribution(param_state_memory : mem): (uint256 * mem) = {
+    var usr$res, param_state_memory, _1, usr$betaLookup, tmp283, _2, usr$gammaLookup, tmp284, _3, _4, usr$betaPlusOne, usr$betaGamma, _5, _6, _7, _8, tmp285, _9, _10, tmp286, _11, _12, tmp287, _13, _14, _15, usr$lastOmega, tmp288, _16, _17, _18, tmp289, usr$zMinusLastOmega, _19, _20, _21, tmp290, _22, _23, tmp291, usr$intermediateValue, _24, _25, usr$lnMinusOneAtZ, tmp292, usr$betaGammaPowered, tmp293, _26, usr$alphaPower8, tmp294, _27, usr$subtrahend, _28;
+      {
+      _1 <- 3872;
+      tmp283 <@ MLoad(_1, param_state_memory);
+      usr$betaLookup <- tmp283;
+      _2 <- 3904;
+      tmp284 <@ MLoad(_2, param_state_memory);
+      usr$gammaLookup <- tmp284;
+      _3 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+      _4 <- 1;
+      usr$betaPlusOne <- addmod(usr$betaLookup, _4, _3);
+      usr$betaGamma <- mulmod(usr$betaPlusOne, usr$gammaLookup, _3);
+      _5 <- 3936;
+      param_state_memory <@ MStore(_5, usr$betaPlusOne, param_state_memory);
+      _6 <- 3968;
+      param_state_memory <@ MStore(_6, usr$betaGamma, param_state_memory);
+      _7 <- 2880;
+      tmp285 <@ MLoad(_7, param_state_memory);
+      _8 <- tmp285;
+      usr$res <- mulmod(_8, usr$betaLookup, _3);
+      usr$res <- addmod(usr$res, usr$betaGamma, _3);
+      _9 <- 2912;
+      tmp286 <@ MLoad(_9, param_state_memory);
+      _10 <- tmp286;
+      usr$res <- mulmod(usr$res, _10, _3);
+      _11 <- 3744;
+      tmp287 <@ MLoad(_11, param_state_memory);
+      _12 <- tmp287;
+      usr$res <- mulmod(usr$res, _12, _3);
+      _13 <- 67108864;
+      _14 <- _13 - _4;
+      _15 <- 13446667982376394161563610564587413125564757801019538732601045199901075958935;
+      tmp288,param_state_memory <@ usr$modexp(_15, _14, param_state_memory);
+      usr$lastOmega <- tmp288;
+      _16 <- _3 - usr$lastOmega;
+      _17 <- 4064;
+      tmp289 <@ MLoad(_17, param_state_memory);
+      _18 <- tmp289;
+      usr$zMinusLastOmega <- addmod(_18, _16, _3);
+      _19 <- 4096;
+      param_state_memory <@ MStore(_19, usr$zMinusLastOmega, param_state_memory);
+      usr$res <- mulmod(usr$res, usr$zMinusLastOmega, _3);
+      _20 <- 3776;
+      tmp290 <@ MLoad(_20, param_state_memory);
+      _21 <- tmp290;
+      _22 <- 4128;
+      tmp291 <@ MLoad(_22, param_state_memory);
+      _23 <- tmp291;
+      usr$intermediateValue <- mulmod(_23, _21, _3);
+      _24 <- _3 - usr$intermediateValue;
+      usr$res <- addmod(usr$res, _24, _3);
+      _25 <- 4160;
+      tmp292 <@ MLoad(_25, param_state_memory);
+      usr$lnMinusOneAtZ <- tmp292;
+      tmp293,param_state_memory <@ usr$modexp(usr$betaGamma, _14, param_state_memory);
+      usr$betaGammaPowered <- tmp293;
+      _26 <- 3808;
+      tmp294 <@ MLoad(_26, param_state_memory);
+      usr$alphaPower8 <- tmp294;
+      _27 <- mulmod(usr$lnMinusOneAtZ, usr$betaGammaPowered, _3);
+      usr$subtrahend <- mulmod(_27, usr$alphaPower8, _3);
+      _28 <- _3 - usr$subtrahend;
+      usr$res <- addmod(usr$res, _28, _3);
+      return (usr$res, param_state_memory);
+      
+      }
+    }
+  
+  proc revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
+    var _1;
+      {
+      _1 <- 0;
+      return ();
+      
+      }
+    }
+  
+  proc usr$addAssignLookupLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, usr$factor, tmp330, _2, tmp331, _3, tmp332, _4, _5, tmp333, _6, _7, tmp334, _8, _9, tmp335, _10, _11, tmp336, _12, _13, tmp337, usr$fReconstructed, _14, usr$eta, tmp338, usr$currentEta, _15, _16, _17, _18, tmp339, _19, _20, _21, tmp340, _22, _23, tmp341, _24, _25, tmp342, _26, tmp343, _27, tmp344, _28, _29, tmp345, _30, _31, tmp346, _32, _33, _34, tmp347, _35, _36, tmp348, _37, _38, tmp349, _39;
+      {
+      _1 <- 2912;
+      tmp330 <@ MLoad(_1, param_state_memory);
+      usr$factor <- tmp330;
+      tmp331 <@ MLoad(3744, param_state_memory);
+      _2 <- tmp331;
+      usr$factor <- mulmod(usr$factor, _2, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      tmp332 <@ MLoad(4096, param_state_memory);
+      _3 <- tmp332;
+      usr$factor <- mulmod(usr$factor, _3, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _4 <- 4000;
+      tmp333 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp333;
+      usr$factor <- mulmod(usr$factor, _5, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _6 <- 4992;
+      param_state_memory <@ MStore(_6, usr$factor, param_state_memory);
+      _7 <- 2976;
+      tmp334 <@ MLoad(_7, param_state_memory);
+      usr$factor <- tmp334;
+      _8 <- 3872;
+      tmp335 <@ MLoad(_8, param_state_memory);
+      _9 <- tmp335;
+      usr$factor <- mulmod(usr$factor, _9, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _10 <- 2944;
+      tmp336 <@ MLoad(_10, param_state_memory);
+      _11 <- tmp336;
+      usr$factor <- addmod(usr$factor, _11, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _12 <- 3968;
+      tmp337 <@ MLoad(_12, param_state_memory);
+      _13 <- tmp337;
+      usr$factor <- addmod(usr$factor, _13, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$fReconstructed <- usr$stateOpening0AtZ;
+      _14 <- 3840;
+      tmp338 <@ MLoad(_14, param_state_memory);
+      usr$eta <- tmp338;
+      usr$currentEta <- usr$eta;
+      _15 <- mulmod(usr$eta, usr$stateOpening1AtZ, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$fReconstructed <- addmod(usr$stateOpening0AtZ, _15, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$currentEta <- mulmod(usr$eta, usr$eta, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _16 <- mulmod(usr$currentEta, usr$stateOpening2AtZ, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$fReconstructed <- addmod(usr$fReconstructed, _16, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$currentEta <- mulmod(usr$currentEta, usr$eta, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _17 <- 3040;
+      tmp339 <@ MLoad(_17, param_state_memory);
+      _18 <- tmp339;
+      _19 <- mulmod(_18, usr$currentEta, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$fReconstructed <- addmod(usr$fReconstructed, _19, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _20 <- 3008;
+      tmp340 <@ MLoad(_20, param_state_memory);
+      _21 <- tmp340;
+      usr$fReconstructed <- mulmod(usr$fReconstructed, _21, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _22 <- 3904;
+      tmp341 <@ MLoad(_22, param_state_memory);
+      _23 <- tmp341;
+      usr$fReconstructed <- addmod(usr$fReconstructed, _23, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$factor <- mulmod(usr$factor, usr$fReconstructed, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _24 <- 3936;
+      tmp342 <@ MLoad(_24, param_state_memory);
+      _25 <- tmp342;
+      usr$factor <- mulmod(usr$factor, _25, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$factor <- 21888242871839275222246405745257275088548364400416034343698204186575808495617 - usr$factor;
+      tmp343 <@ MLoad(3744, param_state_memory);
+      _26 <- tmp343;
+      usr$factor <- mulmod(usr$factor, _26, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      tmp344 <@ MLoad(4096, param_state_memory);
+      _27 <- tmp344;
+      usr$factor <- mulmod(usr$factor, _27, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _28 <- 3776;
+      tmp345 <@ MLoad(_28, param_state_memory);
+      _29 <- tmp345;
+      _30 <- 4128;
+      tmp346 <@ MLoad(_30, param_state_memory);
+      _31 <- tmp346;
+      _32 <- mulmod(_31, _29, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$factor <- addmod(usr$factor, _32, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _33 <- 3808;
+      tmp347 <@ MLoad(_33, param_state_memory);
+      _34 <- tmp347;
+      _35 <- 4160;
+      tmp348 <@ MLoad(_35, param_state_memory);
+      _36 <- tmp348;
+      _37 <- mulmod(_36, _34, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      usr$factor <- addmod(usr$factor, _37, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      tmp349 <@ MLoad(_4, param_state_memory);
+      _38 <- tmp349;
+      usr$factor <- mulmod(usr$factor, _38, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+      _39 <- 4960;
+      param_state_memory <@ MStore(_39, usr$factor, param_state_memory);
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$pointAddAssign(usr$p1 : uint256, usr$p2 : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp72, _2, _3, _4, _5, tmp73, _6, tmp74, _7, _8, _9, tmp75, _10, _11, _12, _13, tmp76, _14, tmp77, _15, _16, _17, tmp78;
+      {
+      tmp72 <@ MLoad(usr$p1, param_state_memory);
+      _1 <- tmp72;
+      _2 <- 0;
+      param_state_memory <@ MStore(_2, _1, param_state_memory);
+      _3 <- 32;
+      _4 <- usr$p1 + _3;
+      tmp73 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp73;
+      param_state_memory <@ MStore(_3, _5, param_state_memory);
+      tmp74 <@ MLoad(usr$p2, param_state_memory);
+      _6 <- tmp74;
+      _7 <- 64;
+      param_state_memory <@ MStore(_7, _6, param_state_memory);
+      _8 <- usr$p2 + _3;
+      tmp75 <@ MLoad(_8, param_state_memory);
+      _9 <- tmp75;
+      _10 <- 96;
+      param_state_memory <@ MStore(_10, _9, param_state_memory);
+      _11 <- 128;
+      _12 <- 6;
+      tmp76 <@ Gas();
+      _13 <- tmp76;
+      tmp77 <@ StaticCall(_13, _12, _2, _11, usr$p1, _7);
+      _14 <- tmp77;
+      _15 <- iszero(_14);
+      if (_15)
+        {
+        _16 <- "pointAddAssign: ecAdd failed";
+        _17 <- 28;
+        tmp78,param_state_memory <@ usr$revertWithMessage(_17, _16, param_state_memory);
+        
+        }
+      ;
+      return param_state_memory;
+      
+      }
+    }
+  
+  proc usr$pointMulAndAddIntoDest(usr$point : uint256, usr$s : uint256, usr$dest : uint256, param_state_memory : mem): mem = {
+    var param_state_memory, _1, tmp79, _2, _3, _4, _5, tmp80, _6, _7, _8, _9, tmp81, usr$success, tmp82, _10, tmp83, _11, _12, tmp84, _13, _14, _15, tmp85, _16, tmp86, _17, _18, _19, tmp87;
+      {
+      tmp79 <@ MLoad(usr$point, param_state_memory);
+      _1 <- tmp79;
       _2 <- 0;
       param_state_memory <@ MStore(_2, _1, param_state_memory);
       _3 <- 32;
       _4 <- usr$point + _3;
-      tmp54 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp54;
+      tmp80 <@ MLoad(_4, param_state_memory);
+      _5 <- tmp80;
       param_state_memory <@ MStore(_3, _5, param_state_memory);
       _6 <- 64;
       param_state_memory <@ MStore(_6, usr$s, param_state_memory);
       _7 <- 96;
       _8 <- 7;
-      tmp55 <@ Gas();
-      _9 <- tmp55;
-      tmp56 <@ StaticCall(_9, _8, _2, _7, usr$dest, _6);
-      _10 <- tmp56;
-      _11 <- iszero(_10);
-      if (_11)
+      tmp81 <@ Gas();
+      _9 <- tmp81;
+      tmp82 <@ StaticCall(_9, _8, _2, _7, _2, _6);
+      usr$success <- tmp82;
+      tmp83 <@ MLoad(usr$dest, param_state_memory);
+      _10 <- tmp83;
+      param_state_memory <@ MStore(_6, _10, param_state_memory);
+      _11 <- usr$dest + _3;
+      tmp84 <@ MLoad(_11, param_state_memory);
+      _12 <- tmp84;
+      param_state_memory <@ MStore(_7, _12, param_state_memory);
+      _13 <- 128;
+      _14 <- 6;
+      tmp85 <@ Gas();
+      _15 <- tmp85;
+      tmp86 <@ StaticCall(_15, _14, _2, _13, usr$dest, _6);
+      _16 <- tmp86;
+      usr$success <- usr$success /\ _16;
+      _17 <- iszero(usr$success);
+      if (_17)
         {
-        _12 <- "pointMulIntoDest: ecMul failed";
-        _13 <- 30;
-        tmp57,param_state_memory <@ usr$revertWithMessage(_13, _12, param_state_memory);
+        _18 <- "pointMulAndAddIntoDest";
+        _19 <- 22;
+        tmp87,param_state_memory <@ usr$revertWithMessage(_19, _18, param_state_memory);
         
         }
       ;
@@ -2370,195 +2559,6 @@ module Verifier_1261 = {
       _81 <- 0;
       _82 <- 1792;
       param_state_memory <@ MStore(_82, _81, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$getTranscriptChallenge(usr$numberOfChallenge : uint256, param_state_memory : mem): (uint256 * mem) = {
-    var usr$challenge, param_state_memory, _1, _2, _3, _4, _5, _6, _7, _8, _9, tmp94;
-      {
-      _1 <- 2;
-      _2 <- 3395;
-      param_state_memory <@ MStore8(_2, _1, param_state_memory);
-      _3 <- 224;
-      _4 <- _3 << usr$numberOfChallenge;
-      _5 <- 3460;
-      param_state_memory <@ MStore(_5, _4, param_state_memory);
-      _6 <- 253 << 1 - 1;
-      _7 <- 72;
-      _8 <- 3392;
-      tmp94 <@ Keccak256(_8, _7);
-      _9 <- tmp94;
-      usr$challenge <- _9 /\ _6;
-      return (usr$challenge, param_state_memory);
-      
-      }
-    }
-  
-  proc usr$pointNegate(usr$point : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, _2, usr$pY, tmp88, _3, tmp90, _4, _5, tmp91, _6, _7;
-      {
-      _1 <- 32;
-      _2 <- usr$point + _1;
-      tmp88 <@ MLoad(_2, param_state_memory);
-      usr$pY <- tmp88;
-      tmp89 <- usr$pY;
-      if (tmp89 = 0)
-        {
-        tmp90 <@ MLoad(usr$point, param_state_memory);
-        _3 <- tmp90;
-        if (_3)
-          {
-          _4 <- "pointNegate: invalid point";
-          _5 <- 26;
-          tmp91,param_state_memory <@ usr$revertWithMessage(_5, _4, param_state_memory);
-          
-          }
-        ;
-        
-        }
-      
-      else {
-        _6 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
-        _7 <- _6 - usr$pY;
-        param_state_memory <@ MStore(_2, _7, param_state_memory);
-        
-        }
-      ;
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$addAssignRescueCustomGateLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, usr$stateOpening3AtZ : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, usr$accumulator, usr$intermediateValue, _1, _2, _3, _4, tmp307, _5, _6, _7, tmp308, _8, _9, _10, tmp309, _11, _12, tmp310, _13, tmp311;
-      {
-      _1 <- 21888242871839275222246405745257275088548364400416034343698204186575808495617;
-      usr$accumulator <- mulmod(usr$stateOpening0AtZ, usr$stateOpening0AtZ, _1);
-      _2 <- _1 - usr$stateOpening1AtZ;
-      usr$accumulator <- addmod(usr$accumulator, _2, _1);
-      _3 <- 3520;
-      tmp307 <@ MLoad(_3, param_state_memory);
-      _4 <- tmp307;
-      usr$accumulator <- mulmod(usr$accumulator, _4, _1);
-      usr$intermediateValue <- mulmod(usr$stateOpening1AtZ, usr$stateOpening1AtZ, _1);
-      _5 <- _1 - usr$stateOpening2AtZ;
-      usr$intermediateValue <- addmod(usr$intermediateValue, _5, _1);
-      _6 <- 3616;
-      tmp308 <@ MLoad(_6, param_state_memory);
-      _7 <- tmp308;
-      usr$intermediateValue <- mulmod(usr$intermediateValue, _7, _1);
-      usr$accumulator <- addmod(usr$accumulator, usr$intermediateValue, _1);
-      usr$intermediateValue <- mulmod(usr$stateOpening2AtZ, usr$stateOpening0AtZ, _1);
-      _8 <- _1 - usr$stateOpening3AtZ;
-      usr$intermediateValue <- addmod(usr$intermediateValue, _8, _1);
-      _9 <- 3648;
-      tmp309 <@ MLoad(_9, param_state_memory);
-      _10 <- tmp309;
-      usr$intermediateValue <- mulmod(usr$intermediateValue, _10, _1);
-      usr$accumulator <- addmod(usr$accumulator, usr$intermediateValue, _1);
-      _11 <- 4000;
-      tmp310 <@ MLoad(_11, param_state_memory);
-      _12 <- tmp310;
-      usr$accumulator <- mulmod(usr$accumulator, _12, _1);
-      _13 <- 1088;
-      tmp311,param_state_memory <@ usr$pointMulAndAddIntoDest(_13, usr$accumulator, usr$dest, param_state_memory);
-      return param_state_memory;
-      
-      }
-    }
-  
-  proc usr$addAssignLookupLinearisationContributionWithV(usr$dest : uint256, usr$stateOpening0AtZ : uint256, usr$stateOpening1AtZ : uint256, usr$stateOpening2AtZ : uint256, param_state_memory : mem): mem = {
-    var param_state_memory, _1, usr$factor, tmp330, _2, tmp331, _3, tmp332, _4, _5, tmp333, _6, _7, tmp334, _8, _9, tmp335, _10, _11, tmp336, _12, _13, tmp337, usr$fReconstructed, _14, usr$eta, tmp338, usr$currentEta, _15, _16, _17, _18, tmp339, _19, _20, _21, tmp340, _22, _23, tmp341, _24, _25, tmp342, _26, tmp343, _27, tmp344, _28, _29, tmp345, _30, _31, tmp346, _32, _33, _34, tmp347, _35, _36, tmp348, _37, _38, tmp349, _39;
-      {
-      _1 <- 2912;
-      tmp330 <@ MLoad(_1, param_state_memory);
-      usr$factor <- tmp330;
-      tmp331 <@ MLoad(3744, param_state_memory);
-      _2 <- tmp331;
-      usr$factor <- mulmod(usr$factor, _2, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      tmp332 <@ MLoad(4096, param_state_memory);
-      _3 <- tmp332;
-      usr$factor <- mulmod(usr$factor, _3, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _4 <- 4000;
-      tmp333 <@ MLoad(_4, param_state_memory);
-      _5 <- tmp333;
-      usr$factor <- mulmod(usr$factor, _5, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _6 <- 4992;
-      param_state_memory <@ MStore(_6, usr$factor, param_state_memory);
-      _7 <- 2976;
-      tmp334 <@ MLoad(_7, param_state_memory);
-      usr$factor <- tmp334;
-      _8 <- 3872;
-      tmp335 <@ MLoad(_8, param_state_memory);
-      _9 <- tmp335;
-      usr$factor <- mulmod(usr$factor, _9, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _10 <- 2944;
-      tmp336 <@ MLoad(_10, param_state_memory);
-      _11 <- tmp336;
-      usr$factor <- addmod(usr$factor, _11, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _12 <- 3968;
-      tmp337 <@ MLoad(_12, param_state_memory);
-      _13 <- tmp337;
-      usr$factor <- addmod(usr$factor, _13, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$fReconstructed <- usr$stateOpening0AtZ;
-      _14 <- 3840;
-      tmp338 <@ MLoad(_14, param_state_memory);
-      usr$eta <- tmp338;
-      usr$currentEta <- usr$eta;
-      _15 <- mulmod(usr$eta, usr$stateOpening1AtZ, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$fReconstructed <- addmod(usr$stateOpening0AtZ, _15, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$currentEta <- mulmod(usr$eta, usr$eta, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _16 <- mulmod(usr$currentEta, usr$stateOpening2AtZ, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$fReconstructed <- addmod(usr$fReconstructed, _16, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$currentEta <- mulmod(usr$currentEta, usr$eta, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _17 <- 3040;
-      tmp339 <@ MLoad(_17, param_state_memory);
-      _18 <- tmp339;
-      _19 <- mulmod(_18, usr$currentEta, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$fReconstructed <- addmod(usr$fReconstructed, _19, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _20 <- 3008;
-      tmp340 <@ MLoad(_20, param_state_memory);
-      _21 <- tmp340;
-      usr$fReconstructed <- mulmod(usr$fReconstructed, _21, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _22 <- 3904;
-      tmp341 <@ MLoad(_22, param_state_memory);
-      _23 <- tmp341;
-      usr$fReconstructed <- addmod(usr$fReconstructed, _23, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$factor <- mulmod(usr$factor, usr$fReconstructed, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _24 <- 3936;
-      tmp342 <@ MLoad(_24, param_state_memory);
-      _25 <- tmp342;
-      usr$factor <- mulmod(usr$factor, _25, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$factor <- 21888242871839275222246405745257275088548364400416034343698204186575808495617 - usr$factor;
-      tmp343 <@ MLoad(3744, param_state_memory);
-      _26 <- tmp343;
-      usr$factor <- mulmod(usr$factor, _26, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      tmp344 <@ MLoad(4096, param_state_memory);
-      _27 <- tmp344;
-      usr$factor <- mulmod(usr$factor, _27, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _28 <- 3776;
-      tmp345 <@ MLoad(_28, param_state_memory);
-      _29 <- tmp345;
-      _30 <- 4128;
-      tmp346 <@ MLoad(_30, param_state_memory);
-      _31 <- tmp346;
-      _32 <- mulmod(_31, _29, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$factor <- addmod(usr$factor, _32, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _33 <- 3808;
-      tmp347 <@ MLoad(_33, param_state_memory);
-      _34 <- tmp347;
-      _35 <- 4160;
-      tmp348 <@ MLoad(_35, param_state_memory);
-      _36 <- tmp348;
-      _37 <- mulmod(_36, _34, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      usr$factor <- addmod(usr$factor, _37, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      tmp349 <@ MLoad(_4, param_state_memory);
-      _38 <- tmp349;
-      usr$factor <- mulmod(usr$factor, _38, 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-      _39 <- 4960;
-      param_state_memory <@ MStore(_39, usr$factor, param_state_memory);
       return param_state_memory;
       
       }
