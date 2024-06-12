@@ -1,11 +1,13 @@
-require import Int Logic IntDiv.
+pragma Goals:printall.
+require import Int Logic IntDiv CoreMap SmtMap.
 
-type MemoryMap = int -> int.
+type MemoryMap = (int, int) map.
 
-print fun_ext.
+
 
 op p = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 
+(*
 op "_.[_<-_]" ['a, 'b] (f : 'a -> 'b) (x : 'a) (y : 'b) =
   fun x' => if x = x' then y else f x'.
 
@@ -20,11 +22,11 @@ proof. by []. qed.
 lemma fupdate_neq ['a 'b] (f : 'a -> 'b) (x x' : 'a) (y : 'b) :
   x <> x' => f.[x <- y] x' = f x'.
 proof. by move=> @/"_.[_<-_]" ->. qed.
-
+*)
 module Test = {
 
   proc mload(m : MemoryMap, a : int) : int = {
-    return m a;
+    return m.[a];
   }
 
   proc mstore(m : MemoryMap, a : int, v : int) : MemoryMap = {
@@ -67,12 +69,15 @@ lemma stupid_lemma :
     skip.
     progress.
     qed.
+
+print ( < ).
     
 lemma pointNegate_lemma :
     forall (m : MemoryMap) (point_addr : int),
-      m(point_addr) <> 0 \/ m(point_addr + 32) <> 0 =>
+    m.[point_addr] <> 0 \/ m.[point_addr + 32] <> 0 => m.[point_addr + 32] < p
+    => 0 < m.[point_addr + 32] =>
         hoare [ Test.pointNegate : arg = (m, point_addr) ==>
-          (m(point_addr) = res(point_addr) /\ res(point_addr + 32) = (-m(point_addr + 32)) %% p)]. 
+          (m.[point_addr] = res.[point_addr] /\ res.[point_addr + 32] = (-m.[point_addr + 32]) %% p)]. 
             progress.
             proc.
             simplify.
@@ -82,9 +87,10 @@ lemma pointNegate_lemma :
             skip.
             progress.
             smt.
-            admit.
-            admit.
-            qed.
+            smt.
+            rewrite -/p.
+            smt.
+qed.            
             
         
         
