@@ -2,22 +2,22 @@ pragma Goals:printall.
 require import Int Logic IntDiv CoreMap SmtMap Array.
 
 type uint256 = int.
-type MemoryMap = (uint256, uint256) map.
+type mem = (uint256, uint256) map.
 
 op p = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 op calldata : uint256 array.
 
 module Test = {
 
-  proc mload(a : uint256, m : MemoryMap) : uint256 = {
+  proc mload(a : uint256, m : mem) : uint256 = {
     return m.[a];
   }
 
-  proc mstore(a : uint256, v : uint256, m : MemoryMap) : MemoryMap = {
+  proc mstore(a : uint256, v : uint256, m : mem) : mem = {
     return m.[a<-v];
   }
 
-  proc mstore8(a : uint256, v : uint256, m : MemoryMap) : MemoryMap = {
+  proc mstore8(a : uint256, v : uint256, m : mem) : mem = {
     (* TODO *)
     return m;
   }
@@ -27,7 +27,7 @@ module Test = {
     return ();
   }
 
-  proc staticcall(gas : uint256, addr : uint256, argOff : uint256, argSize : uint256, retOff : uint256, retSize : uint256, m : MemoryMap) : uint256 * MemoryMap = {
+  proc staticcall(gas : uint256, addr : uint256, argOff : uint256, argSize : uint256, retOff : uint256, retSize : uint256, m : mem) : uint256 * mem = {
     var succ, m';
     if (addr = 5) {
       (* TODO: modexp *)
@@ -88,7 +88,7 @@ module Test = {
     return 42;
   }
   
-  proc pointNegate(m : MemoryMap, point : uint256) : MemoryMap = {
+  proc pointNegate(m : mem, point : uint256) : mem = {
       var _1, _2, _3, pY, tmp166, tmp167, tmp168, _6, _7, tmp170;
       _1 <- 32;
       _2 <- point + _1;
@@ -107,14 +107,14 @@ module Test = {
           _6 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
           _7 <- _6 - pY;
           tmp170 <@ mstore(_2, _7, m);
-      }
+      } 
       return tmp170;
     }
   
 }.
     
 lemma pointNegate_lemma :
-    forall (m : MemoryMap) (point_addr : uint256),
+    forall (m : mem) (point_addr : uint256),
     (m.[point_addr] <> 0 \/ m.[point_addr + 32] <> 0) /\ m.[point_addr + 32] < p /\ 0 < m.[point_addr + 32] =>
         hoare [ Test.pointNegate : arg = (m, point_addr) ==>
           (m.[point_addr] = res.[point_addr] /\ res.[point_addr + 32] = (-m.[point_addr + 32]) %% p)]. 
