@@ -9,15 +9,15 @@ op calldata : uint256 array.
 
 module Test = {
 
-  proc mload(m : MemoryMap, a : uint256) : uint256 = {
+  proc mload(a : uint256, m : MemoryMap) : uint256 = {
     return m.[a];
   }
 
-  proc mstore(m : MemoryMap, a : uint256, v : uint256) : MemoryMap = {
+  proc mstore(a : uint256, v : uint256, m : MemoryMap) : MemoryMap = {
     return m.[a<-v];
   }
 
-  proc mstore8(m : MemoryMap, a : uint256, v : uint256) : MemoryMap = {
+  proc mstore8(a : uint256, v : uint256, m : MemoryMap) : MemoryMap = {
     (* TODO *)
     return m;
   }
@@ -59,16 +59,16 @@ module Test = {
     return 42;
   }
   
-  proc pointNegate(m : MemoryMap, point : uint256): MemoryMap = {
+  proc pointNegate(m : MemoryMap, point : uint256) : MemoryMap = {
       var _1, _2, _3, pY, tmp166, tmp167, tmp168, _6, _7, tmp170;
       _1 <- 32;
       _2 <- point + _1;
-      tmp166 <@ mload(m, _2);
+      tmp166 <@ mload(_2, m);
       pY <- tmp166;
       tmp167 <- pY;
       if (tmp167 = 0)
       {
-        tmp168 <@ mload(m, point);
+        tmp168 <@ mload(point, m);
         _3 <- tmp168;
         if (_3 = 0)
         {
@@ -77,7 +77,7 @@ module Test = {
       } else {
           _6 <- 21888242871839275222246405745257275088696311157297823662689037894645226208583;
           _7 <- _6 - pY;
-          tmp170 <@ mstore(m, _2, _7);
+          tmp170 <@ mstore(_2, _7, m);
       }
       return tmp170;
     }
