@@ -27,7 +27,36 @@ module Test = {
     return ();
   }
 
-  (* proc staticcall()  *)
+  proc staticcall(gas : uint256, addr : uint256, argOff : uint256, argSize : uint256, retOff : uint256, retSize : uint256, m : MemoryMap) : uint256 * MemoryMap = {
+    var succ, m';
+    if (addr = 5) {
+      (* TODO: modexp *)
+      succ <- 0;
+      m' <- m;
+    } else {
+      if (addr = 6) {
+        (* TODO: ecAdd *)
+        succ <- 0;
+        m' <- m;
+      } else {
+        if (addr = 7) {
+          (* TODO: ecMul *)
+          succ <- 0;
+          m' <- m;
+        } else {
+          if (addr = 8) {
+            (* TODO: ecPairing *)
+            succ <- 0;
+            m' <- m;
+          } else {
+              succ <- 0;
+              m' <- m;
+          }
+        }
+      }
+    }
+    return (succ, m');
+  }  
 
   proc calldatasize(i : uint256) : uint256 = {
     return size(calldata);
