@@ -145,7 +145,7 @@ lemma mod_mod_eq_mod :
 
 lemma pointNegate_correctness :
     forall (m : mem) (point_addr : uint256),
-    (m.[point_addr] <> 0 \/ m.[point_addr + 32] <> 0) /\ m.[point_addr + 32] < p /\ 0 < m.[point_addr + 32] =>
+    (m.[point_addr] <> 0 \/ m.[point_addr + 32] <> 0) /\ m.[point_addr + 32] < p /\ 0 <= m.[point_addr + 32] =>
         hoare [ Test.pointNegate : arg = (m, point_addr) ==>
           (m.[point_addr] = res.[point_addr] /\ res.[point_addr + 32] = (-m.[point_addr + 32]) %% p)]. 
             progress.
