@@ -18,13 +18,8 @@ module Test = {
   }
 
   proc mstore8(a : uint256, v : uint256, m : mem) : mem = {
-    (* TODO *)
+    (* TODO: memory model? *)
     return m;
-  }
-
-  proc revert() : unit = {
-    (* TODO *)
-    return ();
   }
 
   proc staticcall(gas : uint256, addr : uint256, argOff : uint256, argSize : uint256, retOff : uint256, retSize : uint256, m : mem) : uint256 * mem = {
@@ -58,12 +53,27 @@ module Test = {
     return (succ, m');
   }  
 
+  proc revert() : unit = {
+    (* TODO: Implement revert, needs to be differentiable from return *)
+    return ();
+  }
+
+  proc calldataload(i : uint256) : uint256 = {
+    return calldata.[i];
+  }
+  
   proc calldatasize(i : uint256) : uint256 = {
     return size(calldata);
   }
+
+  proc ret(retOff : uint256, retSize : uint256) : unit = {
+    (* TODO: Implement return, needs to be differentiable from revert *)
+    return ();
+  }
   
-  proc calldataload(i : uint256) : uint256 = {
-    return calldata.[i];
+  proc gas() : uint256 = {
+    (* Confirm ok *)
+    return 42;
   }
   
   proc iszero(v : uint256) : uint256 = {
@@ -84,8 +94,9 @@ module Test = {
     return (a + b) %% n;
   }
 
-  proc gas() : uint256 = {
-    return 42;
+  proc keccak256(v : uint256) : uint256 = {
+    (* TODO: return sample from uniform distribution over uint256 *)
+    return 0;
   }
   
   proc pointNegate(m : mem, point : uint256) : mem = {
