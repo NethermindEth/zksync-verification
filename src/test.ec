@@ -1,10 +1,11 @@
 pragma Goals:printall.
-require import Int Logic IntDiv CoreMap SmtMap.
+require import Int Logic IntDiv CoreMap SmtMap Array.
 
 type uint256 = int.
 type MemoryMap = (uint256, uint256) map.
 
 op p = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
+op calldata : uint256 array.
 
 module Test = {
 
@@ -14,6 +15,48 @@ module Test = {
 
   proc mstore(m : MemoryMap, a : uint256, v : uint256) : MemoryMap = {
     return m.[a<-v];
+  }
+
+  proc mstore8(m : MemoryMap, a : uint256, v : uint256) : MemoryMap = {
+    (* TODO *)
+    return m;
+  }
+
+  proc revert() : unit = {
+    (* TODO *)
+    return ();
+  }
+
+  (* proc staticcall()  *)
+
+  proc calldatasize(i : uint256) : uint256 = {
+    return size(calldata);
+  }
+  
+  proc calldataload(i : uint256) : uint256 = {
+    return calldata.[i];
+  }
+  
+  proc iszero(v : uint256) : uint256 = {
+    var ref;
+    if (v = 0) {
+      ref <- 1;
+    } else {
+      ref <- 0;
+    }
+    return ref;
+  }
+
+  proc mulmod(a : uint256, b : uint256, n : uint256) : uint256 = {
+    return (a * b) %% n;
+  }
+
+  proc addmod(a : uint256, b : uint256, n : uint256) : uint256 = {
+    return (a + b) %% n;
+  }
+
+  proc gas() : uint256 = {
+    return 42;
   }
   
   proc pointNegate(m : MemoryMap, point : uint256): MemoryMap = {
