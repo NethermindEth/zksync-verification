@@ -123,27 +123,6 @@ module Test = {
     }
   
 }.
-    
-lemma pointNegate_lemma :
-    forall (m : mem) (point_addr : uint256),
-    (m.[point_addr] <> 0 \/ m.[point_addr + 32] <> 0) /\ m.[point_addr + 32] < p /\ 0 < m.[point_addr + 32] =>
-        hoare [ Test.pointNegate : arg = (m, point_addr) ==>
-          (m.[point_addr] = res.[point_addr] /\ res.[point_addr + 32] = (-m.[point_addr + 32]) %% p)]. 
-            progress.
-            proc.
-            simplify.
-            inline Test.mload.
-            inline Test.mstore.
-            wp.
-            skip.
-            progress.
-            smt.
-            smt.
-            rewrite -/p.
-            smt.
-            qed.            
-            
-
 
 (* Some potentially useful lemmas to prove mid-level specs *)
             
@@ -161,3 +140,24 @@ lemma mod_mod_eq_mod :
     progress.
     smt.
     qed.
+
+(* Functional correctness *)
+
+lemma pointNegate_correctness :
+    forall (m : mem) (point_addr : uint256),
+    (m.[point_addr] <> 0 \/ m.[point_addr + 32] <> 0) /\ m.[point_addr + 32] < p /\ 0 < m.[point_addr + 32] =>
+        hoare [ Test.pointNegate : arg = (m, point_addr) ==>
+          (m.[point_addr] = res.[point_addr] /\ res.[point_addr + 32] = (-m.[point_addr + 32]) %% p)]. 
+            progress.
+            proc.
+            simplify.
+            inline Test.mload.
+            inline Test.mstore.
+            wp.
+            skip.
+            progress.
+            smt.
+            smt.
+            rewrite -/p.
+            smt.
+            qed.    
