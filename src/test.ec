@@ -104,4 +104,20 @@ lemma pointNegate_lemma :
             qed.            
             
 
+
+(* Some potentially useful lemmas to prove mid-level specs *)
             
+lemma mod_m_lt_m :
+    forall (a m : int), 0 < m => a %% m < m.
+    smt.
+    qed.
+
+lemma mod_eq_self : forall (a m : int), 0 < m => 0 <= a => a < m => a %% m = a.
+    smt.
+    qed.
+    
+lemma mod_mod_eq_mod :
+    forall (m1 m2 v : int), 0 < m1 => m1 <= m2 => (v %% m1) %% m2 = v %% m1.
+    progress.
+    smt.
+    qed.
