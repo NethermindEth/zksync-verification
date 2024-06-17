@@ -93,6 +93,6 @@ module Primops = {
 
   proc calldataload(i : uint256) : uint256 = {
     (* Needs a fix, for some reason the _.[_] notation no longer works once JWord is included as a depency (In UInt256.ec) *) 
-    return W256.zero; (* calldata.[i]; *)
+    return calldata.[W256.to_uint i];
   }
 }.
