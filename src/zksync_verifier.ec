@@ -6,9 +6,8 @@ op p = W256.of_int 2188824287183927522224640574525727508869631115729782366268903
 
 module Test = {
 
-  proc pointNegate(m : mem, point : uint256) : mem = {
-      var _1, _2, _3, pY, tmp166, tmp167, tmp168, _6, _7, tmp170;
-      Primops.m <- m;
+  proc pointNegate(point : uint256) : unit = {
+      var _1, _2, _3, pY, tmp166, tmp167, tmp168, _6, _7;
       _1 <- W256.of_int 32;
       _2 <- point + _1;
       tmp166 <@ Primops.mload(_2);
@@ -20,14 +19,13 @@ module Test = {
         _3 <- tmp168;
         if (_3 = W256.of_int 0)
         {
+          Primops.revert();
         }
-        (* tmp170 <- Primops.m; *)
       } else {
           _6 <- W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583;
           _7 <- _6 - pY;
-          tmp170 <@ Primops.mstore(_2, _7);
+          Primops.mstore(_2, _7);
       }
-      return Primops.m;
     }
 
 }.
@@ -53,22 +51,32 @@ lemma mod_mod_eq_mod :
 
 
 lemma pointNegate_correctness :
-    forall (m : mem) (point_addr : uint256),
-    (m.[point_addr] <> W256.zero \/ m.[point_addr + (W256.of_int 32)] <> W256.zero) /\ m.[point_addr + (W256.of_int 32)] < p  =>
-        hoare [ Test.pointNegate : arg = (m, point_addr) ==>
-          (m.[point_addr] = res.[point_addr] /\ res.[point_addr + (W256.of_int 32)] = (- m.[point_addr + (W256.of_int 32)]) %% p)].
-            progress.
-            proc.
-            simplify.
-            inline Primops.mload Primops.mstore.
-            wp.
-            skip.
-            progress.
-            rewrite H1.
-            admit.
-            rewrite Map.get_set_neqE.
-            admit.
-            auto.
-            rewrite Map.get_set_sameE.
-            admit.
-            qed.
+    forall (x y point_addr : uint256),
+hoare [ Test.pointNegate :
+      arg = point_addr /\
+      (x <> W256.zero \/ y <> W256.zero) /\
+        Primops.memory.[point_addr] = x /\
+        Primops.memory.[point_addr + (W256.of_int 32)] = y /\
+        y < p ==>
+      (
+        Primops.reverted = false =>
+        (
+          Primops.memory.[point_addr] = x /\
+          Primops.memory.[point_addr + (W256.of_int 32)] = (-y) %% p
+        )
+      )]. proof.
+          progress.
+          proc.
+          simplify.
+          inline Primops.mload Primops.mstore Primops.revert.
+          wp.
+          skip.
+          progress.
+          rewrite H1.
+          admit.
+          rewrite Map.get_set_neqE.
+          admit.
+          auto.
+          rewrite Map.get_set_sameE.
+          admit.
+          qed.
