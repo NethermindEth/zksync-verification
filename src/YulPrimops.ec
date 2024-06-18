@@ -12,11 +12,12 @@ module Primops = {
 
   proc mload(idx : uint256) : uint256 = {
     (* _1 is the most significant byte *)
-    var _1, _2; (*, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32; *)
+    var _1, _2, _3; (*, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32; *)
 
 
-    _1 <- memory.[idx] `<<<` 128;
-    _2 <- memory.[idx+ W256.of_int 1] `<<<` 0;
+    _1 <- memory.[idx] `<<<` 248;
+    _2 <- memory.[idx+ W256.of_int 1] `<<<` 240;
+    _3 <- memory.[idx+ W256.of_int 2] `<<<` 0;
 
     
 
@@ -53,8 +54,8 @@ module Primops = {
     _32 <- memory.[idx+ W256.of_int 31]; *)
     return (
       _1 +
-      _2 (* +
-      _3 +
+      _2 +
+      _3 (* +
       _4 +
       _5 +
       _6 +
@@ -88,7 +89,7 @@ module Primops = {
   }
 
   proc mstore(idx : uint256, val : uint256): unit = {
-    var _1, _2;
+    var _1, _1acc, _2, _2acc;
     (* memory <- memory.[(idx + W256.of_int 31)<-(val `&` W256.masklsb 8)];
     memory <- memory.[(idx + W256.of_int 30)<-((val `>>>` 8) `&` W256.masklsb 8)];
     memory <- memory.[(idx + W256.of_int 29)<-((val `>>>` 16) `&` W256.masklsb 8)];
@@ -123,11 +124,14 @@ module Primops = {
     (* memory <- memory.[(idx + W256.of_int 1)<-((val `>>>` 0) `&` W256.masklsb 128)];
     memory <- memory.[idx<-((val `>>>` 128) `&` W256.masklsb 128)]; *)
 
-    _1 <- (splitMask (W256.masklsb 128) val).`2 `>>>` 128;
-    _2 <- (splitMask (W256.masklsb 128) val).`1;
+    _1 <- (splitMask (W256.masklsb 248) val).`2 `>>>` 248;
+    _1acc <- (splitMask (W256.masklsb 248) val).`1;
+    _2 <- (splitMask (W256.masklsb 240) _1acc).`2 `>>>` 240;
+    _2acc <- (splitMask (W256.masklsb 240) _1acc).`1;
 
     memory <- memory.[idx<-_1];
     memory <- memory.[(idx+W256.of_int 1)<-_2];
+    memory <- memory.[(idx+W256.of_int 2)<-_2acc];
   }
 
   proc mstore8(idx : uint256, val : uint256) : unit = {

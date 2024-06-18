@@ -58,6 +58,14 @@ lemma add_one_neq:
     proof.
       progress.
       smt.
+  qed.
+
+lemma add_neq:
+    forall (x: uint256) (y: int),
+    1 <= y /\ y < 32 => x <> x + W256.of_int y.
+    proof.
+      progress.
+      smt.
     qed.
 
 lemma shl_zero:
@@ -95,13 +103,25 @@ lemma splitmask2_shr_shl:
         skip.
         progress.
         rewrite Map.get_set_sameE Map.get_set_neqE.
+        apply add_neq.
+        auto.
+        rewrite Map.get_set_neqE.
         apply add_one_neq.
+        rewrite Map.get_set_sameE Map.get_set_neqE.
+        smt.
         rewrite Map.get_set_sameE.
         rewrite shl_zero.
         rewrite splitmask2_shr_shl.
         trivial.
+        have split240:
+      ((splitMask (W256.masklsb 240) (splitMask (W256.masklsb 248) value{hr}).`1).`2 `>>>` 240 `<<<` 240 ) +
+      (splitMask (W256.masklsb 240) (splitMask (W256.masklsb 248) value{hr}).`1).`1 = (splitMask (W256.masklsb 248) value {hr}).`1.
+        rewrite splitmask2_shr_shl.
+        trivial.
         rewrite addrC.
         rewrite splitMask_add.
+        reflexivity.
+        rewrite - addrA addrC split240 splitMask_add.
       reflexivity.
 qed.
       
