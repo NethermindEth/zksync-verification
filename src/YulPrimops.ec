@@ -5,7 +5,21 @@ require import Utils.
 require export UInt256 Memory.
 
 op calldata : uint256 array.
-(* op keccak256 : uint256 array -> uint256. *)
+op keccak256_f : uint256 array -> uint256.
+
+op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero.
+
+op mulmod(a : uint256, b : uint256, n : uint256) : uint256 =  (a * b) %% n.
+
+op addmod(a : uint256, b : uint256, n : uint256) : uint256 = (a + b) %% n.
+
+op bit_and(a : uint256, b : uint256) : uint256 = W256.zero.
+
+op shl(a : uint256, b : uint256) : uint256 = a `<<<` (W256.to_uint b).
+
+op shr(a : uint256, b : uint256) : uint256 = a `>>>` (W256.to_uint b).
+
+op STRING : uint256 = W256.zero.
 
 module Primops = {
   var memory : mem
@@ -168,24 +182,6 @@ module Primops = {
     return W256.of_int 42;
   }
 
-  proc iszero(v : uint256) : uint256 = {
-    var ref;
-    if (v = W256.of_int 0) {
-      ref <- W256.one;
-    } else {
-      ref <- W256.zero;
-    }
-    return ref;
-  }
-
-  proc mulmod(a : uint256, b : uint256, n : uint256) : uint256 = {
-    return (a * b) %% n;
-  }
-
-  proc addmod(a : uint256, b : uint256, n : uint256) : uint256 = {
-    return (a + b) %% n;
-  }
-
   proc keccak256(v : uint256) : uint256 = {
     (* TODO: return sample from uniform distribution over uint256 *)
     return W256.zero;
@@ -217,7 +213,7 @@ module Primops = {
     return succ;
   }
 
-  proc revert() : unit = {
+  proc revert(x : uint256, y : uint256) : unit = {
     reverted <- true;
   }
 
