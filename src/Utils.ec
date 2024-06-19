@@ -21,13 +21,6 @@ lemma mod_mod_eq_mod :
 
 (* Lemmas for proving load store properties *)
 
-lemma add_one_neq:
-    forall (x: uint256), x <> x + W256.one.
-    proof.
-      progress.
-      smt.
-  qed.
-
 lemma add_neq:
     forall (x: uint256) (y: int),
     1 <= y /\ y < 32 => x <> x + W256.of_int y.
@@ -52,17 +45,6 @@ proof.
     smt.
 qed.
 
-lemma splitmask2_shr_shl (i: int) (x: uint256):
-    (0 <= i /\ i < 256) => (splitMask (W256.masklsb i) x).`2 `>>>` i `<<<` i = (splitMask (W256.masklsb i) x).`2.
-proof.
-    progress.
-    apply W256.ext_eq.
-    progress.
-    rewrite /splitMask.
-    simplify.
-    smt.
-qed.
-
 (* done between 1 and 32 for now because that's all we need and it's easier on smt *)
 lemma get_set_offset (m: mem) (idx: uint256) (offset: int) (val: uint256):
     0 < offset /\ offset < 32 => m.[idx+W256.of_int offset<-val].[idx] = m.[idx].
@@ -70,14 +52,6 @@ proof.
     progress.
     apply Map.get_set_neqE.
     apply add_neq.
-    smt.
-qed.
-
-lemma get_set_offset_one (offset: int) (m: mem) (idx: uint256) (val: uint256):
-    1 < offset /\ offset < 32 => m.[idx+W256.of_int offset<-val].[idx + W256.one] = m.[idx + W256.one].
-proof.
-    progress.
-    apply Map.get_set_neqE.
     smt.
 qed.
 
@@ -92,20 +66,33 @@ qed.
 
 lemma masklsb_zero:
     W256.masklsb 0 = W256.zero.
-    proof.
-      smt.
-    qed.
+proof.
+    smt.
+qed.
 
-lemma splitmask_zero (x: uint256):
+lemma splitMask_zero (x: uint256):
     (splitMask W256.zero x).`2 = x.
-    proof.
-      rewrite /splitMask.
-      simplify.
-      smt.
-    qed.
+proof.
+    rewrite /splitMask.
+    simplify.
+    smt.
+qed.
+
+lemma splitMask2_shr_shl (i: int) (x: uint256):
+    (0 <= i /\ i < 256) => 
+    (splitMask (W256.masklsb i) x).`2 `>>>` i `<<<` i =
+    (splitMask (W256.masklsb i) x).`2.
+proof.
+    progress.
+    apply W256.ext_eq.
+    progress.
+    rewrite /splitMask.
+    simplify.
+    smt.
+qed.
 
 lemma splitMask_add_comm mask (w: uint256):
- (splitMask mask w).`2 + (splitMask mask w).`1 = w.
+    (splitMask mask w).`2 + (splitMask mask w).`1 = w.
 proof.
     rewrite addrC.
     apply splitMask_add.
