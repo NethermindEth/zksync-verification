@@ -1,6 +1,7 @@
 pragma Goals:printall.
 
 require import Logic UInt256 Memory YulPrimops Array.
+require import Utils.
 
 op p = W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 
@@ -36,58 +37,6 @@ module Test = {
     }
 }.
 
-(* Some potentially useful lemmas to prove mid-level specs *)
-
-lemma mod_m_lt_m :
-    forall (a m : int), 0 < m => a %% m < m.
-    smt ().
-    qed.
-
-lemma mod_eq_self : forall (a m : int), 0 < m => 0 <= a => a < m => a %% m = a.
-    smt ().
-    qed.
-
-lemma mod_mod_eq_mod :
-    forall (m1 m2 v : int), 0 < m1 => m1 <= m2 => (v %% m1) %% m2 = v %% m1.
-    progress.
-    smt ().
-  qed.
-
-lemma add_one_neq:
-    forall (x: uint256), x <> x + W256.one.
-    proof.
-      progress.
-      smt.
-  qed.
-
-lemma add_neq:
-    forall (x: uint256) (y: int),
-    1 <= y /\ y < 32 => x <> x + W256.of_int y.
-    proof.
-      progress.
-      smt.
-    qed.
-
-lemma shl_zero:
-    forall (x: uint256), x `<<<` 0 = x.
-    progress.
-    apply W256.ext_eq.
-    progress.
-    smt.
-  qed.
-
-lemma splitmask2_shr_shl:
-    forall (x: uint256) (i: int),
-    (0 <= i /\ i < 256) => (splitMask (W256.masklsb i) x).`2 `>>>` i `<<<` i = (splitMask (W256.masklsb i) x).`2.
-    proof.
-      progress.
-      apply W256.ext_eq.
-      progress.
-      rewrite /splitMask.
-      simplify.
-      smt.
-    qed.
-  
 (* Functional correctness *)
 
   lemma writeReadTest_correctness :
@@ -101,28 +50,203 @@ lemma splitmask2_shr_shl:
         inline Primops.mstore Primops.mload.
         wp.
         skip.
-        progress.
-        rewrite Map.get_set_sameE Map.get_set_neqE.
-        apply add_neq.
-        auto.
-        rewrite Map.get_set_neqE.
-        apply add_one_neq.
-        rewrite Map.get_set_sameE Map.get_set_neqE.
-        smt.
+        move => &hr hr_eq.
+        move => x248 x240 x232 x224 x216 x208 x200 x192 x184 x176 x168 x160 x152 x144 x136 x128 x120 x112 x104 x96 x88 x80 x72 x64 x56 x48 x40 x32 x24 x16 x8.
+        move => memory.
+        rewrite {1} /memory.
         rewrite Map.get_set_sameE.
-        rewrite shl_zero.
-        rewrite splitmask2_shr_shl.
-        trivial.
-        have split240:
-      ((splitMask (W256.masklsb 240) (splitMask (W256.masklsb 248) value{hr}).`1).`2 `>>>` 240 `<<<` 240 ) +
-      (splitMask (W256.masklsb 240) (splitMask (W256.masklsb 248) value{hr}).`1).`1 = (splitMask (W256.masklsb 248) value {hr}).`1.
-        rewrite splitmask2_shr_shl.
-        trivial.
-        rewrite addrC.
+        rewrite {1} /memory.
+        rewrite get_set_offsets_neq; first trivial.
+        rewrite Map.get_set_sameE.
+        rewrite masklsb_zero.
+        rewrite shr_zero.
+        rewrite splitmask_zero.
+        rewrite /x8.
+        rewrite splitmask2_shr_shl; first trivial.
         rewrite splitMask_add.
-        reflexivity.
-        rewrite - addrA addrC split240 splitMask_add.
-      reflexivity.
+        rewrite {1} /memory.
+        do 2! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 3! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 4! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 5! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 6! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 7! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 8! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 9! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 10! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 11! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 12! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 13! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 14! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 15! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 16! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x128.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 17! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x136.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 18! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x144.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 19! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x152.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 20! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x160.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 21! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x168.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 22! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x176.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 23! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x184.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 24! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x192.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 25! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x200.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 26! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x208.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 27! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x216.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 28! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x224.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 29! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x232.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 30! (rewrite get_set_offsets_neq; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x240.
+        rewrite splitmask2_shr_shl. trivial.
+        rewrite splitMask_add.
+        rewrite {1} /memory.
+        do 31! (rewrite get_set_offset; first trivial).
+        rewrite Map.get_set_sameE.
+        rewrite /x248.
+        rewrite splitmask2_shr_shl; first trivial.
+        rewrite splitMask_add.
+        have injection: forall (a b c d: uint256), (a, b) = (c, d) => b = d.
+        progress.
+        smt.
 qed.
       
 lemma pointNegate_correctness :
