@@ -263,8 +263,7 @@ op mload (memory: mem) (idx: uint256) =
     (memory.[idx] `<<<` 248)
 axiomatized by mLoadE.
 
-lemma mload_spec:
-    forall (memory: mem) (idx: uint256),
+lemma mload_spec (memory: mem) (idx: uint256):
 hoare [ Primops.mload :
     arg = idx /\
     Primops.memory = memory ==>
@@ -281,13 +280,24 @@ hoare [ Primops.mload :
       reflexivity.
   qed.
 
+op apply_mstore (memory: mem) (idx val: uint256): mem.
+axiom mload (memory: mem) (idx val: uint256): mload (apply_mstore memory idx val) idx = val.
+op uint256_frame (memory_pre memory_post: mem) (idx: uint256) = forall (idx2: uint256), W256.of_int 31 < idx2 - idx => memory_post.[idx2] = memory_pre.[idx2].
+axiom apply_mstore_def (memory_pre memory_post: mem) (idx val: uint256):
+memory_post = apply_mstore memory_pre idx val <=> (
+  mload memory_post idx = val /\
+  uint256_frame memory_pre memory_post idx
+).
+
+
 lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 hoare [ Primops.mstore :
     arg = (idx', val') /\
     Primops.memory = memory ==>
       (*(forall (idx2: uint256), (idx2 < idx' \/ idx' + W256.of_int 31 < idx2) => Primops.memory.[idx2] = memory.[idx2]) /\ -- TODO frame rule*)
-      mload Primops.memory idx' = val'
+    (* mload Primops.memory idx' = val' *)
+      Primops.memory = apply_mstore memory idx' val'
     ].
     proof.
       progress.
@@ -302,6 +312,8 @@ hoare [ Primops.mstore :
       have h_mem: Primops.memory{hr} = memory.
       smt.
     move => x248 x240 x232 x224 x216 x208 x200 x192 x184 x176 x168 x160 x152 x144 x136 x128 x120 x112 x104 x96 x88 x80 x72 x64 x56 x48 x40 x32 x24 x16 x8.
+      rewrite apply_mstore_def.
+    split.
       rewrite h_mem.
       rewrite /mload.
       rewrite h_idx.
@@ -465,6 +477,12 @@ hoare [ Primops.mstore :
       rewrite splitMask2_shr_shl; first trivial.
       rewrite splitMask_add.
       exact h_val.
+      rewrite /uint256_frame.
+    move => idx2 h_idx2.
+      rewrite h_idx.
+      do 32! (rewrite Map.get_set_neqE; first smt).
+      rewrite h_mem.
+      reflexivity.
 qed.
     
 op gas = W256.of_int 42 (* TODO confirm ok *)

@@ -34,9 +34,9 @@ module Test = {
       _1 <@ Primops.mload(address);
       return _1;
     }
-}.
+  }.
 
-(* Functional correctness *)
+    (* Functional correctness *)
 
 lemma writeReadTest_correctness :
     forall (address value: uint256),
@@ -45,7 +45,16 @@ hoare [ Test.writeReadTest :
       res = value].
 proof.
     progress.
-    proc.
+  proc.
+  exists* Primops.memory.
+  elim*=>memory_pre.
+  call (ConcretePrimops.mload_spec (ConcretePrimops.apply_mstore memory_pre address value) address).
+  call (ConcretePrimops.mstore_spec memory_pre address value).
+  skip.
+  progress.
+  (* TODO use apply_mstore_def *)
+  apply ConcretePrimops.apply_mstore_def.
+    call (ConcretePrimops.mload_spec Primops.memory{2} address).
     inline Primops.mstore Primops.mload.
     wp.
     skip.
