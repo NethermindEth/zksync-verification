@@ -281,13 +281,17 @@ hoare [ Primops.mload :
   qed.
 
 op apply_mstore (memory: mem) (idx val: uint256): mem.
-axiom mload (memory: mem) (idx val: uint256): mload (apply_mstore memory idx val) idx = val.
 op uint256_frame (memory_pre memory_post: mem) (idx: uint256) = forall (idx2: uint256), W256.of_int 31 < idx2 - idx => memory_post.[idx2] = memory_pre.[idx2].
 axiom apply_mstore_def (memory_pre memory_post: mem) (idx val: uint256):
 memory_post = apply_mstore memory_pre idx val <=> (
   mload memory_post idx = val /\
   uint256_frame memory_pre memory_post idx
 ).
+lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
+    mload (apply_mstore memory idx val) idx = val.
+    proof.
+      smt.
+    qed.
 
 
 lemma mstore_spec:
