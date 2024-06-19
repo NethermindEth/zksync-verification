@@ -46,3 +46,4 @@ time-of-build-pretty.log
 
 # Python virtual environment
 venv/
+node_modules
