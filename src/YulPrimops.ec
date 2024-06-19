@@ -1,6 +1,7 @@
 pragma Goals:printall.
 
 require import Logic Array.
+require import Utils.
 require export UInt256 Memory.
 
 op calldata : uint256 array.
@@ -224,3 +225,260 @@ module Primops = {
     return calldata.[W256.to_uint i];
   }
 }.
+
+theory ConcretePrimops.
+
+op mload (memory: mem) (idx: uint256) =
+    memory.[idx+ W256.of_int 31] +
+    (memory.[idx+ W256.of_int 30] `<<<` 8) +
+    (memory.[idx+ W256.of_int 29] `<<<` 16) +
+    (memory.[idx+ W256.of_int 28] `<<<` 24) +
+    (memory.[idx+ W256.of_int 27] `<<<` 32) +
+    (memory.[idx+ W256.of_int 26] `<<<` 40) +
+    (memory.[idx+ W256.of_int 25] `<<<` 48) +
+    (memory.[idx+ W256.of_int 24] `<<<` 56) +
+    (memory.[idx+ W256.of_int 23] `<<<` 64) +
+    (memory.[idx+ W256.of_int 22] `<<<` 72) +
+    (memory.[idx+ W256.of_int 21] `<<<` 80) +
+    (memory.[idx+ W256.of_int 20] `<<<` 88) +
+    (memory.[idx+ W256.of_int 19] `<<<` 96) +
+    (memory.[idx+ W256.of_int 18] `<<<` 104) +
+    (memory.[idx+ W256.of_int 17] `<<<` 112) +
+    (memory.[idx+ W256.of_int 16] `<<<` 120) +
+    (memory.[idx+ W256.of_int 15] `<<<` 128) +
+    (memory.[idx+ W256.of_int 14] `<<<` 136) +
+    (memory.[idx+ W256.of_int 13] `<<<` 144) +
+    (memory.[idx+ W256.of_int 12] `<<<` 152) +
+    (memory.[idx+ W256.of_int 11] `<<<` 160) +
+    (memory.[idx+ W256.of_int 10] `<<<` 168) +
+    (memory.[idx+ W256.of_int 9] `<<<` 176) +
+    (memory.[idx+ W256.of_int 8] `<<<` 184) +
+    (memory.[idx+ W256.of_int 7] `<<<` 192) +
+    (memory.[idx+ W256.of_int 6] `<<<` 200) +
+    (memory.[idx+ W256.of_int 5] `<<<` 208) +
+    (memory.[idx+ W256.of_int 4] `<<<` 216) +
+    (memory.[idx+ W256.of_int 3] `<<<` 224) +
+    (memory.[idx+ W256.of_int 2] `<<<` 232) +
+    (memory.[idx+ W256.of_int 1] `<<<` 240) +
+    (memory.[idx] `<<<` 248)
+axiomatized by mLoadE.
+
+lemma mload_spec:
+    forall (memory: mem) (idx: uint256),
+hoare [ Primops.mload :
+    arg = idx /\
+    Primops.memory = memory ==>
+      res = mload memory idx /\
+      Primops.memory = memory
+    ].
+    proof.
+      progress.
+      proc.
+      wp.
+      skip.
+      progress.
+      rewrite /mload.
+      reflexivity.
+  qed.
+
+lemma mstore_spec:
+    forall (memory: mem) (idx': uint256) (val': uint256),
+hoare [ Primops.mstore :
+    arg = (idx', val') /\
+    Primops.memory = memory ==>
+      (*(forall (idx2: uint256), (idx2 < idx' \/ idx' + W256.of_int 31 < idx2) => Primops.memory.[idx2] = memory.[idx2]) /\ -- TODO frame rule*)
+      mload Primops.memory idx' = val'
+    ].
+    proof.
+      progress.
+      proc.
+      wp.
+      skip.
+    move => &hr h_args.
+      have h_idx: idx{hr} = idx'.
+      smt.
+      have h_val: val{hr} = val'.
+      smt.
+      have h_mem: Primops.memory{hr} = memory.
+      smt.
+    move => x248 x240 x232 x224 x216 x208 x200 x192 x184 x176 x168 x160 x152 x144 x136 x128 x120 x112 x104 x96 x88 x80 x72 x64 x56 x48 x40 x32 x24 x16 x8.
+      rewrite h_mem.
+      rewrite /mload.
+      rewrite h_idx.
+      rewrite {1} Map.get_set_sameE.
+      rewrite {1} get_set_offsets_neq; first trivial.
+      rewrite {1} Map.get_set_sameE.
+      rewrite masklsb_zero.
+      rewrite splitMask_zero.
+      rewrite shr_zero.
+      rewrite /x8.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 2! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x16.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 3! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x24.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.    
+      do 4! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x32.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.    
+      do 5! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x40.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.    
+      do 6! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x48.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 7! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x56.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 8! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x64.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 9! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x72.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 10! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x80.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 11! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x88.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 12! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x96.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 13! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x104.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 14! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x112.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 15! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x120.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 16! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x128.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 17! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x136.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 18! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x144.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 19! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x152.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 20! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x160.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 21! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x168.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 22! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x176.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 23! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x184.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 24! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x192.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 25! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x200.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 26! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x208.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 27! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x216.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 28! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x224.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 29! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x232.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 30! (rewrite {1} get_set_offsets_neq; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x240.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      do 31! (rewrite {1} get_set_offset; first trivial).
+      rewrite {1} Map.get_set_sameE.
+      rewrite /x248.
+      rewrite splitMask2_shr_shl; first trivial.
+      rewrite splitMask_add.
+      exact h_val.
+qed.
+    
+op gas = W256.of_int 42 (* TODO confirm ok *)
+axiomatized by gasE.
+
+op iszero (v: uint256): uint256.
+axiom iszero_zeroE: iszero (W256.zero) = W256.one.
+axiom iszero_nonzeroE: forall (val: uint256), val <> W256.zero => iszero val = W256.zero.
+
+op mulmod (a b n: uint256) = (a * b) %% n
+axiomatized by mulmodE.
+
+op addmod (a b n: uint256) = (a + b) %% n
+axiomatized by addmodE.
+
+
+end ConcretePrimops.

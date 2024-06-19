@@ -1,6 +1,6 @@
 pragma Goals:printall.
 
-require import Logic UInt256 Memory YulPrimops Array.
+require import Logic UInt256 Memory Array.
 
 (* Some potentially useful lemmas to prove mid-level specs *)
 
