@@ -43,6 +43,7 @@ module Primops = {
 
   proc mload(idx : uint256) : uint256 = {
     (* _1 is the most significant byte *)
+    (* TODO replace definition with a direct call to op mload *)
     var _r1, _r2, _r3, _r4, _r5, _r6, _r7, _r8, _r9, _r10, _r11, _r12, _r13, _r14, _r15, _r16, _r17, _r18, _r19, _r20, _r21, _r22, _r23, _r24, _r25, _r26, _r27, _r28, _r29, _r30, _r31, _r32;
 
 
@@ -304,7 +305,7 @@ lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
     proof.
       smt.
     qed.
-lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x + (W256.of_int 32) <= y \/ y + (W256.of_int 32) <= x) => ConcretePrimops.mload (ConcretePrimops.apply_mstore memory y v) x = ConcretePrimops.mload memory x.
+(* lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x + (W256.of_int 32) <= y \/ y + (W256.of_int 32) <= x) => ConcretePrimops.mload (ConcretePrimops.apply_mstore memory y v) x = ConcretePrimops.mload memory x.
     progress.
     rewrite /mload.
     pose post_mem := apply_mstore memory y v.
@@ -445,8 +446,22 @@ lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x 
     progress.
     admit.
     smt ().
-  qed.
+  qed. *)
 
+lemma neq_of_lt (idx idx2: uint256):
+    W256.of_int 31 < idx2 - idx => idx2 <> idx.
+    proof.
+      progress.
+      smt.
+    qed.
+    
+lemma add_neq_of_lt (idx idx2: uint256) (offset: int):
+    W256.of_int 31 < idx2 - idx =>  0 < offset /\ offset < 32 => idx2 <> (idx + W256.of_int offset).
+    proof.
+      progress.
+      smt.
+    qed.
+    
 lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 hoare [ Primops.mstore :
@@ -637,10 +652,12 @@ hoare [ Primops.mstore :
       rewrite /uint256_frame.
     move => idx2 h_idx2.
       rewrite h_idx.
-      do 32! (rewrite Map.get_set_neqE; first smt).
+      do 31! ((rewrite {1} Map.get_set_neqE; first (apply add_neq_of_lt; first apply h_idx2)); first trivial).
+      rewrite Map.get_set_neqE; first apply neq_of_lt.
+      exact h_idx2.
       rewrite h_mem.
       reflexivity.
 qed.
+    
 
-
-end ConcretePrimops.
+End ConcretePrimops.
