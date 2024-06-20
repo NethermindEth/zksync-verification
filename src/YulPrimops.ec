@@ -304,149 +304,58 @@ lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
     mload (apply_mstore memory idx val) idx = val.
     proof.
       smt.
-    qed.
-(* lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x + (W256.of_int 32) <= y \/ y + (W256.of_int 32) <= x) => ConcretePrimops.mload (ConcretePrimops.apply_mstore memory y v) x = ConcretePrimops.mload memory x.
-    progress.
-    rewrite /mload.
-    pose post_mem := apply_mstore memory y v.
-    have eq : post_mem = apply_mstore memory y v.
-    rewrite /post_mem.
+  qed.
+
+lemma apply_mstore_mload_diff (memory: mem) (idx idx2 val: uint256):
+    W256.of_int 31 < idx2 - idx => W256.of_int 31 < idx - idx2 =>  mload (apply_mstore memory idx val) idx2 = mload memory idx2.
+proof.
+  progress.
+  rewrite /mload.
+  pose memory_post := apply_mstore memory idx val.
+  have h_full: mload memory_post idx = val /\ uint256_frame memory memory_post idx. by smt.
+  have h_frame: uint256_frame memory memory_post idx. smt.
+  rewrite /uint256_frame in h_frame.
+  have h31: forall (offset: int), 0 <= offset => offset < 32 => memory_post.[idx2 + W256.of_int offset] = memory.[idx2 + W256.of_int offset].
+  progress.
+  apply h_frame.
+  rewrite /W256.\ult.
+  by smt.
+  have h0: memory_post.[idx2] = memory.[idx2].
+  by smt.
+  (rewrite (h31 31); first trivial); first trivial.
+  (rewrite (h31 30); first trivial); first trivial.
+  (rewrite (h31 29); first trivial); first trivial.
+  (rewrite (h31 28); first trivial); first trivial.
+  (rewrite (h31 27); first trivial); first trivial.
+  (rewrite (h31 26); first trivial); first trivial.
+  (rewrite (h31 25); first trivial); first trivial.
+  (rewrite (h31 24); first trivial); first trivial.
+  (rewrite (h31 23); first trivial); first trivial.
+  (rewrite (h31 22); first trivial); first trivial.
+  (rewrite (h31 21); first trivial); first trivial.
+  (rewrite (h31 20); first trivial); first trivial.
+  (rewrite (h31 19); first trivial); first trivial.
+  (rewrite (h31 18); first trivial); first trivial.
+  (rewrite (h31 17); first trivial); first trivial.
+  (rewrite (h31 16); first trivial); first trivial.
+  (rewrite (h31 15); first trivial); first trivial.
+  (rewrite (h31 14); first trivial); first trivial.
+  (rewrite (h31 13); first trivial); first trivial.
+  (rewrite (h31 12); first trivial); first trivial.
+  (rewrite (h31 11); first trivial); first trivial.
+  (rewrite (h31 10); first trivial); first trivial.
+  (rewrite (h31 9); first trivial); first trivial.
+  (rewrite (h31 8); first trivial); first trivial.
+  (rewrite (h31 7); first trivial); first trivial.
+  (rewrite (h31 6); first trivial); first trivial.
+  (rewrite (h31 5); first trivial); first trivial.
+  (rewrite (h31 4); first trivial); first trivial.
+  (rewrite (h31 3); first trivial); first trivial.
+  (rewrite (h31 2); first trivial); first trivial.
+  (rewrite (h31 1); first trivial); first trivial.
+    rewrite h0.
     reflexivity.
-    rewrite apply_mstore_def in eq.
-    have eq' : uint256_frame memory post_mem y.
-    smt ().
-    clear eq.
-    rewrite /uint256_frame in eq'.
-    have H31 : post_mem.[x + (of_int 31)%W256] = memory.[x + (of_int 31)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H30 : post_mem.[x + (of_int 30)%W256] = memory.[x + (of_int 30)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H29 : post_mem.[x + (of_int 29)%W256] = memory.[x + (of_int 29)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H28 : post_mem.[x + (of_int 28)%W256] = memory.[x + (of_int 28)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H27 : post_mem.[x + (of_int 27)%W256] = memory.[x + (of_int 27)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H26 : post_mem.[x + (of_int 26)%W256] = memory.[x + (of_int 26)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H25 : post_mem.[x + (of_int 25)%W256] = memory.[x + (of_int 25)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H24 : post_mem.[x + (of_int 24)%W256] = memory.[x + (of_int 24)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H23 : post_mem.[x + (of_int 23)%W256] = memory.[x + (of_int 23)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H22 : post_mem.[x + (of_int 22)%W256] = memory.[x + (of_int 22)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H21 : post_mem.[x + (of_int 21)%W256] = memory.[x + (of_int 21)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H20 : post_mem.[x + (of_int 20)%W256] = memory.[x + (of_int 20)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H19 : post_mem.[x + (of_int 19)%W256] = memory.[x + (of_int 19)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H18 : post_mem.[x + (of_int 18)%W256] = memory.[x + (of_int 18)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H17 : post_mem.[x + (of_int 17)%W256] = memory.[x + (of_int 17)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H16 : post_mem.[x + (of_int 16)%W256] = memory.[x + (of_int 16)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H15 : post_mem.[x + (of_int 15)%W256] = memory.[x + (of_int 15)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H14 : post_mem.[x + (of_int 14)%W256] = memory.[x + (of_int 14)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H13 : post_mem.[x + (of_int 13)%W256] = memory.[x + (of_int 13)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H12 : post_mem.[x + (of_int 12)%W256] = memory.[x + (of_int 12)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H11 : post_mem.[x + (of_int 11)%W256] = memory.[x + (of_int 11)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H10 : post_mem.[x + (of_int 10)%W256] = memory.[x + (of_int 10)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H9 : post_mem.[x + (of_int 9)%W256] = memory.[x + (of_int 9)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H8 : post_mem.[x + (of_int 8)%W256] = memory.[x + (of_int 8)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H7 : post_mem.[x + (of_int 7)%W256] = memory.[x + (of_int 7)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H6 : post_mem.[x + (of_int 6)%W256] = memory.[x + (of_int 6)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H5 : post_mem.[x + (of_int 5)%W256] = memory.[x + (of_int 5)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H4 : post_mem.[x + (of_int 4)%W256] = memory.[x + (of_int 4)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H3 : post_mem.[x + (of_int 3)%W256] = memory.[x + (of_int 3)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H2 : post_mem.[x + (of_int 2)%W256] = memory.[x + (of_int 2)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H1 : post_mem.[x + (of_int 1)%W256] = memory.[x + (of_int 1)%W256].
-    apply eq'.
-    progress.
-    admit.
-    have H0 : post_mem.[x] = memory.[x].
-    apply eq'.
-    progress.
-    admit.
-    smt ().
-  qed. *)
+qed.
 
 lemma neq_of_lt (idx idx2: uint256):
     W256.of_int 31 < idx2 - idx => idx2 <> idx.
