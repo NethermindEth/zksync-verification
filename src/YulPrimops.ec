@@ -3,9 +3,39 @@ pragma Goals:printall.
 require import Logic Array.
 require import Utils.
 require export UInt256 Memory.
-
 op calldata : uint256 array.
-(* op keccak256 : uint256 array -> uint256. *)
+op keccak256_f : uint256 array -> uint256.
+
+op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero.
+lemma iszero_zeroE : iszero (W256.zero) = W256.one.
+    proof.
+      rewrite /iszero.
+      simplify.
+      trivial.
+  qed.
+lemma iszero_nonzeroE : forall (val: uint256), val <> W256.zero => iszero val = W256.zero.
+    proof.
+      progress.
+      rewrite /iszero.
+      smt.
+    qed.
+    
+op mulmod(a b n : uint256) : uint256 =  (a * b) %% n
+axiomatized by mulmodE.
+
+op addmod(a b n : uint256) : uint256 = (a + b) %% n
+axiomatized by addmodE.
+
+op bit_and(a : uint256, b : uint256) : uint256 = a `&` b
+axiomatized by bit_andE.
+
+op shl(a : uint256, b : uint256) : uint256 = a `<<<` (W256.to_uint b)
+axiomatized by shlE.
+
+op shr(a : uint256, b : uint256) : uint256 = a `>>>` (W256.to_uint b)
+axiomatized by shrE.
+
+op STRING : uint256 = W256.zero.
 
 module Primops = {
   var memory : mem
@@ -158,7 +188,7 @@ module Primops = {
     memory <- memory.[idx<-(val `&` W256.masklsb 8)];
   }
 
-  proc ret(retOff : uint256, retSize : uint256) : unit = {
+  proc evm_return(retOff : uint256, retSize : uint256) : unit = {
     (* TODO: Implement return *)
     return ();
   }
@@ -168,26 +198,8 @@ module Primops = {
     return W256.of_int 42;
   }
 
-  proc iszero(v : uint256) : uint256 = {
-    var ref;
-    if (v = W256.of_int 0) {
-      ref <- W256.one;
-    } else {
-      ref <- W256.zero;
-    }
-    return ref;
-  }
-
-  proc mulmod(a : uint256, b : uint256, n : uint256) : uint256 = {
-    return (a * b) %% n;
-  }
-
-  proc addmod(a : uint256, b : uint256, n : uint256) : uint256 = {
-    return (a + b) %% n;
-  }
-
-  proc keccak256(v : uint256) : uint256 = {
-    (* TODO: return sample from uniform distribution over uint256 *)
+  proc keccak256(off : uint256, size : uint256) : uint256 = {
+    (* TODO: relate to keccak_f *)
     return W256.zero;
   }
 
@@ -217,7 +229,7 @@ module Primops = {
     return succ;
   }
 
-  proc revert() : unit = {
+  proc revert(x : uint256, y : uint256) : unit = {
     reverted <- true;
   }
 
@@ -292,7 +304,148 @@ lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
     proof.
       smt.
     qed.
-
+lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x + (W256.of_int 32) <= y \/ y + (W256.of_int 32) <= x) => ConcretePrimops.mload (ConcretePrimops.apply_mstore memory y v) x = ConcretePrimops.mload memory x.
+    progress.
+    rewrite /mload.
+    pose post_mem := apply_mstore memory y v.
+    have eq : post_mem = apply_mstore memory y v.
+    rewrite /post_mem.
+    reflexivity.
+    rewrite apply_mstore_def in eq.
+    have eq' : uint256_frame memory post_mem y.
+    smt ().
+    clear eq.
+    rewrite /uint256_frame in eq'.
+    have H31 : post_mem.[x + (of_int 31)%W256] = memory.[x + (of_int 31)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H30 : post_mem.[x + (of_int 30)%W256] = memory.[x + (of_int 30)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H29 : post_mem.[x + (of_int 29)%W256] = memory.[x + (of_int 29)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H28 : post_mem.[x + (of_int 28)%W256] = memory.[x + (of_int 28)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H27 : post_mem.[x + (of_int 27)%W256] = memory.[x + (of_int 27)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H26 : post_mem.[x + (of_int 26)%W256] = memory.[x + (of_int 26)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H25 : post_mem.[x + (of_int 25)%W256] = memory.[x + (of_int 25)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H24 : post_mem.[x + (of_int 24)%W256] = memory.[x + (of_int 24)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H23 : post_mem.[x + (of_int 23)%W256] = memory.[x + (of_int 23)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H22 : post_mem.[x + (of_int 22)%W256] = memory.[x + (of_int 22)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H21 : post_mem.[x + (of_int 21)%W256] = memory.[x + (of_int 21)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H20 : post_mem.[x + (of_int 20)%W256] = memory.[x + (of_int 20)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H19 : post_mem.[x + (of_int 19)%W256] = memory.[x + (of_int 19)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H18 : post_mem.[x + (of_int 18)%W256] = memory.[x + (of_int 18)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H17 : post_mem.[x + (of_int 17)%W256] = memory.[x + (of_int 17)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H16 : post_mem.[x + (of_int 16)%W256] = memory.[x + (of_int 16)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H15 : post_mem.[x + (of_int 15)%W256] = memory.[x + (of_int 15)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H14 : post_mem.[x + (of_int 14)%W256] = memory.[x + (of_int 14)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H13 : post_mem.[x + (of_int 13)%W256] = memory.[x + (of_int 13)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H12 : post_mem.[x + (of_int 12)%W256] = memory.[x + (of_int 12)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H11 : post_mem.[x + (of_int 11)%W256] = memory.[x + (of_int 11)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H10 : post_mem.[x + (of_int 10)%W256] = memory.[x + (of_int 10)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H9 : post_mem.[x + (of_int 9)%W256] = memory.[x + (of_int 9)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H8 : post_mem.[x + (of_int 8)%W256] = memory.[x + (of_int 8)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H7 : post_mem.[x + (of_int 7)%W256] = memory.[x + (of_int 7)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H6 : post_mem.[x + (of_int 6)%W256] = memory.[x + (of_int 6)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H5 : post_mem.[x + (of_int 5)%W256] = memory.[x + (of_int 5)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H4 : post_mem.[x + (of_int 4)%W256] = memory.[x + (of_int 4)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H3 : post_mem.[x + (of_int 3)%W256] = memory.[x + (of_int 3)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H2 : post_mem.[x + (of_int 2)%W256] = memory.[x + (of_int 2)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H1 : post_mem.[x + (of_int 1)%W256] = memory.[x + (of_int 1)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H0 : post_mem.[x] = memory.[x].
+    apply eq'.
+    progress.
+    admit.
+    smt ().
+  qed.
 
 lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
@@ -488,19 +641,6 @@ hoare [ Primops.mstore :
       rewrite h_mem.
       reflexivity.
 qed.
-    
-op gas = W256.of_int 42 (* TODO confirm ok *)
-axiomatized by gasE.
-
-op iszero (v: uint256): uint256.
-axiom iszero_zeroE: iszero (W256.zero) = W256.one.
-axiom iszero_nonzeroE: forall (val: uint256), val <> W256.zero => iszero val = W256.zero.
-
-op mulmod (a b n: uint256) = (a * b) %% n
-axiomatized by mulmodE.
-
-op addmod (a b n: uint256) = (a + b) %% n
-axiomatized by addmodE.
 
 
 end ConcretePrimops.
