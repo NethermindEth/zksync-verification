@@ -157,8 +157,7 @@ hoare [ Test.usr_pointNegate :
         progress.
         rewrite H1.
         rewrite neg_w256_zero_eq_w256_zero umodE /ulift2.
-        simplify.
-        trivial.
+        progress.
         sp.
         call (ConcretePrimops.mstore_spec memory_pre (point_addr + (of_int 32)%W256) ((of_int
         21888242871839275222246405745257275088696311157297823662689037894645226208583)%W256 - y)).

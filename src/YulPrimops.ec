@@ -3,7 +3,6 @@ pragma Goals:printall.
 require import Logic Array.
 require import Utils.
 require export UInt256 Memory.
-
 op calldata : uint256 array.
 op keccak256_f : uint256 array -> uint256.
 
@@ -307,7 +306,145 @@ lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
     qed.
 lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x + (W256.of_int 32) <= y \/ y + (W256.of_int 32) <= x) => ConcretePrimops.mload (ConcretePrimops.apply_mstore memory y v) x = ConcretePrimops.mload memory x.
     progress.
+    rewrite /mload.
+    pose post_mem := apply_mstore memory y v.
+    have eq : post_mem = apply_mstore memory y v.
+    rewrite /post_mem.
+    reflexivity.
+    rewrite apply_mstore_def in eq.
+    have eq' : uint256_frame memory post_mem y.
+    smt ().
+    clear eq.
+    rewrite /uint256_frame in eq'.
+    have H31 : post_mem.[x + (of_int 31)%W256] = memory.[x + (of_int 31)%W256].
+    apply eq'.
+    progress.
     admit.
+    have H30 : post_mem.[x + (of_int 30)%W256] = memory.[x + (of_int 30)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H29 : post_mem.[x + (of_int 29)%W256] = memory.[x + (of_int 29)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H28 : post_mem.[x + (of_int 28)%W256] = memory.[x + (of_int 28)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H27 : post_mem.[x + (of_int 27)%W256] = memory.[x + (of_int 27)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H26 : post_mem.[x + (of_int 26)%W256] = memory.[x + (of_int 26)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H25 : post_mem.[x + (of_int 25)%W256] = memory.[x + (of_int 25)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H24 : post_mem.[x + (of_int 24)%W256] = memory.[x + (of_int 24)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H23 : post_mem.[x + (of_int 23)%W256] = memory.[x + (of_int 23)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H22 : post_mem.[x + (of_int 22)%W256] = memory.[x + (of_int 22)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H21 : post_mem.[x + (of_int 21)%W256] = memory.[x + (of_int 21)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H20 : post_mem.[x + (of_int 20)%W256] = memory.[x + (of_int 20)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H19 : post_mem.[x + (of_int 19)%W256] = memory.[x + (of_int 19)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H18 : post_mem.[x + (of_int 18)%W256] = memory.[x + (of_int 18)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H17 : post_mem.[x + (of_int 17)%W256] = memory.[x + (of_int 17)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H16 : post_mem.[x + (of_int 16)%W256] = memory.[x + (of_int 16)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H15 : post_mem.[x + (of_int 15)%W256] = memory.[x + (of_int 15)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H14 : post_mem.[x + (of_int 14)%W256] = memory.[x + (of_int 14)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H13 : post_mem.[x + (of_int 13)%W256] = memory.[x + (of_int 13)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H12 : post_mem.[x + (of_int 12)%W256] = memory.[x + (of_int 12)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H11 : post_mem.[x + (of_int 11)%W256] = memory.[x + (of_int 11)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H10 : post_mem.[x + (of_int 10)%W256] = memory.[x + (of_int 10)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H9 : post_mem.[x + (of_int 9)%W256] = memory.[x + (of_int 9)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H8 : post_mem.[x + (of_int 8)%W256] = memory.[x + (of_int 8)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H7 : post_mem.[x + (of_int 7)%W256] = memory.[x + (of_int 7)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H6 : post_mem.[x + (of_int 6)%W256] = memory.[x + (of_int 6)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H5 : post_mem.[x + (of_int 5)%W256] = memory.[x + (of_int 5)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H4 : post_mem.[x + (of_int 4)%W256] = memory.[x + (of_int 4)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H3 : post_mem.[x + (of_int 3)%W256] = memory.[x + (of_int 3)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H2 : post_mem.[x + (of_int 2)%W256] = memory.[x + (of_int 2)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H1 : post_mem.[x + (of_int 1)%W256] = memory.[x + (of_int 1)%W256].
+    apply eq'.
+    progress.
+    admit.
+    have H0 : post_mem.[x] = memory.[x].
+    apply eq'.
+    progress.
+    admit.
+    smt ().
   qed.
 
 lemma mstore_spec:
