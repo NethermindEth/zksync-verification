@@ -81,33 +81,92 @@ proof.
   apply ConcretePrimops.apply_mstore_mload_same.
 qed.
 
+lemma usr_revertWithMessage_correctness :
+    forall (size reason : uint256),
+hoare [ Test.usr_revertWithMessage :
+      arg = (size, reason) ==>
+    Primops.reverted = true
+    ].
+    proof.
+      progress.
+      proc.
+      inline Primops.mload Primops.mstore Primops.revert.
+      wp.
+      skip.
+      progress.
+  qed.
+
 lemma pointNegate_correctness :
     forall (x y point_addr : uint256),
 hoare [ Test.usr_pointNegate :
-    arg = point_addr /\
-    (x <> W256.zero \/ y <> W256.zero) /\
-        Primops.memory.[point_addr] = x /\
-        Primops.memory.[point_addr + (W256.of_int 32)] = y /\
+      arg = point_addr /\
+      (x <> W256.zero \/ y <> W256.zero) /\
+        ConcretePrimops.mload Primops.memory point_addr = x /\
+        ConcretePrimops.mload Primops.memory (point_addr + (W256.of_int 32)) = y /\
         y < p ==>
-    (
+      (
         Primops.reverted = false =>
-    (
-        Primops.memory.[point_addr] = x /\
-        Primops.memory.[point_addr + (W256.of_int 32)] = (-y) %% p
-    )
-)]. proof.
-    progress.
-    proc.
-    simplify.
-    inline Test.usr_revertWithMessage Primops.mload Primops.mstore Primops.revert.
-    wp.
-    skip.
-    progress.
-    rewrite H1.
-    admit.
-    rewrite Map.get_set_neqE.
-    admit.
-    auto.
-    rewrite Map.get_set_sameE.
-    admit.
-qed.
+        (
+          ConcretePrimops.mload Primops.memory point_addr = x /\
+          ConcretePrimops.mload Primops.memory (point_addr + (W256.of_int 32)) = (-y) %% p
+        )
+      )
+    ]. proof.
+        progress.
+        proc.
+        exists* Primops.memory.
+        elim*=>memory_pre.
+        sp.
+        seq 1 : (_1 = (of_int 32)%W256 /\
+      _2 = point_addr + (of_int 32)%W256 /\
+      memory_pre = Primops.memory /\
+      usr_point = point_addr /\
+      tmp88 = y /\
+      (x <> W256.zero \/ y <> W256.zero) /\
+      (ConcretePrimops.mload Primops.memory point_addr)%ConcretePrimops = x /\
+      (ConcretePrimops.mload Primops.memory (point_addr + (of_int 32)%W256))%ConcretePrimops = y /\
+        y < p).
+        call (ConcretePrimops.mload_spec memory_pre (point_addr + (of_int 32)%W256)).
+        skip.
+        progress.
+        sp.
+        if.
+        seq 1 :
+    (memory_pre = Primops.memory /\
+      usr_point = point_addr /\
+      tmp88 = y /\
+      tmp89 = y /\
+      tmp90 = x /\
+      usr_pY = y /\
+      (x <> W256.zero \/ y <> W256.zero) /\
+      (ConcretePrimops.mload Primops.memory point_addr)%ConcretePrimops = x /\
+      (ConcretePrimops.mload Primops.memory (point_addr + (of_int 32)%W256))%ConcretePrimops = y /\
+        y < p /\
+      y = W256.zero).
+        call (ConcretePrimops.mload_spec memory_pre point_addr).
+        skip.
+        progress.
+        sp.
+        if.
+        sp.
+        (* should do this better *)
+        inline Test.usr_revertWithMessage Primops.revert.
+        wp.
+        progress.
+        skip.
+        progress.
+        rewrite H1.
+        rewrite neg_w256_zero_eq_w256_zero umodE /ulift2.
+        simplify.
+        trivial.
+        sp.
+        call (ConcretePrimops.mstore_spec memory_pre (point_addr + (of_int 32)%W256) ((of_int
+        21888242871839275222246405745257275088696311157297823662689037894645226208583)%W256 - y)).
+        skip.
+        progress.
+        rewrite ConcretePrimops.mload_apply_mstore_eq_mload_of_disj.
+        smt.
+        reflexivity.
+        rewrite ConcretePrimops.apply_mstore_mload_same -/p umodE /ulift2.
+        admit.
+  qed.

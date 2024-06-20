@@ -8,16 +8,33 @@ op calldata : uint256 array.
 op keccak256_f : uint256 array -> uint256.
 
 op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero.
+lemma iszero_zeroE : iszero (W256.zero) = W256.one.
+    proof.
+      rewrite /iszero.
+      simplify.
+      trivial.
+  qed.
+lemma iszero_nonzeroE : forall (val: uint256), val <> W256.zero => iszero val = W256.zero.
+    proof.
+      progress.
+      rewrite /iszero.
+      smt.
+    qed.
+    
+op mulmod(a b n : uint256) : uint256 =  (a * b) %% n
+axiomatized by mulmodE.
 
-op mulmod(a : uint256, b : uint256, n : uint256) : uint256 =  (a * b) %% n.
+op addmod(a b n : uint256) : uint256 = (a + b) %% n
+axiomatized by addmodE.
 
-op addmod(a : uint256, b : uint256, n : uint256) : uint256 = (a + b) %% n.
+op bit_and(a : uint256, b : uint256) : uint256 = a `&` b
+axiomatized by bit_andE.
 
-op bit_and(a : uint256, b : uint256) : uint256 = W256.zero.
+op shl(a : uint256, b : uint256) : uint256 = a `<<<` (W256.to_uint b)
+axiomatized by shlE.
 
-op shl(a : uint256, b : uint256) : uint256 = a `<<<` (W256.to_uint b).
-
-op shr(a : uint256, b : uint256) : uint256 = a `>>>` (W256.to_uint b).
+op shr(a : uint256, b : uint256) : uint256 = a `>>>` (W256.to_uint b)
+axiomatized by shrE.
 
 op STRING : uint256 = W256.zero.
 
@@ -172,7 +189,7 @@ module Primops = {
     memory <- memory.[idx<-(val `&` W256.masklsb 8)];
   }
 
-  proc ret(retOff : uint256, retSize : uint256) : unit = {
+  proc evm_return(retOff : uint256, retSize : uint256) : unit = {
     (* TODO: Implement return *)
     return ();
   }
@@ -182,8 +199,8 @@ module Primops = {
     return W256.of_int 42;
   }
 
-  proc keccak256(v : uint256) : uint256 = {
-    (* TODO: return sample from uniform distribution over uint256 *)
+  proc keccak256(off : uint256, size : uint256) : uint256 = {
+    (* TODO: relate to keccak_f *)
     return W256.zero;
   }
 
@@ -288,7 +305,10 @@ lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
     proof.
       smt.
     qed.
-
+lemma mload_apply_mstore_eq_mload_of_disj (memory : mem) (x y v : uint256) : (x + (W256.of_int 32) <= y \/ y + (W256.of_int 32) <= x) => ConcretePrimops.mload (ConcretePrimops.apply_mstore memory y v) x = ConcretePrimops.mload memory x.
+    progress.
+    admit.
+  qed.
 
 lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
@@ -484,19 +504,6 @@ hoare [ Primops.mstore :
       rewrite h_mem.
       reflexivity.
 qed.
-    
-op gas = W256.of_int 42 (* TODO confirm ok *)
-axiomatized by gasE.
-
-op iszero (v: uint256): uint256.
-axiom iszero_zeroE: iszero (W256.zero) = W256.one.
-axiom iszero_nonzeroE: forall (val: uint256), val <> W256.zero => iszero val = W256.zero.
-
-op mulmod (a b n: uint256) = (a * b) %% n
-axiomatized by mulmodE.
-
-op addmod (a b n: uint256) = (a + b) %% n
-axiomatized by addmodE.
 
 
 end ConcretePrimops.
