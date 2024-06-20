@@ -81,30 +81,45 @@ proof.
   apply ConcretePrimops.apply_mstore_mload_same.
 qed.
 
+lemma usr_revertWithMessage_correctness :
+    forall (size reason : uint256),
+hoare [ Test.usr_revertWithMessage :
+      arg = (size, reason) ==>
+    Primops.reverted = true
+    ].
+    proof.
+      progress.
+      proc.
+      inline Primops.mload Primops.mstore Primops.revert.
+      wp.
+      skip.
+      progress.
+  qed.
+
 module PointNegate = {
   proc low(point: uint256) : unit = {
     var x, y;
     x <@ Primops.mload(point);
     y <@ Primops.mload(point + W256.of_int 32);
-    if (x = W256.zero /\ y = W256.zero) {
-      Primops.revert();
-    } else {
-      if (y <> W256.zero) {
+    if (y <> W256.zero) {
         Primops.mstore(point + W256.of_int 32, p - y);
-      }
+    }
+    
+    if (x <> W256.zero /\ y = W256.zero) {
+      Primops.revert(W256.zero, W256.zero);
     }
   }
 }.
 
 lemma pointNegate_actual_matches_low: equiv [
-    Test.pointNegate ~ PointNegate.low :
+    Test.usr_pointNegate ~ PointNegate.low :
     Primops.memory{1} = Primops.memory{2} /\
       arg{1} = arg{2} /\
     !Primops.reverted{1} /\
     !Primops.reverted{2}
       ==>
         Primops.reverted{1} <=> Primops.reverted{2} /\
-        !Primops.reverted{1} =>
+        (!Primops.reverted{1}) =>
         forall (idx: uint256),
         Primops.memory{1}.[idx] =
         Primops.memory{2}.[idx]
@@ -112,97 +127,69 @@ lemma pointNegate_actual_matches_low: equiv [
     proof.
       exists* Primops.memory{1}.
       elim*=>memory.
-      exists* point{1}.
+      exists* usr_point{1}.
       elim*=>point.
       proc.
-      case (ConcretePrimops.mload memory (point+W256.of_int 32) = W256.zero).
-      rcondt{1} 6.
-      progress.
-      wp.
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      wp.
-      skip.
-      progress.
-      case (ConcretePrimops.mload memory point = W256.zero).
-      rcondt{1} 8.
-      progress.
-      wp.
-      call (ConcretePrimops.mload_spec memory point).
-      wp.
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      wp.
-      skip.
-      progress.
-      inline Primops.revert.
-      rcondt{2} 3.
-      progress.
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      call (ConcretePrimops.mload_spec memory point).
-      skip.
-      progress.
-      wp.
-      progress.
+      case (ConcretePrimops.mload memory (point+W256.of_int 32) = W256.zero). (* case y=0 *)
+      rcondt{1} 6; first last.                                                   (* actual: take the no-writing branch *)
+      rcondf{2} 3; first last.                                                   (* low: take the no-writing branch *)
+      case (ConcretePrimops.mload memory point = W256.zero).                     (* case x=0 *)
+      rcondf{1} 8; first last.                                                     (* actual: take the non-reverting branch *)
+      rcondf{2} 3; first last.                                                     (* low: take the non-reverting branch *)
+      sim.                                                                         (* simplify post to just equating memory *)
       inline Primops.mload.
-      wp.
+      by sim.                                                                         (* prove memory is unchanged *)
+      progress.                                                                    (* to prove: x and y are loaded correctly in the low spec *)
+      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).           (* load y *)
+      call (ConcretePrimops.mload_spec memory point).                              (* load x *)
       skip.
       progress.
-      rcondf{1} 8.
-      progress.
+      rewrite H2 H1.
+      by trivial.
+      progress.                                                                    (* to prove: x is loaded correctly in actual *)
       wp.
-      call (ConcretePrimops.mload_spec memory point).
+      call (ConcretePrimops.mload_spec memory point).                              (* load x *)
+      inline Primops.mload. wp. skip. by progress.                                    (* discharge the rest of the program *)
+                                                                                 (* case x <> 0 *)
+      rcondt{1} 8; first last.                                                     (* actual: take the reverting branch *)
+      rcondt{2} 3; first last.                                                     (* low: take the reverting branch *)
+      inline Test.usr_revertWithMessage Primops.revert Primops.mstore Primops.mload. (* sim here breaks the proof *)
+      wp. skip. by progress.
+      progress.                                                                    (* to prove: x and y are loaded correctly in the low spec *)
+      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).           (* load y *)
+      call (ConcretePrimops.mload_spec memory point).                              (* load x *)
+      skip. by progress.
+      progress.                                                                    (* to prove: x loaded correct in actual *)
       wp.
+      call (ConcretePrimops.mload_spec memory point).   
+      inline Primops.mload. wp. skip. by progress.
+      progress.                                                                  (* to prove: y loaded correctly in low *)
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      wp.
-      skip.
-      progress.
-      rcondf{2} 3.
-      progress.
+      inline Primops.mload. wp. skip. by progress.
+      progress.                                                                  (* to prove: y loaded correctly in actual *)
+      wp.                                                                         
+      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).         
+      wp. skip. by progress.                                                     
+                                                                             (* case y<>0 *)
+      rcondf{1} 6; first last.                                                 (* actual: take writing branch *)
+      rcondf{2} 4; first last.                                                 (* low: skip reverting branch *)
+      rcondt{2} 3; first last.                                                 (* low: take writing branch *)
+      sim. inline Primops.mstore Primops.mload. wp. skip. by progress.         (* prove that neither revert and memory maps are modified equally *)
+      progress.                                                                (* prove that y is loaded correct in low *)
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      call (ConcretePrimops.mload_spec memory point).
-      skip.
-      progress.
-      rewrite H1 H2.
-      trivial.
-      wp.
-      rcondf{2} 3.
-      progress.
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      call (ConcretePrimops.mload_spec memory point).
-      skip.
-      progress.
-      inline Primops.mload.
-      wp.
-      skip.
-      progress.
-      rcondf{1} 6.
-      progress.
-      wp.
-      sp.
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      skip.
-      progress.
-      rcondf{2} 3.
-      progress.
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
-      call (ConcretePrimops.mload_spec memory point).
-      skip.
-      progress.
-      rewrite H1.
-      trivial.
-      rcondt{2} 3.
-      progress.
+      inline Primops.mload. wp. skip. by progress.
+      progress.                                                                (* prove that x and y are loaded correct in low and the writing branch is taken *)
+      rcondt 3; first last.                                                    (* take the writing branch *)
+      inline Primops.mstore. wp.
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
       call (ConcretePrimops.mload_spec memory point).
-      skip.
-      progress.
-      sp.
-      sim.
-      inline Primops.mstore. (*TODO why doesn't call work here*)
-      sim.
-      inline Primops.mload.
+      skip. progress. rewrite H1. by trivial.
+      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
+      inline Primops.mload. wp. skip. by progress.
+      progress.                                                                (* prove y is loaded correctly in actual *)
       wp.
-      skip.
-      progress.
+      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
+      wp. skip. by progress.
 qed.
       
 lemma pointNegate_low_correctness :
@@ -271,20 +258,6 @@ hoare [ Test.pointNegate :
     rewrite Map.get_set_sameE.
     admit.
 qed.
-lemma usr_revertWithMessage_correctness :
-    forall (size reason : uint256),
-hoare [ Test.usr_revertWithMessage :
-      arg = (size, reason) ==>
-    Primops.reverted = true
-    ].
-    proof.
-      progress.
-      proc.
-      inline Primops.mload Primops.mstore Primops.revert.
-      wp.
-      skip.
-      progress.
-  qed.
 
 lemma pointNegate_correctness :
     forall (x y point_addr : uint256),
