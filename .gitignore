@@ -51,5 +51,7 @@ node_modules
 # Proof general generated files
 *.ec#
 *.eco
-*.ec~
 .#*
+
+# Emacs temp files
+*~
