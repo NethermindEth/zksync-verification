@@ -105,6 +105,7 @@ hoare [ Test.usr_revertWithMessage :
 
   type Point = int * int.
   op NegatePoint (point: Point): Point = (point.`1, (-point.`2) %% p_int).
+  op IsPointWellformed (point: Point): bool = 0 <= point.`1 /\ 0 <= point.`2 /\ point.`1 < p_int /\ point.`2 < p_int.
   op IsPointValid (point: Point): bool = !(point.`1 <> 0 /\ point.`2 = 0).
 
 module PointNegate = {
@@ -293,7 +294,25 @@ lemma pointNegate_low_matches_mid (memory: mem) (point_address: uint256) (point_
       wp. skip. by progress.
     qed.
     
-    
+lemma pointNegate_mid_matches_high (point: Point):
+  equiv [
+    PointNegate.mid ~ PointNegate.high :
+      arg{2} = (arg{1}.`1, arg{1}.`2) /\
+      arg{2} = point /\
+    IsPointWellformed point /\
+    !Primops.reverted{1} /\
+      !Primops.reverted{2}
+      ==>
+    (Primops.reverted{1} <=> Primops.reverted{2}) /\ (!Primops.reverted{1} => res{2} = (res{1}.`1, res{1}.`2))
+  ].
+  proof.
+    proc.
+    wp. skip. progress; by smt().
+qed.
+
+
+  
+   
     
       
 (* lemma pointNegate_low_correctness :
