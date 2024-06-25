@@ -56,14 +56,14 @@ op mulmod(a b n : uint256) : uint256 =
   let a_int = W256.to_uint a in
   let b_int = W256.to_uint b in
   let n_int = W256.to_uint n in
-  W256.of_int ((a * b) %% n)
+  W256.of_int ((a_int * b_int) %% n_int)
 axiomatized by mulmodE.
 
 op addmod(a b n : uint256) : uint256 =
   let a_int = W256.to_uint a in
   let b_int = W256.to_uint b in
   let n_int = W256.to_uint n in
-  W256.of_int ((a + b) %% n)
+  W256.of_int ((a_int + b_int) %% n_int)
 axiomatized by addmodE.
 
 op bit_and(a : uint256, b : uint256) : uint256 = a `&` b
