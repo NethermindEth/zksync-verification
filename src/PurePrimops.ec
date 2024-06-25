@@ -52,10 +52,18 @@ op mload (memory: mem) (idx: uint256) =
 
 op mstore (memory: mem) (idx val: uint256): mem.
 
-op mulmod(a b n : uint256) : uint256 =  (a * b) %% n
+op mulmod(a b n : uint256) : uint256 =
+  let a_int = W256.to_uint a in
+  let b_int = W256.to_uint b in
+  let n_int = W256.to_uint n in
+  W256.of_int ((a * b) %% n)
 axiomatized by mulmodE.
 
-op addmod(a b n : uint256) : uint256 = (a + b) %% n
+op addmod(a b n : uint256) : uint256 =
+  let a_int = W256.to_uint a in
+  let b_int = W256.to_uint b in
+  let n_int = W256.to_uint n in
+  W256.of_int ((a + b) %% n)
 axiomatized by addmodE.
 
 op bit_and(a : uint256, b : uint256) : uint256 = a `&` b
