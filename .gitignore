@@ -47,3 +47,11 @@ time-of-build-pretty.log
 # Python virtual environment
 venv/
 node_modules
+
+# Proof general generated files
+*.ec#
+*.eco
+.#*
+
+# Emacs temp files
+*~

@@ -1,6 +1,6 @@
 pragma Goals:printall.
 
-require import Logic UInt256 Memory YulPrimops Array.
+require import Logic UInt256 Memory Array.
 
 (* Some potentially useful lemmas to prove mid-level specs *)
 
@@ -28,6 +28,13 @@ lemma add_neq:
       progress.
       smt.
     qed.
+
+lemma neq_of_lt (idx idx2: uint256):
+    W256.of_int 31 < idx2 - idx => idx2 <> idx.
+proof.
+    progress.
+    smt.
+qed.
 
 lemma shl_zero (x: uint256):
     x `<<<` 0 = x.
