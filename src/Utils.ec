@@ -29,6 +29,13 @@ lemma add_neq:
       smt.
     qed.
 
+lemma neq_of_lt (idx idx2: uint256):
+    W256.of_int 31 < idx2 - idx => idx2 <> idx.
+proof.
+    progress.
+    smt.
+qed.
+
 lemma shl_zero (x: uint256):
     x `<<<` 0 = x.
 proof.

@@ -1,9 +1,16 @@
 pragma Goals:printall.
 
-require import Logic UInt256 Memory YulPrimops Array Real.
+require import Array.
+require import Logic.
+require import Memory.
+require import PurePrimops.
+require import Real.
+require import UInt256.
 require import Utils.
+require YulPrimops.
 
-op p = W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583.
+op p_int = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
+op p_uint256 = W256.of_int p_int.
 
 module Test = {
 
@@ -74,11 +81,11 @@ proof.
   proc.
   exists* Primops.memory.
   elim*=>memory_pre.
-  call (ConcretePrimops.mload_spec (ConcretePrimops.apply_mstore memory_pre address value) address).
+  call (ConcretePrimops.mload_spec (PurePrimops.mstore memory_pre address value) address).
   call (ConcretePrimops.mstore_spec memory_pre address value).
   skip.
   progress.
-  apply ConcretePrimops.apply_mstore_mload_same.
+  apply PurePrimops.mload_mstore_same.
 qed.
 
 lemma usr_revertWithMessage_correctness :
@@ -102,13 +109,35 @@ module PointNegate = {
     x <@ Primops.mload(point);
     y <@ Primops.mload(point + W256.of_int 32);
     if (y <> W256.zero) {
-        Primops.mstore(point + W256.of_int 32, p - y);
+        Primops.mstore(point + W256.of_int 32, p_uint256 - y);
     }
     
     if (x <> W256.zero /\ y = W256.zero) {
       Primops.revert(W256.zero, W256.zero);
     }
   }
+
+  proc mid(point_x: int, point_y: int) : int * int = {
+    var ret_x, ret_y;
+    ret_x <- point_x;
+    ret_y <- (-point_y) %% p_int;
+
+    if (point_x <> 0 /\ point_y = 0) {
+      Primops.reverted <- true;
+    }
+
+    return (ret_x, ret_y);
+  }
+
+  (* proc high(point_address: int): unit = {
+    var point_val;
+    point_val <- mload_point Primops.memory point_address;
+    if (point_invertible point_val) {
+      Primops.memory <- mstore_point Primops.memory point_address (point_invert point_val);
+    } else {
+      Primops.revert <- true;
+    }
+  } *)
 }.
 
 lemma pointNegate_actual_matches_low: equiv [
@@ -130,10 +159,10 @@ lemma pointNegate_actual_matches_low: equiv [
       exists* usr_point{1}.
       elim*=>point.
       proc.
-      case (ConcretePrimops.mload memory (point+W256.of_int 32) = W256.zero). (* case y=0 *)
+      case (PurePrimops.mload memory (point+W256.of_int 32) = W256.zero). (* case y=0 *)
       rcondt{1} 6; first last.                                                   (* actual: take the no-writing branch *)
       rcondf{2} 3; first last.                                                   (* low: take the no-writing branch *)
-      case (ConcretePrimops.mload memory point = W256.zero).                     (* case x=0 *)
+      case (PurePrimops.mload memory point = W256.zero).                     (* case x=0 *)
       rcondf{1} 8; first last.                                                     (* actual: take the non-reverting branch *)
       rcondf{2} 3; first last.                                                     (* low: take the non-reverting branch *)
       sim.                                                                         (* simplify post to just equating memory *)

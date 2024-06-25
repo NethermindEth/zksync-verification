@@ -1,41 +1,10 @@
 pragma Goals:printall.
 
-require import Logic Array.
+require import Array.
+require import Logic.
+require import PurePrimops.
 require import Utils.
 require export UInt256 Memory.
-op calldata : uint256 array.
-op keccak256_f : uint256 array -> uint256.
-
-op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero.
-lemma iszero_zeroE : iszero (W256.zero) = W256.one.
-    proof.
-      rewrite /iszero.
-      simplify.
-      trivial.
-  qed.
-lemma iszero_nonzeroE : forall (val: uint256), val <> W256.zero => iszero val = W256.zero.
-    proof.
-      progress.
-      rewrite /iszero.
-      smt.
-    qed.
-    
-op mulmod(a b n : uint256) : uint256 =  (a * b) %% n
-axiomatized by mulmodE.
-
-op addmod(a b n : uint256) : uint256 = (a + b) %% n
-axiomatized by addmodE.
-
-op bit_and(a : uint256, b : uint256) : uint256 = a `&` b
-axiomatized by bit_andE.
-
-op shl(a : uint256, b : uint256) : uint256 = a `<<<` (W256.to_uint b)
-axiomatized by shlE.
-
-op shr(a : uint256, b : uint256) : uint256 = a `>>>` (W256.to_uint b)
-axiomatized by shrE.
-
-op STRING : uint256 = W256.zero.
 
 module Primops = {
   var memory : mem
@@ -235,52 +204,17 @@ module Primops = {
   }
 
   proc calldataload(i : uint256) : uint256 = {
-    return calldata.[W256.to_uint i];
+    return PurePrimops.calldata.[W256.to_uint i];
   }
 }.
 
 theory ConcretePrimops.
 
-op mload (memory: mem) (idx: uint256) =
-    memory.[idx+ W256.of_int 31] +
-    (memory.[idx+ W256.of_int 30] `<<<` 8) +
-    (memory.[idx+ W256.of_int 29] `<<<` 16) +
-    (memory.[idx+ W256.of_int 28] `<<<` 24) +
-    (memory.[idx+ W256.of_int 27] `<<<` 32) +
-    (memory.[idx+ W256.of_int 26] `<<<` 40) +
-    (memory.[idx+ W256.of_int 25] `<<<` 48) +
-    (memory.[idx+ W256.of_int 24] `<<<` 56) +
-    (memory.[idx+ W256.of_int 23] `<<<` 64) +
-    (memory.[idx+ W256.of_int 22] `<<<` 72) +
-    (memory.[idx+ W256.of_int 21] `<<<` 80) +
-    (memory.[idx+ W256.of_int 20] `<<<` 88) +
-    (memory.[idx+ W256.of_int 19] `<<<` 96) +
-    (memory.[idx+ W256.of_int 18] `<<<` 104) +
-    (memory.[idx+ W256.of_int 17] `<<<` 112) +
-    (memory.[idx+ W256.of_int 16] `<<<` 120) +
-    (memory.[idx+ W256.of_int 15] `<<<` 128) +
-    (memory.[idx+ W256.of_int 14] `<<<` 136) +
-    (memory.[idx+ W256.of_int 13] `<<<` 144) +
-    (memory.[idx+ W256.of_int 12] `<<<` 152) +
-    (memory.[idx+ W256.of_int 11] `<<<` 160) +
-    (memory.[idx+ W256.of_int 10] `<<<` 168) +
-    (memory.[idx+ W256.of_int 9] `<<<` 176) +
-    (memory.[idx+ W256.of_int 8] `<<<` 184) +
-    (memory.[idx+ W256.of_int 7] `<<<` 192) +
-    (memory.[idx+ W256.of_int 6] `<<<` 200) +
-    (memory.[idx+ W256.of_int 5] `<<<` 208) +
-    (memory.[idx+ W256.of_int 4] `<<<` 216) +
-    (memory.[idx+ W256.of_int 3] `<<<` 224) +
-    (memory.[idx+ W256.of_int 2] `<<<` 232) +
-    (memory.[idx+ W256.of_int 1] `<<<` 240) +
-    (memory.[idx] `<<<` 248)
-axiomatized by mLoadE.
-
 lemma mload_spec (memory: mem) (idx: uint256):
 hoare [ Primops.mload :
     arg = idx /\
     Primops.memory = memory ==>
-      res = mload memory idx /\
+      res = PurePrimops.mload memory idx /\
       Primops.memory = memory
     ].
     proof.
@@ -292,93 +226,13 @@ hoare [ Primops.mload :
       rewrite /mload.
       reflexivity.
   qed.
-
-op apply_mstore (memory: mem) (idx val: uint256): mem.
-op uint256_frame (memory_pre memory_post: mem) (idx: uint256) = forall (idx2: uint256), W256.of_int 31 < idx2 - idx => memory_post.[idx2] = memory_pre.[idx2].
-axiom apply_mstore_def (memory_pre memory_post: mem) (idx val: uint256):
-memory_post = apply_mstore memory_pre idx val <=> (
-  mload memory_post idx = val /\
-  uint256_frame memory_pre memory_post idx
-).
-lemma apply_mstore_mload_same (memory: mem) (idx val: uint256):
-    mload (apply_mstore memory idx val) idx = val.
-    proof.
-      smt.
-  qed.
-
-lemma apply_mstore_mload_diff (memory: mem) (idx idx2 val: uint256):
-    W256.of_int 31 < idx2 - idx => W256.of_int 31 < idx - idx2 =>  mload (apply_mstore memory idx val) idx2 = mload memory idx2.
-proof.
-  progress.
-  rewrite /mload.
-  pose memory_post := apply_mstore memory idx val.
-  have h_full: mload memory_post idx = val /\ uint256_frame memory memory_post idx. by smt.
-  have h_frame: uint256_frame memory memory_post idx. smt.
-  rewrite /uint256_frame in h_frame.
-  have h31: forall (offset: int), 0 <= offset => offset < 32 => memory_post.[idx2 + W256.of_int offset] = memory.[idx2 + W256.of_int offset].
-  progress.
-  apply h_frame.
-  rewrite /W256.\ult.
-  by smt.
-  have h0: memory_post.[idx2] = memory.[idx2].
-  by smt.
-  (rewrite (h31 31); first trivial); first trivial.
-  (rewrite (h31 30); first trivial); first trivial.
-  (rewrite (h31 29); first trivial); first trivial.
-  (rewrite (h31 28); first trivial); first trivial.
-  (rewrite (h31 27); first trivial); first trivial.
-  (rewrite (h31 26); first trivial); first trivial.
-  (rewrite (h31 25); first trivial); first trivial.
-  (rewrite (h31 24); first trivial); first trivial.
-  (rewrite (h31 23); first trivial); first trivial.
-  (rewrite (h31 22); first trivial); first trivial.
-  (rewrite (h31 21); first trivial); first trivial.
-  (rewrite (h31 20); first trivial); first trivial.
-  (rewrite (h31 19); first trivial); first trivial.
-  (rewrite (h31 18); first trivial); first trivial.
-  (rewrite (h31 17); first trivial); first trivial.
-  (rewrite (h31 16); first trivial); first trivial.
-  (rewrite (h31 15); first trivial); first trivial.
-  (rewrite (h31 14); first trivial); first trivial.
-  (rewrite (h31 13); first trivial); first trivial.
-  (rewrite (h31 12); first trivial); first trivial.
-  (rewrite (h31 11); first trivial); first trivial.
-  (rewrite (h31 10); first trivial); first trivial.
-  (rewrite (h31 9); first trivial); first trivial.
-  (rewrite (h31 8); first trivial); first trivial.
-  (rewrite (h31 7); first trivial); first trivial.
-  (rewrite (h31 6); first trivial); first trivial.
-  (rewrite (h31 5); first trivial); first trivial.
-  (rewrite (h31 4); first trivial); first trivial.
-  (rewrite (h31 3); first trivial); first trivial.
-  (rewrite (h31 2); first trivial); first trivial.
-  (rewrite (h31 1); first trivial); first trivial.
-    rewrite h0.
-    reflexivity.
-qed.
-
-lemma neq_of_lt (idx idx2: uint256):
-    W256.of_int 31 < idx2 - idx => idx2 <> idx.
-    proof.
-      progress.
-      smt.
-    qed.
-    
-lemma add_neq_of_lt (idx idx2: uint256) (offset: int):
-    W256.of_int 31 < idx2 - idx =>  0 < offset /\ offset < 32 => idx2 <> (idx + W256.of_int offset).
-    proof.
-      progress.
-      smt.
-    qed.
     
 lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 hoare [ Primops.mstore :
     arg = (idx', val') /\
     Primops.memory = memory ==>
-      (*(forall (idx2: uint256), (idx2 < idx' \/ idx' + W256.of_int 31 < idx2) => Primops.memory.[idx2] = memory.[idx2]) /\ -- TODO frame rule*)
-    (* mload Primops.memory idx' = val' *)
-      Primops.memory = apply_mstore memory idx' val'
+      Primops.memory = PurePrimops.mstore memory idx' val'
     ].
     proof.
       progress.
@@ -393,8 +247,7 @@ hoare [ Primops.mstore :
       have h_mem: Primops.memory{hr} = memory.
       smt.
     move => x248 x240 x232 x224 x216 x208 x200 x192 x184 x176 x168 x160 x152 x144 x136 x128 x120 x112 x104 x96 x88 x80 x72 x64 x56 x48 x40 x32 x24 x16 x8.
-      rewrite apply_mstore_def.
-    split.
+      apply PurePrimops.mstore_of_load_and_frame.
       rewrite h_mem.
       rewrite /mload.
       rewrite h_idx.
@@ -561,12 +414,12 @@ hoare [ Primops.mstore :
       rewrite /uint256_frame.
     move => idx2 h_idx2.
       rewrite h_idx.
-      do 31! ((rewrite {1} Map.get_set_neqE; first (apply add_neq_of_lt; first apply h_idx2)); first trivial).
-      rewrite Map.get_set_neqE; first apply neq_of_lt.
+      do 31! (rewrite {1} Map.get_set_neqE; first by smt (PurePrimops.add_neq_of_lt)).
+      rewrite Map.get_set_neqE.
+      apply neq_of_lt.
       exact h_idx2.
       rewrite h_mem.
       reflexivity.
 qed.
-    
 
 end ConcretePrimops.
