@@ -7,7 +7,7 @@ require import PurePrimops.
 require import Real.
 require import UInt256.
 require import Utils.
-require YulPrimops.
+require import YulPrimops.
 
 op p_int = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 op p_uint256 = W256.of_int p_int.
@@ -16,7 +16,7 @@ module Test = {
 
     proc usr_revertWithMessage(usr_len : uint256, usr_reason : uint256): unit = {
     var _1, _2, _3, _4, _5, _6, _7;
-    _1 <- (shl (W256.of_int 229) (W256.of_int 4594637));
+    _1 <- (PurePrimops.shl (W256.of_int 229) (W256.of_int 4594637));
     _2 <- (W256.of_int 0);
     Primops.mstore(_2, _1);
     _3 <- (W256.of_int 32);
@@ -43,7 +43,7 @@ module Test = {
       _3 <- tmp90;
       if (bool_of_uint256 _3)
         {
-        _4 <- STRING (*pointNegate: invalid point*);
+        _4 <- PurePrimops.STRING (*pointNegate: invalid point*);
         _5 <- (W256.of_int 26);
         tmp91 <@ usr_revertWithMessage(_5, _4);
 
@@ -73,16 +73,16 @@ module Test = {
 
 lemma writeReadTest_correctness :
     forall (address value: uint256),
-hoare [ Test.writeReadTest :
+phoare [ Test.writeReadTest :
       arg = (address, value) ==>
-      res = value].
+      res = value] = 1%r.
 proof.
     progress.
   proc.
   exists* Primops.memory.
   elim*=>memory_pre.
-  call (ConcretePrimops.mload_spec (PurePrimops.mstore memory_pre address value) address).
-  call (ConcretePrimops.mstore_spec memory_pre address value).
+  call (ConcretePrimops.mload_pspec (PurePrimops.mstore memory_pre address value) address).
+  call (ConcretePrimops.mstore_pspec memory_pre address value).
   skip.
   progress.
   apply PurePrimops.mload_mstore_same.
@@ -102,6 +102,10 @@ hoare [ Test.usr_revertWithMessage :
       skip.
       progress.
   qed.
+
+  type Point = int * int.
+  op NegatePoint (point: Point): Point = (point.`1, (-point.`2) %% p_int).
+  op IsPointValid (point: Point): bool = !(point.`1 <> 0 /\ point.`2 = 0).
 
 module PointNegate = {
   proc low(point: uint256) : unit = {
@@ -129,15 +133,13 @@ module PointNegate = {
     return (ret_x, ret_y);
   }
 
-  (* proc high(point_address: int): unit = {
-    var point_val;
-    point_val <- mload_point Primops.memory point_address;
-    if (point_invertible point_val) {
-      Primops.memory <- mstore_point Primops.memory point_address (point_invert point_val);
-    } else {
-      Primops.revert <- true;
+  proc high(point: Point): Point = {
+    if (!IsPointValid point) {
+      Primops.reverted <- true;
     }
-  } *)
+
+    return (NegatePoint point);
+  }
 }.
 
 lemma pointNegate_actual_matches_low: equiv [
@@ -219,9 +221,82 @@ lemma pointNegate_actual_matches_low: equiv [
       wp.
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
       wp. skip. by progress.
-qed.
+  qed.
+
+lemma zero_of_to_uint_zero (x: uint256): to_uint x = 0 => x = W256.zero.
+    proof.
+      by smt(@W256).
+    qed.
+
+lemma pointNegate_low_matches_mid (memory: mem) (point_address: uint256) (point_x_int point_y_int: int): equiv [
+    PointNegate.low ~ PointNegate.mid :
+      arg{2} = (point_x_int, point_y_int) /\
+      arg{1} = point_address /\
+      Primops.memory{1} = memory /\
+      W256.to_uint(PurePrimops.mload memory point_address) = point_x_int /\
+      W256.to_uint(PurePrimops.mload memory (point_address + W256.of_int 32)) = point_y_int /\
+      !Primops.reverted{1} /\
+      !Primops.reverted{2}
+      ==>
+        Primops.reverted{1} <=> Primops.reverted{2} /\ (
+        (!Primops.reverted{1}) => (
+          Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore memory point_address (W256.of_int res{2}.`1)) (point_address + W256.of_int 32) (W256.of_int res{2}.`2)
+        ))
+    ].
+    proof.
+      exists* Primops.memory{1}.
+      elim*=> memory_pre.
+      proc.
+    case (point_y_int = 0).
+      rcondf{1} 3. progress.
+      call (ConcretePrimops.mload_spec memory (point_address + W256.of_int 32)).
+      call (ConcretePrimops.mload_spec memory point_address).
+      skip. progress.
+      apply zero_of_to_uint_zero. exact H1.
+    case (point_x_int = 0).
+      rcondf{1} 3. progress.
+      call (ConcretePrimops.mload_spec memory (point_address + W256.of_int 32)).
+      call (ConcretePrimops.mload_spec memory point_address).
+      skip. progress.
+      by smt (zero_of_to_uint_zero).
+      rcondf{2} 3. progress.
+      wp. skip. progress.
+      by smt (zero_of_to_uint_zero).
+      wp.
+      kill{1} 0 ! 2; first (inline Primops.mload; wp; skip; by progress).
+      skip.
+      by progress.
+      (* case point_x_int <> 0 *)
+      rcondt{1} 3. progress.
+      call (ConcretePrimops.mload_spec memory (point_address + W256.of_int 32)).
+      call (ConcretePrimops.mload_spec memory point_address).
+      skip. progress; by smt (@W256).
+      rcondt{2} 3. progress.
+      wp. skip. by progress.
+      inline Primops.revert.
+      kill{1} 0 ! 4. inline Primops.mload. wp. skip. by progress.
+      wp. skip. by progress.
+      (* case point_y_int <> 0 *)
+      rcondt{1} 3. progress.
+      call (ConcretePrimops.mload_spec memory (point_address + W256.of_int 32)).
+      call (ConcretePrimops.mload_spec memory point_address).
+      skip. progress. by smt (@W256).
+      rcondf{1} 4. progress.
+      inline Primops.mstore. wp.
+      call (ConcretePrimops.mload_spec memory (point_address + W256.of_int 32)).
+      call (ConcretePrimops.mload_spec memory point_address).
+      skip. progress. by smt (@W256).
+      rcondf{2} 3. progress. wp. skip. progress. by smt (@W256).
+      call{1} (ConcretePrimops.mstore_pspec memory_pre (point_address + W256.of_int 32) (p_uint256 - W256.of_int point_y_int)).
+      call{1} (ConcretePrimops.mload_pspec memory_pre (point_address + W256.of_int 32)).
+      call{1} (ConcretePrimops.mload_pspec memory_pre point_address).
+      wp. skip. by progress.
+    qed.
+    
+    
+    
       
-lemma pointNegate_low_correctness :
+(* lemma pointNegate_low_correctness :
     forall (x y point_addr : uint256),
 hoare [ PointNegate.low :
     arg = point_addr /\
@@ -360,4 +435,4 @@ hoare [ Test.usr_pointNegate :
         reflexivity.
         rewrite ConcretePrimops.apply_mstore_mload_same -/p umodE /ulift2.
         admit.
-  qed.
+  qed. *)
