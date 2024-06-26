@@ -1,0 +1,49 @@
+digraph zk {
+    initializeTranscript -> modexp
+    initializeTranscript -> updateTranscript
+    initializeTranscript -> getTranscriptChallenge
+
+    verifyQuotientEvaluation -> evaluateLagrangePolyOutOfDomain
+    verifyQuotientEvaluation -> permutationQuotientContribution
+    verifyQuotientEvaluation -> lookupQuotientContribution
+
+    evaluateLagrangePolyOutOfDomain -> modexp
+    lookupQuotientContribution -> modexp
+
+    prepareQueries -> pointMulAndAddIntoDest
+    prepareQueries -> mainGateLinearisationContributionWithV
+    prepareQueries -> addAssignRescueCustomGateLinearisationContributionWithV
+    prepareQueries -> addAssignPermutationLinearisationContributionWithV
+    prepareQueries -> addAssignLookupLinearisationContributionWithV
+
+    mainGateLinearisationContributionWithV -> pointMulIntoDest
+    mainGateLinearisationContributionWithV -> pointMulAndAddIntoDest
+    mainGateLinearisationContributionWithV -> pointAddAssign
+
+    addAssignRescueCustomGateLinearisationContributionWithV -> pointMulAndAddIntoDest
+
+    addAssignPermutationLinearisationContributionWithV -> pointMulIntoDest
+    addAssignPermutationLinearisationContributionWithV -> pointSubAssign
+
+    addAssignLookupLinearisationContributionWithV -> 
+
+    prepareAggregatedCommitment -> updateAggregationChallenge1
+    prepareAggregatedCommitment -> pointAddIntoDest
+    prepareAggregatedCommitment -> pointMulIntoDest
+    prepareAggregatedCommitment -> updateAggregationChallenge2
+
+    updateAggregationChallenge1 -> pointMulAndAddIntoDest
+    updateAggregationChallenge2 -> pointMulAndAddIntoDest
+
+    finalPairing -> pointSubAssign
+    finalPairing -> pointMulAndAddIntoDest
+    finalPairing -> pointNegate
+
+    verify -> _loadVerificationKey
+    verify -> loadProof
+    verify -> initializeTranscript
+    verify -> verifyQuotientEvaluation
+    verify -> prepareQueries
+    verify -> prepareAggregatedCommitment
+    verify -> finalPairing
+}
