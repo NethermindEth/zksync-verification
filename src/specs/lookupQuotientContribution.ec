@@ -15,7 +15,26 @@ module LookupQuotientContribution = {
     a7_c <- a7 * l0_z;
     a8_c <- a8 * ln1_z * (g' * (b' + one))^(DOMAIN_SIZE - 1);
     
-    return a6 - a7 - a8;
+    return a6_c - a7_c - a8_c;
+  }
+
+
+  var _a6, _a7, _a8, _b', _g' : int
+  var _l0_z, _ln1_z : int
+  var _s_z0, _zl_z0 : int
+  var _z : int
+  
+  proc mid() : int = {
+    var a6_c1, a6_c2, a6_c, a7_c, a8_c : int;
+
+    a6_c1 <- (_s_z0 * _b' + _g' * (_b' + 1))%%R;
+    a6_c2 <- (_z + (R - (OMEGA^(DOMAIN_SIZE - 1))%%R) * _zl_z0)%%R;
+    a6_c  <- (_a6 * a6_c1 * a6_c2)%%R;
+
+    a7_c  <- (_a7 * _l0_z)%%R;
+    a8_c  <- (_a8 * _ln1_z * (_g' * (_b' + 1))^(DOMAIN_SIZE - 1))%%R;
+
+    return (a6_c + (R - a6_c) + (R - a7_c))%%R;
   }
 }.
 
