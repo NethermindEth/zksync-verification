@@ -9,6 +9,7 @@ require export UInt256 Memory.
 
 module Primops = {
   var memory : mem
+  var ret_data : uint256 array
   var reverted : bool
 
   proc mload(idx : uint256) : uint256 = {
@@ -160,8 +161,13 @@ module Primops = {
   }
 
   proc evm_return(retOff : uint256, retSize : uint256) : unit = {
-    (* TODO: Implement return *)
-    return ();
+      var i : uint256;
+      i <- W256.zero;
+      while (i < retSize) {
+      ret_data.[W256.to_uint i] <- memory.[retOff + i];
+      i <- i + W256.one;
+      }
+      return ();
   }
 
   proc gas() : uint256 = {
@@ -170,8 +176,15 @@ module Primops = {
   }
 
   proc keccak256(off : uint256, size : uint256) : uint256 = {
-    (* TODO: relate to keccak_f *)
-    return W256.zero;
+      (* TODO: relate to keccak_f *)
+      var input : uint256 array;
+      var i : uint256;
+      while (i < size) {
+      input.[W256.to_uint i] <- memory.[off + i];
+      i <- i + W256.one;
+      }
+    
+      return PurePrimops.keccak256_f input;
   }
 
   proc staticcall(gas : uint256, addr : uint256, argOff : uint256, argSize : uint256, retOff : uint256, retSize : uint256) : uint256 = {
