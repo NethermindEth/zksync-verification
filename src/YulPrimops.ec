@@ -1,9 +1,9 @@
 pragma Goals:printall.
 
+require import AllCore Int IntDiv.
 require import Array.
 require import Logic.
 require import PurePrimops.
-require import Real.
 require import Utils.
 require export UInt256 Memory.
 
@@ -175,28 +175,40 @@ module Primops = {
   }
 
   proc staticcall(gas : uint256, addr : uint256, argOff : uint256, argSize : uint256, retOff : uint256, retSize : uint256) : uint256 = {
-    var succ;
-    if (addr = W256.of_int 5) {
-      (* TODO: modexp *)
-      succ <- W256.zero;
-    } else {
-      if (addr = W256.of_int 6) {
-        (* TODO: ecAdd *)
-        succ <- W256.zero;
+      var succ;
+      var bsize, esize, msize : uint256;
+      var base, exp, mod;
+      if (addr = W256.of_int 5) {
+        bsize <@ mload(argOff);
+        esize <@ mload(argOff + W256.of_int 32);
+        msize <@ mload(argOff + W256.of_int 64);
+        if (bsize = (W256.of_int 32) /\ esize = (W256.of_int 32) /\ msize = (W256.of_int 32) /\ retSize = (W256.of_int 32) /\ argSize = (W256.of_int 192)) {
+          base <@ mload(argOff + W256.of_int 96);
+          exp  <@ mload(argOff + W256.of_int 128);
+          mod  <@ mload(argOff + W256.of_int 160);
+          mstore(retOff, W256.of_int (((W256.to_uint base) ^ (W256.to_uint exp)) %% (W256.to_uint mod)));
+          succ <- W256.one;
+        } else {
+          succ <- W256.zero;
+        }
       } else {
-        if (addr = W256.of_int 7) {
-          (* TODO: ecMul *)
+        if (addr = W256.of_int 6) {
+          (* TODO: ecAdd *)
           succ <- W256.zero;
         } else {
-          if (addr = W256.of_int 8) {
-            (* TODO: ecPairing *)
+          if (addr = W256.of_int 7) {
+            (* TODO: ecMul *)
             succ <- W256.zero;
           } else {
+            if (addr = W256.of_int 8) {
+              (* TODO: ecPairing *)
               succ <- W256.zero;
+            } else {
+                succ <- W256.zero;
+            }
           }
         }
       }
-    }
     return succ;
   }
 
