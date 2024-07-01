@@ -89,6 +89,17 @@ module PointNegate = {
   }
 }.
 
+lemma usr_revertWithMessage_correctness (size reason : uint256) :
+  phoare [ PointNegate.usr_revertWithMessage : true ==> Primops.reverted = true] = 1%r.
+proof.
+progress.
+proc.
+inline Primops.mload Primops.mstore Primops.revert.
+wp.
+skip.
+progress.
+qed.
+
 lemma pointNegate_extracted_equiv_low :
    equiv [PointNegate.usr_pointNegate ~ PointNegate.low :
             ={arg, glob PointNegate} ==> ={res}].
@@ -113,11 +124,13 @@ lemma pointNegate_low_equiv_mid (memory: mem) (point_address: uint256) (point_x_
       !Primops.reverted{1} /\ !Primops.reverted{2}
       ==>
       Primops.reverted{1} <=> Primops.reverted{2} /\ (
-        (!Primops.reverted{1}) => (
-          Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore memory point_address (W256.of_int res{2}.`1)) (point_address + W256.of_int 32) (W256.of_int res{2}.`2)
+        (!Primops.reverted{1} /\ (
+          Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore memory point_address (W256.of_int res{2}.`1)) (point_address + W256.of_int 32) (W256.of_int res{2}.`2))
         )
-      )
-    ].
+        \/
+        (Primops.reverted{1} /\ point_y_int = 0 /\ point_x_int <> 0)
+     )
+].
 proof. proc.
 seq 2 2 : (#pre /\ ret_x{2} = point_x{2} /\ ret_y{2} = point_y{2} /\ W256.to_uint usr_pY{1} = ret_y{2}).
 call {1} (ConcretePrimops.mload_pspec memory (point_address + W256.of_int 32)).
@@ -126,11 +139,25 @@ if. smt (@W256).
 seq 1 0 : (#pre /\ W256.to_uint tmp90{1} = point_x_int{2}).
 exists*  usr_point{1}. elim*. move => usr_point_l.
 call {1} (ConcretePrimops.mload_pspec memory (usr_point_l)). skip. auto.
-if. 
-smt(@W256). inline*. auto. skip. auto.
-simplify.
-exists* _2{1},  usr_pY{1}. elim*. move => _2_l usr_pY_l.
-call {1} (ConcretePrimops.mstore_pspec memory _2_l ((of_int Q)%W256 - usr_pY_l)).
-wp. skip. 
-progress.
-qed.
+seq 1 1 : (#pre /\ ((!Primops.reverted{1} /\ point_x{2} = 0) \/ (Primops.reverted{1} /\ point_x{2} <> 0))).
+case (point_x_int = 0).
+rcondf{1} 1. progress. skip. progress. rewrite /bool_of_uint256. by smt(@W256).
+rcondf{2} 1. progress. skip. progress. by smt(@W256). left. auto.
+(* case point_x_int <> 0 *)
+rcondt{1} 1. progress. skip. progress. rewrite /bool_of_uint256. by smt(@W256).
+rcondt{2} 1. by progress.
+
+(* stuck here. tried using the spec for revertWithMessage but it got worse. *)
+
+call{1} (usr_revertWithMessage_correctness (W256.of_int 26) PurePrimops.STRING).
+
+(* below is Denis proof for the old spec. The difference is the revert disjunct. *)
+  
+(* if {1}. *)
+(* smt(@W256). inline *. wp. skip. simplify. *)
+(* simplify. *)
+(* exists* _2{1},  usr_pY{1}. elim*. move => _2_l usr_pY_l. *)
+(* call {1} (ConcretePrimops.mstore_pspec memory _2_l ((of_int Q)%W256 - usr_pY_l)). *)
+(* wp. skip.  *)
+(* progress. *)
+(* qed. *)
