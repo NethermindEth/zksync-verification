@@ -90,7 +90,7 @@ module PointNegate = {
 }.
 
 lemma usr_revertWithMessage_correctness (size reason : uint256) :
-  phoare [ PointNegate.usr_revertWithMessage : true ==> Primops.reverted = true] = 1%r.
+  phoare [ PointNegate.usr_revertWithMessage : arg = (size, reason) ==> Primops.reverted = true] = 1%r.
 proof.
 progress.
 proc.
