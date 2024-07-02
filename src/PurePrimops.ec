@@ -1,6 +1,7 @@
 pragma Goals:printall.
 
 require import Array.
+require import IntDiv.
 require import Logic.
 require import Memory.
 require export UInt256.
@@ -10,48 +11,33 @@ theory PurePrimops.
 
 (* definitions ========== *)
 
+(* uninterpreted functions *)
 op calldata : uint256 array.
 op keccak256_f : uint256 array -> uint256.
 
-op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero.
-op eq_uint256(a : uint256, b : uint256) : uint256  = if a = b then W256.one else W256.zero.
-op gt_uint256 (x y : uint256)  = if y < x then W256.one else W256.zero.
-op slt_uint256 (x y : uint256) = if uint256_as_signed x < uint256_as_signed y then W256.one else W256.zero.
 
-op mload (memory: mem) (idx: uint256) =
-    memory.[idx+ W256.of_int 31] +
-    (memory.[idx+ W256.of_int 30] `<<<` 8) +
-    (memory.[idx+ W256.of_int 29] `<<<` 16) +
-    (memory.[idx+ W256.of_int 28] `<<<` 24) +
-    (memory.[idx+ W256.of_int 27] `<<<` 32) +
-    (memory.[idx+ W256.of_int 26] `<<<` 40) +
-    (memory.[idx+ W256.of_int 25] `<<<` 48) +
-    (memory.[idx+ W256.of_int 24] `<<<` 56) +
-    (memory.[idx+ W256.of_int 23] `<<<` 64) +
-    (memory.[idx+ W256.of_int 22] `<<<` 72) +
-    (memory.[idx+ W256.of_int 21] `<<<` 80) +
-    (memory.[idx+ W256.of_int 20] `<<<` 88) +
-    (memory.[idx+ W256.of_int 19] `<<<` 96) +
-    (memory.[idx+ W256.of_int 18] `<<<` 104) +
-    (memory.[idx+ W256.of_int 17] `<<<` 112) +
-    (memory.[idx+ W256.of_int 16] `<<<` 120) +
-    (memory.[idx+ W256.of_int 15] `<<<` 128) +
-    (memory.[idx+ W256.of_int 14] `<<<` 136) +
-    (memory.[idx+ W256.of_int 13] `<<<` 144) +
-    (memory.[idx+ W256.of_int 12] `<<<` 152) +
-    (memory.[idx+ W256.of_int 11] `<<<` 160) +
-    (memory.[idx+ W256.of_int 10] `<<<` 168) +
-    (memory.[idx+ W256.of_int 9] `<<<` 176) +
-    (memory.[idx+ W256.of_int 8] `<<<` 184) +
-    (memory.[idx+ W256.of_int 7] `<<<` 192) +
-    (memory.[idx+ W256.of_int 6] `<<<` 200) +
-    (memory.[idx+ W256.of_int 5] `<<<` 208) +
-    (memory.[idx+ W256.of_int 4] `<<<` 216) +
-    (memory.[idx+ W256.of_int 3] `<<<` 224) +
-    (memory.[idx+ W256.of_int 2] `<<<` 232) +
-    (memory.[idx+ W256.of_int 1] `<<<` 240) +
-    (memory.[idx] `<<<` 248)
-    axiomatized by mLoadE.
+op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero
+axiomatized by iszeroE.
+op eq_uint256(a : uint256, b : uint256) : uint256  = if a = b then W256.one else W256.zero
+axiomatized by eq_uint256E.
+op gt_uint256 (x y : uint256)  = if y < x then W256.one else W256.zero
+axiomatized by gt_uint256E.
+op slt_uint256 (x y : uint256) = if uint256_as_signed x < uint256_as_signed y then W256.one else W256.zero
+axiomatized by slt_uint256E.
+
+(* arithmetic definition *)
+(* could also be done bitwise *)
+op mload_bit (memory: mem) (idx: uint256) (i: int): bool =
+  memory.[idx + W256.of_int (i %/ 8)].[i %% 8].
+op mload (memory: mem) (idx: uint256): uint256 =
+  W256.init (mload_bit memory idx).
+op mstore_bit (memory: mem) (idx: uint256) (i: int) (bit: bool): mem =
+  let byte_index = idx + W256.of_int (i %/ 8) in
+  let byte = memory.[byte_index] in
+  memory.[byte_index <- (byte.[i%%8 <- bit])].
+op mstore_uint8 (memory: mem) (idx: uint256) (val: uint8): mem =
+  
+    
 
 op mstore (memory: mem) (idx val: uint256): mem.
 

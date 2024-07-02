@@ -1,7 +1,9 @@
 pragma Goals:printall.
 
+require import AllCore.
 require export Int IntDiv JWord.
 
+type uint8 = W8.t. (*specifically used for storing bytes in the memory map*)
 type uint256 = W256.t.
 
 abbrev (%%) (m d : uint256) = W256.\umod m d.
@@ -14,22 +16,30 @@ op uint256_as_signed (x : uint256) : int =
   else - (340282366920938463463374607431768211457 - (W256.to_uint x)).
 op bool_of_uint256 (x : uint256) : bool = x <> W256.zero.
 
+(* op try_u256_to_u8 (x: uint256) : uint8 option =
+  if W256.to_uint x < (2^8)
+  then Some (W8.of_int (W256.to_uint x))
+  else None. *)
+
 lemma neg_w256_zero_eq_w256_zero : - W256.zero = W256.zero.
     proof.
       smt (@W256).
   qed.
 
 lemma eq_sub_of_add_eq (x y z : uint256) : x + y = z => x = z - y.
+  proof.
     progress.
     smt (@W256).
   qed.
 
 lemma neq_sub_of_add_neq (x y z : uint256) : x + y <> z => x <> z - y.
+  proof.
     progress.
     smt (@W256).
   qed.
 
 lemma lt_or_eq_of_lt_succ (a l : uint256) : a < l + W256.one => a < l \/ a = l.
+  proof.
     case (a < l).
     progress.
     progress.

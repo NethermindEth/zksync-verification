@@ -19,6 +19,7 @@ lemma mod_mod_eq_mod :
     smt ().
   qed.
 
+  
 (* Lemmas for proving load store properties *)
 
 lemma add_neq:
@@ -53,7 +54,7 @@ proof.
 qed.
 
 (* done between 1 and 32 for now because that's all we need and it's easier on smt *)
-lemma get_set_offset (m: mem) (idx: uint256) (offset: int) (val: uint256):
+lemma get_set_offset (m: mem) (idx: uint256) (offset: int) (val: uint8):
     0 < offset /\ offset < 32 => m.[idx+W256.of_int offset<-val].[idx] = m.[idx].
 proof.
     progress.
@@ -62,7 +63,7 @@ proof.
     smt.
 qed.
 
-lemma get_set_offsets_neq (m: mem) (idx: uint256) (offset1 offset2: int) (val: uint256):
+lemma get_set_offsets_neq (m: mem) (idx: uint256) (offset1 offset2: int) (val: uint8):
     0 <= offset1 /\ 0 <= offset2 /\ offset1 < 32 /\ offset2 < 32 /\ offset1 <> offset2 =>
     m.[idx+W256.of_int offset1<-val].[idx+W256.of_int offset2] = m.[idx+W256.of_int offset2].
 proof.
