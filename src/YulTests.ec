@@ -60,6 +60,14 @@ module Test = {
       return z;
     }
 
+    proc calldata_test(ind : uint256) : uint256 = {
+        var v1, v2, r : uint256;
+        v1 <@ Primops.calldataload(ind);
+        v2 <@ Primops.calldataload(ind);
+        r <- PurePrimops.eq_uint256 v1 v2;
+        return r;
+    }
+    
     proc modexp_test(x: uint256, y: uint256, z: uint256) = {
         var success, ret;
         Primops.mstore(W256.zero, W256.of_int 32);
@@ -406,9 +414,11 @@ lemma modexp_test_correctness (a b c: uint256): hoare [ Test.modexp_test: arg = 
 
 
       
-    
-    
-    
-    
-    
-    
+lemma calldata_test_correctness (ind : uint256) :
+    phoare [Test.calldata_test : arg = ind ==> res = W256.one] = 1%r.
+    proc.
+    inline Primops.calldataload.
+    wp.
+    skip.
+    progress.
+  qed.
