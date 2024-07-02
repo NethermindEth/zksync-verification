@@ -1,6 +1,15 @@
 pragma Goals:printall.
 
-require import Array Real UInt256 YulPrimops PurePrimops Utils JUtils.
+require import AllCore.
+require import Array.
+require import Int.
+require import IntDiv.
+require import Real.
+require import UInt256.
+require import YulPrimops.
+require import PurePrimops.
+require import Utils.
+require import JUtils.
 
 module Test = {
   proc writeReadTest(address: uint256, value: uint256): uint256 = {
@@ -50,7 +59,19 @@ module Test = {
       z' <- PurePrimops.bit_and z x';
       return z;
     }
-    
+
+    proc modexp_test(x: uint256, y: uint256, z: uint256) = {
+        var success, ret;
+        Primops.mstore(W256.zero, W256.of_int 32);
+        Primops.mstore(W256.of_int 32, W256.of_int 32);
+        Primops.mstore(W256.of_int 64, W256.of_int 32);
+        Primops.mstore(W256.of_int 96, x); 
+        Primops.mstore(W256.of_int 128, y);
+        Primops.mstore(W256.of_int 160, z);
+        success <@ Primops.staticcall(W256.one, W256.of_int 5, W256.zero, W256.of_int 192, W256.zero, W256.of_int 32);
+        ret <@ Primops.mload(W256.zero);
+        return (success, ret);
+    }
   }.
 
 lemma writeReadTest_correctness :
@@ -155,41 +176,46 @@ lemma mod_test_correctness (m : uint256) :
     smt (@W256).
   qed.
   
-lemma keccak_correctness (addr1 addr2 sz : uint256) : equiv [Primops.keccak256 ~ Primops.keccak256 : arg{1} = (addr1, sz) /\ arg{2} = (addr2, sz) /\ forall (i : uint256), W256.zero < i /\ i < sz => Primops.memory{1}.[addr1 + i] = Primops.memory{2}.[addr2 + i] ==> res{1} = res{2}].
+lemma keccak_correctness (addr1 addr2 sz : uint256) : equiv [Primops.keccak256 ~ Primops.keccak256 : arg{1} = (addr1, sz) /\ arg{2} = (addr2, sz) /\ forall (i : uint256), W256.zero <= i /\ i < sz => Primops.memory{1}.[addr1 + i] = Primops.memory{2}.[addr2 + i] ==> res{1} = res{2}].
     proc.
-    while (i{1} = i{2} /\ i{1} <= sz /\ size{1} = sz /\ size{2} = sz /\ forall (j : uint256), j < i{1} => input{1}.[W256.to_uint j] = Primops.memory{1}.[off{1} + j] /\ input{2}.[W256.to_uint j] = Primops.memory{2}.[off{2} + j]).
-    wp.
-    skip.
-    move=> &1 &2 H.
-    split. split. smt ().
-    split. smt (@W256).
-    split. smt ().
-    split. smt ().
-    move=> j j_le.
-    case (lt_or_eq_of_lt_succ _ _ j_le).
-    progress.
-    rewrite get_set_if.
-    smt (@W256).
-    progress.
-    rewrite get_set_if.
-    smt (@W256).
-    move=> j_eq.
-    rewrite j_eq get_set_if get_set_if.
-    have H0 : 0 <= to_uint i{1}. smt (W256.to_uint_cmp).
-    have H1 : 0 <= to_uint i{1}. smt (W256.to_uint_cmp).
-    have H2 : to_uint i{1} = to_uint i{2}. smt ().
-    split.
-    simplify.
-    case (0 <= to_uint i{1} && to_uint i{1} < (size input{1})%Array).
-    progress.
-    progress.
-    admit.
-    progress.
-    admit.
-    smt ().
-    skip.
-    admit.
-  qed.
+    while (
+      i{1} = i{2} /\
+      i{1} <= sz /\
+      size{1} = sz /\
+      size{2} = sz /\
+    Array.size input{1} = W256.to_uint sz /\
+    Array.size input{2} = W256.to_uint sz /\
+      forall (j : uint256),
+        j < i{1} => (
+          input{1}.[W256.to_uint j] = Primops.memory{1}.[off{1} + j] /\
+          input{2}.[W256.to_uint j] = Primops.memory{2}.[off{2} + j]
+      )
+    ); first last.
+        (* before the while *)
+        wp. skip. progress.
+        smt(@W256).
+        rewrite Array.size_mkarray List.size_nseq. smt(@W256).
+        rewrite Array.size_mkarray List.size_nseq. smt(@W256).
+        smt (@W256).
+        smt (@W256).
+        congr.
+        have H_i_R : i_R = size{1}. smt (@W256).
+        progress.
+        apply Array.eq_from_get. smt().
+        progress.
+        have H5_i0: W256.of_int i0 < i_R =>
+          input_L.[to_uint (W256.of_int i0)] = Primops.memory{1}.[off{1} + W256.of_int i0] /\
+        input_R.[to_uint (W256.of_int i0)] = Primops.memory{2}.[off{2} + W256.of_int i0].
+        exact (H5 (W256.of_int i0)).
+        rewrite H in H5_i0. smt (@W256).
+        smt (@W256).
+        (* inside the while *)
+        wp. skip. progress. smt (@W256).
+        smt (@Array @W256).
+        smt (@Array @W256).
+        smt (@Array @W256).
+        smt (@Array @W256).
+qed.
 
 lemma splitMask_zero mask: W256.splitMask mask W256.zero = (W256.zero, W256.zero).
     proof.
@@ -287,6 +313,82 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
       rewrite add_shl. trivial.
       rewrite W256.shlw_add. trivial. trivial. simplify. exact addrC.
   qed.
+
+lemma modexp_test_correctness (a b c: uint256): hoare [ Test.modexp_test: arg = (a, b, c) ==> res = (W256.one, (
+    W256.of_int (
+            ((W256.to_uint a) ^ (W256.to_uint b)) %% (W256.to_uint c)
+    )
+  ))].
+      proc.
+      exists* Primops.memory.
+      elim*. progress.
+      pose mem_1 := PurePrimops.mstore memory W256.zero (W256.of_int 32).
+      pose mem_2 := PurePrimops.mstore mem_1 (W256.of_int 32) (W256.of_int 32).
+      pose mem_3 := PurePrimops.mstore mem_2 (W256.of_int 64) (W256.of_int 32).
+      pose mem_4 := PurePrimops.mstore mem_3 (W256.of_int 96) a.
+      pose mem_5 := PurePrimops.mstore mem_4 (W256.of_int 128) b.
+      pose mem_6 := PurePrimops.mstore mem_5 (W256.of_int 160) c.
+      have H_mem6_get0: PurePrimops.mload mem_6 W256.zero = W256.of_int 32.
+      do 5! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
+      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      have H_mem6_get32: PurePrimops.mload mem_6 (W256.of_int 32) = W256.of_int 32.
+      do 4! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
+      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      have H_mem6_get64: PurePrimops.mload mem_6 (W256.of_int 64) = W256.of_int 32.
+      do 3! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
+      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      have H_mem6_get96: PurePrimops.mload mem_6 (W256.of_int 96) = a.
+      do 2! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
+      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      have H_mem6_get128: PurePrimops.mload mem_6 (W256.of_int 128) = b.
+      rewrite PurePrimops.apply_mstore_mload_diff. smt(@W256). smt(@W256).
+      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      have H_mem6_get160: PurePrimops.mload mem_6 (W256.of_int 160) = c.
+      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      seq 6 : (Primops.memory = mem_6 /\ x = a /\ y = b /\ z = c).
+      call (ConcretePrimops.mstore_spec mem_5 (W256.of_int 160) c).
+      call (ConcretePrimops.mstore_spec mem_4 (W256.of_int 128) b).
+      call (ConcretePrimops.mstore_spec mem_3 (W256.of_int 96) a).
+      call (ConcretePrimops.mstore_spec mem_2 (W256.of_int 64) (W256.of_int 32)).
+      call (ConcretePrimops.mstore_spec mem_1 (W256.of_int 32) (W256.of_int 32)).
+      call (ConcretePrimops.mstore_spec memory W256.zero (W256.of_int 32)).
+      skip. by progress.
+      inline Primops.staticcall.
+      sp.
+      rcondt 1. skip. by progress.
+      rcondt 4.
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 64)).
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 32)).
+      call (ConcretePrimops.mload_spec mem_6 W256.zero).
+      skip. progress.
+      seq 6: (
+        #pre /\
+        bsize = W256.of_int 32 /\
+        esize = W256.of_int 32 /\
+        msize = W256.of_int 32 /\
+        base = a /\
+        exp = b /\
+        mod = c
+      ).
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 160)).
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 128)).
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 96)).
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 64)).
+      call (ConcretePrimops.mload_spec mem_6 (W256.of_int 32)).
+      call (ConcretePrimops.mload_spec mem_6 W256.zero).
+      skip. progress.
+      pose result := (W256.of_int ((W256.to_uint a) ^ (W256.to_uint b) %% (W256.to_uint c))).
+          pose mem_7 := PurePrimops.mstore mem_6 W256.zero result.
+          call (ConcretePrimops.mload_spec mem_7 W256.zero).
+          wp.
+          call (ConcretePrimops.mstore_spec mem_6 W256.zero result).
+          skip. progress.
+          rewrite /mem_7.
+          rewrite PurePrimops.mload_mstore_same.
+          reflexivity.
+      qed.
+
+
       
     
     
