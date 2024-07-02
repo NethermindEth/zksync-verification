@@ -72,8 +72,24 @@ module Test = {
         ret <@ Primops.mload(W256.zero);
         return (success, ret);
     }
+
+    proc is_even(a: uint256): uint256 = {
+      var ret;
+      ret <- PurePrimops.iszero (a %% W256.of_int 2);
+      return (ret);
+    }
   }.
 
+lemma is_even_correcteness (x: uint256) :
+hoare [ Test.is_even : arg = x ==> (
+    x %% W256.of_int 2 = W256.zero => res = W256.one
+      ) /\ (x %% W256.of_int 2 <> W256.zero => res = W256.zero) ].
+    proof.
+      proc.
+      wp. skip. progress. smt.
+      smt.
+    qed.
+  
 lemma writeReadTest_correctness :
 
     forall (address value: uint256),
