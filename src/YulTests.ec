@@ -50,6 +50,14 @@ module Test = {
       z' <- PurePrimops.bit_and z x';
       return z;
     }
+
+    proc calldata_test(ind : uint256) : uint256 = {
+        var v1, v2, r : uint256;
+        v1 <@ Primops.calldataload(ind);
+        v2 <@ Primops.calldataload(ind);
+        r <- PurePrimops.eq_uint256 v1 v2;
+        return r;
+    }
     
   }.
 
@@ -288,9 +296,11 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
       rewrite W256.shlw_add. trivial. trivial. simplify. exact addrC.
   qed.
       
-    
-    
-    
-    
-    
-    
+lemma calldata_test_correctness (ind : uint256) :
+    phoare [Test.calldata_test : arg = ind ==> res = W256.one] = 1%r.
+    proc.
+    inline Primops.calldataload.
+    wp.
+    skip.
+    progress.
+  qed.
