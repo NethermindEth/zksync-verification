@@ -1,4 +1,6 @@
-require import Array Real UInt256 YulPrimops PurePrimops Utils.
+pragma Goals:printall.
+
+require import Array Real UInt256 YulPrimops PurePrimops Utils JUtils.
 
 module Test = {
   proc writeReadTest(address: uint256, value: uint256): uint256 = {
@@ -36,6 +38,17 @@ module Test = {
         o <- PurePrimops.mulmod mv mv m;
         z <- PurePrimops.addmod o mv m;
         return z;
+    }
+
+    proc mstore8test(x: uint256, y: uint256): uint256 = {
+      var x', z, z';
+      Primops.mstore(W256.zero, W256.zero);
+      Primops.mstore8(W256.zero, x);
+      Primops.mstore8(W256.one, y);
+      z <@ Primops.mload(W256.zero);
+      x' <- PurePrimops.shl x (W256.of_int 248);
+      z' <- PurePrimops.bit_and z x';
+      return z;
     }
     
   }.
@@ -177,3 +190,107 @@ lemma keccak_correctness (addr1 addr2 sz : uint256) : equiv [Primops.keccak256 ~
     skip.
     admit.
   qed.
+
+lemma splitMask_zero mask: W256.splitMask mask W256.zero = (W256.zero, W256.zero).
+    proof.
+      by smt(@W256).
+  qed.
+
+lemma zero_shl s: W256.zero `<<<` s = W256.zero.
+    proof.
+      by smt(@W256).
+    qed.
+
+lemma zero_shr s: W256.zero `>>>` s = W256.zero.
+    proof.
+      by smt(@W256).
+    qed.
+
+    hint simplify splitMask_zero, zero_shl, zero_shr.
+
+  lemma neq_zero (i: int): 1 < i /\ i < 32 => W256.of_int i <> W256.zero.
+      proof.
+        admit.
+    qed.
+  lemma neq_one (i: int): 1 < i /\ i < 32 => W256.of_int i <> W256.one.
+      proof.
+        admit.
+    qed.
+  lemma byte_mask_id (a: uint256): a < W256.of_int 256 => a `&` (W256.masklsb 8) = a.
+      proof.
+        admit.
+    qed.
+
+  lemma add_shl (a b : uint256) (i: int): 0 <= i => (a + b) `<<<` i = (a `<<<` i) + (b `<<<` i).
+      proof.
+        progress.
+        admit.
+      qed.
+
+lemma mstore8_test_correctness (a b: uint256): hoare[
+    Test.mstore8test :
+      arg = (a,b) /\ a < W256.of_int 256 /\ b < W256.of_int 256 ==> res = ((a `<<<` 8) + b) `<<<` 240
+    ].
+    proof.
+      proc.
+      seq 1 : (#pre /\ (forall (i: int), (0 <= i /\ i < 32) => Primops.memory.[W256.of_int i] = W256.zero)).
+      inline Primops.mstore. wp. skip. progress.
+    case (i = 0). progress. smt (@W256 @Map).
+    case (i = 1). progress. smt (@W256 @Map).
+    case (i = 2). progress. smt (@W256 @Map).
+    case (i = 3). progress. smt (@W256 @Map).
+    case (i = 4). progress. smt (@W256 @Map).
+    case (i = 5). progress. smt (@W256 @Map).
+    case (i = 6). progress. smt (@W256 @Map).
+    case (i = 7). progress. smt (@W256 @Map).
+    case (i = 8). progress. smt (@W256 @Map).
+    case (i = 9). progress. smt (@W256 @Map).
+    case (i = 10). progress. smt (@W256 @Map).
+    case (i = 11). progress. smt (@W256 @Map).
+    case (i = 12). progress. smt (@W256 @Map).
+    case (i = 13). progress. smt (@W256 @Map).
+    case (i = 14). progress. smt (@W256 @Map).
+    case (i = 15). progress. smt (@W256 @Map).
+    case (i = 16). progress. smt (@W256 @Map).
+    case (i = 17). progress. smt (@W256 @Map).
+    case (i = 18). progress. smt (@W256 @Map).
+    case (i = 19). progress. smt (@W256 @Map).
+    case (i = 20). progress. smt (@W256 @Map).
+    case (i = 21). progress. smt (@W256 @Map).
+    case (i = 22). progress. smt (@W256 @Map).
+    case (i = 23). progress. smt (@W256 @Map).
+    case (i = 24). progress. smt (@W256 @Map).
+    case (i = 25). progress. smt (@W256 @Map).
+    case (i = 26). progress. smt (@W256 @Map).
+    case (i = 27). progress. smt (@W256 @Map).
+    case (i = 28). progress. smt (@W256 @Map).
+    case (i = 29). progress. smt (@W256 @Map).
+    case (i = 30). progress. smt (@W256 @Map).
+    case (i = 31). progress. smt (@W256 @Map).
+    progress. smt (@W256).
+      inline Primops.mstore8 Primops.mload. wp. skip. progress.
+      do 30! (((rewrite Map.get_set_neqE; first exact neq_one);
+      rewrite Map.get_set_neqE; first exact neq_zero);
+      simplify);
+    (rewrite H1; first trivial).
+      do 29! (rewrite H1; first trivial).
+      simplify.
+      rewrite Map.get_set_sameE.
+      rewrite Map.get_set_neqE. by smt(@W256).
+      rewrite Map.get_set_sameE.
+      rewrite byte_mask_id. exact H0.
+      rewrite byte_mask_id. exact H.
+      pose x' := to_uint x{hr}.
+      pose y' := to_uint y{hr}.
+      have H_x: x{hr} = W256.of_int x'. by smt(@W256).
+      have H_y: y{hr} = W256.of_int y'. by smt (@W256).
+      rewrite add_shl. trivial.
+      rewrite W256.shlw_add. trivial. trivial. simplify. exact addrC.
+  qed.
+      
+    
+    
+    
+    
+    
+    
