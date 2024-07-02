@@ -60,7 +60,6 @@ module Test = {
       return z;
     }
 
-<<<<<<< HEAD
     proc calldata_test(ind : uint256) : uint256 = {
         var v1, v2, r : uint256;
         v1 <@ Primops.calldataload(ind);
@@ -69,7 +68,6 @@ module Test = {
         return r;
     }
     
-=======
     proc modexp_test(x: uint256, y: uint256, z: uint256) = {
         var success, ret;
         Primops.mstore(W256.zero, W256.of_int 32);
@@ -82,7 +80,6 @@ module Test = {
         ret <@ Primops.mload(W256.zero);
         return (success, ret);
     }
->>>>>>> 1c08c2eeb00886bc62e2d0af99228e41e29d3394
   }.
 
 lemma writeReadTest_correctness :
