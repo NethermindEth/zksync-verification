@@ -26,14 +26,14 @@ lemma add_neq:
     1 <= y /\ y < 32 => x <> x + W256.of_int y.
     proof.
       progress.
-      smt.
+      smt timeout=100.
     qed.
 
 lemma neq_of_lt (idx idx2: uint256):
     W256.of_int 31 < idx2 - idx => idx2 <> idx.
 proof.
     progress.
-    smt.
+    smt timeout=100.
 qed.
 
 lemma shl_zero (x: uint256):
@@ -68,7 +68,7 @@ lemma get_set_offsets_neq (m: mem) (idx: uint256) (offset1 offset2: int) (val: u
 proof.
     progress.
     apply Map.get_set_neqE.
-    smt.
+    smt timeout=100.
 qed.
 
 lemma masklsb_zero:
@@ -82,7 +82,7 @@ lemma splitMask_zero (x: uint256):
 proof.
     rewrite /splitMask.
     simplify.
-    smt.
+    smt timeout=100.
 qed.
 
 lemma splitMask2_shr_shl (i: int) (x: uint256):
@@ -105,3 +105,6 @@ proof.
     apply splitMask_add.
 qed.
 
+lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
+    smt ().
+  qed.

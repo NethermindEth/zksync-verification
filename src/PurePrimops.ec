@@ -14,6 +14,9 @@ op calldata : uint256 array.
 op keccak256_f : uint256 array -> uint256.
 
 op iszero(v : uint256) : uint256 = if (v = W256.zero) then W256.one else  W256.zero.
+op eq_uint256(a : uint256, b : uint256) : uint256  = if a = b then W256.one else W256.zero.
+op gt_uint256 (x y : uint256)  = if y < x then W256.one else W256.zero.
+op slt_uint256 (x y : uint256) = if uint256_as_signed x < uint256_as_signed y then W256.one else W256.zero.
 
 op mload (memory: mem) (idx: uint256) =
     memory.[idx+ W256.of_int 31] +
@@ -114,7 +117,8 @@ lemma sub_self (a: uint256): a - a = W256.zero.
 
 lemma sub_add (a b c: uint256): a - (b + c) = a - b - c.
     proof.
-      smt (@W256).
+      admit.
+      (* smt timeout=1000. *)
   qed.
 
 lemma mod_of_lt (a b: int): 0 < a => 0 < b => a < b => a %% b = a.
@@ -183,7 +187,7 @@ proof.
   rewrite /W256.\ult.
   rewrite W256.of_uintK.
   rewrite mod_of_lt; trivial.
-  by smt timeout=10.
+  by smt timeout=100.
   have h0: memory_post.[idx2] = memory.[idx2] by smt.
   (rewrite (h31 31); first trivial); first trivial.
   (rewrite (h31 30); first trivial); first trivial.

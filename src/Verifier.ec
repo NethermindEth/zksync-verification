@@ -1,4 +1,4 @@
-require import UInt256 PurePrimops YulPrimops.
+require import UInt256 PurePrimops YulPrimops YulTests.
 
 (* Begin Verifier_1261 *)
 op cleanup_bytes32(value : uint256): uint256 = value.
@@ -9,10 +9,7 @@ op zero_value_for_split_bytes32: uint256 = (W256.of_int 0).
 
 op STRING : int = 0.
 
-op slt (x y : uint256) = W256.zero.
-op gt (x y : uint256) = W256.zero.
-
-module Verifier_1261 = {
+module Verifier = {
   proc usr_revertWithMessage(usr_len : uint256, usr_reason : uint256): unit = {
     var _1, _2, _3, _4, _5, _6, _7;
     _1 <- (PurePrimops.shl (W256.of_int 229) (W256.of_int 4594637));
@@ -493,7 +490,7 @@ module Verifier_1261 = {
     tmp96 <@ Primops.calldataload(_2);
     usr_publicInputLengthInWords <- tmp96;
     _3 <- (W256.of_int 1);
-    usr_isValid <- (eq_uint256 usr_publicInputLengthInWords _3);
+    usr_isValid <- (PurePrimops.eq_uint256 usr_publicInputLengthInWords _3);
     _4 <- ((PurePrimops.shl (W256.of_int 253) (W256.of_int 1)) - (W256.of_int 1));
     _5 <- (W256.of_int 36);
     _6 <- (usr_offset + _5);
@@ -508,7 +505,7 @@ module Verifier_1261 = {
     tmp99 <@ Primops.calldataload(_10);
     usr_proofLengthInWords <- tmp99;
     _11 <- (W256.of_int 44);
-    _12 <- (eq_uint256 usr_proofLengthInWords _11);
+    _12 <- (PurePrimops.eq_uint256 usr_proofLengthInWords _11);
     usr_isValid <- (PurePrimops.bit_and _12 usr_isValid);
     _13 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
     _14 <- (usr_offset + _5);
@@ -525,7 +522,7 @@ module Verifier_1261 = {
     _20 <- (PurePrimops.mulmod usr_x usr_xx _13);
     _21 <- (PurePrimops.addmod _20 _19 _13);
     _22 <- (PurePrimops.mulmod usr_y usr_y _13);
-    _23 <- (eq_uint256 _22 _21);
+    _23 <- (PurePrimops.eq_uint256 _22 _21);
     usr_isValid <- (PurePrimops.bit_and _23 usr_isValid);
     _24 <- (W256.of_int 1856);
     Primops.mstore(_24, usr_x);
@@ -545,7 +542,7 @@ module Verifier_1261 = {
     _32 <- (PurePrimops.mulmod usr_x_1 usr_xx_1 _13);
     _33 <- (PurePrimops.addmod _32 _19 _13);
     _34 <- (PurePrimops.mulmod usr_y_1 usr_y_1 _13);
-    _35 <- (eq_uint256 _34 _33);
+    _35 <- (PurePrimops.eq_uint256 _34 _33);
     usr_isValid <- (PurePrimops.bit_and _35 usr_isValid);
     _36 <- (W256.of_int 1920);
     Primops.mstore(_36, usr_x_1);
@@ -565,7 +562,7 @@ module Verifier_1261 = {
     _44 <- (PurePrimops.mulmod usr_x_2 usr_xx_2 _13);
     _45 <- (PurePrimops.addmod _44 _19 _13);
     _46 <- (PurePrimops.mulmod usr_y_2 usr_y_2 _13);
-    _47 <- (eq_uint256 _46 _45);
+    _47 <- (PurePrimops.eq_uint256 _46 _45);
     usr_isValid <- (PurePrimops.bit_and _47 usr_isValid);
     _48 <- (W256.of_int 1984);
     Primops.mstore(_48, usr_x_2);
@@ -585,7 +582,7 @@ module Verifier_1261 = {
     _56 <- (PurePrimops.mulmod usr_x_3 usr_xx_3 _13);
     _57 <- (PurePrimops.addmod _56 _19 _13);
     _58 <- (PurePrimops.mulmod usr_y_3 usr_y_3 _13);
-    _59 <- (eq_uint256 _58 _57);
+    _59 <- (PurePrimops.eq_uint256 _58 _57);
     usr_isValid <- (PurePrimops.bit_and _59 usr_isValid);
     _60 <- (W256.of_int 2048);
     Primops.mstore(_60, usr_x_3);
@@ -605,7 +602,7 @@ module Verifier_1261 = {
     _68 <- (PurePrimops.mulmod usr_x_4 usr_xx_4 _13);
     _69 <- (PurePrimops.addmod _68 _19 _13);
     _70 <- (PurePrimops.mulmod usr_y_4 usr_y_4 _13);
-    _71 <- (eq_uint256 _70 _69);
+    _71 <- (PurePrimops.eq_uint256 _70 _69);
     usr_isValid <- (PurePrimops.bit_and _71 usr_isValid);
     _72 <- (W256.of_int 2112);
     Primops.mstore(_72, usr_x_4);
@@ -625,7 +622,7 @@ module Verifier_1261 = {
     _80 <- (PurePrimops.mulmod usr_x_5 usr_xx_5 _13);
     _81 <- (PurePrimops.addmod _80 _19 _13);
     _82 <- (PurePrimops.mulmod usr_y_5 usr_y_5 _13);
-    _83 <- (eq_uint256 _82 _81);
+    _83 <- (PurePrimops.eq_uint256 _82 _81);
     usr_isValid <- (PurePrimops.bit_and _83 usr_isValid);
     _84 <- (W256.of_int 2176);
     Primops.mstore(_84, usr_x_5);
@@ -645,7 +642,7 @@ module Verifier_1261 = {
     _92 <- (PurePrimops.mulmod usr_x_6 usr_xx_6 _13);
     _93 <- (PurePrimops.addmod _92 _19 _13);
     _94 <- (PurePrimops.mulmod usr_y_6 usr_y_6 _13);
-    _95 <- (eq_uint256 _94 _93);
+    _95 <- (PurePrimops.eq_uint256 _94 _93);
     usr_isValid <- (PurePrimops.bit_and _95 usr_isValid);
     _96 <- (W256.of_int 2240);
     Primops.mstore(_96, usr_x_6);
@@ -665,7 +662,7 @@ module Verifier_1261 = {
     _104 <- (PurePrimops.mulmod usr_x_7 usr_xx_7 _13);
     _105 <- (PurePrimops.addmod _104 _19 _13);
     _106 <- (PurePrimops.mulmod usr_y_7 usr_y_7 _13);
-    _107 <- (eq_uint256 _106 _105);
+    _107 <- (PurePrimops.eq_uint256 _106 _105);
     usr_isValid <- (PurePrimops.bit_and _107 usr_isValid);
     _108 <- (W256.of_int 2304);
     Primops.mstore(_108, usr_x_7);
@@ -685,7 +682,7 @@ module Verifier_1261 = {
     _116 <- (PurePrimops.mulmod usr_x_8 usr_xx_8 _13);
     _117 <- (PurePrimops.addmod _116 _19 _13);
     _118 <- (PurePrimops.mulmod usr_y_8 usr_y_8 _13);
-    _119 <- (eq_uint256 _118 _117);
+    _119 <- (PurePrimops.eq_uint256 _118 _117);
     usr_isValid <- (PurePrimops.bit_and _119 usr_isValid);
     _120 <- (W256.of_int 2368);
     Primops.mstore(_120, usr_x_8);
@@ -705,7 +702,7 @@ module Verifier_1261 = {
     _128 <- (PurePrimops.mulmod usr_x_9 usr_xx_9 _13);
     _129 <- (PurePrimops.addmod _128 _19 _13);
     _130 <- (PurePrimops.mulmod usr_y_9 usr_y_9 _13);
-    _131 <- (eq_uint256 _130 _129);
+    _131 <- (PurePrimops.eq_uint256 _130 _129);
     usr_isValid <- (PurePrimops.bit_and _131 usr_isValid);
     _132 <- (W256.of_int 2432);
     Primops.mstore(_132, usr_x_9);
@@ -725,7 +722,7 @@ module Verifier_1261 = {
     _140 <- (PurePrimops.mulmod usr_x_10 usr_xx_10 _13);
     _141 <- (PurePrimops.addmod _140 _19 _13);
     _142 <- (PurePrimops.mulmod usr_y_10 usr_y_10 _13);
-    _143 <- (eq_uint256 _142 _141);
+    _143 <- (PurePrimops.eq_uint256 _142 _141);
     usr_isValid <- (PurePrimops.bit_and _143 usr_isValid);
     _144 <- (W256.of_int 2496);
     Primops.mstore(_144, usr_x_10);
@@ -872,7 +869,7 @@ module Verifier_1261 = {
     _243 <- (PurePrimops.mulmod usr_x_11 usr_xx_11 _13);
     _244 <- (PurePrimops.addmod _243 _19 _13);
     _245 <- (PurePrimops.mulmod usr_y_11 usr_y_11 _13);
-    _246 <- (eq_uint256 _245 _244);
+    _246 <- (PurePrimops.eq_uint256 _245 _244);
     usr_isValid <- (PurePrimops.bit_and _246 usr_isValid);
     _247 <- (W256.of_int 3136);
     Primops.mstore(_247, usr_x_11);
@@ -892,7 +889,7 @@ module Verifier_1261 = {
     _255 <- (PurePrimops.mulmod usr_x_12 usr_xx_12 _13);
     _256 <- (PurePrimops.addmod _255 _19 _13);
     _257 <- (PurePrimops.mulmod usr_y_12 usr_y_12 _13);
-    _258 <- (eq_uint256 _257 _256);
+    _258 <- (PurePrimops.eq_uint256 _257 _256);
     usr_isValid <- (PurePrimops.bit_and _258 usr_isValid);
     _259 <- (W256.of_int 3200);
     Primops.mstore(_259, usr_x_12);
@@ -915,7 +912,7 @@ module Verifier_1261 = {
       }
     
     else {
-      _265 <- (eq_uint256 usr_recursiveProofLengthInWords _1);
+      _265 <- (PurePrimops.eq_uint256 usr_recursiveProofLengthInWords _1);
       usr_isValid <- (PurePrimops.bit_and _265 usr_isValid);
       _266 <- (usr_offset + _5);
       tmp148 <@ Primops.calldataload(_266);
@@ -929,7 +926,7 @@ module Verifier_1261 = {
       _270 <- (PurePrimops.mulmod usr_x_13 usr_xx_13 _13);
       _271 <- (PurePrimops.addmod _270 _19 _13);
       _272 <- (PurePrimops.mulmod usr_y_13 usr_y_13 _13);
-      _273 <- (eq_uint256 _272 _271);
+      _273 <- (PurePrimops.eq_uint256 _272 _271);
       usr_isValid <- (PurePrimops.bit_and _273 usr_isValid);
       _274 <- (W256.of_int 3264);
       Primops.mstore(_274, usr_x_13);
@@ -947,7 +944,7 @@ module Verifier_1261 = {
       _280 <- (PurePrimops.mulmod usr_x_14 usr_xx_14 _13);
       _281 <- (PurePrimops.addmod _280 _19 _13);
       _282 <- (PurePrimops.mulmod usr_y_14 usr_y_14 _13);
-      _283 <- (eq_uint256 _282 _281);
+      _283 <- (PurePrimops.eq_uint256 _282 _281);
       usr_isValid <- (PurePrimops.bit_and _283 usr_isValid);
       _284 <- (W256.of_int 3328);
       Primops.mstore(_284, usr_x_14);
@@ -1188,7 +1185,7 @@ module Verifier_1261 = {
     var arrayPos, length, _1, _2, _3, _4, tmp17, tmp18, _5, _6, tmp19, _7, _8, _9, _10, tmp20;
     _1 <- (W256.of_int 31);
     _2 <- (offset + _1);
-    _3 <- (slt _2 _end);
+    _3 <- (PurePrimops.slt_uint256 _2 _end);
     _4 <- (PurePrimops.iszero _3);
     if ((bool_of_uint256 _4))
       {
@@ -1199,7 +1196,7 @@ module Verifier_1261 = {
     tmp18 <@ Primops.calldataload(offset);
     length <- tmp18;
     _5 <- (W256.of_int 18446744073709551615);
-    _6 <- (gt length _5);
+    _6 <- (PurePrimops.gt_uint256 length _5);
     if ((bool_of_uint256 _6))
       {
       tmp19 <@ revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490();
@@ -1210,7 +1207,7 @@ module Verifier_1261 = {
     arrayPos <- (offset + _7);
     _8 <- (length * _7);
     _9 <- (arrayPos + _8);
-    _10 <- (gt _9 _end);
+    _10 <- (PurePrimops.gt_uint256 _9 _end);
     if ((bool_of_uint256 _10))
       {
       tmp20 <@ revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef();
@@ -1224,7 +1221,7 @@ module Verifier_1261 = {
     var _1, _2, _3, tmp38;
     _1 <- (W256.of_int 0);
     _2 <- (dataEnd - headStart);
-    _3 <- (slt _2 _1);
+    _3 <- (PurePrimops.slt_uint256 _2 _1);
     if ((bool_of_uint256 _3))
       {
       tmp38 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
@@ -1581,7 +1578,7 @@ module Verifier_1261 = {
     var value0, value1, value2, value3, value4, value5, _1, _2, _3, tmp21, _4, _5, offset, tmp22, _6, _7, tmp23, _8, tmp24, _9, _10, offset_1, tmp25, _11, tmp26, _12, tmp27, _13, _14, offset_2, tmp28, _15, tmp29, _16, tmp30;
     _1 <- (W256.of_int 96);
     _2 <- (dataEnd - headStart);
-    _3 <- (slt _2 _1);
+    _3 <- (PurePrimops.slt_uint256 _2 _1);
     if ((bool_of_uint256 _3))
       {
       tmp21 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
@@ -1593,7 +1590,7 @@ module Verifier_1261 = {
     tmp22 <@ Primops.calldataload(_5);
     offset <- tmp22;
     _6 <- (W256.of_int 18446744073709551615);
-    _7 <- (gt offset _6);
+    _7 <- (PurePrimops.gt_uint256 offset _6);
     if ((bool_of_uint256 _7))
       {
       tmp23 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
@@ -1607,7 +1604,7 @@ module Verifier_1261 = {
     _10 <- (headStart + _9);
     tmp25 <@ Primops.calldataload(_10);
     offset_1 <- tmp25;
-    _11 <- (gt offset_1 _6);
+    _11 <- (PurePrimops.gt_uint256 offset_1 _6);
     if ((bool_of_uint256 _11))
       {
       tmp26 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
@@ -1621,7 +1618,7 @@ module Verifier_1261 = {
     _14 <- (headStart + _13);
     tmp28 <@ Primops.calldataload(_14);
     offset_2 <- tmp28;
-    _15 <- (gt offset_2 _6);
+    _15 <- (PurePrimops.gt_uint256 offset_2 _6);
     if ((bool_of_uint256 _15))
       {
       tmp29 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
@@ -2072,7 +2069,7 @@ module Verifier_1261 = {
     tmp264 <@ Primops.mload(_31);
     _32 <- tmp264;
     usr_lhs <- (PurePrimops.mulmod _32 usr_vanishing _2);
-    _33 <- (eq_uint256 usr_lhs usr_result);
+    _33 <- (PurePrimops.eq_uint256 usr_lhs usr_result);
     _34 <- (PurePrimops.iszero _33);
     if ((bool_of_uint256 _34))
       {
