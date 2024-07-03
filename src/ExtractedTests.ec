@@ -15,11 +15,11 @@ module YulTest = {
   
   proc calldata_test(ind : uint256): uint256 = {
     var r, v1, tmp2, v2, tmp3, r_;
-    tmp2 <@ calldataload(ind);
+    tmp2 <@ Primops.calldataload(ind);
     v1 <- tmp2;
-    tmp3 <@ calldataload(ind);
+    tmp3 <@ Primops.calldataload(ind);
     v2 <- tmp3;
-    r_ <- (eq_uint256 v1 v2);
+    r_ <- (PurePrimops.eq_uint256 v1 v2);
     r <- r_;
     return r;
     }
@@ -27,7 +27,7 @@ module YulTest = {
   proc revert_if_two(x : uint256): uint256 = {
     var r, y;
     y <- (x + (W256.of_int 3));
-    if ((bool_of_uint256 (eq_uint256 y (W256.of_int 5))))
+    if ((bool_of_uint256 (PurePrimops.eq_uint256 y (W256.of_int 5))))
       {
       Primops.revert((W256.of_int 0), (W256.of_int 0));
       
@@ -55,7 +55,7 @@ module YulTest = {
   
   proc shifty(x : uint256, s : uint256): uint256 = {
     var r, v1, v2, v1_, v2_;
-    if ((bool_of_uint256 (gt s (W256.of_int 256))))
+    if ((bool_of_uint256 (PurePrimops.gt_uint256 s (W256.of_int 256))))
       {
       Primops.revert((W256.of_int 0), (W256.of_int 0));
       
