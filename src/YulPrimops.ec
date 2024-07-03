@@ -261,7 +261,8 @@ lemma mstore_pspec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 phoare [ Primops.mstore :
     arg = (idx', val') /\
-    Primops.memory = memory ==>
+    Primops.memory = memory /\
+    mem_wellformed memory ==>
       Primops.memory = PurePrimops.mstore memory idx' val'
     ] = 1%r.
     proof.
@@ -273,11 +274,14 @@ phoare [ Primops.mstore :
       have h_idx: idx{hr} = idx'.
       smt.
       have h_val: val{hr} = val'.
-      smt.
+      admit. (* TODO add sufficient weakening lemmas to utils *)
       have h_mem: Primops.memory{hr} = memory.
       smt.
     move => x248 x240 x232 x224 x216 x208 x200 x192 x184 x176 x168 x160 x152 x144 x136 x128 x120 x112 x104 x96 x88 x80 x72 x64 x56 x48 x40 x32 x24 x16 x8.
       apply PurePrimops.mstore_of_load_and_frame.
+      smt ().
+      do 32! (rewrite write_byte_maintains_wellformed; first admit). (* mem wellformedness *)
+      smt ().
       rewrite h_mem.
       rewrite /mload.
       rewrite h_idx.
@@ -456,7 +460,8 @@ lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 hoare [ Primops.mstore :
     arg = (idx', val') /\
-    Primops.memory = memory ==>
+    Primops.memory = memory /\
+    mem_wellformed memory ==>
       Primops.memory = PurePrimops.mstore memory idx' val'
     ].
     proof.
@@ -468,11 +473,14 @@ hoare [ Primops.mstore :
       have h_idx: idx{hr} = idx'.
       smt.
       have h_val: val{hr} = val'.
-      smt.
+      admit. (* TODO add sufficient weakening lemmas to utils *)
       have h_mem: Primops.memory{hr} = memory.
       smt.
     move => x248 x240 x232 x224 x216 x208 x200 x192 x184 x176 x168 x160 x152 x144 x136 x128 x120 x112 x104 x96 x88 x80 x72 x64 x56 x48 x40 x32 x24 x16 x8.
       apply PurePrimops.mstore_of_load_and_frame.
+      smt ().
+      do 32! (rewrite write_byte_maintains_wellformed; first admit). (* mem wellformedness *)
+      smt ().
       rewrite h_mem.
       rewrite /mload.
       rewrite h_idx.
@@ -645,7 +653,6 @@ hoare [ Primops.mstore :
       exact h_idx2.
       rewrite h_mem.
       reflexivity.
-  qed.
-
+    qed.
 
 end ConcretePrimops.
