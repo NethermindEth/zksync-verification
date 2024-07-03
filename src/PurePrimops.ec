@@ -163,7 +163,15 @@ axiom mload_mstore_same (memory: mem) (idx val: uint256):
 axiom mstore_frame (memory: mem) (idx val: uint256):
   uint256_frame memory (mstore memory idx val) idx.
 
+axiom mstore_preserves_wellformed (memory: mem) (idx val: uint256):
+  mem_wellformed memory => mem_wellformed (mstore memory idx val).
+
+axiom mstore_mloaded_val (memory: mem) (idx: uint256):
+  mstore memory idx (mload memory idx) = memory.
+
 axiom mstore_of_load_and_frame (memory_pre memory_post: mem) (idx val: uint256):
+  mem_wellformed memory_pre =>
+  mem_wellformed memory_post =>
   mload memory_post idx = val =>
   uint256_frame memory_pre memory_post idx =>
   memory_post = mstore memory_pre idx val.
