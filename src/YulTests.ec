@@ -86,6 +86,10 @@ module Test = {
       ret <- PurePrimops.iszero (a %% W256.of_int 2);
       return (ret);
     }
+
+    proc ret_test(a: uint256, b: uint256, c: uint256): (uint256, uint256, uint256) = {
+
+    }
   }.
 
 lemma is_even_correcteness (x: uint256) :
