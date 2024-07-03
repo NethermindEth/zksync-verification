@@ -179,6 +179,8 @@ module Primops = {
       (* TODO: relate to keccak_f *)
       var input : uint256 array;
       var i : uint256;
+      i <- W256.zero;
+      input <- Array.mkarray (List.nseq (W256.to_uint size) W256.zero);
       while (i < size) {
       input.[W256.to_uint i] <- memory.[off + i];
       i <- i + W256.one;
