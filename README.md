@@ -19,25 +19,13 @@ Running
 ---------
 Just run the command 
 ```bash
-just bash PROJECT_DIR_TO_MOUNT
+just bash
 ```
-to run the container mount the directory ```PROJECT_DIR_TO_MOUNT``` and 
+to run the container mount the directory ```src/``` and 
 enter the container. No X11 is needed.
 
 Just run the command 
 ```bash
-just gui PROJECT_DIR_TO_MOUNT
+just emacs
 ```
-to mount the directory ```PROJECT_DIR_TO_MOUNT``` to the container and run emacs-gtk on it.
-
-Run 
-```
-just zk-code-shell DIRECTORY_OF_EASYCRYPT_ZK_CODE
-```
-to mount the easycrypt-zk-code by @dfirsov and land in bash.
-
-Run 
-```
-just zk-code-emacs DIRECTORY_OF_EASYCRYPT_ZK_CODE
-```
-to mount the easycrypt-zk-code by @dfirsov and land in emacs.
+to mount the directory ```src/``` to the container and run emacs-gtk on it.
