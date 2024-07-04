@@ -1,6 +1,8 @@
 pragma Goals:printall.
 
-require import Logic UInt256 Memory Array.
+require import Array.
+require import Logic.
+require import UInt256.
 
 (* Some potentially useful lemmas to prove mid-level specs *)
 
@@ -19,22 +21,87 @@ lemma mod_mod_eq_mod :
     smt ().
   qed.
 
-(* Lemmas for proving load store properties *)
+  
+(* uint256 lemmas *)
+
+lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
 
 lemma add_neq:
     forall (x: uint256) (y: int),
     1 <= y /\ y < 32 => x <> x + W256.of_int y.
     proof.
       progress.
-      smt.
+      smt timeout=100.
     qed.
+
+lemma add_2_neq (x y: int) (a: uint256):
+    0 <= x =>
+    0 <= y =>
+    x < 32 =>
+    y < 32 =>
+    x <> y =>
+    a + W256.of_int x <> a + W256.of_int y.
+    proof.
+      progress.
+      smt.
+  qed.
 
 lemma neq_of_lt (idx idx2: uint256):
     W256.of_int 31 < idx2 - idx => idx2 <> idx.
 proof.
     progress.
-    smt.
+    smt timeout=100.
 qed.
+
+lemma neg_add_eq (a: uint256): (-a) + a = W256.zero.
+    proof.
+      smt(@W256).
+  qed.
+
+lemma add_neq_of_diff (idx idx2: uint256) (i: int):
+    W256.of_int 32 <= idx2 - idx =>
+    0 <= i =>
+    i < 32 =>
+    idx2 <> idx + W256.of_int i.
+    proof.
+      progress.
+    case (idx2 <> idx + W256.of_int i). smt ().
+      (*proof by contradiction *)
+    change (idx2 = idx + W256.of_int i => false).
+    move=> H_eq.
+      have H': W256.of_int 32 <= idx2 - idx by exact H.
+      rewrite H_eq addrC in H'.
+      rewrite addrA in H'.
+      rewrite neg_add_eq in H'.
+      rewrite W256.add0r_s in H'.
+      rewrite W256.ule_of_int in H'.
+      rewrite pmod_small in H'. smt().
+      rewrite pmod_small in H'. smt().
+      smt().
+  qed.
+
+lemma add_2_neq_of_diff (idx idx2: uint256) (a b: int):
+    W256.of_int 32 <= idx2 - idx =>
+    W256.of_int 32 <= idx - idx2 =>
+    0 <= a =>
+    a < 32 =>
+    0 <= b =>
+    b < 32 =>
+    idx2 + (W256.of_int a) <> idx + W256.of_int b.
+    proof.
+      progress.
+      smt.
+    qed.
+
+lemma neq_of_diff (idx idx2: uint256):
+    W256.of_int 32 <= idx2 - idx =>
+    idx2 <> idx.
+    proof.
+      progress.
+      have H_add_zero: idx2 <> idx + W256.zero by exact add_neq_of_diff.
+      rewrite addr0_s in H_add_zero.
+      assumption.
+    qed.
 
 lemma shl_zero (x: uint256):
     x `<<<` 0 = x.
@@ -52,25 +119,6 @@ proof.
     smt.
 qed.
 
-(* done between 1 and 32 for now because that's all we need and it's easier on smt *)
-lemma get_set_offset (m: mem) (idx: uint256) (offset: int) (val: uint256):
-    0 < offset /\ offset < 32 => m.[idx+W256.of_int offset<-val].[idx] = m.[idx].
-proof.
-    progress.
-    apply Map.get_set_neqE.
-    apply add_neq.
-    smt.
-qed.
-
-lemma get_set_offsets_neq (m: mem) (idx: uint256) (offset1 offset2: int) (val: uint256):
-    0 <= offset1 /\ 0 <= offset2 /\ offset1 < 32 /\ offset2 < 32 /\ offset1 <> offset2 =>
-    m.[idx+W256.of_int offset1<-val].[idx+W256.of_int offset2] = m.[idx+W256.of_int offset2].
-proof.
-    progress.
-    apply Map.get_set_neqE.
-    smt.
-qed.
-
 lemma masklsb_zero:
     W256.masklsb 0 = W256.zero.
 proof.
@@ -82,7 +130,7 @@ lemma splitMask_zero (x: uint256):
 proof.
     rewrite /splitMask.
     simplify.
-    smt.
+    smt timeout=100.
 qed.
 
 lemma splitMask2_shr_shl (i: int) (x: uint256):
@@ -105,3 +153,9 @@ proof.
     apply splitMask_add.
 qed.
 
+lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
+    smt ().
+  qed.
+
+lemma weaken_and_left (a b): a /\ b => a by smt().
+lemma weaken_and_right (a b): a /\ b => b by smt().

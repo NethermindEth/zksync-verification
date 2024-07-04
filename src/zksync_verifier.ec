@@ -12,86 +12,12 @@ require import Verifier.
 
 op p_int = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 op p_uint256 = W256.of_int p_int.
-
-module Test = {
-
-    proc usr_revertWithMessage(usr_len : uint256, usr_reason : uint256): unit = {
-    var _1, _2, _3, _4, _5, _6, _7;
-    _1 <- (PurePrimops.shl (W256.of_int 229) (W256.of_int 4594637));
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 32);
-    _4 <- (W256.of_int 4);
-    Primops.mstore(_4, _3);
-    _5 <- (W256.of_int 36);
-    Primops.mstore(_5, usr_len);
-    _6 <- (W256.of_int 68);
-    Primops.mstore(_6, usr_reason);
-    _7 <- (W256.of_int 100);
-    Primops.revert(_2, _7);
-    }
-
-  proc usr_pointNegate(usr_point : uint256): unit = {
-    var _1, _2, usr_pY, tmp88, tmp89, _3, tmp90, _4, _5, tmp91, _6, _7;
-    _1 <- (W256.of_int 32);
-    _2 <- (usr_point + _1);
-    tmp88 <@ Primops.mload(_2);
-    usr_pY <- tmp88;
-    tmp89 <- usr_pY;
-    if ((tmp89 = (W256.of_int 0)))
-      {
-      tmp90 <@ Primops.mload(usr_point);
-      _3 <- tmp90;
-      if (bool_of_uint256 _3)
-        {
-        _4 <- PurePrimops.STRING (*pointNegate: invalid point*);
-        _5 <- (W256.of_int 26);
-        tmp91 <@ usr_revertWithMessage(_5, _4);
-
-        }
-
-
-      }
-
-    else {
-      _6 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
-      _7 <- (_6 - usr_pY);
-      Primops.mstore(_2, _7);
-
-      }
-
-    }
-
-    proc writeReadTest(address: uint256, value: uint256): uint256 = {
-      var _1;
-      Primops.mstore(address, value);
-      _1 <@ Primops.mload(address);
-      return _1;
-    }
-  }.
-
-    (* Functional correctness *)
-
-lemma writeReadTest_correctness :
-    forall (address value: uint256),
-phoare [ Test.writeReadTest :
-      arg = (address, value) ==>
-      res = value] = 1%r.
-proof.
-    progress.
-  proc.
-  exists* Primops.memory.
-  elim*=>memory_pre.
-  call (ConcretePrimops.mload_pspec (PurePrimops.mstore memory_pre address value) address).
-  call (ConcretePrimops.mstore_pspec memory_pre address value).
-  skip.
-  progress.
-  apply PurePrimops.mload_mstore_same.
-qed.
+  
+(* Functional correctness *)
 
 lemma usr_revertWithMessage_correctness :
     forall (size reason : uint256),
-hoare [ Test.usr_revertWithMessage :
+hoare [ Verifier.usr_revertWithMessage :
       arg = (size, reason) ==>
     Primops.reverted = true
     ].
@@ -146,7 +72,7 @@ module PointNegate = {
 }.
 
 lemma pointNegate_actual_matches_low: equiv [
-    Test.usr_pointNegate ~ PointNegate.low :
+    Verifier.usr_pointNegate ~ PointNegate.low :
     Primops.memory{1} = Primops.memory{2} /\
       arg{1} = arg{2} /\
     !Primops.reverted{1} /\
@@ -187,7 +113,7 @@ lemma pointNegate_actual_matches_low: equiv [
                                                                                  (* case x <> 0 *)
       rcondt{1} 8; first last.                                                     (* actual: take the reverting branch *)
       rcondt{2} 3; first last.                                                     (* low: take the reverting branch *)
-      inline Test.usr_revertWithMessage Primops.revert Primops.mstore Primops.mload. (* sim here breaks the proof *)
+      inline Verifier.usr_revertWithMessage Primops.revert Primops.mstore Primops.mload. (* sim here breaks the proof *)
       wp. skip. by progress.
       progress.                                                                    (* to prove: x and y are loaded correctly in the low spec *)
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).           (* load y *)
@@ -225,12 +151,7 @@ lemma pointNegate_actual_matches_low: equiv [
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
       wp. skip. by progress.
   qed.
-
-lemma zero_of_to_uint_zero (x: uint256): to_uint x = 0 => x = W256.zero.
-    proof.
-      by smt(@W256).
-    qed.
-
+    
 lemma pointNegate_low_matches_mid (memory: mem) (point_address: uint256) (point_x_int point_y_int: int): equiv [
     PointNegate.low ~ PointNegate.mid :
       arg{2} = (point_x_int, point_y_int) /\
