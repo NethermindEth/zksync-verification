@@ -13,42 +13,42 @@ type mem = (uint256, uint8) map.
 op store (memory: mem) (idx val: uint256) =
     let bytes = W32u8.unpack8 val in
   memory
-  .[idx <- bytes.[0]]
-  .[idx + (W256.of_int 1) <- bytes.[1]]
-  .[idx + (W256.of_int 2) <- bytes.[2]]
-  .[idx + (W256.of_int 3) <- bytes.[3]]
-  .[idx + (W256.of_int 4) <- bytes.[4]]
-  .[idx + (W256.of_int 5) <- bytes.[5]]
-  .[idx + (W256.of_int 6) <- bytes.[6]]
-  .[idx + (W256.of_int 7) <- bytes.[7]]
-  .[idx + (W256.of_int 8) <- bytes.[8]]
-  .[idx + (W256.of_int 9) <- bytes.[9]]
-  .[idx + (W256.of_int 10) <- bytes.[10]]
-  .[idx + (W256.of_int 11) <- bytes.[11]]
-  .[idx + (W256.of_int 12) <- bytes.[12]]
-  .[idx + (W256.of_int 13) <- bytes.[13]]
-  .[idx + (W256.of_int 14) <- bytes.[14]]
-  .[idx + (W256.of_int 15) <- bytes.[15]]
-  .[idx + (W256.of_int 16) <- bytes.[16]]
-  .[idx + (W256.of_int 17) <- bytes.[17]]
-  .[idx + (W256.of_int 18) <- bytes.[18]]
-  .[idx + (W256.of_int 19) <- bytes.[19]]
-  .[idx + (W256.of_int 20) <- bytes.[20]]
-  .[idx + (W256.of_int 21) <- bytes.[21]]
-  .[idx + (W256.of_int 22) <- bytes.[22]]
-  .[idx + (W256.of_int 23) <- bytes.[23]]
-  .[idx + (W256.of_int 24) <- bytes.[24]]
-  .[idx + (W256.of_int 25) <- bytes.[25]]
-  .[idx + (W256.of_int 26) <- bytes.[26]]
-  .[idx + (W256.of_int 27) <- bytes.[27]]
-  .[idx + (W256.of_int 28) <- bytes.[28]]
-  .[idx + (W256.of_int 29) <- bytes.[29]]
-  .[idx + (W256.of_int 30) <- bytes.[30]]
-  .[idx + (W256.of_int 31) <- bytes.[31]]
+  .[idx <- bytes.[31]]
+  .[idx + (W256.of_int 1) <- bytes.[30]]
+  .[idx + (W256.of_int 2) <- bytes.[29]]
+  .[idx + (W256.of_int 3) <- bytes.[28]]
+  .[idx + (W256.of_int 4) <- bytes.[27]]
+  .[idx + (W256.of_int 5) <- bytes.[26]]
+  .[idx + (W256.of_int 6) <- bytes.[25]]
+  .[idx + (W256.of_int 7) <- bytes.[24]]
+  .[idx + (W256.of_int 8) <- bytes.[23]]
+  .[idx + (W256.of_int 9) <- bytes.[22]]
+  .[idx + (W256.of_int 10) <- bytes.[21]]
+  .[idx + (W256.of_int 11) <- bytes.[20]]
+  .[idx + (W256.of_int 12) <- bytes.[19]]
+  .[idx + (W256.of_int 13) <- bytes.[18]]
+  .[idx + (W256.of_int 14) <- bytes.[17]]
+  .[idx + (W256.of_int 15) <- bytes.[16]]
+  .[idx + (W256.of_int 16) <- bytes.[15]]
+  .[idx + (W256.of_int 17) <- bytes.[14]]
+  .[idx + (W256.of_int 18) <- bytes.[13]]
+  .[idx + (W256.of_int 19) <- bytes.[12]]
+  .[idx + (W256.of_int 20) <- bytes.[11]]
+  .[idx + (W256.of_int 21) <- bytes.[10]]
+  .[idx + (W256.of_int 22) <- bytes.[9]]
+  .[idx + (W256.of_int 23) <- bytes.[8]]
+  .[idx + (W256.of_int 24) <- bytes.[7]]
+  .[idx + (W256.of_int 25) <- bytes.[6]]
+  .[idx + (W256.of_int 26) <- bytes.[5]]
+  .[idx + (W256.of_int 27) <- bytes.[4]]
+  .[idx + (W256.of_int 28) <- bytes.[3]]
+  .[idx + (W256.of_int 29) <- bytes.[2]]
+  .[idx + (W256.of_int 30) <- bytes.[1]]
+  .[idx + (W256.of_int 31) <- bytes.[0]]
 axiomatized by storeE.
 
 op load (memory: mem) (idx: uint256): uint256 =
-  W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int i]))
+  W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
 
 lemma load_store_same (memory: mem) (idx val: uint256):
@@ -66,7 +66,39 @@ lemma load_store_same (memory: mem) (idx val: uint256):
       have H_byte_idx : 0 <= byte_idx && byte_idx < 32. smt().
       rewrite H_byte_idx. simplify.
       congr.
-      smt (add_2_neq @W32u8 add_zero).
+      case (byte_idx = 0). move => HB0. rewrite HB0. smt (@SmtMap).
+      move => HB0. case (byte_idx = 1). move => HB1. rewrite HB1. simplify. smt (@SmtMap add_2_neq).
+      move => HB1. case (byte_idx = 2). move => HB2. rewrite HB2. simplify. smt (@SmtMap add_2_neq).
+      move => HB2. case (byte_idx = 3). move => HB3. rewrite HB3. simplify. smt (@SmtMap add_2_neq).
+      move => HB3. case (byte_idx = 4). move => HB4. rewrite HB4. simplify. smt (@SmtMap add_2_neq).
+      move => HB4. case (byte_idx = 5). move => HB5. rewrite HB5. simplify. smt (@SmtMap add_2_neq).
+      move => HB5. case (byte_idx = 6). move => HB6. rewrite HB6. simplify. smt (@SmtMap add_2_neq).
+      move => HB6. case (byte_idx = 7). move => HB7. rewrite HB7. simplify. smt (@SmtMap add_2_neq).
+      move => HB7. case (byte_idx = 8). move => HB8. rewrite HB8. simplify. smt (@SmtMap add_2_neq).
+      move => HB8. case (byte_idx = 9). move => HB9. rewrite HB9. simplify. smt (@SmtMap add_2_neq).
+      move => HB9. case (byte_idx = 10). move => HB10. rewrite HB10. simplify. smt (@SmtMap add_2_neq).
+      move => HB10. case (byte_idx = 11). move => HB11. rewrite HB11. simplify. smt (@SmtMap add_2_neq).
+      move => HB11. case (byte_idx = 12). move => HB12. rewrite HB12. simplify. smt (@SmtMap add_2_neq).
+      move => HB12. case (byte_idx = 13). move => HB13. rewrite HB13. simplify. smt (@SmtMap add_2_neq).
+      move => HB13. case (byte_idx = 14). move => HB14. rewrite HB14. simplify. smt (@SmtMap add_2_neq).
+      move => HB14. case (byte_idx = 15). move => HB15. rewrite HB15. simplify. smt (@SmtMap add_2_neq).
+      move => HB15. case (byte_idx = 16). move => HB16. rewrite HB16. simplify. smt (@SmtMap add_2_neq).
+      move => HB16. case (byte_idx = 17). move => HB17. rewrite HB17. simplify. smt (@SmtMap add_2_neq).
+      move => HB17. case (byte_idx = 18). move => HB18. rewrite HB18. simplify. smt (@SmtMap add_2_neq).
+      move => HB18. case (byte_idx = 19). move => HB19. rewrite HB19. simplify. smt (@SmtMap add_2_neq).
+      move => HB19. case (byte_idx = 20). move => HB20. rewrite HB20. simplify. smt (@SmtMap add_2_neq).
+      move => HB20. case (byte_idx = 21). move => HB21. rewrite HB21. simplify. smt (@SmtMap add_2_neq).
+      move => HB21. case (byte_idx = 22). move => HB22. rewrite HB22. simplify. smt (@SmtMap add_2_neq).
+      move => HB22. case (byte_idx = 23). move => HB23. rewrite HB23. simplify. smt (@SmtMap add_2_neq).
+      move => HB23. case (byte_idx = 24). move => HB24. rewrite HB24. simplify. smt (@SmtMap add_2_neq).
+      move => HB24. case (byte_idx = 25). move => HB25. rewrite HB25. simplify. smt (@SmtMap add_2_neq).
+      move => HB25. case (byte_idx = 26). move => HB26. rewrite HB26. simplify. smt (@SmtMap add_2_neq).
+      move => HB26. case (byte_idx = 27). move => HB27. rewrite HB27. simplify. smt (@SmtMap add_2_neq).
+      move => HB27. case (byte_idx = 28). move => HB28. rewrite HB28. simplify. smt (@SmtMap add_2_neq).
+      move => HB28. case (byte_idx = 29). move => HB29. rewrite HB29. simplify. smt (@SmtMap add_2_neq).
+      move => HB29. case (byte_idx = 30). move => HB30. rewrite HB30. simplify. smt (@SmtMap add_2_neq).
+      move => HB30. case (byte_idx = 31). move => HB31. rewrite HB31. simplify. smt (@SmtMap add_neq).
+      move => HB31. smt ().
   qed.
 
 op uint256_frame (memory_pre memory_post: mem) (idx: uint256) =
@@ -109,6 +141,9 @@ lemma load_store_diff (memory: mem) (idx idx2 val: uint256):
       rewrite W32u8.Pack.initE.
       rewrite W32u8.Pack.initE. simplify. congr.
       rewrite storeE. simplify.
+      pose z := 31 - y.
+      have H_z_lower: 0 <= z by smt ().
+      have H_z_upper: z < 32 by smt ().
       do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff).
       rewrite Map.get_set_neqE. smt(@Utils).
       reflexivity.

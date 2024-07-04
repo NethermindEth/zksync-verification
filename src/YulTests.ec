@@ -5,12 +5,15 @@ require import Array.
 require import ExtractedTests.
 require import Int.
 require import IntDiv.
+require import Memory.
 require import Real.
 require import UInt256.
 require import YulPrimops.
 require import PurePrimops.
 require import Utils.
 require import JUtils.
+
+import MemoryMap.
 
 lemma is_even_correcteness (x: uint256) :
 hoare [ YulTest.is_even : arg = x ==> (
@@ -38,7 +41,7 @@ proof.
   call (ConcretePrimops.mstore_pspec memory_pre address value).
   skip.
   progress.
-  apply PurePrimops.mload_mstore_same.
+  apply load_store_same.
 qed.
   
 lemma revert_if_two_correctness (x : uint256) :
@@ -127,44 +130,20 @@ lemma mod_test_correctness (m : uint256) :
   
 lemma keccak_correctness (addr1 addr2 sz : uint256) : equiv [Primops.keccak256 ~ Primops.keccak256 : arg{1} = (addr1, sz) /\ arg{2} = (addr2, sz) /\ forall (i : uint256), W256.zero <= i /\ i < sz => Primops.memory{1}.[addr1 + i] = Primops.memory{2}.[addr2 + i] ==> res{1} = res{2}].
     proc.
-    while (
-      i{1} = i{2} /\
-      i{1} <= sz /\
-      size{1} = sz /\
-      size{2} = sz /\
-    Array.size input{1} = W256.to_uint sz /\
-    Array.size input{2} = W256.to_uint sz /\
-      forall (j : uint256),
-        j < i{1} => (
-          input{1}.[W256.to_uint j] = Primops.memory{1}.[off{1} + j] /\
-          input{2}.[W256.to_uint j] = Primops.memory{2}.[off{2} + j]
-      )
-    ); first last.
-        (* before the while *)
-        wp. skip. progress.
-        smt(@W256).
-        rewrite Array.size_mkarray List.size_nseq. smt(@W256).
-        rewrite Array.size_mkarray List.size_nseq. smt(@W256).
-        smt (@W256).
-        smt (@W256).
-        congr.
-        have H_i_R : i_R = size{1}. smt (@W256).
-        progress.
-        apply Array.eq_from_get. smt().
-        progress.
-        have H5_i0: W256.of_int i0 < i_R =>
-          input_L.[to_uint (W256.of_int i0)] = Primops.memory{1}.[off{1} + W256.of_int i0] /\
-        input_R.[to_uint (W256.of_int i0)] = Primops.memory{2}.[off{2} + W256.of_int i0].
-        exact (H5 (W256.of_int i0)).
-        rewrite H in H5_i0. smt (@W256).
-        smt (@W256).
-        (* inside the while *)
-        wp. skip. progress. smt (@W256).
-        smt (@Array @W256).
-        smt (@Array @W256).
-        smt (@Array @W256).
-        smt (@Array @W256).
-qed.
+    wp. skip.
+    progress.
+    congr.
+    apply eq_from_get.
+    smt (@Array).
+    rewrite Array.size_offun.
+    progress.
+    have H_i: i < to_uint size{1} by smt(@W256).
+    rewrite Array.offunE. smt ().
+    rewrite Array.offunE. smt ().
+    progress.
+    apply H.
+    smt (@W256).
+  qed.
 
 lemma splitMask_zero mask: W256.splitMask mask W256.zero = (W256.zero, W256.zero).
     proof.
@@ -183,86 +162,87 @@ lemma zero_shr s: W256.zero `>>>` s = W256.zero.
 
     hint simplify splitMask_zero, zero_shl, zero_shr.
 
-  lemma neq_zero (i: int): 1 < i /\ i < 32 => W256.of_int i <> W256.zero.
-      proof.
-        admit.
-    qed.
-  lemma neq_one (i: int): 1 < i /\ i < 32 => W256.of_int i <> W256.one.
-      proof.
-        admit.
-    qed.
-  lemma byte_mask_id (a: uint256): a < W256.of_int 256 => a `&` (W256.masklsb 8) = a.
-      proof.
-        admit.
-    qed.
-
-  lemma add_shl (a b : uint256) (i: int): 0 <= i => (a + b) `<<<` i = (a `<<<` i) + (b `<<<` i).
-      proof.
-        progress.
-        admit.
-      qed.
-
 lemma mstore8_test_correctness (a b: uint256): hoare[
     YulTest.mstore8test :
-      arg = (a,b) /\ a < W256.of_int 256 /\ b < W256.of_int 256 ==> res = ((a `<<<` 8) + b) `<<<` 240
+      arg = (a,b) /\ a < W256.of_int 256 /\ b < W256.of_int 256 ==> res = ((a `<<<` 8) `|` b) `<<<` 240
     ].
     proof.
       proc.
-      seq 1 : (#pre /\ (forall (i: int), (0 <= i /\ i < 32) => Primops.memory.[W256.of_int i] = W256.zero)).
-      inline Primops.mstore. wp. skip. progress.
-    case (i = 0). progress. smt (@W256 @Map).
-    case (i = 1). progress. smt (@W256 @Map).
-    case (i = 2). progress. smt (@W256 @Map).
-    case (i = 3). progress. smt (@W256 @Map).
-    case (i = 4). progress. smt (@W256 @Map).
-    case (i = 5). progress. smt (@W256 @Map).
-    case (i = 6). progress. smt (@W256 @Map).
-    case (i = 7). progress. smt (@W256 @Map).
-    case (i = 8). progress. smt (@W256 @Map).
-    case (i = 9). progress. smt (@W256 @Map).
-    case (i = 10). progress. smt (@W256 @Map).
-    case (i = 11). progress. smt (@W256 @Map).
-    case (i = 12). progress. smt (@W256 @Map).
-    case (i = 13). progress. smt (@W256 @Map).
-    case (i = 14). progress. smt (@W256 @Map).
-    case (i = 15). progress. smt (@W256 @Map).
-    case (i = 16). progress. smt (@W256 @Map).
-    case (i = 17). progress. smt (@W256 @Map).
-    case (i = 18). progress. smt (@W256 @Map).
-    case (i = 19). progress. smt (@W256 @Map).
-    case (i = 20). progress. smt (@W256 @Map).
-    case (i = 21). progress. smt (@W256 @Map).
-    case (i = 22). progress. smt (@W256 @Map).
-    case (i = 23). progress. smt (@W256 @Map).
-    case (i = 24). progress. smt (@W256 @Map).
-    case (i = 25). progress. smt (@W256 @Map).
-    case (i = 26). progress. smt (@W256 @Map).
-    case (i = 27). progress. smt (@W256 @Map).
-    case (i = 28). progress. smt (@W256 @Map).
-    case (i = 29). progress. smt (@W256 @Map).
-    case (i = 30). progress. smt (@W256 @Map).
-    case (i = 31). progress. smt (@W256 @Map).
-    progress. smt (@W256).
-      inline Primops.mstore8 Primops.mload. wp. skip. progress.
-      do 30! (((rewrite Map.get_set_neqE; first exact neq_one);
-      rewrite Map.get_set_neqE; first exact neq_zero);
-      simplify);
-    (rewrite H1; first trivial).
-      do 29! (rewrite H1; first trivial).
+
+      inline *.
+      wp.
+      skip.
+      progress.
+      rewrite loadE storeE.
       simplify.
+      do 32! rewrite W32u8.get_zero.
+      apply W256.ext_eq.
+      progress.
+      rewrite W32u8.pack32wE. smt ().
+      have H_256: 0 <= x0 && x0 < 256 by smt ().
+      rewrite H_256. progress.
+      pose byte_idx := x0 %/ 8.
+      pose bit_idx := x0 %% 8.
+    case (x0 < 240).
+      progress.
+      have H_lhs: !(0 <= x0 - 240 && x0 - 240 < 256) by smt ().
+      rewrite H_lhs. progress.
+      have H_byte_idx_low: 0 <= byte_idx by smt ().
+      have H_byte_idx_high: byte_idx < 30 by smt ().
+      rewrite W32u8.Pack.initE.
+      have H_byte_idx_wide_range: 0 <= byte_idx && byte_idx < 32 by smt ().
+      rewrite H_byte_idx_wide_range.
+      progress. 
+      pose idx' := 31 - byte_idx.
+      have H_idx'_low: 2 <= idx' by smt ().
+      have H_idx'_high: idx' < 32 by smt ().
+      rewrite Map.get_set_neqE. smt.
+      rewrite Map.get_set_neqE. smt.
+      have H_y : y{hr}.[x0-240] = false by smt (@W256).
+      rewrite H_y.
+    search W8."_.[_]".
+      rewrite - (W8.zerowE (bit_idx)).
+      congr.
+      have H_diff: forall (i j: int), 0 <= i < 32 => 0 <= j < 32 => i <> j => W256.of_int i <> W256.of_int j.
+      progress.
+      smt.
+      smt (Map.get_set_sameE Map.get_set_neqE).
+      progress.
+      rewrite W32u8.Pack.initE.
+    case (byte_idx = 30). progress.
+      rewrite H4.
+      progress.
+      have H_x0: 240 <= x0 < 248 by smt ().
+      have H_x0_range: (0 <= x0 - 240 && x0 - 240 < 256) by smt ().
+      rewrite H_x0_range. progress.
+    search W256."_.[_]".
+      rewrite W256.get_out. smt ().
       rewrite Map.get_set_sameE.
-      rewrite Map.get_set_neqE. by smt(@W256).
-      rewrite Map.get_set_sameE.
-      rewrite byte_mask_id. exact H0.
-      rewrite byte_mask_id. exact H.
-      pose x' := to_uint x{hr}.
-      pose y' := to_uint y{hr}.
-      have H_x: x{hr} = W256.of_int x'. by smt(@W256).
-      have H_y: y{hr} = W256.of_int y'. by smt (@W256).
-      rewrite add_shl. trivial.
-      rewrite W256.shlw_add. trivial. trivial. simplify.
-      exact addrC.
-  qed.
+      have H_lhs: 0 <= x0 && x0 < 256 by smt().
+      simplify.
+      have H_bit_idx: bit_idx = x0-240 by smt().
+      rewrite - H_bit_idx.
+      smt.
+    case (byte_idx = 31). progress.
+      rewrite H4.
+      progress.
+      have H_x0: 248 <= x0 < 256 by smt().
+      have H_small: forall (a: uint256) (b: int), a < W256.of_int 256 => 8 <= b => a.[b] = false.
+      progress.
+    search W256."_.[_]".
+      pose a8 := W8.of_int (W256.to_uint a).
+      have H_a8: forall (i: int), a.[i] = a8.[i] by smt.
+      rewrite H_a8. smt.
+      rewrite (H_small (y{hr})). assumption. smt (). simplify.
+      have H_lhs: (0 <= x0 - 240 && x0 - 240 < 256) by smt().
+      rewrite H_lhs. simplify.
+      rewrite Map.get_set_neqE. smt (@W256).
+      rewrite (Map.get_set_sameE _ W256.zero).
+      have H_bit_idx: bit_idx = x0 - 248 by smt ().
+      rewrite -H_bit_idx.
+      smt.
+      smt ().
+    qed.
 
 lemma modexp_test_correctness (a b c: uint256): hoare [ YulTest.modexp_test: arg = (a, b, c) ==> res = (W256.one, (
     W256.of_int (
@@ -279,22 +259,22 @@ lemma modexp_test_correctness (a b c: uint256): hoare [ YulTest.modexp_test: arg
       pose mem_5 := PurePrimops.mstore mem_4 (W256.of_int 128) b.
       pose mem_6 := PurePrimops.mstore mem_5 (W256.of_int 160) c.
       have H_mem6_get0: PurePrimops.mload mem_6 W256.zero = W256.of_int 32.
-      do 5! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
-      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      do 5! ((rewrite load_store_diff; first smt(@W256)); first smt(@W256)).
+      rewrite load_store_same. reflexivity.
       have H_mem6_get32: PurePrimops.mload mem_6 (W256.of_int 32) = W256.of_int 32.
-      do 4! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
-      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      do 4! ((rewrite load_store_diff; first smt(@W256)); first smt(@W256)).
+      rewrite load_store_same. reflexivity.
       have H_mem6_get64: PurePrimops.mload mem_6 (W256.of_int 64) = W256.of_int 32.
-      do 3! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
-      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      do 3! ((rewrite load_store_diff; first smt(@W256)); first smt(@W256)).
+      rewrite load_store_same. reflexivity.
       have H_mem6_get96: PurePrimops.mload mem_6 (W256.of_int 96) = a.
-      do 2! ((rewrite PurePrimops.apply_mstore_mload_diff; first smt(@W256)); first smt(@W256)).
-      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      do 2! ((rewrite load_store_diff; first smt(@W256)); first smt(@W256)).
+      rewrite load_store_same. reflexivity.
       have H_mem6_get128: PurePrimops.mload mem_6 (W256.of_int 128) = b.
-      rewrite PurePrimops.apply_mstore_mload_diff. smt(@W256). smt(@W256).
-      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      rewrite load_store_diff. smt(@W256). smt(@W256).
+      rewrite load_store_same. reflexivity.
       have H_mem6_get160: PurePrimops.mload mem_6 (W256.of_int 160) = c.
-      rewrite PurePrimops.mload_mstore_same. reflexivity.
+      rewrite load_store_same. reflexivity.
       seq 6 : (Primops.memory = mem_6 /\ x = a /\ y = b /\ z = c).
       call (ConcretePrimops.mstore_spec mem_5 (W256.of_int 160) c).
       call (ConcretePrimops.mstore_spec mem_4 (W256.of_int 128) b).
@@ -335,7 +315,7 @@ lemma modexp_test_correctness (a b c: uint256): hoare [ YulTest.modexp_test: arg
           call (ConcretePrimops.mstore_spec mem_6 W256.zero result).
           skip. progress.
           rewrite /mem_7.
-          rewrite PurePrimops.mload_mstore_same.
+          rewrite load_store_same.
           reflexivity.
       qed.
 
@@ -348,29 +328,94 @@ lemma calldata_test_correctness (ind : uint256) :
     wp.
     skip.
     progress.
+    smt ().
   qed.
+
+lemma aux_range (x: int): 0<=x<32 => !(W256.of_int 64 <= W256.of_int (31 - x)).
+    proof.
+      progress.
+      smt.
+    qed.
+  
+      lemma aux_range2 (x: int): 0<=x<32 => !(W256.of_int 64 <= W256.of_int (63 - x)).
+        proof.
+          progress.
+          smt.
+        qed.
 
 lemma ret_test_correctness (a b: uint256) :
     phoare [
       YulTest.ret_test :
       arg = (a,b) ==>
-      Array.size Primops.ret_data = 2 /\
-      Primops.ret_data.[0] = a /\
-      Primops.ret_data.[1] = b
+      load Primops.ret_data W256.zero = a /\
+      load Primops.ret_data (W256.of_int 32) = b
     ] = 1%r.
     proof.
       proc.
       exists* Primops.memory.
       elim*.
       progress.
-      inline Primops.evm_return.
-      pose mem_1 := PurePrimops.mstore memory W256.zero a.
-      pose mem_2 := PurePrimops.mstore mem_1 (W256.of_int 32) b.
-      seq 2: (Primops.memory = mem_2).
-      by auto.
-      call (ConcretePrimops.mstore_pspec mem_1 (W256.of_int 32) b).
-      call (ConcretePrimops.mstore_pspec memory W256.zero a).
-      skip. progress.
-      sp.
+      inline *. wp.
+      skip.
+      progress.
+      rewrite /load.
+      apply W256.ext_eq.
+      progress.
+    print pack32wE.
+      rewrite pack32wE. by trivial.
+      rewrite W32u8.Pack.initE.
+      have H_in_range: 0 <= x %/ 8 && x %/ 8 < 32 by smt ().
+      rewrite H_in_range. progress.
+      rewrite Map.offunE. progress.
+      have H_in_range2: !(W256.of_int 64 <= W256.of_int (31 - x %/ 8)).
+      apply (aux_range (x %/ 8)). by trivial.
+      rewrite H_in_range2. progress.
+      rewrite /store. progress.
+      have H_diff: forall (i j: int), 0<=i<32 => 32<=j<64 => W256.of_int i <> W256.of_int j.
+      progress. smt.
+      pose byte_idx:= 31 - x %/ 8.
+      have H_byte_idx: 0<=byte_idx<32 by smt ().
+      do 32! (rewrite Map.get_set_neqE; first exact H_diff).
+      have H_a: (load (store Primops.memory{hr} W256.zero a{hr}) W256.zero).[x] = a{hr}.[x] by smt (load_store_same).
+      rewrite- H_a.
+      rewrite /byte_idx.
+      rewrite /load /store.
+      rewrite pack32wE. by trivial.
+      rewrite W32u8.Pack.initE.
+      rewrite H_in_range. simplify. by trivial.
+      pose mem_1:= store Primops.memory{hr} W256.zero a{hr}.
+      have H_b: load (store mem_1 (W256.of_int 32) b{hr}) (W256.of_int 32) = b{hr} by exact load_store_same.
+      rewrite -H_b.
+      rewrite /load.
+      pose mem := store mem_1 (W256.of_int 32) b{hr}.
+      have H_inner: forall (i: int), 0<=i<32 =>
+        ((Map.offun (fun (i0: uint256) => (
+          if W256.of_int 64 <= i0
+          then witness
+          else (store mem_1 (W256.of_int 32) (pack32_t (W32u8.Pack.init (fun (i1: int) => mem.[W256.of_int (63-i1)])))).[i0]
+            ))).[W256.of_int (63-i)] = mem.[W256.of_int (63-i)]).
+                progress.
+                rewrite Map.offunE. progress.
+                have H_if: !(W256.of_int 64 <= W256.of_int (63-i)). smt.
+                rewrite H_if. progress.
+                rewrite /mem /store. progress.
+                smt.
+                apply W256.ext_eq. progress.
+                rewrite pack32wE. trivial.
+                rewrite initE.
+                have H_range: 0 <= x %/ 8 && x %/ 8 < 32 by smt ().
+                rewrite H_range. progress.
+                rewrite Map.offunE. progress.
+                have H_range': !(W256.of_int 64 <= W256.of_int (63 - x %/ 8)) by exact aux_range2.
+                rewrite H_range'. progress.
+                rewrite /store. progress.
+                rewrite pack32wE. by trivial.
+                rewrite initE.
+                rewrite H_range. progress.
+                congr.
+                pose idx := x %/ 8.
+                have H_diff: forall (i j: int), 32<=i<64 => 32<=j<64 => i <> j => W256.of_int i <> W256.of_int j.
+                progress. smt.
+                smt (Map.get_set_sameE Map.get_set_neqE).
+      qed.      
 
-      

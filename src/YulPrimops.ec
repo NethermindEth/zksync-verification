@@ -31,12 +31,9 @@ module Primops = {
   }
 
   proc evm_return(retOff : uint256, retSize : uint256) : unit = {
-      var i : uint256;
-      i <- W256.zero;
-      while (i < retSize) {
-      ret_data <- ret_data.[i <- memory.[retOff + i]];
-      i <- i + W256.one;
-      }
+      ret_data <- Map.offun (fun (i: uint256) =>
+      if retSize <= i then witness
+      else memory.[retOff + i]);
       return ();
   }
 
