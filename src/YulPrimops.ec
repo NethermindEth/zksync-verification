@@ -231,7 +231,7 @@ module Primops = {
             s <@ mload(argOff + W256.of_int 64);
             x1_F <- ZModField.inzmod (W256.to_sint x1);
             y1_F <- ZModField.inzmod (W256.to_sint y1);
-            s_F <- ZModField.inzmod (W256.to_sint s);
+            s_F <- ZModField.inzmod (W256.to_uint s);
             if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
               succ <- W256.zero;
             } else {
