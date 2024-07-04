@@ -51,6 +51,12 @@ axiom ecAdd_def (x1 y1 x2 y2 : F) (p1 p2 : g) :
     => aspoint_G1 p2 = (x2, y2)
       => Some (aspoint_G1 (p1 + p2)) = ecAdd_precompile x1 y1 x2 y2.
 
+axiom ecAdd_fail (x1 y1 x2 y2 : F) :
+  !(on_curve (x1, y1)) \/ !(on_curve (x2, y2)) => ecAdd_precompile x1 y1 x2 y2 = None.
+
 axiom ecMul_def (x y s : F) (p : g):
   aspoint_G1 p = (x, y)
-     => Some (aspoint_G1 (ZModField.asint s * p)) = ecMul_precompile x y s.
+    => Some (aspoint_G1 (ZModField.asint s * p)) = ecMul_precompile x y s.
+
+axiom ecMul_fail (x y s : F) :
+  !(on_curve (x, y)) => ecMul_precompile x y s = None.
