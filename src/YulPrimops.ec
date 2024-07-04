@@ -163,6 +163,7 @@ module Primops = {
   proc evm_return(retOff : uint256, retSize : uint256) : unit = {
       var i : uint256;
       i <- W256.zero;
+      ret_data <- Array.mkarray (List.nseq (W256.to_uint retSize) W256.zero);
       while (i < retSize) {
       ret_data.[W256.to_uint i] <- memory.[retOff + i];
       i <- i + W256.one;
