@@ -199,20 +199,21 @@ module Primops = {
         }
       } else {
         if (addr = W256.of_int 6) {
-          x1 <@ mload(argOff);
-          y1 <@ mload(argOff + W256.of_int 32);
-          x2 <@ mload(argOff + W256.of_int 64);
-          y2 <@ mload(argOff + W256.of_int 96);
-          x1_F <- ZModField.inzmod (W256.to_sint x1);
-          y1_F <- ZModField.inzmod (W256.to_sint y1);
-          x2_F <- ZModField.inzmod (W256.to_sint x2);
-          y2_F <- ZModField.inzmod (W256.to_sint y2);
-          if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
-            succ <- W256.zero;
-          } else {
-              if (!(on_curve (x1_F, y1_F)) \/ !(on_curve ((x2_F, y2_F)))) {
-                 succ <- W256.zero;
+          if (retSize = (W256.of_int 64) /\ argSize = (W256.of_int 128)) {
+            x1 <@ mload(argOff);
+            y1 <@ mload(argOff + W256.of_int 32);
+            x2 <@ mload(argOff + W256.of_int 64);
+            y2 <@ mload(argOff + W256.of_int 96);
+            x1_F <- ZModField.inzmod (W256.to_sint x1);
+            y1_F <- ZModField.inzmod (W256.to_sint y1);
+            x2_F <- ZModField.inzmod (W256.to_sint x2);
+            y2_F <- ZModField.inzmod (W256.to_sint y2);
+            if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
+              succ <- W256.zero;
             } else {
+              if (!(on_curve (x1_F, y1_F)) \/ !(on_curve ((x2_F, y2_F)))) {
+                succ <- W256.zero;
+              } else {
                 result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
                 if (is_none result) {
                   succ <- W256.zero;
@@ -222,22 +223,26 @@ module Primops = {
                     mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
                     succ <- W256.one;
                 }                
+              }
             }
-          }
+          } else {
+            succ <- W256.zero;
+          } 
         } else {
           if (addr = W256.of_int 7) {
-            x1 <@ mload(argOff);
-            y1 <@ mload(argOff + W256.of_int 32);
-            s <@ mload(argOff + W256.of_int 64);
-            x1_F <- ZModField.inzmod (W256.to_sint x1);
-            y1_F <- ZModField.inzmod (W256.to_sint y1);
-            s_F <- ZModField.inzmod (W256.to_uint s);
-            if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
-              succ <- W256.zero;
-            } else {
+            if (retSize = (W256.of_int 64) /\ argSize = (W256.of_int 96)) {
+              x1 <@ mload(argOff);
+              y1 <@ mload(argOff + W256.of_int 32);
+              s <@ mload(argOff + W256.of_int 64);
+              x1_F <- ZModField.inzmod (W256.to_sint x1);
+              y1_F <- ZModField.inzmod (W256.to_sint y1);
+              s_F <- ZModField.inzmod (W256.to_uint s);
+              if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
+                succ <- W256.zero;
+              } else {
                 if (!(on_curve (x1_F, y1_F))) {
                   succ <- W256.zero;
-              } else {
+                } else {
                   result <- ecMul_precompile x1_F y1_F s_F;
                   if (is_none result) {
                     succ <- W256.zero;
@@ -247,6 +252,7 @@ module Primops = {
                       mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
                       succ <- W256.one;
                   }                
+                }
               }
             }
           } else {
