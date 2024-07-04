@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import AllCore.
 require import Array.
+require import ExtractedTests.
 require import Int.
 require import IntDiv.
 require import Real.
@@ -11,89 +12,8 @@ require import PurePrimops.
 require import Utils.
 require import JUtils.
 
-module Test = {
-  proc writeReadTest(address: uint256, value: uint256): uint256 = {
-      var _1;
-      Primops.mstore(address, value);
-      _1 <@ Primops.mload(address);
-      return _1;
-    }
-
-    proc revert_if_two(x : uint256) : uint256 = {
-        var y;
-        y <- x + (W256.of_int 3);
-        if (bool_of_uint256 (PurePrimops.eq_uint256 y (W256.of_int 5))) {
-        Primops.revert(W256.zero, W256.zero);
-      }
-      return y;
-    }
-
-    proc shifty(x : uint256, s : uint256) : uint256 = {
-      var v1, v1', v2, v2' : uint256;
-      if (bool_of_uint256 (PurePrimops.gt_uint256 s (W256.of_int 256))) {
-        Primops.revert(W256.zero, W256.zero);
-      }
-      
-      v1 <- PurePrimops.shl x s;
-      v2 <- PurePrimops.shr x ((W256.of_int 256) - s);
-      v1' <- PurePrimops.shr v1 s;
-      v2' <- PurePrimops.shl v2 ((W256.of_int 256) - s);
-      return (v1' + v2');
-    }
-
-    proc mod_test(m : uint256) : uint256 = {
-        var mv, o, z : uint256;
-        mv <- m - (W256.of_int 1);
-        o <- PurePrimops.mulmod mv mv m;
-        z <- PurePrimops.addmod o mv m;
-        return z;
-    }
-
-    proc mstore8test(x: uint256, y: uint256): uint256 = {
-      var x', z, z';
-      Primops.mstore(W256.zero, W256.zero);
-      Primops.mstore8(W256.zero, x);
-      Primops.mstore8(W256.one, y);
-      z <@ Primops.mload(W256.zero);
-      x' <- PurePrimops.shl x (W256.of_int 248);
-      z' <- PurePrimops.bit_and z x';
-      return z;
-    }
-
-    proc calldata_test(ind : uint256) : uint256 = {
-        var v1, v2, r : uint256;
-        v1 <@ Primops.calldataload(ind);
-        v2 <@ Primops.calldataload(ind);
-        r <- PurePrimops.eq_uint256 v1 v2;
-        return r;
-    }
-    
-    proc modexp_test(x: uint256, y: uint256, z: uint256) = {
-        var success, ret;
-        Primops.mstore(W256.zero, W256.of_int 32);
-        Primops.mstore(W256.of_int 32, W256.of_int 32);
-        Primops.mstore(W256.of_int 64, W256.of_int 32);
-        Primops.mstore(W256.of_int 96, x); 
-        Primops.mstore(W256.of_int 128, y);
-        Primops.mstore(W256.of_int 160, z);
-        success <@ Primops.staticcall(W256.one, W256.of_int 5, W256.zero, W256.of_int 192, W256.zero, W256.of_int 32);
-        ret <@ Primops.mload(W256.zero);
-        return (success, ret);
-    }
-
-    proc is_even(a: uint256): uint256 = {
-      var ret;
-      ret <- PurePrimops.iszero (a %% W256.of_int 2);
-      return (ret);
-    }
-
-    proc ret_test(a: uint256, b: uint256, c: uint256): (uint256, uint256, uint256) = {
-
-    }
-  }.
-
 lemma is_even_correcteness (x: uint256) :
-hoare [ Test.is_even : arg = x ==> (
+hoare [ YulTest.is_even : arg = x ==> (
     x %% W256.of_int 2 = W256.zero => res = W256.one
       ) /\ (x %% W256.of_int 2 <> W256.zero => res = W256.zero) ].
     proof.
@@ -105,7 +25,7 @@ hoare [ Test.is_even : arg = x ==> (
 lemma writeReadTest_correctness :
 
     forall (address value: uint256),
-phoare [ Test.writeReadTest :
+phoare [ YulTest.writeReadTest :
       arg = (address, value) ==>
       res = value] = 1%r.
 proof.
@@ -113,6 +33,7 @@ proof.
   proc.
   exists* Primops.memory.
   elim*=>memory_pre.
+  wp.
   call (ConcretePrimops.mload_pspec (PurePrimops.mstore memory_pre address value) address).
   call (ConcretePrimops.mstore_pspec memory_pre address value).
   skip.
@@ -121,7 +42,7 @@ proof.
 qed.
   
 lemma revert_if_two_correctness (x : uint256) :
-    phoare [Test.revert_if_two : arg = x /\ !Primops.reverted ==>
+    phoare [YulTest.revert_if_two : arg = x /\ !Primops.reverted ==>
       (res = x + (W256.of_int 3)/\ x <> (W256.of_int 2) /\ !Primops.reverted) \/ (x = (W256.of_int 2) /\ Primops.reverted)] = 1%r.
         proc.
         inline Primops.revert.
@@ -140,7 +61,7 @@ lemma revert_if_two_correctness (x : uint256) :
   qed.
 
 lemma shifty_correctness (x s : uint256) :
-    phoare [Test.shifty : arg = (x, s) /\ !Primops.reverted ==>
+    phoare [YulTest.shifty : arg = (x, s) /\ !Primops.reverted ==>
       (res = x /\ !Primops.reverted) \/ ((W256.of_int 256) < s /\ Primops.reverted)] = 1%r.
         proc.
         case ((W256.of_int 256) < s).
@@ -188,7 +109,7 @@ lemma shifty_correctness (x s : uint256) :
   qed.  
   
 lemma mod_test_correctness (m : uint256) :
-    phoare [Test.mod_test : arg = m /\ W256.one < m ==> res = W256.zero] = 1%r.
+    phoare [YulTest.mod_test : arg = m /\ W256.one < m ==> res = W256.zero] = 1%r.
     proc.
     wp.
     skip.
@@ -282,7 +203,7 @@ lemma zero_shr s: W256.zero `>>>` s = W256.zero.
       qed.
 
 lemma mstore8_test_correctness (a b: uint256): hoare[
-    Test.mstore8test :
+    YulTest.mstore8test :
       arg = (a,b) /\ a < W256.of_int 256 /\ b < W256.of_int 256 ==> res = ((a `<<<` 8) + b) `<<<` 240
     ].
     proof.
@@ -339,10 +260,11 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
       have H_x: x{hr} = W256.of_int x'. by smt(@W256).
       have H_y: y{hr} = W256.of_int y'. by smt (@W256).
       rewrite add_shl. trivial.
-      rewrite W256.shlw_add. trivial. trivial. simplify. exact addrC.
+      rewrite W256.shlw_add. trivial. trivial. simplify.
+      exact addrC.
   qed.
 
-lemma modexp_test_correctness (a b c: uint256): hoare [ Test.modexp_test: arg = (a, b, c) ==> res = (W256.one, (
+lemma modexp_test_correctness (a b c: uint256): hoare [ YulTest.modexp_test: arg = (a, b, c) ==> res = (W256.one, (
     W256.of_int (
             ((W256.to_uint a) ^ (W256.to_uint b)) %% (W256.to_uint c)
     )
@@ -404,9 +326,10 @@ lemma modexp_test_correctness (a b c: uint256): hoare [ Test.modexp_test: arg = 
       call (ConcretePrimops.mload_spec mem_6 (W256.of_int 64)).
       call (ConcretePrimops.mload_spec mem_6 (W256.of_int 32)).
       call (ConcretePrimops.mload_spec mem_6 W256.zero).
-      skip. progress.
-      pose result := (W256.of_int ((W256.to_uint a) ^ (W256.to_uint b) %% (W256.to_uint c))).
+          skip. progress.
+          pose result := (W256.of_int ((W256.to_uint a) ^ (W256.to_uint b) %% (W256.to_uint c))).
           pose mem_7 := PurePrimops.mstore mem_6 W256.zero result.
+          wp.
           call (ConcretePrimops.mload_spec mem_7 W256.zero).
           wp.
           call (ConcretePrimops.mstore_spec mem_6 W256.zero result).
@@ -419,10 +342,35 @@ lemma modexp_test_correctness (a b c: uint256): hoare [ Test.modexp_test: arg = 
 
       
 lemma calldata_test_correctness (ind : uint256) :
-    phoare [Test.calldata_test : arg = ind ==> res = W256.one] = 1%r.
+    phoare [YulTest.calldata_test : arg = ind ==> res = W256.one] = 1%r.
     proc.
     inline Primops.calldataload.
     wp.
     skip.
     progress.
   qed.
+
+lemma ret_test_correctness (a b: uint256) :
+    phoare [
+      YulTest.ret_test :
+      arg = (a,b) ==>
+      Array.size Primops.ret_data = 2 /\
+      Primops.ret_data.[0] = a /\
+      Primops.ret_data.[1] = b
+    ] = 1%r.
+    proof.
+      proc.
+      exists* Primops.memory.
+      elim*.
+      progress.
+      inline Primops.evm_return.
+      pose mem_1 := PurePrimops.mstore memory W256.zero a.
+      pose mem_2 := PurePrimops.mstore mem_1 (W256.of_int 32) b.
+      seq 2: (Primops.memory = mem_2).
+      by auto.
+      call (ConcretePrimops.mstore_pspec mem_1 (W256.of_int 32) b).
+      call (ConcretePrimops.mstore_pspec memory W256.zero a).
+      skip. progress.
+      sp.
+
+      
