@@ -1,6 +1,8 @@
 pragma Goals:printall.
 
-require import AllCore Int IntDiv.
+require import AllCore.
+require import Int.
+require import IntDiv.
 
 op Q : int = 21888242871839275222246405745257275088696311157297823662689037894645226208583 axiomatized by qE.
 op R : int = 21888242871839275222246405745257275088548364400416034343698204186575808495617 axiomatized by rE.

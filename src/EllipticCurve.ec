@@ -1,4 +1,8 @@
-require import AllCore Group Int IntDiv ZModP. 
+require import AllCore.
+require import Group.
+require import Int.
+require import IntDiv.
+require import ZModP. 
 
 type g.
 

@@ -1,20 +1,14 @@
+pragma Goals:printall.
+
+require import AllCore.
+require import IntDiv.
 require import UInt256.
+require import Utils.
 require export CoreMap SmtMap.
 
-type uint8 = W8.t.
+theory MemoryMap.
+
 type mem = (uint256, uint8) map.
-(* pred mem_wellformed (memory: mem) = forall (idx: uint256), memory.[idx] <= W256.masklsb 8. *)
-
-(* lemma write_byte_maintains_wellformed (memory: mem) (idx val: uint256):
-    val < W256.masklsb 8 =>
-    mem_wellformed memory =>
-    mem_wellformed (memory.[idx <- val]).
-    proof.
-      progress.
-      smt ().
-  qed. *)
-
-print W32u8.
 
 op store (memory: mem) (idx val: uint256) =
     let bytes = W32u8.unpack8 val in
@@ -50,39 +44,14 @@ op store (memory: mem) (idx val: uint256) =
   .[idx + (W256.of_int 28) <- bytes.[28]]
   .[idx + (W256.of_int 29) <- bytes.[29]]
   .[idx + (W256.of_int 30) <- bytes.[30]]
-  .[idx + (W256.of_int 31) <- bytes.[31]].
+  .[idx + (W256.of_int 31) <- bytes.[31]]
+axiomatized by storeE.
 
 op load (memory: mem) (idx: uint256): uint256 =
-  W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int i])).
+  W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int i]))
+axiomatized by loadE.
 
-  (* pack32wE *)
-search W32u8.\bits8.
-search W256."_.[_]".
-
-(* from utils *)
-lemma add_neq:
-    forall (x: uint256) (y: int),
-    1 <= y /\ y < 32 => x <> x + W256.of_int y.
-    proof.
-      progress.
-      smt.
-    qed.
-
-lemma add_2_neq (x y: int) (a: uint256):
-    0 <= x =>
-    0 <= y =>
-    x < 32 =>
-    y < 32 =>
-    x <> y =>
-    a + W256.of_int x <> a + W256.of_int y.
-    proof.
-      progress.
-      smt.
-  qed.
-
-lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
-
-lemma load_store (memory: mem) (idx val: uint256):
+lemma load_store_same (memory: mem) (idx val: uint256):
     load (store memory idx val) idx = val.
     proof.
       rewrite /load /store.
@@ -98,6 +67,73 @@ lemma load_store (memory: mem) (idx val: uint256):
       rewrite H_byte_idx. simplify.
       congr.
       smt (add_2_neq @W32u8 add_zero).
+  qed.
+
+op uint256_frame (memory_pre memory_post: mem) (idx: uint256) =
+  forall (idx2: uint256), W256.of_int 32 <= idx2 - idx => memory_pre.[idx2] = memory_post.[idx2]
+axiomatized by uint256_frameE.
+
+lemma store_frame (memory: mem) (idx val: uint256):
+    uint256_frame memory (store memory idx val) idx.
+    proof.
+      rewrite uint256_frameE.
+      progress.
+      rewrite storeE.
+      simplify.
+      do 31! (rewrite Map.get_set_neqE; first exact add_neq_of_diff).
+      rewrite Map.get_set_neqE; first exact (neq_of_diff idx idx2).
+      reflexivity.
     qed.
 
-    
+lemma store_loaded_val (memory: mem) (idx: uint256):
+    store memory idx (load memory idx) = memory.
+    proof.
+      rewrite /store /load.
+      smt(@W32u8).
+  qed.
+
+
+
+lemma load_store_diff (memory: mem) (idx idx2 val: uint256):
+    W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 => load (store memory idx val) idx2 = load memory idx2.
+    proof.
+      progress.
+      rewrite loadE loadE.
+      apply W256.ext_eq. progress.
+      rewrite W32u8.pack32wE. trivial.
+      rewrite W32u8.pack32wE. trivial.
+      congr.
+      pose y := x %/ 8.
+      have H_y_lower: 0 <= y by smt (@IntDiv).
+      have H_y_upper: y < 32 by smt (@IntDiv).
+      rewrite W32u8.Pack.initE.
+      rewrite W32u8.Pack.initE. simplify. congr.
+      rewrite storeE. simplify.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff).
+      rewrite Map.get_set_neqE. smt(@Utils).
+      reflexivity.
+    qed.
+      
+      
+
+    (* done between 1 and 32 for now because that's all we need and it's easier on smt *)
+lemma get_set_offset (m: mem) (idx: uint256) (offset: int) (val: uint8):
+    0 < offset /\ offset < 32 => m.[idx+W256.of_int offset<-val].[idx] = m.[idx].
+proof.
+    progress.
+    apply Map.get_set_neqE.
+    apply add_neq.
+    smt ().
+qed.
+
+lemma get_set_offsets_neq (m: mem) (idx: uint256) (offset1 offset2: int) (val: uint8):
+    0 <= offset1 /\ 0 <= offset2 /\ offset1 < 32 /\ offset2 < 32 /\ offset1 <> offset2 =>
+    m.[idx+W256.of_int offset1<-val].[idx+W256.of_int offset2] = m.[idx+W256.of_int offset2].
+proof.
+    progress.
+    apply Map.get_set_neqE.
+    have H3': offset2 <> offset1 by smt ().
+    exact add_2_neq.
+qed.
+  
+end MemoryMap.
