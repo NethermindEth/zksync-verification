@@ -4,6 +4,7 @@ require import Int.
 require import IntDiv.
 require import ZModP. 
 
+
 type g.
 
 op p: int.
