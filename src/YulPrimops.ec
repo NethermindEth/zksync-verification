@@ -5,7 +5,7 @@ require import Array.
 require import Logic.
 require import PurePrimops.
 require import Utils.
-require export UInt256 Memory.
+require export UInt256 Memory EllipticCurve.
 
 module Primops = {
   var memory : mem
@@ -178,6 +178,12 @@ module Primops = {
       var succ;
       var bsize, esize, msize : uint256;
       var base, exp, mod;
+      var x1, y1, x2, y2;
+      var s;
+      var s_F;
+      var x1_F, y1_F, x2_F, y2_F;
+      var result;
+      var result_unwrap;
       if (addr = W256.of_int 5) {
         bsize <@ mload(argOff);
         esize <@ mload(argOff + W256.of_int 32);
@@ -193,12 +199,56 @@ module Primops = {
         }
       } else {
         if (addr = W256.of_int 6) {
-          (* TODO: ecAdd *)
-          succ <- W256.zero;
+          x1 <@ mload(argOff);
+          y1 <@ mload(argOff + W256.of_int 32);
+          x2 <@ mload(argOff + W256.of_int 64);
+          y2 <@ mload(argOff + W256.of_int 96);
+          x1_F <- ZModField.inzmod (W256.to_sint x1);
+          y1_F <- ZModField.inzmod (W256.to_sint y1);
+          x2_F <- ZModField.inzmod (W256.to_sint x2);
+          y2_F <- ZModField.inzmod (W256.to_sint y2);
+          if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
+            succ <- W256.zero;
+          } else {
+              if (!(on_curve (x1_F, y1_F)) \/ !(on_curve ((x2_F, y2_F)))) {
+                 succ <- W256.zero;
+            } else {
+                result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
+                if (is_none result) {
+                  succ <- W256.zero;
+                } else {
+                    result_unwrap <- odflt (ZModField.zero, ZModField.zero) result;
+                    mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
+                    mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
+                    succ <- W256.one;
+                }                
+            }
+          }
         } else {
           if (addr = W256.of_int 7) {
-            (* TODO: ecMul *)
-            succ <- W256.zero;
+            x1 <@ mload(argOff);
+            y1 <@ mload(argOff + W256.of_int 32);
+            s <@ mload(argOff + W256.of_int 64);
+            x1_F <- ZModField.inzmod (W256.to_sint x1);
+            y1_F <- ZModField.inzmod (W256.to_sint y1);
+            s_F <- ZModField.inzmod (W256.to_sint s);
+            if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
+              succ <- W256.zero;
+            } else {
+                if (!(on_curve (x1_F, y1_F))) {
+                  succ <- W256.zero;
+              } else {
+                  result <- ecMul_precompile x1_F y1_F s_F;
+                  if (is_none result) {
+                    succ <- W256.zero;
+                  } else {
+                      result_unwrap <- odflt (ZModField.zero, ZModField.zero) result;
+                      mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
+                      mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
+                      succ <- W256.one;
+                  }                
+              }
+            }
           } else {
             if (addr = W256.of_int 8) {
               (* TODO: ecPairing *)
