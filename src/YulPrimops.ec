@@ -204,10 +204,10 @@ module Primops = {
             y1 <@ mload(argOff + W256.of_int 32);
             x2 <@ mload(argOff + W256.of_int 64);
             y2 <@ mload(argOff + W256.of_int 96);
-            x1_F <- ZModField.inzmod (W256.to_sint x1);
-            y1_F <- ZModField.inzmod (W256.to_sint y1);
-            x2_F <- ZModField.inzmod (W256.to_sint x2);
-            y2_F <- ZModField.inzmod (W256.to_sint y2);
+            x1_F <- ZModField.inzmod (W256.to_uint x1);
+            y1_F <- ZModField.inzmod (W256.to_uint y1);
+            x2_F <- ZModField.inzmod (W256.to_uint x2);
+            y2_F <- ZModField.inzmod (W256.to_uint y2);
             if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
               succ <- W256.zero;
             } else {
@@ -234,8 +234,8 @@ module Primops = {
               x1 <@ mload(argOff);
               y1 <@ mload(argOff + W256.of_int 32);
               s <@ mload(argOff + W256.of_int 64);
-              x1_F <- ZModField.inzmod (W256.to_sint x1);
-              y1_F <- ZModField.inzmod (W256.to_sint y1);
+              x1_F <- ZModField.inzmod (W256.to_uint x1);
+              y1_F <- ZModField.inzmod (W256.to_uint y1);
               s_F <- ZModField.inzmod (W256.to_uint s);
               if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
                 succ <- W256.zero;
