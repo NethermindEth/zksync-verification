@@ -4,6 +4,7 @@ require import AllCore Int IntDiv Constants Field.
 require import Memory PurePrimops UInt256 Utils YulPrimops.
 
 import FieldQ.
+import MemoryMap.
 
 type Point = F * F.
 
@@ -124,7 +125,6 @@ lemma pointNegate_low_equiv_mid (memory: mem) (point_address: uint256) (point_x_
       arg{1} = point_address /\
       point_y_int < Q /\
       Primops.memory{1} = memory /\
-      mem_wellformed Primops.memory{1} /\
       W256.to_uint(PurePrimops.mload memory point_address) = point_x_int /\
       W256.to_uint(PurePrimops.mload memory (point_address + W256.of_int 32)) = point_y_int /\
       !Primops.reverted{1} /\
@@ -153,15 +153,15 @@ progress.
 call {1} (usr_revertWithMessage_correctness (of_int 26)%W256 PurePrimops.STRING). wp. skip. progress. right. by progress.
 
     rcondf {1} 1.
-progress. skip. progress. rewrite -W256.to_uintK H4 H6. smt ().
+progress. skip. progress. rewrite -W256.to_uintK H3 H5. smt ().
 rcondf {2} 1.
 progress. skip. progress. smt (). smt (). left. progress. 
-do 2! (rewrite PurePrimops.mstore_mloaded_val). reflexivity.
+do 2! (rewrite store_loaded_val). reflexivity.
 
     simplify.
 exists* _2{1},  usr_pY{1}. elim*. move => _2_l usr_pY_l.
 call {1} (ConcretePrimops.mstore_pspec memory _2_l ((of_int Q)%W256 - usr_pY_l)).
 wp. skip. progress. smt (). smt (). left. progress.
-rewrite PurePrimops.mstore_mloaded_val. congr.
-rewrite -W256.to_uintK -H3. rewrite aux. smt (@W256). smt (@W256). smt (@W256).
+rewrite store_loaded_val. congr.
+rewrite -W256.to_uintK -H2. rewrite aux. smt (@W256). smt (@W256). smt (@W256).
 qed.
