@@ -12,12 +12,12 @@ require import Verifier.
 
 op p_int = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 op p_uint256 = W256.of_int p_int.
-  
+
 (* Functional correctness *)
 
 lemma usr_revertWithMessage_correctness :
     forall (size reason : uint256),
-hoare [ Verifier.usr_revertWithMessage :
+hoare [ Verifier_1261.usr_revertWithMessage :
       arg = (size, reason) ==>
     Primops.reverted = true
     ].
@@ -43,7 +43,7 @@ module PointNegate = {
     if (y <> W256.zero) {
         Primops.mstore(point + W256.of_int 32, p_uint256 - y);
     }
-    
+
     if (x <> W256.zero /\ y = W256.zero) {
       Primops.revert(W256.zero, W256.zero);
     }
@@ -72,7 +72,7 @@ module PointNegate = {
 }.
 
 lemma pointNegate_actual_matches_low: equiv [
-    Verifier.usr_pointNegate ~ PointNegate.low :
+    Verifier_1261.usr_pointNegate ~ PointNegate.low :
     Primops.memory{1} = Primops.memory{2} /\
       arg{1} = arg{2} /\
     !Primops.reverted{1} /\
@@ -113,7 +113,7 @@ lemma pointNegate_actual_matches_low: equiv [
                                                                                  (* case x <> 0 *)
       rcondt{1} 8; first last.                                                     (* actual: take the reverting branch *)
       rcondt{2} 3; first last.                                                     (* low: take the reverting branch *)
-      inline Verifier.usr_revertWithMessage Primops.revert Primops.mstore Primops.mload. (* sim here breaks the proof *)
+      inline Verifier_1261.usr_revertWithMessage Primops.revert Primops.mstore Primops.mload. (* sim here breaks the proof *)
       wp. skip. by progress.
       progress.                                                                    (* to prove: x and y are loaded correctly in the low spec *)
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).           (* load y *)
@@ -121,15 +121,15 @@ lemma pointNegate_actual_matches_low: equiv [
       skip. by progress.
       progress.                                                                    (* to prove: x loaded correct in actual *)
       wp.
-      call (ConcretePrimops.mload_spec memory point).   
+      call (ConcretePrimops.mload_spec memory point).
       inline Primops.mload. wp. skip. by progress.
       progress.                                                                  (* to prove: y loaded correctly in low *)
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
       inline Primops.mload. wp. skip. by progress.
       progress.                                                                  (* to prove: y loaded correctly in actual *)
-      wp.                                                                         
-      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).         
-      wp. skip. by progress.                                                     
+      wp.
+      call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
+      wp. skip. by progress.
                                                                              (* case y<>0 *)
       rcondf{1} 6; first last.                                                 (* actual: take writing branch *)
       rcondf{2} 4; first last.                                                 (* low: skip reverting branch *)
@@ -151,8 +151,8 @@ lemma pointNegate_actual_matches_low: equiv [
       call (ConcretePrimops.mload_spec memory (point + W256.of_int 32)).
       wp. skip. by progress.
   qed.
-    
-lemma pointNegate_low_matches_mid (memory: mem) (point_address: uint256) (point_x_int point_y_int: int): equiv [
+
+lemma pointNegate_low_matches_mid (memory: MemoryMap.mem) (point_address: uint256) (point_x_int point_y_int: int): equiv [
     PointNegate.low ~ PointNegate.mid :
       arg{2} = (point_x_int, point_y_int) /\
       arg{1} = point_address /\
@@ -216,7 +216,7 @@ lemma pointNegate_low_matches_mid (memory: mem) (point_address: uint256) (point_
       call{1} (ConcretePrimops.mload_pspec memory_pre point_address).
       wp. skip. by progress.
     qed.
-    
+
 lemma pointNegate_mid_matches_high (point: Point):
   equiv [
     PointNegate.mid ~ PointNegate.high :
