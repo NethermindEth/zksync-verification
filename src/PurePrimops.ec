@@ -15,6 +15,7 @@ import MemoryMap.
 
 (* uninterpreted functions *)
 op calldata : uint256 array.
+op callvalue : uint256.
 op keccak256_f : uint8 array -> uint256.
 
 
@@ -24,6 +25,8 @@ op eq_uint256(a : uint256, b : uint256) : uint256  = if a = b then W256.one else
 axiomatized by eq_uint256E.
 op gt_uint256 (x y : uint256)  = if y < x then W256.one else W256.zero
 axiomatized by gt_uint256E.
+op lt_uint256 (x y : uint256)  = if x < y then W256.one else W256.zero
+axiomatized by lt_uint256E.
 op slt_uint256 (x y : uint256) = if uint256_as_signed x < uint256_as_signed y then W256.one else W256.zero
 axiomatized by slt_uint256E.
 
@@ -55,8 +58,6 @@ axiomatized by shrE.
 
 op modexp(base: uint256, exponent: uint256, mod: uint256) = W256.of_int (((W256.to_uint base) ^ (W256.to_uint exponent)) %% (W256.to_uint mod))
 axiomatized by modexpE.
-
-op STRING : uint256 = W256.zero.
 
 
 (* lemmas =========== *)

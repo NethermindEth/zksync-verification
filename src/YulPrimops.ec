@@ -1,4 +1,5 @@
 pragma Goals:printall.
+prover timeout=100.
 
 require import AllCore.
 require import Array.
@@ -37,9 +38,16 @@ module Primops = {
       return ();
   }
 
+  proc pop(x : uint256) : unit = {
+    return ();
+  }
+
   proc gas() : uint256 = {
-    (* Confirm ok *)
     return W256.of_int 42;
+  }
+
+  proc callvalue() = {
+      return PurePrimops.callvalue;
   }
 
   proc keccak256(off : uint256, size : uint256) : uint256 = {
@@ -96,7 +104,7 @@ module Primops = {
                     mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
                     mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
                     succ <- W256.one;
-                }                
+                }
             }
           }
         } else {
@@ -121,7 +129,7 @@ module Primops = {
                       mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
                       mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
                       succ <- W256.one;
-                  }                
+                  }
               }
             }
           } else {
@@ -143,6 +151,10 @@ module Primops = {
 
   proc calldataload(i : uint256) : uint256 = {
     return PurePrimops.calldata.[W256.to_uint i];
+  }
+
+  proc calldatasize() = {
+    return W256.of_int (Array.size (PurePrimops.calldata));
   }
 }.
 
@@ -177,7 +189,7 @@ hoare [ Primops.mload :
       skip.
       by progress.
   qed.
-    
+
 lemma mstore_pspec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 phoare [ Primops.mstore :
@@ -362,9 +374,9 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       rcondt 14. wp. skip. progress. by smt ().
       wp. skip. by progress.
     qed.
-      
 
 
-    
+
+
 
 end ConcretePrimops.
