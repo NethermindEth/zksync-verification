@@ -232,3 +232,121 @@ lemma pointNegate_mid_matches_high (point: Point):
     proc.
     wp. skip. progress; by smt().
 qed.
+
+module PointMulIntoDest = {
+  proc low(usr_point, usr_s, usr_dest) =
+  {
+    var _1, _2, _5, _6,  _9, _10;
+    _1 <@ Primops.mload(usr_point);
+    Primops.mstore(W256.zero, _1);
+    _5 <@ Primops.mload(usr_point + W256.of_int 32);
+    Primops.mstore(W256.of_int 32, _5);
+    Primops.mstore(W256.of_int 64, usr_s);
+    _9 <@ Primops.gas();
+    _10 <@ Primops.staticcall(_9, W256.of_int 7, _2, W256.of_int 96, usr_dest, _6);
+    if (bool_of_uint256 (PurePrimops.iszero(_10)))
+    {
+      Verifier_1261.usr_revertWithMessage(W256.of_int 30, W256.zero);
+    }
+  }
+}.
+
+lemma mstore_eq_of_eq (mem1 mem2 : MemoryMap.mem) (ind val : uint256) : mem1 = mem2 => PurePrimops.mstore mem1 ind val = PurePrimops.mstore mem2 ind val.
+    proof.
+      progress.
+    qed.
+
+lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
+    Verifier_1261.usr_pointMulIntoDest ~ PointMulIntoDest.low :
+      ={Primops.memory} /\
+      ={arg} /\
+      ={Primops.reverted} /\
+      !Primops.reverted{1} 
+      ==>
+        (Primops.reverted{1} <=> Primops.reverted{2}) /\
+        (!Primops.reverted{1}) =>
+        forall (idx: uint256),
+        Primops.memory{1}.[idx] =
+        Primops.memory{2}.[idx]
+    ].
+    proof.
+      exists* Primops.memory{1}.
+      elim*=>memory.
+      proc.
+      exists* usr_point{1}.
+      elim* => u_point.
+      exists* usr_s{1}.
+      elim* => u_s.
+      exists* usr_dest{1}.
+      elim* => u_dest.
+      seq 2 1 :
+      (u_dest = usr_dest{1} /\
+        u_s = usr_s{1} /\
+        u_point = usr_point{1} /\
+        memory = Primops.memory{1} /\
+        ={Primops.memory} /\
+        (usr_point{1}, usr_s{1}, usr_dest{1}) =
+        (usr_point{2}, usr_s{2}, usr_dest{2}) /\
+        ={Primops.reverted} /\ !Primops.reverted{1} /\ _1{1} = _1{2} /\ _1{1} = PurePrimops.mload memory u_point).
+      inline Primops.mload. wp. skip. progress.
+      sp.
+      seq 1 1 :
+      (
+        u_dest = usr_dest{1} /\
+        u_s = usr_s{1} /\
+        u_point = usr_point{1} /\
+        (usr_point{1}, usr_s{1}, usr_dest{1}) = (usr_point{2}, usr_s{2}, usr_dest{2}) /\
+        Primops.memory{1} = PurePrimops.mstore memory (W256.of_int 0) (PurePrimops.mload memory u_point) /\
+        ={Primops.memory} /\
+        ={Primops.reverted} /\
+        !Primops.reverted{1}
+      ).
+      inline Primops.mstore. wp. skip. progress.
+      sp.
+      seq 2 1 :
+      (
+        _3{1} = W256.of_int 32 /\
+        u_dest = usr_dest{1} /\
+        u_s = usr_s{1} /\
+        u_point = usr_point{1} /\
+        (usr_point{1}, usr_s{1}, usr_dest{1}) = (usr_point{2}, usr_s{2}, usr_dest{2}) /\
+        Primops.memory{1} = (PurePrimops.mstore memory W256.zero ((PurePrimops.mload memory u_point))) /\
+        ={Primops.memory} /\ ={Primops.reverted} /\ !Primops.reverted{1} /\
+        _5{1} = _5{2} /\ _5{1} = PurePrimops.mload Primops.memory{1} (usr_point{1} + W256.of_int 32)
+      ).
+      inline Primops.mload. wp. skip. move=> &1 &2 H. progress. smt (). smt (). smt (). smt (). admit. admit. admit. smt (). smt (). smt (). smt (). smt (). smt ().
+      seq 1 1 :
+      (
+        u_dest = usr_dest{1} /\
+        u_s = usr_s{1} /\
+        u_point = usr_point{1} /\
+        (usr_point{1}, usr_s{1}, usr_dest{1}) =
+        (usr_point{2}, usr_s{2}, usr_dest{2}) /\
+          Primops.memory{1} =
+        (PurePrimops.mstore (PurePrimops.mstore memory W256.zero (PurePrimops.mload memory u_point)) (W256.of_int 32) (PurePrimops.mload Primops.memory{1} (usr_point{1} + (W256.of_int 32)))) /\
+        ={Primops.memory} /\
+        ={Primops.reverted} /\ !Primops.reverted{1}
+      ).
+      inline Primops.mstore. wp. skip. move=> &1 &2 H. simplify.
+      progress. smt (). smt (). smt (). smt (). admit. admit.
+      have H1 : _3{1} = W256.of_int 32. smt ().
+      have H2 : Primops.memory{1} = (PurePrimops.mstore memory W256.zero (PurePrimops.mload memory u_point)). smt ().
+      rewrite H1 H2.
+          apply mstore_eq_of_eq .
+      
+      have H1 : Primops.memory{1} = Primops.memory{2}. smt ().
+          have H2 : usr_point{2} = usr_point{1}. smt ().
+          rewrite H2.
+          have H3 : 
+          rewrite H1.
+      
+          Primops.mstore Primops.gas Verifier_1261.usr_revertWithMessage Primops.staticcall bool_of_uint256.
+    inline PurePrimops.iszero.
+      sim.
+      wp.
+      sp.
+      sim.
+      progress.
+      simplify.
+    print ConcretePrimops.mload_spec.
+      call (ConcretePrimops.mload_spec memory u_pt).
