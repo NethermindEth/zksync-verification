@@ -316,11 +316,13 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       seq 1 1: (#pre /\ argOff{1} = _2{1} /\ ={argOff}).
       inline *. wp. skip. by progress.
       sp.
-      
-      seq 2 1: (#pre /\ )
-    move => &1 &2.
-      progress. smt().
-      by progress.     
+      if.
+      smt().
+      inline *. wp. skip.
+      smt (five_neq_seven).
+      if. smt(). inline *. wp. skip. smt(six_neq_seven).
+      if. smt().
+           
       
       (* exists* Primops.memory{1},  usr_point{1}, usr_s{2}.
       elim*. progress.
