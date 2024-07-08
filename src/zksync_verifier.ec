@@ -237,14 +237,14 @@ qed.
 module PointMulIntoDest = {
   proc low(usr_point, usr_s, usr_dest) =
   {
-    var _1, _2, _5, _6,  _9, _10;
+    var _1, _5, _6,  _9, _10;
     _1 <@ Primops.mload(usr_point);
     Primops.mstore(W256.zero, _1);
     _5 <@ Primops.mload(usr_point + W256.of_int 32);
     Primops.mstore(W256.of_int 32, _5);
     Primops.mstore(W256.of_int 64, usr_s);
     _9 <@ Primops.gas();
-    _10 <@ Primops.staticcall(_9, W256.of_int 7, _2, W256.of_int 96, usr_dest, _6);
+    _10 <@ Primops.staticcall(_9, W256.of_int 7, W256.zero, W256.of_int 96, usr_dest, _6);
     if (bool_of_uint256 (PurePrimops.iszero(_10)))
     {
       Verifier_1261.usr_revertWithMessage(W256.of_int 30, W256.zero);
@@ -299,8 +299,28 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       seq 1 1: #pre.
       inline *. wp. skip. by progress.
       sp.
-      seq 2 1: (#pre /\ tmp54{1} = _5{2}).
+      seq 2 1: (#pre /\ _5{1} = _5{2}).
       inline *. wp. skip. by progress.
+      seq 2 1: (#pre /\ _6{1} = (W256.of_int 64) /\ Primops.memory{1} = Primops.memory{2}).
+      inline *. wp. skip. by progress.
+      seq 1 1: (#pre /\ ={Primops.memory}).
+      inline *. wp. skip. by progress.
+      seq 4 1: (#pre /\ _7{1}=W256.of_int 96 /\ _8{1}=W256.of_int 7 /\ ={_9}).
+      inline *. wp. skip. by progress.
+      sp.
+      inline Primops.staticcall.
+      seq 1 1: (#pre).
+      inline *. wp. skip. by progress.
+      seq 1 1: (#pre /\ addr{1} = W256.of_int 7 /\ ={addr}).
+      inline *. wp. skip. by progress.
+      seq 1 1: (#pre /\ argOff{1} = _2{1} /\ ={argOff}).
+      inline *. wp. skip. by progress.
+      sp.
+      
+      seq 2 1: (#pre /\ )
+    move => &1 &2.
+      progress. smt().
+      by progress.     
       
       (* exists* Primops.memory{1},  usr_point{1}, usr_s{2}.
       elim*. progress.
