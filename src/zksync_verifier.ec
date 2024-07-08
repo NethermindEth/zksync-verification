@@ -1,6 +1,7 @@
 pragma Goals:printall.
 
 require import Array.
+require import EllipticCurve.
 require import Logic.
 require import Memory.
 require import PurePrimops.
@@ -256,6 +257,25 @@ lemma mstore_eq_of_eq (mem1 mem2 : MemoryMap.mem) (ind val : uint256) : mem1 = m
       progress.
     qed.
 
+lemma five_neq_seven : W256.of_int 7 <> W256.of_int 5.
+proof.
+  have Hle: W256.of_int 5 < W256.of_int 7 by smt(W256.ult_of_int).
+  smt().  
+qed.
+
+lemma six_neq_seven : W256.of_int 7 <> W256.of_int 6.
+proof.
+  have Hle: W256.of_int 6 < W256.of_int 7 by smt(W256.ult_of_int).
+  smt().
+qed.
+
+lemma one_neq_zero : W256.one <> W256.zero.
+    proof.
+  print W256.
+(*  rewrite /W256.zero /W256.one.*)
+  smt (@W256).  
+qed.
+  
 lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
     Verifier_1261.usr_pointMulIntoDest ~ PointMulIntoDest.low :
       ={Primops.memory} /\
@@ -270,6 +290,45 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
         Primops.memory{2}.[idx]
     ].
     proof.
+      proc.
+      inline *; wp; skip.
+    move=> &1 &2  H.
+      simplify.
+      rewrite five_neq_seven six_neq_seven PurePrimops.iszero_zeroE /bool_of_uint256 one_neq_zero.
+      simplify.
+      progress.
+      smt().
+      smt().
+      smt().
+      smt().
+      simplify.
+      progress.
+      print ecMul_def.
+      smt (@W256 @Memory.MemoryMap @EllipticCurve.ZModField @EllipticCurve ecMul_def).
+        apply ecMul_def.
+      
+      smt().
+      rewrite /bool_of_uint256.
+      si
+      progress.
+      rewrite PurePrimops.iszero_zeroE.
+      simplif
+      progress.
+      rewrite fi
+      have Hseven_neq_five: W256.of_int 7 <> W256.of_int 5 by smt (five_neq_seven).
+      rewrite Hseven_neq_five.
+      simplify.
+      progress.
+      trivial.
+      rcondf Hneq.
+      progress.
+      apply W256.ult_of_int_true.
+    
+     print W256.ule_of_in.
+     have Hneq : (W256.of_int 7) <> (W256.of_int 5) by smt(W256.ule_of_int_true).      
+   
+      do! smt(@YulPrimops @Memory @Memory.MemoryMap).
+      smt().
       exists* Primops.memory{1}.
       elim*=>memory.
       proc.
@@ -288,6 +347,11 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
         (usr_point{1}, usr_s{1}, usr_dest{1}) =
         (usr_point{2}, usr_s{2}, usr_dest{2}) /\
         ={Primops.reverted} /\ !Primops.reverted{1} /\ _1{1} = _1{2} /\ _1{1} = PurePrimops.mload memory u_point).
+      print YulPrimops.ConcretePrimops.mstore_spec.
+      call YulPrimops.ConcretePrimops.mstore_spec.
+          call YulVerifier.
+
+        call Memory.MemoryMap.loadE.
       inline Primops.mload. wp. skip. progress.
       sp.
       seq 1 1 :
@@ -331,7 +395,11 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       progress. smt (). smt (). smt (). smt (). admit. admit.
       have H1 : _3{1} = W256.of_int 32. smt ().
       have H2 : Primops.memory{1} = (PurePrimops.mstore memory W256.zero (PurePrimops.mload memory u_point)). smt ().
-      rewrite H1 H2.
+          rewrite H1 H2.
+          simplify.
+          print Memory.
+          rewrite Memory.MemoryMap.storeE.
+          inline mstore.
           apply mstore_eq_of_eq .
       
       have H1 : Primops.memory{1} = Primops.memory{2}. smt ().
