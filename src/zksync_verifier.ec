@@ -275,13 +275,15 @@ lemma one_neq_zero : W256.one <> W256.zero.
 (*  rewrite /W256.zero /W256.one.*)
   smt (@W256).  
 qed.
+
+import MemoryMap.
   
 lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
     Verifier_1261.usr_pointMulIntoDest ~ PointMulIntoDest.low :
       ={Primops.memory} /\
       ={arg} /\
       ={Primops.reverted} /\
-      !Primops.reverted{1} 
+      !Primops.reverted{1}
       ==>
         (Primops.reverted{1} <=> Primops.reverted{2}) /\
         (!Primops.reverted{1}) =>
@@ -291,6 +293,46 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
     ].
     proof.
       proc.
+      seq 1 1: (#pre /\ tmp53{1} = _1{2}).
+      inline *. wp. skip. by progress.
+      sp.
+      seq 1 1: #pre.
+      inline *. wp. skip. by progress.
+      sp.
+      seq 2 1: (#pre /\ tmp54{1} = _5{2}).
+      inline *. wp. skip. by progress.
+      
+      (* exists* Primops.memory{1},  usr_point{1}, usr_s{2}.
+      elim*. progress.
+      pose mem_1 := PurePrimops.mstore memory_L W256.zero (PurePrimops.mload memory_L usr_point_L).
+      have H_mem1 : load mem_1 (usr_point_L + W256.of_int 32) = load memory_L (usr_point_L + W256.of_int 32).
+      rewrite /mem_1.
+      apply load_store_diff.
+      pose mem_2 := PurePrimops.mstore mem_1 (W256.of_int 32) (PurePrimops.mload memory_L (usr_point_L + W256.of_int 32)).
+      pose mem_3 := PurePrimops.mstore mem_2 (W256.of_int 64) usr_s_R.
+      seq 15 6: (Primops.memory{1} = mem_3 /\ Primops.memory{2} = mem_3).
+      inline Primops.gas. wp.
+      call {1} (ConcretePrimops.mstore_pspec mem_2 (W256.of_int 64) usr_s_R).
+      call {2} (ConcretePrimops.mstore_pspec mem_2 (W256.of_int 64) usr_s_R).
+      wp.
+      call {1} (ConcretePrimops.mstore_pspec mem_1 (W256.of_int 32) (PurePrimops.mload memory_L (usr_point_L + W256.of_int 32))).
+      call {2} (ConcretePrimops.mstore_pspec mem_1 (W256.of_int 32) (PurePrimops.mload memory_L (usr_point_L + W256.of_int 32))).
+      wp.
+      call {1} (ConcretePrimops.mload_pspec mem_1 (usr_point_L + W256.of_int 32)).
+      call {2} (ConcretePrimops.mload_pspec mem_1 (usr_point_L + W256.of_int 32)).
+      wp.      
+      call {1} (ConcretePrimops.mstore_pspec memory_L (W256.zero) (PurePrimops.mload memory_L usr_point_L)).
+      call {2} (ConcretePrimops.mstore_pspec memory_L (W256.zero) (PurePrimops.mload memory_L usr_point_L)).      wp.
+      call {1} (ConcretePrimops.mload_pspec memory_L usr_point_L).
+      call {2} (ConcretePrimops.mload_pspec memory_L usr_point_L).
+      wp.
+      skip. progress.
+      rewrite /mem_1.
+      apply MemoryMap.load_store_diff. smt (@W256).
+
+
+
+    
       inline *; wp; skip.
     move=> &1 &2  H.
       simplify.
@@ -307,7 +349,9 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       smt().
       simplify.
       rewrite /odflt.
-            
+      
+      
+
       smt(@W256 @Memory @EllipticCurve).
       rewrite - ecMul_def.
       simplify at H1.
@@ -426,4 +470,4 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       progress.
       simplify.
     print ConcretePrimops.mload_spec.
-      call (ConcretePrimops.mload_spec memory u_pt).
+      call (ConcretePrimops.mload_spec memory u_pt). *)
