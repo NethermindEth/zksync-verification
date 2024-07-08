@@ -303,7 +303,16 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       smt().
       simplify.
       progress.
-      print ecMul_def.
+      admit.
+      smt().
+      simplify.
+      rewrite /odflt.
+            
+      smt(@W256 @Memory @EllipticCurve).
+      rewrite - ecMul_def.
+      simplify at H1.
+    print ecMul_def.
+      
       smt (@W256 @Memory.MemoryMap @EllipticCurve.ZModField @EllipticCurve ecMul_def).
         apply ecMul_def.
       
