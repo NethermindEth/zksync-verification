@@ -237,14 +237,14 @@ qed.
 module PointMulIntoDest = {
   proc low(usr_point, usr_s, usr_dest) =
   {
-    var _1, _5, _6,  _9, _10;
+    var _1, _5,  _9, _10;
     _1 <@ Primops.mload(usr_point);
     Primops.mstore(W256.zero, _1);
     _5 <@ Primops.mload(usr_point + W256.of_int 32);
     Primops.mstore(W256.of_int 32, _5);
     Primops.mstore(W256.of_int 64, usr_s);
     _9 <@ Primops.gas();
-    _10 <@ Primops.staticcall(_9, W256.of_int 7, W256.zero, W256.of_int 96, usr_dest, _6);
+    _10 <@ Primops.staticcall(_9, W256.of_int 7, W256.zero, W256.of_int 96, usr_dest, W256.of_int 64);
     if (bool_of_uint256 (PurePrimops.iszero(_10)))
     {
       Verifier_1261.usr_revertWithMessage(W256.of_int 30, W256.zero);
@@ -322,174 +322,25 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       smt (five_neq_seven).
       if. smt(). inline *. wp. skip. smt(six_neq_seven).
       if. smt().
-           
-      
-      (* exists* Primops.memory{1},  usr_point{1}, usr_s{2}.
-      elim*. progress.
-      pose mem_1 := PurePrimops.mstore memory_L W256.zero (PurePrimops.mload memory_L usr_point_L).
-      have H_mem1 : load mem_1 (usr_point_L + W256.of_int 32) = load memory_L (usr_point_L + W256.of_int 32).
-      rewrite /mem_1.
-      apply load_store_diff.
-      pose mem_2 := PurePrimops.mstore mem_1 (W256.of_int 32) (PurePrimops.mload memory_L (usr_point_L + W256.of_int 32)).
-      pose mem_3 := PurePrimops.mstore mem_2 (W256.of_int 64) usr_s_R.
-      seq 15 6: (Primops.memory{1} = mem_3 /\ Primops.memory{2} = mem_3).
-      inline Primops.gas. wp.
-      call {1} (ConcretePrimops.mstore_pspec mem_2 (W256.of_int 64) usr_s_R).
-      call {2} (ConcretePrimops.mstore_pspec mem_2 (W256.of_int 64) usr_s_R).
-      wp.
-      call {1} (ConcretePrimops.mstore_pspec mem_1 (W256.of_int 32) (PurePrimops.mload memory_L (usr_point_L + W256.of_int 32))).
-      call {2} (ConcretePrimops.mstore_pspec mem_1 (W256.of_int 32) (PurePrimops.mload memory_L (usr_point_L + W256.of_int 32))).
-      wp.
-      call {1} (ConcretePrimops.mload_pspec mem_1 (usr_point_L + W256.of_int 32)).
-      call {2} (ConcretePrimops.mload_pspec mem_1 (usr_point_L + W256.of_int 32)).
-      wp.      
-      call {1} (ConcretePrimops.mstore_pspec memory_L (W256.zero) (PurePrimops.mload memory_L usr_point_L)).
-      call {2} (ConcretePrimops.mstore_pspec memory_L (W256.zero) (PurePrimops.mload memory_L usr_point_L)).      wp.
-      call {1} (ConcretePrimops.mload_pspec memory_L usr_point_L).
-      call {2} (ConcretePrimops.mload_pspec memory_L usr_point_L).
-      wp.
-      skip. progress.
-      rewrite /mem_1.
-      apply MemoryMap.load_store_diff. smt (@W256).
-
-
-
-    
-      inline *; wp; skip.
-    move=> &1 &2  H.
-      simplify.
-      rewrite five_neq_seven six_neq_seven PurePrimops.iszero_zeroE /bool_of_uint256 one_neq_zero.
-      simplify.
-      progress.
-      smt().
-      smt().
-      smt().
-      smt().
-      simplify.
-      progress.
-      admit.
-      smt().
-      simplify.
-      rewrite /odflt.
-      
-      
-
-      smt(@W256 @Memory @EllipticCurve).
-      rewrite - ecMul_def.
-      simplify at H1.
-    print ecMul_def.
-      
-      smt (@W256 @Memory.MemoryMap @EllipticCurve.ZModField @EllipticCurve ecMul_def).
-        apply ecMul_def.
-      
-      smt().
-      rewrite /bool_of_uint256.
-      si
-      progress.
-      rewrite PurePrimops.iszero_zeroE.
-      simplif
-      progress.
-      rewrite fi
-      have Hseven_neq_five: W256.of_int 7 <> W256.of_int 5 by smt (five_neq_seven).
-      rewrite Hseven_neq_five.
-      simplify.
-      progress.
-      trivial.
-      rcondf Hneq.
-      progress.
-      apply W256.ult_of_int_true.
-    
-     print W256.ule_of_in.
-     have Hneq : (W256.of_int 7) <> (W256.of_int 5) by smt(W256.ule_of_int_true).      
-   
-      do! smt(@YulPrimops @Memory @Memory.MemoryMap).
-      smt().
-      exists* Primops.memory{1}.
-      elim*=>memory.
-      proc.
-      exists* usr_point{1}.
-      elim* => u_point.
-      exists* usr_s{1}.
-      elim* => u_s.
-      exists* usr_dest{1}.
-      elim* => u_dest.
-      seq 2 1 :
-      (u_dest = usr_dest{1} /\
-        u_s = usr_s{1} /\
-        u_point = usr_point{1} /\
-        memory = Primops.memory{1} /\
-        ={Primops.memory} /\
-        (usr_point{1}, usr_s{1}, usr_dest{1}) =
-        (usr_point{2}, usr_s{2}, usr_dest{2}) /\
-        ={Primops.reverted} /\ !Primops.reverted{1} /\ _1{1} = _1{2} /\ _1{1} = PurePrimops.mload memory u_point).
-      print YulPrimops.ConcretePrimops.mstore_spec.
-      call YulPrimops.ConcretePrimops.mstore_spec.
-          call YulVerifier.
-
-        call Memory.MemoryMap.loadE.
-      inline Primops.mload. wp. skip. progress.
+      if. smt(). sp.
+      seq 2 2: (#pre /\ ={x1} /\ ={y1}).
+      inline*. wp. skip. smt().      
+      seq 1 1 : (#pre /\ ={s}).           
+      inline *. wp. skip. smt().      
+      seq 3 3 : (#pre /\ ={x1_F} /\ ={y1_F} /\ ={s_F}).
+      inline *. wp. skip. smt().
       sp.
-      seq 1 1 :
-      (
-        u_dest = usr_dest{1} /\
-        u_s = usr_s{1} /\
-        u_point = usr_point{1} /\
-        (usr_point{1}, usr_s{1}, usr_dest{1}) = (usr_point{2}, usr_s{2}, usr_dest{2}) /\
-        Primops.memory{1} = PurePrimops.mstore memory (W256.of_int 0) (PurePrimops.mload memory u_point) /\
-        ={Primops.memory} /\
-        ={Primops.reverted} /\
-        !Primops.reverted{1}
-      ).
-      inline Primops.mstore. wp. skip. progress.
+      if.smt().
+      inline *. wp. skip. smt().
+      if.smt().
+      inline *. wp. skip. smt().
       sp.
-      seq 2 1 :
-      (
-        _3{1} = W256.of_int 32 /\
-        u_dest = usr_dest{1} /\
-        u_s = usr_s{1} /\
-        u_point = usr_point{1} /\
-        (usr_point{1}, usr_s{1}, usr_dest{1}) = (usr_point{2}, usr_s{2}, usr_dest{2}) /\
-        Primops.memory{1} = (PurePrimops.mstore memory W256.zero ((PurePrimops.mload memory u_point))) /\
-        ={Primops.memory} /\ ={Primops.reverted} /\ !Primops.reverted{1} /\
-        _5{1} = _5{2} /\ _5{1} = PurePrimops.mload Primops.memory{1} (usr_point{1} + W256.of_int 32)
-      ).
-      inline Primops.mload. wp. skip. move=> &1 &2 H. progress. smt (). smt (). smt (). smt (). admit. admit. admit. smt (). smt (). smt (). smt (). smt (). smt ().
-      seq 1 1 :
-      (
-        u_dest = usr_dest{1} /\
-        u_s = usr_s{1} /\
-        u_point = usr_point{1} /\
-        (usr_point{1}, usr_s{1}, usr_dest{1}) =
-        (usr_point{2}, usr_s{2}, usr_dest{2}) /\
-          Primops.memory{1} =
-        (PurePrimops.mstore (PurePrimops.mstore memory W256.zero (PurePrimops.mload memory u_point)) (W256.of_int 32) (PurePrimops.mload Primops.memory{1} (usr_point{1} + (W256.of_int 32)))) /\
-        ={Primops.memory} /\
-        ={Primops.reverted} /\ !Primops.reverted{1}
-      ).
-      inline Primops.mstore. wp. skip. move=> &1 &2 H. simplify.
-      progress. smt (). smt (). smt (). smt (). admit. admit.
-      have H1 : _3{1} = W256.of_int 32. smt ().
-      have H2 : Primops.memory{1} = (PurePrimops.mstore memory W256.zero (PurePrimops.mload memory u_point)). smt ().
-          rewrite H1 H2.
-          simplify.
-          print Memory.
-          rewrite Memory.MemoryMap.storeE.
-          inline mstore.
-          apply mstore_eq_of_eq .
-      
-      have H1 : Primops.memory{1} = Primops.memory{2}. smt ().
-          have H2 : usr_point{2} = usr_point{1}. smt ().
-          rewrite H2.
-          have H3 : 
-          rewrite H1.
-      
-          Primops.mstore Primops.gas Verifier_1261.usr_revertWithMessage Primops.staticcall bool_of_uint256.
-    inline PurePrimops.iszero.
-      sim.
-      wp.
-      sp.
-      sim.
-      progress.
-      simplify.
-    print ConcretePrimops.mload_spec.
-      call (ConcretePrimops.mload_spec memory u_pt). *)
+      if. smt(). inline*. wp. skip. smt().
+      inline*. wp. skip. smt().
+      inline*. wp. skip. smt().
+      if.  smt().
+      seq 3 2: (#pre /\ ={succ} /\ succ{1} = W256.zero /\ ={_10} /\ _10{1}=W256.zero).
+      inline*. wp. skip. smt().
+      inline*. wp. skip. smt().
+      inline*. wp. skip. smt().
+qed.
