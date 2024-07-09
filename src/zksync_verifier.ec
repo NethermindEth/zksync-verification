@@ -252,30 +252,6 @@ module PointMulIntoDest = {
   }
 }.
 
-lemma mstore_eq_of_eq (mem1 mem2 : MemoryMap.mem) (ind val : uint256) : mem1 = mem2 => PurePrimops.mstore mem1 ind val = PurePrimops.mstore mem2 ind val.
-    proof.
-      progress.
-    qed.
-
-lemma five_neq_seven : W256.of_int 7 <> W256.of_int 5.
-proof.
-  have Hle: W256.of_int 5 < W256.of_int 7 by smt(W256.ult_of_int).
-  smt().  
-qed.
-
-lemma six_neq_seven : W256.of_int 7 <> W256.of_int 6.
-proof.
-  have Hle: W256.of_int 6 < W256.of_int 7 by smt(W256.ult_of_int).
-  smt().
-qed.
-
-lemma one_neq_zero : W256.one <> W256.zero.
-    proof.
-  print W256.
-(*  rewrite /W256.zero /W256.one.*)
-  smt (@W256).  
-qed.
-
 import MemoryMap.
   
 lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
@@ -317,30 +293,29 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       inline *. wp. skip. by progress.
       sp.
       if.
-      smt().
-      inline *. wp. skip.
-      smt (five_neq_seven).
-      if. smt(). inline *. wp. skip. smt(six_neq_seven).
-      if. smt().
-      if. smt(). sp.
+      progress.
+      inline *. wp. skip. progress.
+      if. progress. inline *. wp. skip. progress. 
+      if. progress. 
+      if. progress. sp.
       seq 2 2: (#pre /\ ={x1} /\ ={y1}).
-      inline*. wp. skip. smt().      
+      inline*. wp. skip. progress.      
       seq 1 1 : (#pre /\ ={s}).           
-      inline *. wp. skip. smt().      
+      inline *. wp. skip. progress.      
       seq 3 3 : (#pre /\ ={x1_F} /\ ={y1_F} /\ ={s_F}).
-      inline *. wp. skip. smt().
+      inline *. wp. skip. progress.
       sp.
-      if.smt().
-      inline *. wp. skip. smt().
-      if.smt().
-      inline *. wp. skip. smt().
+      if. progress.
+      inline *. wp. skip. progress.
+      if. progress.
+      inline *. wp. skip. progress.
       sp.
-      if. smt(). inline*. wp. skip. smt().
-      inline*. wp. skip. smt().
-      inline*. wp. skip. smt().
-      if.  smt().
+      if. progress. inline*. wp. skip. progress.
+      inline*. wp. skip. progress.
+      inline*. wp. skip. progress.
+      if.  progress.
       seq 3 2: (#pre /\ ={succ} /\ succ{1} = W256.zero /\ ={_10} /\ _10{1}=W256.zero).
-      inline*. wp. skip. smt().
-      inline*. wp. skip. smt().
-      inline*. wp. skip. smt().
+      inline*. wp. skip. progress.
+      inline*. wp. skip. progress.
+      inline*. wp. skip. progress.
 qed.
