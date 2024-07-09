@@ -42,7 +42,7 @@ module LookupQuotientContribution = {
 
 lemma lookupQuotientContribution_extracted_equiv_low:
     equiv [
-      Verifier.usr_lookupQuotientContribution ~ LookupQuotientContribution.low:
+      Verifier_1261.usr_lookupQuotientContribution ~ LookupQuotientContribution.low:
       ={arg, glob LookupQuotientContribution} ==>
       ={res, glob LookupQuotientContribution}
     ].

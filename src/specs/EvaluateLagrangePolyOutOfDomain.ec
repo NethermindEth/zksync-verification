@@ -36,7 +36,7 @@ module EvaluateLagrangePolyOutOfDomain = {
 
 lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
     equiv [
-      Verifier.usr_evaluateLagrangePolyOutOfDomain ~ EvaluateLagrangePolyOutOfDomain.low :
+      Verifier_1261.usr_evaluateLagrangePolyOutOfDomain ~ EvaluateLagrangePolyOutOfDomain.low :
       ={arg, glob EvaluateLagrangePolyOutOfDomain} ==>
       ={res, glob EvaluateLagrangePolyOutOfDomain}
     ].

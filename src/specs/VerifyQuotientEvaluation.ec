@@ -56,7 +56,7 @@ module VerifyQuotientEvaluation = {
 
 lemma verifyQuotientEvaluation_extracted_equiv_low:
     equiv [
-      Verifier.usr_verifyQuotientEvaluation ~ VerifyQuotientEvaluation.low:
+      Verifier_1261.usr_verifyQuotientEvaluation ~ VerifyQuotientEvaluation.low:
       ={arg, glob VerifyQuotientEvaluation} ==>
       ={res, glob VerifyQuotientEvaluation}
     ].

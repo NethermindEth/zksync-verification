@@ -25,7 +25,7 @@ module Modexp = {
     staticcall_success <@ Primops.staticcall(gas, W256.of_int 5, W256.zero, W256.of_int 192, W256.zero, W256.of_int 32);
     if (bool_of_uint256 (PurePrimops.iszero staticcall_success))
     {
-      Verifier.usr_revertWithMessage(W256.of_int 24, W256.of_int STRING);
+      Verifier_1261.usr_revertWithMessage(W256.of_int 24, W256.of_int STRING);
     }
 
     ret <@ Primops.mload(W256.zero);
@@ -39,7 +39,7 @@ module Modexp = {
 
 lemma modexp_extracted_equiv_low:
     equiv [
-      Verifier.usr_modexp ~ Modexp.low :
+      Verifier_1261.usr_modexp ~ Modexp.low :
       ={arg, glob Modexp} ==>
       ={res, glob Modexp}
     ].

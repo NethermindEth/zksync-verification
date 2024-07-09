@@ -45,7 +45,7 @@ module PermutationQuotientContribution = {
 
 lemma permutationQuotientContribution_extracted_equiv_low:
     equiv [
-      Verifier.usr_permutationQuotientContribution ~ PermutationQuotientContribution.low:
+      Verifier_1261.usr_permutationQuotientContribution ~ PermutationQuotientContribution.low:
       ={arg, glob PermutationQuotientContribution} ==>
       ={res, glob PermutationQuotientContribution}
     ].

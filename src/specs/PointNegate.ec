@@ -1,7 +1,17 @@
 pragma Goals:printall.
 
-require import AllCore Int IntDiv Constants Field.
-require import Memory PurePrimops UInt256 Utils YulPrimops.
+require import AllCore.
+require        Constants.
+require import Field.
+require import Int.
+require import IntDiv.
+require import Memory.
+require import PurePrimops.
+require import RevertWithMessage.
+require import UInt256.
+require import Utils.
+require import Verifier.
+require import YulPrimops.
 
 import FieldQ.
 import MemoryMap.
@@ -16,60 +26,18 @@ op pointNegate (point: Point): Point option =
   if !IsPointValid point then None else Some (point.`1, -(point.`2)).
 
 module PointNegate = {
-
-  proc usr_revertWithMessage(usr_len : uint256, usr_reason : uint256): unit = {
-  var _1, _2, _3, _4, _5, _6, _7;
-  _1 <- (PurePrimops.shl (W256.of_int 229) (W256.of_int 4594637));
-  _2 <- (W256.of_int 0);
-  Primops.mstore(_2, _1);
-  _3 <- (W256.of_int 32);
-  _4 <- (W256.of_int 4);
-  Primops.mstore(_4, _3);
-  _5 <- (W256.of_int 36);
-  Primops.mstore(_5, usr_len);
-  _6 <- (W256.of_int 68);
-  Primops.mstore(_6, usr_reason);
-  _7 <- (W256.of_int 100);
-  Primops.revert(_2, _7);
-  }
-
-  proc usr_pointNegate(usr_point : uint256): unit = {
-    var _1, _2, usr_pY, tmp88, tmp89, _3, tmp90, _4, _5, tmp91, _6, _7;
-    _1 <- (W256.of_int 32);
-    _2 <- (usr_point + _1);
-    tmp88 <@ Primops.mload(_2);
-    usr_pY <- tmp88;
-    tmp89 <- usr_pY;
-    if ((tmp89 = (W256.of_int 0)))
-      {
-      tmp90 <@ Primops.mload(usr_point);
-      _3 <- tmp90;
-      if (bool_of_uint256 _3)
-        {
-        _4 <- PurePrimops.STRING (*pointNegate: invalid point*);
-        _5 <- (W256.of_int 26);
-        tmp91 <@ usr_revertWithMessage(_5, _4);
-        }
-      }
-    else {
-      _6 <- (W256.of_int Q);
-      _7 <- (_6 - usr_pY);
-      Primops.mstore(_2, _7);
-      }
-    }
-
   proc low(usr_point : uint256): unit = {
     var _2, usr_pY, tmp90, tmp91, _6, _7 : uint256;
     _2 <- (usr_point + W256.of_int 32);
     usr_pY <@ Primops.mload(_2);
-    if ((usr_pY = (W256.of_int 0))) {
+    if (usr_pY = W256.zero) {
       tmp90 <@ Primops.mload(usr_point);
       if (bool_of_uint256 tmp90) {
-        usr_revertWithMessage((W256.of_int 26), PurePrimops.STRING);
-        }
+        RevertWithMessage.low((W256.of_int 26), W256.of_int STRING);
+      }
     }
     else {
-      Primops.mstore(_2, ((W256.of_int Q) - usr_pY));
+      Primops.mstore(_2, ((W256.of_int Constants.Q) - usr_pY));
     }
   }
 
@@ -83,39 +51,36 @@ module PointNegate = {
       }
       (* ... *)
     } else {
-      ret_y <- (-point_y) %% Q;
+      ret_y <- (-point_y) %% Constants.Q;
     }
     return (ret_x, ret_y);
   }
 }.
 
-lemma usr_revertWithMessage_correctness (size reason : uint256) :
-  phoare [ PointNegate.usr_revertWithMessage : arg = (size, reason) ==> Primops.reverted ] = 1%r.
-proof.
-progress.
-proc.
-inline Primops.mload Primops.mstore Primops.revert.
-wp.
-skip.
-progress.
-qed.
-
 lemma pointNegate_extracted_equiv_low :
-   equiv [PointNegate.usr_pointNegate ~ PointNegate.low : ={arg, glob PointNegate} ==> ={res}].
-proof. proc.
-seq 5  2 : (#pre /\ ={usr_pY, _2} /\ usr_pY{1} = tmp89{1}).
-wp.
-call (_: ={glob PointNegate}). wp. skip. auto.
-wp. auto.
-if. auto. 
-inline *. sp. wp.
-skip. auto.
-call (_: ={glob PointNegate}). auto. wp. auto.
-qed.
+    equiv [
+      Verifier_1261.usr_pointNegate ~ PointNegate.low :
+      ={arg, glob PointNegate} ==>
+      ={res, glob PointNegate}
+    ].
+    proof.
+      proc.
+      seq 4  2 : (#pre /\ ={usr_pY, _2}).
+      inline*. wp. skip. by progress.
+      sp.
+      if. by progress.
+      seq 1 1: (#pre /\ ={tmp90}).
+      inline*. wp. skip. by progress.
+      sp.
+      if. by progress.
+      sp.
+      call revertWithMessage_extracted_equiv_low.
+      skip. by progress.
+      skip. by progress.
+      inline*. wp. skip. rewrite /Constants.Q. by progress.
+    qed.
 
-print pmod_small.
-
-lemma aux (x : int): 0 < x => x < Q => (-x) %% Q = Q - x.
+lemma aux (x : int): 0 < x => x < Constants.Q => (-x) %% Constants.Q = Constants.Q - x.
 proof. progress. rewrite -modzDl pmod_small. split. smt ().
 progress.  smt (). reflexivity. qed.
     
@@ -123,7 +88,7 @@ lemma pointNegate_low_equiv_mid (memory: mem) (point_address: uint256) (point_x_
     PointNegate.low ~ PointNegate.mid :
       arg{2} = (point_x_int, point_y_int) /\
       arg{1} = point_address /\
-      point_y_int < Q /\
+      point_y_int < Constants.Q /\
       Primops.memory{1} = memory /\
       W256.to_uint(PurePrimops.mload memory point_address) = point_x_int /\
       W256.to_uint(PurePrimops.mload memory (point_address + W256.of_int 32)) = point_y_int /\
@@ -149,10 +114,10 @@ case (point_x_int <> 0).
 rcondt {1} 1.
 progress. skip. progress. smt ().
 rcondt {2} 1.
-progress. 
-call {1} (usr_revertWithMessage_correctness (of_int 26)%W256 PurePrimops.STRING). wp. skip. progress. right. by progress.
-
-    rcondf {1} 1.
+progress.
+call{1} revertWithMessage_low_pspec.
+wp. skip. progress. by smt ().
+rcondf {1} 1.
 progress. skip. progress. rewrite -W256.to_uintK H3 H5. smt ().
 rcondf {2} 1.
 progress. skip. progress. smt (). smt (). left. progress. 
@@ -160,7 +125,7 @@ do 2! (rewrite store_loaded_val). reflexivity.
 
     simplify.
 exists* _2{1},  usr_pY{1}. elim*. move => _2_l usr_pY_l.
-call {1} (ConcretePrimops.mstore_pspec memory _2_l ((of_int Q)%W256 - usr_pY_l)).
+call {1} (ConcretePrimops.mstore_pspec memory _2_l ((of_int Constants.Q)%W256 - usr_pY_l)).
 wp. skip. progress. smt (). smt (). left. progress.
 rewrite store_loaded_val. congr.
 rewrite -W256.to_uintK -H2. rewrite aux. smt (@W256). smt (@W256). smt (@W256).

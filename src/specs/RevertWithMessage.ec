@@ -1,5 +1,6 @@
 require import UInt256.
 require import PurePrimops.
+require import Real.
 require import Verifier.
 require import YulPrimops.
 
@@ -15,7 +16,7 @@ module RevertWithMessage = {
 
 lemma revertWithMessage_extracted_equiv_low:
     equiv [
-      Verifier.usr_revertWithMessage ~ RevertWithMessage.low :
+      Verifier_1261.usr_revertWithMessage ~ RevertWithMessage.low :
       ={arg, glob RevertWithMessage} ==>
       ={res, glob RevertWithMessage}
     ].
@@ -24,4 +25,15 @@ lemma revertWithMessage_extracted_equiv_low:
         wp.
         skip.
         by progress.
+    qed.
+
+lemma revertWithMessage_low_pspec:
+    phoare [
+      RevertWithMessage.low:
+      true ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline*. wp. skip. by progress.
     qed.

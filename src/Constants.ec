@@ -3,9 +3,16 @@ pragma Goals:printall.
 require import AllCore.
 require import Int.
 require import IntDiv.
+require import UInt256.
+require        VerifierConsts.
 
 op Q : int = 21888242871839275222246405745257275088696311157297823662689037894645226208583 axiomatized by qE.
 op R : int = 21888242871839275222246405745257275088548364400416034343698204186575808495617 axiomatized by rE.
+
+lemma Q_int: Q = W256.to_uint VerifierConsts.Q_MOD
+    by rewrite /VerifierConsts.Q_MOD W256.of_uintK qE pmod_small; [trivial | reflexivity].
+lemma R_int: R = W256.to_uint VerifierConsts.R_MOD
+    by rewrite /VerifierConsts.R_MOD W256.of_uintK rE pmod_small; [trivial | reflexivity].
 
 axiom prime_q : prime Q.
 axiom prime_r : prime R.
@@ -15,3 +22,8 @@ op OMEGA : int = 134466679823763941615636105645874131255647578010195387326010451
 
 (* 0x4000000 2^26 *)
 op DOMAIN_SIZE : int = 67108864 axiomatized by domain_sizeE.
+
+lemma OMEGA_int: OMEGA = W256.to_uint VerifierConsts.OMEGA
+    by rewrite /VerifierConsts.OMEGA W256.of_uintK omegaE pmod_small; [trivial | reflexivity].
+lemma DOMAIN_SIZE_int: DOMAIN_SIZE = W256.to_uint VerifierConsts.DOMAIN_SIZE
+    by rewrite /VerifierConsts.DOMAIN_SIZE W256.of_uintK domain_sizeE pmod_small; [trivial | reflexivity].
