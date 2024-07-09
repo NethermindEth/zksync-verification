@@ -11,6 +11,8 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
+import MemoryMap.
+
 op p_int = 21888242871839275222246405745257275088696311157297823662689037894645226208583.
 op p_uint256 = W256.of_int p_int.
 
@@ -234,6 +236,68 @@ lemma pointNegate_mid_matches_high (point: Point):
     wp. skip. progress; by smt().
 qed.
 
+module PointAddIntoDest = {
+  proc low(usr_p1, usr_p2, usr_dest) =
+  {
+    var _1, _5, _6, _9, _13, _14, tmp64;
+    _1 <@ Primops.mload(usr_p1);
+    Primops.mstore(W256.of_int 0, _1);
+    _5 <@ Primops.mload(usr_p1 + W256.of_int 32);
+    Primops.mstore(W256.of_int 32, _5);
+    _6 <@ Primops.mload(usr_p2);
+    Primops.mstore(W256.of_int 64, _6);
+    _9 <@ Primops.mload(usr_p2 + W256.of_int 32);
+    Primops.mstore(W256.of_int 96, _9);
+    _13 <@ Primops.gas();
+    _14 <@ Primops.staticcall(_13, W256.of_int 6, W256.zero, W256.of_int 128, usr_dest, W256.of_int 64);
+    if ((bool_of_uint256 (PurePrimops.iszero _14)))
+      {
+      tmp64 <@ Verifier_1261.usr_revertWithMessage((W256.of_int 30), (W256.of_int STRING (*pointAddIntoDest: ecAdd failed*)));
+      }
+  }
+}.
+
+lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
+    Verifier_1261.usr_pointAddIntoDest ~ PointAddIntoDest.low :
+      ={Primops.memory} /\
+      ={arg} /\
+      ={Primops.reverted} /\
+      !Primops.reverted{1}
+      ==>
+        (Primops.reverted{1} <=> Primops.reverted{2}) /\
+        (!Primops.reverted{1}) =>
+        forall (idx: uint256),
+        Primops.memory{1}.[idx] =
+        Primops.memory{2}.[idx]
+    ].
+proof.
+  proc.
+  seq 2 1: (#pre /\ ={_1}).
+  inline *. wp. skip. progress.
+  seq 2 1: (#pre /\ _2{1} = W256.zero /\ ={Primops.memory}).
+  inline *. wp. skip. progress.
+  seq 4 1: (#pre /\ ={_5} /\ _3{1} = W256.of_int 32 /\ _4{1} = usr_p1{1} + _3{1}).
+  inline*. wp. skip. progress.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ ={_6}).  
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ _7{1} = W256.of_int 64 /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  seq 3 1: (#pre /\ ={_9}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_13}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ ={_14}).
+  inline*. wp. skip. progress.
+  sp. if. progress. inline*. wp. skip. progress.
+  skip. progress.
+qed.
+
 module PointMulIntoDest = {
   proc low(usr_point, usr_s, usr_dest) =
   {
@@ -252,8 +316,6 @@ module PointMulIntoDest = {
   }
 }.
 
-import MemoryMap.
-  
 lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
     Verifier_1261.usr_pointMulIntoDest ~ PointMulIntoDest.low :
       ={Primops.memory} /\
