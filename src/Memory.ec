@@ -148,8 +148,360 @@ lemma load_store_diff (memory: mem) (idx idx2 val: uint256):
       rewrite Map.get_set_neqE. smt(@Utils).
       reflexivity.
     qed.
+
+lemma swap_aux1 (a b: uint256):
+    a <= b => b < a + W256.of_int 32 => b = a + W256.of_int (W256.to_uint (b-a)).
+    proof.
+      progress.
+      smt (@W256).
+  qed.
+
+lemma swap_aux2 (a b: uint256):
+    a <= b => b < a + W256.of_int 32 => 0 <= W256.to_uint (b-a) < 32.
+    proof.
+      progress.
+      smt (@W256).
+      smt (@W256).
+    qed.
+
+(* lemma swap_aux3 (idx idx2 x: uint256):
+    W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 =>
+    idx <= x < idx + W256.of_int 32 =>
+    forall (i: int), 0 <= i < 32 => x <> idx2 + (W256.of_int i).
+    progress.
+    smt(@W256 @Utils). *)
+    
+lemma store_store_swap_diff (memory: mem) (idx idx2 val val2: uint256):
+    W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 =>
+    store (store memory idx val) idx2 val2 = store (store memory idx2 val2) idx val.
+    proof.
+      progress.
+      rewrite storeE storeE storeE storeE.
+      progress.
+      apply Map.map_eqP. progress.
+      case (x = idx). progress. do 63! (rewrite Map.get_set_neqE; first smt(@Utils)). rewrite Map.get_set_sameE. do 31! (rewrite Map.get_set_neqE; first smt(@Utils)). rewrite Map.get_set_sameE. reflexivity.
+      progress. case (x = idx + W256.of_int 1). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 30! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 30! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 2). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 29! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 29! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 3). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 28! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 28! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 4). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 27! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 27! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 5). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 26! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 26! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 6). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 25! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 25! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 7). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 24! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 24! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 8). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 23! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 23! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 9). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 22! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 22! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 10). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 21! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 21! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 11). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 20! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 20! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 12). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 19! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 19! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 13). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 18! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 18! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 14). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 17! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 17! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 15). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 16! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 16! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 16). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 15! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 15! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 17). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 14! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 14! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 18). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 13! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 13! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 19). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 12! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 12! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 20). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 11! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 11! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 21). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 10! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 10! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 22). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 9! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 9! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 23). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 8! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 8! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 24). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 7! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 7! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 25). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 6! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 6! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 26). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 5! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 5! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 27). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 4! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 4! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 28). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 3! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 3! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 29). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 2! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 2! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 30). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      rewrite Map.get_set_neqE; first exact add_2_neq. rewrite Map.get_set_sameE.
+      rewrite Map.get_set_neqE; first exact add_2_neq. rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx + W256.of_int 31). progress.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      rewrite Map.get_set_sameE.
+      rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2). progress. do 31! (rewrite Map.get_set_neqE; first smt(@Utils)). rewrite Map.get_set_sameE. do 63! (rewrite Map.get_set_neqE; first smt(@Utils)). rewrite Map.get_set_sameE. reflexivity.
+      progress. case (x = idx2 + W256.of_int 1). progress.
+      do 30! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 30! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 2). progress.
+      do 29! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 29! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 3). progress.
+      do 28! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 28! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 4). progress.
+      do 27! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 27! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 5). progress.
+      do 26! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 26! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 6). progress.
+      do 25! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 25! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 7). progress.
+      do 24! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 24! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 8). progress.
+      do 23! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 23! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 9). progress.
+      do 22! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 22! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 10). progress.
+      do 21! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 21! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 11). progress.
+      do 20! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 20! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 12). progress.
+      do 19! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 19! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 13). progress.
+      do 18! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 18! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 14). progress.
+      do 17! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 17! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 15). progress.
+      do 16! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 16! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 16). progress.
+      do 15! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 15! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 17). progress.
+      do 14! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 14! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 18). progress.
+      do 13! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 13! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 19). progress.
+      do 12! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 12! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 20). progress.
+      do 11! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 11! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 21). progress.
+      do 10! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 10! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 22). progress.
+      do 9! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 9! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 23). progress.
+      do 8! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 8! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 24). progress.
+      do 7! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 7! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 25). progress.
+      do 6! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 6! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 26). progress.
+      do 5! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 5! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 27). progress.
+      do 4! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 4! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 28). progress.
+      do 3! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 3! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 29). progress.
+      do 2! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      do 2! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 30). progress.
+      rewrite Map.get_set_neqE; first exact add_2_neq. rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      rewrite Map.get_set_neqE; first exact add_2_neq. rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. case (x = idx2 + W256.of_int 31). progress.
+      rewrite Map.get_set_sameE.
+      do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
+      rewrite Map.get_set_sameE.
+      reflexivity.
+      progress. smt (@W256 @Map).
+    qed.
       
-      
+  lemma store_store_same (memory: mem) (idx val val2):
+      store (store memory idx val2) idx val = store memory idx val.
+      proof.
+        rewrite storeE storeE storeE.
+        progress.
+        smt (@Map).
+      qed.
+    
 
     (* done between 1 and 32 for now because that's all we need and it's easier on smt *)
 lemma get_set_offset (m: mem) (idx: uint256) (offset: int) (val: uint8):
