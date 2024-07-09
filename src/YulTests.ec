@@ -1,4 +1,5 @@
 pragma Goals:printall.
+prover timeout=100.
 
 require import AllCore.
 require import Array.
@@ -200,7 +201,6 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
       rewrite Map.get_set_neqE. smt.
       have H_y : y{hr}.[x0-240] = false by smt (@W256).
       rewrite H_y.
-    search W8."_.[_]".
       rewrite - (W8.zerowE (bit_idx)).
       congr.
       have H_diff: forall (i j: int), 0 <= i < 32 => 0 <= j < 32 => i <> j => W256.of_int i <> W256.of_int j.
@@ -215,7 +215,6 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
       have H_x0: 240 <= x0 < 248 by smt ().
       have H_x0_range: (0 <= x0 - 240 && x0 - 240 < 256) by smt ().
       rewrite H_x0_range. progress.
-    search W256."_.[_]".
       rewrite W256.get_out. smt ().
       rewrite Map.get_set_sameE.
       have H_lhs: 0 <= x0 && x0 < 256 by smt().
@@ -229,7 +228,6 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
       have H_x0: 248 <= x0 < 256 by smt().
       have H_small: forall (a: uint256) (b: int), a < W256.of_int 256 => 8 <= b => a.[b] = false.
       progress.
-    search W256."_.[_]".
       pose a8 := W8.of_int (W256.to_uint a).
       have H_a8: forall (i: int), a.[i] = a8.[i] by smt.
       rewrite H_a8. smt.
@@ -336,12 +334,12 @@ lemma aux_range (x: int): 0<=x<32 => !(W256.of_int 64 <= W256.of_int (31 - x)).
       progress.
       smt.
     qed.
-  
-      lemma aux_range2 (x: int): 0<=x<32 => !(W256.of_int 64 <= W256.of_int (63 - x)).
-        proof.
-          progress.
-          smt.
-        qed.
+
+lemma aux_range2 (x: int): 0<=x<32 => !(W256.of_int 64 <= W256.of_int (63 - x)).
+    proof.
+      progress.
+      smt.
+  qed.
 
 lemma ret_test_correctness (a b: uint256) :
     phoare [
@@ -361,7 +359,6 @@ lemma ret_test_correctness (a b: uint256) :
       rewrite /load.
       apply W256.ext_eq.
       progress.
-    print pack32wE.
       rewrite pack32wE. by trivial.
       rewrite W32u8.Pack.initE.
       have H_in_range: 0 <= x %/ 8 && x %/ 8 < 32 by smt ().
