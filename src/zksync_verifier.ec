@@ -445,3 +445,78 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
       inline*. wp. skip. progress.
       inline*. wp. skip. progress.
 qed.
+
+module PointMulAndAddIntoDest = {
+  proc low(usr_point, usr_s, usr_dest) =
+  {
+    var _1, _5, _9, usr_success, _10, _11, _12, _15, _16, tmp87;
+    _1 <@ Primops.mload(usr_point);
+    Primops.mstore(W256.zero, _1);
+    _5 <@ Primops.mload(usr_point + W256.of_int 32);
+    Primops.mstore(W256.of_int 32, _5);
+    Primops.mstore(W256.of_int 64, usr_s);
+    _9 <@ Primops.gas();
+    usr_success <@ Primops.staticcall(_9, W256.of_int 7, W256.zero, W256.of_int 96, W256.zero, W256.of_int 64);
+    _10 <@ Primops.mload(usr_dest);
+    Primops.mstore(W256.of_int 64, _10);
+    _11 <- (usr_dest + W256.of_int 32);
+    _12 <@ Primops.mload(_11);
+    Primops.mstore(W256.of_int 96, _12);
+    _15 <@ Primops.gas();
+    _16 <@ Primops.staticcall(_15, W256.of_int 6, W256.zero, W256.of_int 128, usr_dest, W256.of_int 64);
+    usr_success <- (PurePrimops.bit_and usr_success _16);
+    if ((bool_of_uint256 (PurePrimops.iszero usr_success)))
+      {
+      tmp87 <@ Verifier_1261.usr_revertWithMessage(W256.of_int 22, W256.of_int STRING);
+      }
+  }
+}.
+
+lemma usr_pointMulAndAddIntoDest_actual_matches_low (x y : uint256) : equiv [
+    Verifier_1261.usr_pointMulAndAddIntoDest ~ PointMulAndAddIntoDest.low :
+      ={Primops.memory} /\
+      ={arg} /\
+      ={Primops.reverted} /\
+      !Primops.reverted{1}
+      ==>
+        (Primops.reverted{1} <=> Primops.reverted{2}) /\
+        (!Primops.reverted{1}) =>
+        forall (idx: uint256),
+        Primops.memory{1}.[idx] =
+        Primops.memory{2}.[idx]
+    ].
+proof.
+  proc.
+  seq 2 1: (#pre /\ ={_1}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline *. wp. skip. progress.
+  sp.
+  seq 3 2: (#pre /\ ={_5} /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_9}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={usr_success}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ ={_10}).
+  inline*. wp. skip. progress.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_12}).
+  inline*. wp. skip. progress.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_15}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ ={_16}).
+  inline*. wp. skip. progress.
+  inline*. wp. skip. progress.
+qed.
