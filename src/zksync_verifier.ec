@@ -236,6 +236,70 @@ lemma pointNegate_mid_matches_high (point: Point):
     wp. skip. progress; by smt().
 qed.
 
+module PointAddAssign = {
+  proc low(usr_p1, usr_p2) =
+  {
+    var _1, _5, _6, _9, _13, _14, tmp78;
+    _1 <@ Primops.mload(usr_p1);
+    Primops.mstore(W256.zero, _1);
+    _5 <@ Primops.mload(usr_p1 + W256.of_int 32);
+    Primops.mstore(W256.of_int 32, _5);
+    _6 <@ Primops.mload(usr_p2);
+    Primops.mstore(W256.of_int 64, _6);
+    _9 <@ Primops.mload(usr_p2 + W256.of_int 32);
+    Primops.mstore(W256.of_int 96, _9);
+    _13 <@ Primops.gas();
+    _14 <@ Primops.staticcall(_13, W256.of_int 6, W256.zero, W256.of_int 128, usr_p1, W256.of_int 64);
+    if ((bool_of_uint256 (PurePrimops.iszero _14)))
+      {
+      tmp78 <@ Verifier_1261.usr_revertWithMessage(W256.of_int 28, (W256.of_int STRING (*pointAddAssign: ecAdd failed*)));
+      }
+  }
+}.
+
+lemma usr_pointAddAssign_actual_matches_low (x y : uint256) : equiv [
+    Verifier_1261.usr_pointAddAssign ~ PointAddAssign.low :
+      ={Primops.memory} /\
+      ={arg} /\
+      ={Primops.reverted} /\
+      !Primops.reverted{1}
+      ==>
+        (Primops.reverted{1} <=> Primops.reverted{2}) /\
+        (!Primops.reverted{1}) =>
+        forall (idx: uint256),
+        Primops.memory{1}.[idx] =
+        Primops.memory{2}.[idx]
+    ].
+proof.
+  proc.
+  seq 2 1: (#pre /\ ={_1}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ _2{1} = W256.zero /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_5}).
+  inline*. wp. skip. progress.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ ={_6}).
+  inline *. wp. skip. progress.
+  sp.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_9}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 1 1: (#pre /\ ={Primops.memory}).
+  inline*. wp. skip. progress.
+  sp.
+  seq 2 1: (#pre /\ ={_13}).
+  inline*. wp. skip. progress.
+  seq 2 1: (#pre /\ ={_14}).
+  inline*. wp. skip. progress.
+  inline*. wp. skip. progress.
+qed. 
+
 module PointAddIntoDest = {
   proc low(usr_p1, usr_p2, usr_dest) =
   {
@@ -257,7 +321,7 @@ module PointAddIntoDest = {
   }
 }.
 
-lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
+lemma usr_pointAddIntoDest_actual_matches_low (x y : uint256) : equiv [
     Verifier_1261.usr_pointAddIntoDest ~ PointAddIntoDest.low :
       ={Primops.memory} /\
       ={arg} /\
