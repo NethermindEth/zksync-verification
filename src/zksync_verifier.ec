@@ -271,31 +271,10 @@ lemma usr_pointAddAssign_actual_matches_low (x y : uint256) : equiv [
         Primops.memory{2}.[idx]
     ].
 proof.
-  proc.
-  seq 2 1: (#pre /\ ={_1}).
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ _2{1} = W256.zero /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_5}).
-  inline*. wp. skip. progress.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ ={_6}).
-  inline *. wp. skip. progress.
-  sp.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_9}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_13}).
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ ={_14}).
+  proc.  
+  seq 24 10: (#pre /\ ={_1, _5, _6, _9, _13, _14} /\ _2{1} = W256.zero /\ _3{1} = W256.of_int 32 /\ _4{1} = usr_p1{1} + _3{1}
+             /\ _7{1} = W256.of_int 64 /\ _8{1} = usr_p2{1} + _3{1} /\ _10{1} = W256.of_int 96 /\ _11{1} = W256.of_int 128
+             /\ _12{1} = W256.of_int 6).
   inline*. wp. skip. progress.
   inline*. wp. skip. progress.
 qed. 
@@ -336,30 +315,11 @@ lemma usr_pointAddIntoDest_actual_matches_low (x y : uint256) : equiv [
     ].
 proof.
   proc.
-  seq 2 1: (#pre /\ ={_1}).
-  inline *. wp. skip. progress.
-  seq 2 1: (#pre /\ _2{1} = W256.zero /\ ={Primops.memory}).
-  inline *. wp. skip. progress.
-  seq 4 1: (#pre /\ ={_5} /\ _3{1} = W256.of_int 32 /\ _4{1} = usr_p1{1} + _3{1}).
+  seq 24 10: (#pre /\ ={_1, _5, _6, _9, _13, _14} /\ _2{1} = W256.zero /\ _3{1} = W256.of_int 32 /\ _4{1} = usr_p1{1} + _3{1}
+             /\ _7{1} = W256.of_int 64 /\ _8{1} = usr_p2{1} + _3{1} /\ _10{1} = W256.of_int 96 /\ _11{1} = W256.of_int 128
+             /\ _12{1} = W256.of_int 6).
   inline*. wp. skip. progress.
-  seq 1 1: (#pre /\ ={Primops.memory}).
   inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ ={_6}).  
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ _7{1} = W256.of_int 64 /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  seq 3 1: (#pre /\ ={_9}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_13}).
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ ={_14}).
-  inline*. wp. skip. progress.
-  sp. if. progress. inline*. wp. skip. progress.
-  skip. progress.
 qed.
 
 module PointMulIntoDest = {
@@ -393,63 +353,18 @@ lemma usr_pointMulIntoDest_actual_matches_low (x y : uint256) : equiv [
         Primops.memory{1}.[idx] =
         Primops.memory{2}.[idx]
     ].
-    proof.
-      proc.
-      seq 1 1: (#pre /\ tmp53{1} = _1{2}).
-      inline *. wp. skip. by progress.
-      sp.
-      seq 1 1: #pre.
-      inline *. wp. skip. by progress.
-      sp.
-      seq 2 1: (#pre /\ _5{1} = _5{2}).
-      inline *. wp. skip. by progress.
-      seq 2 1: (#pre /\ _6{1} = (W256.of_int 64) /\ Primops.memory{1} = Primops.memory{2}).
-      inline *. wp. skip. by progress.
-      seq 1 1: (#pre /\ ={Primops.memory}).
-      inline *. wp. skip. by progress.
-      seq 4 1: (#pre /\ _7{1}=W256.of_int 96 /\ _8{1}=W256.of_int 7 /\ ={_9}).
-      inline *. wp. skip. by progress.
-      sp.
-      inline Primops.staticcall.
-      seq 1 1: (#pre).
-      inline *. wp. skip. by progress.
-      seq 1 1: (#pre /\ addr{1} = W256.of_int 7 /\ ={addr}).
-      inline *. wp. skip. by progress.
-      seq 1 1: (#pre /\ argOff{1} = _2{1} /\ ={argOff}).
-      inline *. wp. skip. by progress.
-      sp.
-      if.
-      progress.
-      inline *. wp. skip. progress.
-      if. progress. inline *. wp. skip. progress. 
-      if. progress. 
-      if. progress. sp.
-      seq 2 2: (#pre /\ ={x1} /\ ={y1}).
-      inline*. wp. skip. progress.      
-      seq 1 1 : (#pre /\ ={s}).           
-      inline *. wp. skip. progress.      
-      seq 3 3 : (#pre /\ ={x1_F} /\ ={y1_F} /\ ={s_F}).
-      inline *. wp. skip. progress.
-      sp.
-      if. progress.
-      inline *. wp. skip. progress.
-      if. progress.
-      inline *. wp. skip. progress.
-      sp.
-      if. progress. inline*. wp. skip. progress.
-      inline*. wp. skip. progress.
-      inline*. wp. skip. progress.
-      if.  progress.
-      seq 3 2: (#pre /\ ={succ} /\ succ{1} = W256.zero /\ ={_10} /\ _10{1}=W256.zero).
-      inline*. wp. skip. progress.
-      inline*. wp. skip. progress.
-      inline*. wp. skip. progress.
+proof.
+  proc.
+  seq 17 7: (#pre /\ ={_1} /\ _2{1} = W256.zero /\ _3{1} = W256.of_int 32 /\ _4{1} = usr_point{1} + _3{1}
+            /\ _6{1} = W256.of_int 64 /\ _7{1} = W256.of_int 96 /\ _8{1} = W256.of_int 7 /\ ={_5, _9, _10}).
+  inline*. wp. skip. progress.
+  inline*. wp. skip. progress.
 qed.
 
 module PointMulAndAddIntoDest = {
   proc low(usr_point, usr_s, usr_dest) =
   {
-    var _1, _5, _9, usr_success, _10, _11, _12, _15, _16, tmp87;
+    var _1, _5, _9, usr_success, _10, _12, _15, _16, tmp87;
     _1 <@ Primops.mload(usr_point);
     Primops.mstore(W256.zero, _1);
     _5 <@ Primops.mload(usr_point + W256.of_int 32);
@@ -459,8 +374,7 @@ module PointMulAndAddIntoDest = {
     usr_success <@ Primops.staticcall(_9, W256.of_int 7, W256.zero, W256.of_int 96, W256.zero, W256.of_int 64);
     _10 <@ Primops.mload(usr_dest);
     Primops.mstore(W256.of_int 64, _10);
-    _11 <- (usr_dest + W256.of_int 32);
-    _12 <@ Primops.mload(_11);
+    _12 <@ Primops.mload(usr_dest + W256.of_int 32);
     Primops.mstore(W256.of_int 96, _12);
     _15 <@ Primops.gas();
     _16 <@ Primops.staticcall(_15, W256.of_int 6, W256.zero, W256.of_int 128, usr_dest, W256.of_int 64);
@@ -487,39 +401,14 @@ lemma usr_pointMulAndAddIntoDest_actual_matches_low (x y : uint256) : equiv [
     ].
 proof.
   proc.
-  seq 2 1: (#pre /\ ={_1}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline *. wp. skip. progress.
-  sp.
-  seq 3 2: (#pre /\ ={_5} /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_9}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={usr_success}).
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ ={_10}).
-  inline*. wp. skip. progress.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_12}).
-  inline*. wp. skip. progress.
-  seq 1 1: (#pre /\ ={Primops.memory}).
-  inline*. wp. skip. progress.
-  sp.
-  seq 2 1: (#pre /\ ={_15}).
-  inline*. wp. skip. progress.
-  seq 2 1: (#pre /\ ={_16}).
+  seq 20 9: (#pre /\ ={_1} /\ _2{1} = W256.zero /\ _3{1} = W256.of_int 32 /\  _4{1} = usr_point{1} + _3{1} /\
+            _6{1} = W256.of_int 64 /\ _7{1} = W256.of_int 96 /\ _8{1} = W256.of_int 7 /\ ={_5, _9, usr_success, _10}).
+  inline*. wp. skip. progress. sp.
+  seq 9 4: (#pre /\ ={_12} /\ _13{1} = W256.of_int 128 /\ _14{1} = W256.of_int 6 /\ ={_15, _16}).
   inline*. wp. skip. progress.
   inline*. wp. skip. progress.
 qed.
+
 
 module PointSubAssign = {
   proc low(usr_p1, usr_p2) =
