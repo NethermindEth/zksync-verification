@@ -12,7 +12,9 @@ require VerifierMem.
 require VerifierVars.
 require YulPrimops.
 require YulTests.
-(* specs *)
+  (* specs *)
+require AddAssignPermutationLinearisationContributionWithV.
+require AddAssignRescueCustomGateLinearisationContributionWithV.
 require EvaluateLagrangePolyOutOfDomain.
 require LookupQuotientContribution.
 require MainGateLinearisationContributionWithV.

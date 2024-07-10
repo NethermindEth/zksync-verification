@@ -34,7 +34,7 @@ module PointSubAssign = {
   }
 }.
 
-lemma usr_pointSubAssign_extracted_matches_low :
+lemma pointSubAssign_extracted_equiv_low :
     equiv [
       Verifier_1261.usr_pointSubAssign ~ PointSubAssign.low :
       ={arg, glob PointSubAssign} ==>
