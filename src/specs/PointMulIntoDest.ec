@@ -30,7 +30,7 @@ module PointMulIntoDest = {
   }
 }.
 
-lemma usr_pointMulIntoDest_extracted_matches_low (x y : uint256) : equiv [
+lemma pointMulIntoDest_extracted_equiv_low : equiv [
     Verifier_1261.usr_pointMulIntoDest ~ PointMulIntoDest.low :
       ={arg, glob PointMulIntoDest} ==>
       ={res, glob PointMulIntoDest}

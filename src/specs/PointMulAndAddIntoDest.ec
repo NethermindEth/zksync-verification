@@ -37,8 +37,9 @@ module PointMulAndAddIntoDest = {
   }
 }.
 
-lemma usr_pointMulAndAddIntoDest_extracted_matches_low : equiv [
-    Verifier_1261.usr_pointMulAndAddIntoDest ~ PointMulAndAddIntoDest.low :
+lemma pointMulAndAddIntoDest_extracted_equiv_low :
+    equiv [
+      Verifier_1261.usr_pointMulAndAddIntoDest ~ PointMulAndAddIntoDest.low :
       ={arg, glob PointMulAndAddIntoDest} ==>
       ={res, glob PointMulAndAddIntoDest}
     ].

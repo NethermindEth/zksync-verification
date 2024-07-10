@@ -32,8 +32,9 @@ module PointAddAssign = {
   }
 }.
 
-lemma usr_pointAddAssign_extracted_matches_low (x y : uint256) : equiv [
-    Verifier_1261.usr_pointAddAssign ~ PointAddAssign.low :
+lemma pointAddAssign_extracted_equiv_low :
+    equiv [
+      Verifier_1261.usr_pointAddAssign ~ PointAddAssign.low :
       ={arg, glob PointAddAssign} ==>
       ={res, glob PointAddAssign}
     ].
