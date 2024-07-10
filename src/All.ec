@@ -8,6 +8,8 @@ require UInt256.
 require Utils.
 require Verifier.
 require VerifierConsts.
+require VerifierMem.
+require VerifierVars.
 require YulPrimops.
 require YulTests.
 (* specs *)

@@ -43,7 +43,7 @@ lemma add_2_neq (x y: int) (a: uint256):
     a + W256.of_int x <> a + W256.of_int y.
     proof.
       progress.
-      smt.
+      smt timeout=100.
   qed.
 
 lemma neq_of_lt (idx idx2: uint256):
@@ -90,7 +90,7 @@ lemma add_2_neq_of_diff (idx idx2: uint256) (a b: int):
     idx2 + (W256.of_int a) <> idx + W256.of_int b.
     proof.
       progress.
-      smt.
+      smt timeout=100.
     qed.
 
 lemma neq_of_diff (idx idx2: uint256):
@@ -157,5 +157,10 @@ lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
     smt ().
   qed.
 
-lemma weaken_and_left (a b): a /\ b => a by smt().
-lemma weaken_and_right (a b): a /\ b => b by smt().
+lemma weaken_and_left (a b): a /\ b => a. proof. by smt(). qed.
+lemma weaken_and_right (a b): a /\ b => b. proof. by smt(). qed.
+
+require import Constants.
+  
+lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.
+lemma R_mod_W256_R : R %% W256.modulus = R. by smt(). qed.      
