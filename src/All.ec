@@ -13,6 +13,7 @@ require VerifierVars.
 require YulPrimops.
 require YulTests.
   (* specs *)
+require AddAssignLookupLinearisationContributionWithV.
 require AddAssignPermutationLinearisationContributionWithV.
 require AddAssignRescueCustomGateLinearisationContributionWithV.
 require EvaluateLagrangePolyOutOfDomain.
