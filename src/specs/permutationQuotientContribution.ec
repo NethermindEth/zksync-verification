@@ -40,7 +40,7 @@ axiom l0_z_mem : in_mem STATE_L_0_AT_Z_SLOT l0_z.
 
 module M = {
 
-  proc low0(): uint256 = {
+  proc low(): uint256 = {
     var usr_res, tmp270, tmp271, usr_gamma, usr_beta, usr_factorMultiplier, tmp274, tmp275, tmp276, tmp277, tmp278, tmp279, tmp280, _22, usr_l0AtZ, tmp282, _26;
     tmp270 <@ Primops.mload(STATE_POWER_OF_ALPHA_4_SLOT);
     tmp271 <@ Primops.mload(PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT);
@@ -76,7 +76,32 @@ module M = {
     usr_res <- (PurePrimops.addmod usr_res _26 (W256.of_int R));
     return usr_res;
   }
+    
+  proc mid() : int = {
+    var s0BGa, s1BGb, s2BGc, s3G, inv1, inv2;
+    
+    s0BGa <- (sigma0_z * Beta + Gamma + a_z)%%R;
+    s1BGb <- (sigma1_z * Beta + Gamma + b_z)%%R;
+    s2BGc <- (sigma2_z * Beta + Gamma + c_z)%%R;
+    s3G   <- (sigma3_z + Gamma)%%R;
 
+    inv1 <- R - (Alpha4 * zperm_zO * s0BGa * s1BGb * s2BGc * s3G)%%R;
+    inv2 <- R - (Alpha5 * l0_z)%%R;
+    
+    return (inv1 + inv2)%%R;
+  }
+}.
+
+lemma extracted_equiv_low :
+     equiv [Verifier.usr_permutationQuotientContribution ~ M.low :
+           ={arg, glob M} ==> ={res, glob M}].
+proof. proc.
+  inline *; wp; skip; progress; smt ().
+qed.
+
+section T.
+
+local module TMP = {
   proc low1(): uint256 = {
     var usr_res, _alpha4, _zperm_zOmega, usr_gamma, usr_beta, usr_factorMultiplier, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, _22, usr_l0AtZ, _alpha5, _26;
     _alpha4 <@ Primops.mload(STATE_POWER_OF_ALPHA_4_SLOT);
@@ -215,7 +240,7 @@ module M = {
     return (PurePrimops.addmod inv1 inv2 (W256.of_int R));
   }
 
-  proc low(): uint256 = {
+  proc low4(): uint256 = {
     var usr_res1, usr_res2, _alpha4, _zperm_zOmega, usr_gamma, usr_beta, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, usr_l0AtZ, _alpha5;
     var s0BGa, s1BGb, s2BGc, s3G;
     var inv1, inv2;
@@ -260,75 +285,47 @@ module M = {
 
     return (PurePrimops.addmod inv1 inv2 (W256.of_int R));
   }
-    
-  proc mid() : int = {
-    var s0BGa, s1BGb, s2BGc, s3G, inv1, inv2;
-    
-    s0BGa <- (sigma0_z * Beta + Gamma + a_z)%%R;
-    s1BGb <- (sigma1_z * Beta + Gamma + b_z)%%R;
-    s2BGc <- (sigma2_z * Beta + Gamma + c_z)%%R;
-    s3G   <- (sigma3_z + Gamma)%%R;
-
-    inv1 <- R - (Alpha4 * zperm_zO * s0BGa * s1BGb * s2BGc * s3G)%%R;
-    inv2 <- R - (Alpha5 * l0_z)%%R;
-    
-    return (inv1 + inv2)%%R;
-  }
 }.
 
-section Lol.
-local lemma extracted_equiv_low0 :
-     equiv [Verifier.usr_permutationQuotientContribution ~ M.low0 :
-           ={arg, glob M} ==> ={res, glob M}].
-proof. proc.
-  inline *; wp; skip; progress; smt ().
-qed.
-
-local lemma low0_equiv_low1 :
-     equiv [M.low0 ~ M.low1 : ={arg, glob M} ==> ={res, glob M}].
+local lemma low_equiv_low1 :
+     equiv [M.low ~ TMP.low1 : ={arg, Primops.memory} ==> ={res, Primops.memory}].
 proof. proc.
   inline *; wp; skip; progress; smt ().
 qed.
 
 local lemma low1_equiv_low2 :
-     equiv [M.low1 ~ M.low2 : ={arg, glob M} ==> ={res, glob M}].
+     equiv [TMP.low1 ~ TMP.low2 : ={arg, glob TMP} ==> ={res, glob TMP}].
 proof. proc.
   inline *; wp; skip; progress; smt ().
 qed.
 
 local lemma low2_equiv_low3 :
-     equiv [M.low2 ~ M.low3 : ={arg, glob M} ==> ={res, glob M}].
+     equiv [TMP.low2 ~ TMP.low3 : ={arg, glob TMP} ==> ={res, glob TMP}].
 proof. proc.
   inline *; wp; skip; progress; smt ().
 qed.
 
-local lemma low3_equiv_low :
-     equiv [M.low3 ~ M.low : ={arg, glob M} ==> ={res, glob M}].
+local lemma low3_equiv_low4 :
+     equiv [TMP.low3 ~ TMP.low4 : ={arg, glob TMP} ==> ={res, glob TMP}].
 proof. proc.
   inline *; wp; skip; progress; smt ().
 qed.
 
-lemma extracted_equiv_low :
-     equiv [Verifier.usr_permutationQuotientContribution ~ M.low :
-           ={arg, glob M} ==> ={res, glob M}].
+local lemma low_equiv_low4 :
+     equiv [M.low ~ TMP.low4 : ={arg, Primops.memory} ==> ={res, Primops.memory}].
 proof.
-transitivity M.low0 (={arg, glob M} ==> ={res, glob M}) (={arg, glob M} ==> ={res, glob M}); progress.
-exists Primops.memory{2}. progress. apply extracted_equiv_low0.
-transitivity M.low1 (={arg, glob M} ==> ={res, glob M}) (={arg, glob M} ==> ={res, glob M}); progress.
-exists Primops.memory{2}. progress. apply  low0_equiv_low1.
-transitivity M.low2 (={arg, glob M} ==> ={res, glob M}) (={arg, glob M} ==> ={res, glob M}); progress.
+transitivity TMP.low1 (={arg, glob M} ==> ={res, glob M}) (={arg, Primops.memory} ==> ={res, Primops.memory}); progress.
+exists Primops.memory{2}. progress. apply low_equiv_low1.
+transitivity TMP.low2 (={arg, glob TMP} ==> ={res, glob TMP}) (={arg, glob TMP} ==> ={res, glob TMP}); progress.
 exists Primops.memory{2}. progress. apply low1_equiv_low2.
-transitivity M.low3 (={arg, glob M} ==> ={res, glob M}) (={arg, glob M} ==> ={res, glob M}); progress.
+transitivity TMP.low3 (={arg, glob TMP} ==> ={res, glob TMP}) (={arg, glob TMP} ==> ={res, glob TMP}); progress.
 exists Primops.memory{2}. progress. apply low2_equiv_low3.
-apply low3_equiv_low.
+apply low3_equiv_low4.
 qed.
-
-end section Lol.
 
 lemma aux1 (n : int) : n %% R %% W256.modulus = n %% R. by smt(). qed.
 lemma aux2 : R %% W256.modulus = R. by smt(). qed.
 
-    
 lemma low_equiv_mid :
 equiv [M.low ~ M.mid :
    ={arg, glob M} /\
@@ -336,9 +333,14 @@ equiv [M.low ~ M.mid :
    !Primops.reverted{1} /\
    !Primops.reverted{2}
    ==>
-   W256.to_uint res{1} = res{2}].
-proof. proc.
-
+   W256.to_uint res{1} = res{2}
+ ].
+proof. 
+transitivity TMP.low4 (={arg, glob M} ==> ={res, glob M}) (={arg} /\ Primops.memory{1} = memory /\
+   !Primops.reverted{1} /\
+   !Primops.reverted{2} ==> to_uint res{1} = res{2}); progress.
+exists memory Primops.reverted{1}. auto. apply low_equiv_low4.
+proc.
 seq 13 0 : (#pre /\
   W256.to_uint _alpha4{1} = Alpha4 /\
   W256.to_uint _alpha5{1} = Alpha5 /\
@@ -387,4 +389,19 @@ rewrite T -W256.of_uintK. smt(@W256).
 
 skip. progress. rewrite /addmod. progress. rewrite !W256.of_uintK !aux2 !aux1. by smt().
 qed. 
+
+end section T.
+
 end PermutationQuotientContribution.
+
+clone PermutationQuotientContribution as PQC.
+
+print PQC.alpha4_mem.
+
+with
+  op Alpha4 <- 1
+proof *.
+realize alpha4_mem.
+
+   
+print PQC.low_equiv_mid.
