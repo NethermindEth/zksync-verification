@@ -27,4 +27,5 @@ require PointMulIntoDest.
 require PointNegate.
 require PointSubAssign.
 require RevertWithMessage.
+require UpdateAggregationChallenge.
 require VerifyQuotientEvaluation.
