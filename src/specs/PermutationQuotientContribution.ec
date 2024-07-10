@@ -12,7 +12,7 @@ require import VerifierMem.
 
 module PermutationQuotientContribution = {
   proc low(): uint256 = {
-    var _res, tmp270, tmp271, _gamma, _beta, _factorMultiplier, tmp274, tmp275, tmp276, tmp277, tmp278, tmp279, tmp280, _22, usr_l0AtZ, tmp282, _26;
+    var _res, tmp270, tmp271, _gamma, _beta, _factorMultiplier, tmp274, tmp275, tmp276, tmp277, tmp278, tmp279, tmp280, _22, _l0AtZ, tmp282, _26;
     tmp270 <@ Primops.mload(STATE_POWER_OF_ALPHA_4_SLOT);
     tmp271 <@ Primops.mload(PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT);
     _res <- (PurePrimops.mulmod tmp271 tmp270 (W256.of_int Constants.R));
@@ -40,10 +40,10 @@ module PermutationQuotientContribution = {
     _22 <- (PurePrimops.addmod tmp280 _gamma (W256.of_int Constants.R));
     _res <- (PurePrimops.mulmod _res _22 (W256.of_int Constants.R));
     _res <- ((W256.of_int Constants.R) - _res);
-    usr_l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
+    _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     tmp282 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
-    usr_l0AtZ <- (PurePrimops.mulmod usr_l0AtZ tmp282 (W256.of_int Constants.R));
-    _26 <- ((W256.of_int Constants.R) - usr_l0AtZ);
+    _l0AtZ <- (PurePrimops.mulmod _l0AtZ tmp282 (W256.of_int Constants.R));
+    _26 <- ((W256.of_int Constants.R) - _l0AtZ);
     _res <- (PurePrimops.addmod _res _26 (W256.of_int Constants.R));
     return _res;
   }
@@ -77,7 +77,7 @@ section.
 
 local module TMP = {
   proc low1(): uint256 = {
-    var _res, _alpha4, _zperm_zOmega, _gamma, _beta, _factorMultiplier, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, _22, usr_l0AtZ, _alpha5, _26;
+    var _res, _alpha4, _zperm_zOmega, _gamma, _beta, _factorMultiplier, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, _22, _l0AtZ, _alpha5, _26;
     _alpha4 <@ Primops.mload(STATE_POWER_OF_ALPHA_4_SLOT);
     _zperm_zOmega <@ Primops.mload(PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT);
     _gamma <@ Primops.mload(STATE_GAMMA_SLOT);
@@ -89,7 +89,7 @@ local module TMP = {
     _sigma2_z <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT);
     _c_z <@ Primops.mload(PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT);
     _sigma3_z <@ Primops.mload(PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT);
-    usr_l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
+    _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
     _res <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
@@ -108,14 +108,14 @@ local module TMP = {
     _22 <- (PurePrimops.addmod _sigma3_z _gamma (W256.of_int Constants.R));
     _res <- (PurePrimops.mulmod _res _22 (W256.of_int Constants.R));
     _res <- ((W256.of_int Constants.R) - _res);
-    usr_l0AtZ <- (PurePrimops.mulmod usr_l0AtZ _alpha5 (W256.of_int Constants.R));
-    _26 <- ((W256.of_int Constants.R) - usr_l0AtZ);
+    _l0AtZ <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
+    _26 <- ((W256.of_int Constants.R) - _l0AtZ);
     _res <- (PurePrimops.addmod _res _26 (W256.of_int Constants.R));
     return _res;
   }
 
   proc low2(): uint256 = {
-    var _res, _alpha4, _zperm_zOmega, _gamma, _beta, _factorMultiplier, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, usr_l0AtZ, _alpha5, _26;
+    var _res, _alpha4, _zperm_zOmega, _gamma, _beta, _factorMultiplier, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, _l0AtZ, _alpha5, _26;
     var s0BGa, s1BGb, s2BGc, s3G;
     
     _alpha4 <@ Primops.mload(STATE_POWER_OF_ALPHA_4_SLOT);
@@ -129,7 +129,7 @@ local module TMP = {
     _sigma2_z <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT);
     _c_z <@ Primops.mload(PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT);
     _sigma3_z <@ Primops.mload(PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT);
-    usr_l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
+    _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
     _res <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
@@ -159,14 +159,14 @@ local module TMP = {
     _res <- (PurePrimops.mulmod _res s3G (W256.of_int Constants.R));
     
     _res <- ((W256.of_int Constants.R) - _res);
-    usr_l0AtZ <- (PurePrimops.mulmod usr_l0AtZ _alpha5 (W256.of_int Constants.R));
-    _26 <- ((W256.of_int Constants.R) - usr_l0AtZ);
+    _l0AtZ <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
+    _26 <- ((W256.of_int Constants.R) - _l0AtZ);
     _res <- (PurePrimops.addmod _res _26 (W256.of_int Constants.R));
     return _res;
   }
 
   proc low3(): uint256 = {
-    var _res1, _res2, _alpha4, _zperm_zOmega, _gamma, _beta, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, usr_l0AtZ, _alpha5;
+    var _res1, _res2, _alpha4, _zperm_zOmega, _gamma, _beta, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, _l0AtZ, _alpha5;
     var s0BGa, s1BGb, s2BGc, s3G;
     var inv1, inv2;
     
@@ -181,7 +181,7 @@ local module TMP = {
     _sigma2_z <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT);
     _c_z <@ Primops.mload(PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT);
     _sigma3_z <@ Primops.mload(PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT);
-    usr_l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
+    _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
     _res1 <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
@@ -208,14 +208,14 @@ local module TMP = {
     _res1 <- (PurePrimops.mulmod _res1 s3G (W256.of_int Constants.R));
     inv1 <- ((W256.of_int Constants.R) - _res1);
     
-    _res2 <- (PurePrimops.mulmod usr_l0AtZ _alpha5 (W256.of_int Constants.R));
+    _res2 <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
     inv2 <- ((W256.of_int Constants.R) - _res2);
 
     return (PurePrimops.addmod inv1 inv2 (W256.of_int Constants.R));
   }
 
   proc low4(): uint256 = {
-    var _res1, _res2, _alpha4, _zperm_zOmega, _gamma, _beta, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, usr_l0AtZ, _alpha5;
+    var _res1, _res2, _alpha4, _zperm_zOmega, _gamma, _beta, _sigma0_z, _a_z, _sigma1_z, _b_z, _sigma2_z, _c_z, _sigma3_z, _l0AtZ, _alpha5;
     var s0BGa, s1BGb, s2BGc, s3G;
     var inv1, inv2;
     
@@ -230,7 +230,7 @@ local module TMP = {
     _sigma2_z <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT);
     _c_z <@ Primops.mload(PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT);
     _sigma3_z <@ Primops.mload(PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT);
-    usr_l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
+    _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
     s0BGa <- (PurePrimops.mulmod _sigma0_z _beta (W256.of_int Constants.R));
@@ -254,7 +254,7 @@ local module TMP = {
     _res1 <- (PurePrimops.mulmod _res1 s3G (W256.of_int Constants.R));
     inv1 <- ((W256.of_int Constants.R) - _res1);
     
-    _res2 <- (PurePrimops.mulmod usr_l0AtZ _alpha5 (W256.of_int Constants.R));
+    _res2 <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
     inv2 <- ((W256.of_int Constants.R) - _res2);
 
     return (PurePrimops.addmod inv1 inv2 (W256.of_int Constants.R));
@@ -419,7 +419,7 @@ seq 13 0 : (#pre /\
   W256.to_uint _a_z{1} = A_z /\
   W256.to_uint _c_z{1} = C_z /\
   W256.to_uint _b_z{1} = B_z /\
-  W256.to_uint usr_l0AtZ{1} = L0_z).
+  W256.to_uint _l0AtZ{1} = L0_z).
 call{1} (ConcretePrimops.mload_pspec m STATE_POWER_OF_ALPHA_5_SLOT).
 call{1} (ConcretePrimops.mload_pspec m STATE_L_0_AT_Z_SLOT).
 call{1} (ConcretePrimops.mload_pspec m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT).
@@ -464,4 +464,3 @@ by reflexivity.
 qed. 
 
 end section.
-
