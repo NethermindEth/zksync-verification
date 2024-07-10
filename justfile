@@ -31,9 +31,7 @@ emacs: build xhost-docker
 test: build
     docker run -h {{image}} \
         --net=host \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        --env="QT_X11_NO_MITSHM=1" \
         --mount type=bind,source=$(readlink -f ./src),target={{project_dir}} \
         --mount type=bind,source=$(readlink -f ./script),target=/tmp/script \
-        -it {{image}} \
+        {{image}} \
         -c "cd /tmp/script; bash test.sh"
