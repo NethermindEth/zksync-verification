@@ -19,6 +19,7 @@ require AddAssignRescueCustomGateLinearisationContributionWithV.
 require EvaluateLagrangePolyOutOfDomain.
 require FinalPairing.
 require GetTranscriptChallenge.
+require InitializeTranscript.
 require LookupQuotientContribution.
 require MainGateLinearisationContributionWithV.
 require Modexp.
