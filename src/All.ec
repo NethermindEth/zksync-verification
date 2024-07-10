@@ -13,6 +13,7 @@ require YulTests.
 (* specs *)
 require EvaluateLagrangePolyOutOfDomain.
 require LookupQuotientContribution.
+require MainGateLinearisationContributionWithV.
 require Modexp.
 require PermutationQuotientContribution.
 require PointAddAssign.
