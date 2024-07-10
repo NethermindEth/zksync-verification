@@ -17,6 +17,7 @@ require AddAssignLookupLinearisationContributionWithV.
 require AddAssignPermutationLinearisationContributionWithV.
 require AddAssignRescueCustomGateLinearisationContributionWithV.
 require EvaluateLagrangePolyOutOfDomain.
+require FinalPairing.
 require LookupQuotientContribution.
 require MainGateLinearisationContributionWithV.
 require Modexp.

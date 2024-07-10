@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require import Array.
 require import Logic.
 require import UInt256.
@@ -25,6 +26,34 @@ lemma mod_mod_eq_mod :
 (* uint256 lemmas *)
 
 lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
+
+lemma neq_small (x y: int):
+    0 <= x < W256.modulus =>
+    0 <= y < W256.modulus =>
+    x <> y =>
+    W256.of_int x <> W256.of_int y.
+    proof.
+      progress.
+      case (W256.of_int x < W256.of_int y).
+      progress. smt (@W256).
+      progress.
+      case (W256.of_int y < W256.of_int x).
+      progress. smt (@W256).
+      progress.
+      case (W256.of_int x = W256.of_int y).
+      progress.
+      have h_lte_1: (W256.of_int y <= W256.of_int x) by smt (@W256).
+      have h_lte_2: (W256.of_int x <= W256.of_int y) by smt (@W256).
+      have h_eq: (W256.of_int x = W256.of_int y) by smt(@W256).
+      have h_neq: (W256.to_uint(W256.of_int(x)) <> W256.to_uint(W256.of_int(y))).
+      rewrite W256.of_uintK W256.of_uintK.
+      rewrite pmod_small. smt ().
+      rewrite pmod_small. smt ().
+      exact H3.
+      smt().
+      by progress.
+    qed.
+
 
 lemma add_neq:
     forall (x: uint256) (y: int),
