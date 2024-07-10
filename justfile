@@ -28,8 +28,8 @@ emacs: build xhost-docker
         -it {{image}} \
         -c "cd /tmp/script; bash entrypoint.sh emacs-gtk"
 
-test: build xhost-docker
-    docker run -h {{image}} -e DISPLAY=$DISPLAY \
+test: build
+    docker run -h {{image}} \
         --net=host \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         --env="QT_X11_NO_MITSHM=1" \
