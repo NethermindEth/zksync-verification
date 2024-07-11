@@ -38,4 +38,5 @@ require RevertWithMessage.
 require UpdateAggregationChallenge.
 require UpdateAggregationChallenge105.
 require UpdateTranscript.
+require Verify.
 require VerifyQuotientEvaluation.

@@ -47,7 +47,7 @@ module LoadVerificationKey = {
   }
 }.
 
-lemma leadVerificationKey_extracted_equiv_low:
+lemma loadVerificationKey_extracted_equiv_low:
     equiv [
       Verifier_1261.fun_loadVerificationKey ~ LoadVerificationKey.low:
       ={arg, glob LoadVerificationKey} ==>

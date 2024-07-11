@@ -73,7 +73,7 @@ module PrepareAggregatedCommitment = {
   }
 }.
 
-lemma prepareAggregateCommitment_extracted_equiv_low:
+lemma prepareAggregatedCommitment_extracted_equiv_low:
     equiv [
       Verifier_1261.usr_prepareAggregatedCommitment ~ PrepareAggregatedCommitment.low:
       ={arg, glob PrepareAggregatedCommitment} ==>
