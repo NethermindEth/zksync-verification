@@ -32,7 +32,7 @@ jobs:
         push: true
         tags: crypt
         context: .
-          - cache-from: type=gha
-          - cache-to: type=gha,mode=max`
+        cache-from: type=gha
+        cache-to: type=gha,mode=max`
     - name: Run test
       run: just test
