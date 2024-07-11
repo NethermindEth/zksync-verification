@@ -1,15 +1,34 @@
 digraph zk {
-    modexp [color="yellow"]
-    evaluateLagrangePolyOutOfDomain [color="red"]
-    permutationQuotientContribution [color="yellow"]
-    lookupQuotientContribution [color="red"]
-    mainGateLinearisationContributionWithV [color="red"]
-    pointAddAssign [color="red"]
-    pointAddIntoDest [color="red"]
-    pointMulAndAddIntoDest [color="red"]
-    pointMulIntoDest [color="red"]
-    pointNegate [color="yellow"]
-    verifyQuotientEvaluation [color="red"]
+    { node [style=filled fillcolor="yellow"]
+        modexp 
+        permutationQuotientContribution 
+        pointNegate 
+    }
+    { node [style=filled fillcolor="red"] 
+        evaluateLagrangePolyOutOfDomain 
+        lookupQuotientContribution 
+        mainGateLinearisationContributionWithV
+        pointAddAssign
+        pointAddIntoDest
+        pointSubAssign
+        pointMulAndAddIntoDest
+        pointMulIntoDest
+        verifyQuotientEvaluation
+        addAssignLookupLinearisationContributionWithV
+        addAssignPermutationLinearisationContributionWithV
+        addAssignRescueCustomGateLinearisationContributionWithV
+        finalPairing
+        getTranscriptChallenge
+        initializeTranscript
+        loadProof
+        loadVerificationKey
+        prepareAggregatedCommitment
+        prepareQueries
+        updateAggregationChallenge1
+        updateAggregationChallenge2
+        updateTranscript
+        verify
+    }
 
     initializeTranscript -> modexp
     initializeTranscript -> updateTranscript
@@ -49,7 +68,7 @@ digraph zk {
     finalPairing -> pointMulAndAddIntoDest
     finalPairing -> pointNegate
 
-    verify -> _loadVerificationKey
+    verify -> loadVerificationKey
     verify -> loadProof
     verify -> initializeTranscript
     verify -> verifyQuotientEvaluation
