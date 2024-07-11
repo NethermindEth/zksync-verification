@@ -12,6 +12,8 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
+op topoint (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
+
 module PointAddIntoDest = {
   proc low(p1, p2, dest) =
   {
@@ -51,15 +53,14 @@ module PointAddIntoDest = {
     }
   }
 
-  proc mid(x1 : int, y1 : int, x2 : int, y2 : int) : int * int = {
-    var x, y, x1_F, x2_F, y1_F, y2_F, result;
+  proc mid(x1 : int, y1 : int, x2 : int, y2 : int) : (int * int) option = {
+    var x1_F, x2_F, y1_F, y2_F, result;
       x1_F <- ZModField.inzmod x1;
       y1_F <- ZModField.inzmod y1;
       x2_F <- ZModField.inzmod x2;
       y2_F <- ZModField.inzmod y2;
       result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
-      (x, y) <- odflt (ZModField.zero, ZModField.zero) result;
-      return (ZModField.asint x, ZModField.asint y);
+      return (omap topoint result);
   }
 }.
 
@@ -76,6 +77,11 @@ proof.
   inline*. wp. skip. by progress.
 qed.
 
+lemma uint256_ord1 (a b c : uint256) : a + c <= b => c <= b => a <= b - c.
+    progress.
+    admit.
+  qed.
+
 lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest : uint256) : equiv [
     PointAddIntoDest.low ~ PointAddIntoDest.low':
       ={arg, glob PointAddIntoDest} /\
@@ -90,36 +96,35 @@ proof.
   inline*. wp. skip. progress.
 
   rewrite MemoryMap.load_store_diff.
-  have H' : p2{2} + W256.of_int 32 - W256.of_int 64 = p2{2} - W256.of_int 32. smt (@W256).
-  rewrite H'. admit.
+  apply uint256_ord1. smt.
+  smt. admit.
+
+  rewrite MemoryMap.load_store_diff.
+  smt.
   admit.
 
   rewrite MemoryMap.load_store_diff.
-  admit.
-  admit.
-
-  rewrite MemoryMap.load_store_diff.
-  admit.
+  smt.
   admit.
 
   reflexivity.
 
   rewrite MemoryMap.load_store_diff.
-  admit.
-  admit.
-
-  rewrite MemoryMap.load_store_diff.
-  admit.
+  smt.
   admit.
 
   rewrite MemoryMap.load_store_diff.
   admit.
+  admit.
+
+  rewrite MemoryMap.load_store_diff.
+  smt.
   admit.
 
   reflexivity.
 qed.
 
-lemma PointAddIntoDest_mid_of_low (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : equiv [
+lemma PointAddIntoDest_mid_of_low' (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : equiv [
     PointAddIntoDest.low' ~ PointAddIntoDest.mid :
     x1 < p /\ x2 < p /\ y1 < p /\ y2 < p /\
     PurePrimops.mload Primops.memory{1} p1 = W256.of_int x1 /\
@@ -131,13 +136,13 @@ lemma PointAddIntoDest_mid_of_low (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : e
       (
         exists (x y : F),
         ecAdd_precompile (ZModField.inzmod x1) (ZModField.inzmod y1) (ZModField.inzmod x2) (ZModField.inzmod y2) = Some (x, y) /\
-        res{2} = (ZModField.asint x, ZModField.asint y) /\
+        res{2} = Some (ZModField.asint x, ZModField.asint y) /\
         PurePrimops.mload Primops.memory{1} dest = W256.of_int (ZModField.asint x) /\
         PurePrimops.mload Primops.memory{1} (dest + W256.of_int 32) = W256.of_int (ZModField.asint y)
       ) \/
       (
         ecAdd_precompile (ZModField.inzmod x1) (ZModField.inzmod y1) (ZModField.inzmod x2) (ZModField.inzmod y2) = None /\
-        res{2} = (0, 0) /\
+        res{2} = None /\
         PurePrimops.mload Primops.memory{1} dest = W256.zero /\
         PurePrimops.mload Primops.memory{1} (dest + W256.of_int 32) = W256.zero
       )
@@ -151,7 +156,6 @@ lemma PointAddIntoDest_mid_of_low (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : e
       _1{1} = W256.of_int x1 /\
       _5{1} = W256.of_int y1 /\
       _6{1} = W256.of_int x2 /\
-      _5{1} = W256.of_int y1 /\
       _9{1} = W256.of_int y2
     ).
     inline *. wp. skip. progress.
@@ -170,6 +174,7 @@ lemma PointAddIntoDest_mid_of_low (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : e
     Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory W256.zero _1{1}) (W256.of_int 32) _5{1}) (W256.of_int 64) _6{1}) (W256.of_int 96) _9{1}
     ).
         inline *. wp. skip. progress.
+        wp.
         inline Primops.staticcall. sp.
         rcondf{1} 1. progress. skip. progress. smt (@W256).
         rcondt{1} 1. move=> &m. skip. progress.
