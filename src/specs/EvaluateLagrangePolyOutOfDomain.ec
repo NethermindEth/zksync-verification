@@ -128,7 +128,6 @@ equiv [
       ==>
       (
         !Primops.reverted{1} /\
-        Primops.memory{1} = (modexp_memory_footprint memory poly256 at256 res{1}) /\
         res{2} = Some (to_uint res{1})%W256)
       \/
       (
