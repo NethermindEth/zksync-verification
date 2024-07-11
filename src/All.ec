@@ -21,6 +21,7 @@ require FinalPairing.
 require GetTranscriptChallenge.
 require InitializeTranscript.
 require LoadProof.
+require LoadVerificationKey.
 require LookupQuotientContribution.
 require MainGateLinearisationContributionWithV.
 require Modexp.
