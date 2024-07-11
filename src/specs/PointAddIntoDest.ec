@@ -33,7 +33,7 @@ module PointAddIntoDest = {
   }
 }.
 
-lemma usr_pointAddIntoDest_extracted_matches_low (x y : uint256) : equiv [
+lemma pointAddIntoDest_extracted_equiv_low : equiv [
     Verifier_1261.usr_pointAddIntoDest ~ PointAddIntoDest.low :
       ={arg, glob PointAddIntoDest} ==>
       ={res, glob PointAddIntoDest}
