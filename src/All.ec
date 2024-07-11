@@ -33,6 +33,7 @@ require PointMulIntoDest.
 require PointNegate.
 require PointSubAssign.
 require PrepareAggregatedCommitment.
+require PrepareQueries.
 require RevertWithMessage.
 require UpdateAggregationChallenge.
 require UpdateAggregationChallenge105.
