@@ -36,4 +36,5 @@ require PrepareAggregatedCommitment.
 require RevertWithMessage.
 require UpdateAggregationChallenge.
 require UpdateAggregationChallenge105.
+require UpdateTranscript.
 require VerifyQuotientEvaluation.
