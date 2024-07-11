@@ -137,7 +137,6 @@ lemma PointAddIntoDest_mid_of_low' (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : 
         exists (x y : F),
         ecAdd_precompile (ZModField.inzmod x1) (ZModField.inzmod y1) (ZModField.inzmod x2) (ZModField.inzmod y2) = Some (x, y) /\
         res{2} = Some (ZModField.asint x, ZModField.asint y) /\
-        res{2} = (ZModField.asint x, ZModField.asint y) /\
         PurePrimops.mload Primops.memory{1} dest = W256.of_int (ZModField.asint x) /\
         PurePrimops.mload Primops.memory{1} (dest + W256.of_int 32) = W256.of_int (ZModField.asint y)
       ) \/
@@ -176,7 +175,7 @@ lemma PointAddIntoDest_mid_of_low' (x1 x2 y1 y2 : int) (p1 p2 dest : uint256) : 
     ).
         inline *. wp. skip. progress.
         wp.
-    
+
         inline Primops.staticcall. sp.
         rcondf{1} 1. progress. skip. progress. smt (@W256).
         rcondt{1} 1. move=> &m. skip. progress.
