@@ -35,4 +35,5 @@ require PointSubAssign.
 require PrepareAggregatedCommitment.
 require RevertWithMessage.
 require UpdateAggregationChallenge.
+require UpdateAggregationChallenge105.
 require VerifyQuotientEvaluation.
