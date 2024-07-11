@@ -20,6 +20,7 @@ require EvaluateLagrangePolyOutOfDomain.
 require FinalPairing.
 require GetTranscriptChallenge.
 require InitializeTranscript.
+require LoadProof.
 require LookupQuotientContribution.
 require MainGateLinearisationContributionWithV.
 require Modexp.
