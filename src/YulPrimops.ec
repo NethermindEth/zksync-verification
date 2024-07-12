@@ -314,19 +314,19 @@ pred point_wellformed (pnt: uint256*uint256) =
     pnt.`1 = pnt.`1 %% W256.of_int p /\
     pnt.`2 = pnt.`2 %% W256.of_int p.
 pred point_oncurve (pnt: uint256*uint256) =
-    on_curve ((ZModField.inzmod(to_sint pnt.`1)), (ZModField.inzmod(to_sint pnt.`2))).
+    on_curve ((ZModField.inzmod(to_uint pnt.`1)), (ZModField.inzmod(to_uint pnt.`2))).
 pred staticcall_ec_add_should_succeed (p1 p2: uint256 * uint256) =
     point_wellformed p1 /\
     point_wellformed p2 /\
     point_oncurve p1 /\
     point_oncurve p2 /\
-    is_some (ecAdd_precompile (ZModField.inzmod(to_sint p1.`1)) (ZModField.inzmod(to_sint p1.`2)) (ZModField.inzmod(to_sint p2.`1)) (ZModField.inzmod(to_sint p2.`2))).
+    is_some (ecAdd_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (ZModField.inzmod(to_uint p2.`1)) (ZModField.inzmod(to_uint p2.`2))).
 
 op ecAdd_precompile_unsafe_cast (p1 p2: uint256 * uint256): (uint256*uint256) =
-  let x1 = ZModField.inzmod(to_sint p1.`1) in
-  let y1 = ZModField.inzmod(to_sint p1.`2) in
-  let x2 = ZModField.inzmod(to_sint p2.`1) in
-  let y2 = ZModField.inzmod(to_sint p2.`2) in
+  let x1 = ZModField.inzmod(to_uint p1.`1) in
+  let y1 = ZModField.inzmod(to_uint p1.`2) in
+  let x2 = ZModField.inzmod(to_uint p2.`1) in
+  let y2 = ZModField.inzmod(to_uint p2.`2) in
   let ret = ecAdd_precompile x1 y1 x2 y2 in
   let ret_unwrapped = odflt (ZModField.zero, ZModField.zero) ret in
   let x_ret = W256.of_int (ZModField.asint ret_unwrapped.`1) in
@@ -360,7 +360,9 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       inline *.
       rcondf 1. skip. progress. by smt(@W256).
       rcondt 1. skip. by progress.
-    case (staticcall_ec_add_should_succeed p1 p2).
+      case (staticcall_ec_add_should_succeed p1 p2).
+      rewrite /staticcall_ec_add_should_succeed /point_oncurve /point_wellformed.
+      rcondt 1. skip. by progress.
       rcondf 13. wp. skip. progress. by smt().
       rcondf 13. wp. skip. progress. by smt ().
       rcondf 14. wp. skip. progress. by smt (is_none_iff_not_is_some).
@@ -370,8 +372,10 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       smt ().
       smt (). smt ().
     case (!point_wellformed p1 \/ !point_wellformed p2).
+      rcondt 1. skip. by progress.
       rcondt 13. wp. skip. progress. by smt ().
       wp. skip. by progress.
+      rcondt 1. skip. by progress.
       rcondf 13. wp. skip. progress. by smt ().
     case (!point_oncurve p1 \/ !point_oncurve p2).
       rcondt 13. wp. skip. progress. by smt ().
