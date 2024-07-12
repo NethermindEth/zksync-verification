@@ -1,4 +1,7 @@
+
 require import UInt256 PurePrimops YulPrimops.
+
+op STRING : int = 0.
 
 (* Begin Verifier_1261 *)
 op zero_value_for_split_bool: uint256 = (W256.of_int 0).
@@ -7,9 +10,167 @@ op zero_value_for_split_bytes32: uint256 = (W256.of_int 0).
 
 op cleanup_bytes32(value : uint256): uint256 = value.
 
-op STRING : int = 0.
-
 module Verifier_1261 = {
+  proc revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d(): unit = {
+    var _1;
+    _1 <- (W256.of_int 0);
+    Primops.revert(_1, _1);
+    }
+  
+  proc usr_addAssignLookupLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256): unit = {
+    var _1, usr_factor, tmp330, _2, tmp331, _3, tmp332, _4, _5, tmp333, _6, _7, tmp334, _8, _9, tmp335, _10, _11, tmp336, _12, _13, tmp337, usr_fReconstructed, _14, usr_eta, tmp338, usr_currentEta, _15, _16, _17, _18, tmp339, _19, _20, _21, tmp340, _22, _23, tmp341, _24, _25, tmp342, _26, tmp343, _27, tmp344, _28, _29, tmp345, _30, _31, tmp346, _32, _33, _34, tmp347, _35, _36, tmp348, _37, _38, tmp349, _39;
+    _1 <- (W256.of_int 2912);
+    tmp330 <@ Primops.mload(_1);
+    usr_factor <- tmp330;
+    tmp331 <@ Primops.mload((W256.of_int 3744));
+    _2 <- tmp331;
+    usr_factor <- (PurePrimops.mulmod usr_factor _2 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    tmp332 <@ Primops.mload((W256.of_int 4096));
+    _3 <- tmp332;
+    usr_factor <- (PurePrimops.mulmod usr_factor _3 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _4 <- (W256.of_int 4000);
+    tmp333 <@ Primops.mload(_4);
+    _5 <- tmp333;
+    usr_factor <- (PurePrimops.mulmod usr_factor _5 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _6 <- (W256.of_int 4992);
+    Primops.mstore(_6, usr_factor);
+    _7 <- (W256.of_int 2976);
+    tmp334 <@ Primops.mload(_7);
+    usr_factor <- tmp334;
+    _8 <- (W256.of_int 3872);
+    tmp335 <@ Primops.mload(_8);
+    _9 <- tmp335;
+    usr_factor <- (PurePrimops.mulmod usr_factor _9 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _10 <- (W256.of_int 2944);
+    tmp336 <@ Primops.mload(_10);
+    _11 <- tmp336;
+    usr_factor <- (PurePrimops.addmod usr_factor _11 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _12 <- (W256.of_int 3968);
+    tmp337 <@ Primops.mload(_12);
+    _13 <- tmp337;
+    usr_factor <- (PurePrimops.addmod usr_factor _13 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_fReconstructed <- usr_stateOpening0AtZ;
+    _14 <- (W256.of_int 3840);
+    tmp338 <@ Primops.mload(_14);
+    usr_eta <- tmp338;
+    usr_currentEta <- usr_eta;
+    _15 <- (PurePrimops.mulmod usr_eta usr_stateOpening1AtZ (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_fReconstructed <- (PurePrimops.addmod usr_stateOpening0AtZ _15 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_currentEta <- (PurePrimops.mulmod usr_eta usr_eta (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _16 <- (PurePrimops.mulmod usr_currentEta usr_stateOpening2AtZ (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_fReconstructed <- (PurePrimops.addmod usr_fReconstructed _16 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_currentEta <- (PurePrimops.mulmod usr_currentEta usr_eta (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _17 <- (W256.of_int 3040);
+    tmp339 <@ Primops.mload(_17);
+    _18 <- tmp339;
+    _19 <- (PurePrimops.mulmod _18 usr_currentEta (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_fReconstructed <- (PurePrimops.addmod usr_fReconstructed _19 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _20 <- (W256.of_int 3008);
+    tmp340 <@ Primops.mload(_20);
+    _21 <- tmp340;
+    usr_fReconstructed <- (PurePrimops.mulmod usr_fReconstructed _21 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _22 <- (W256.of_int 3904);
+    tmp341 <@ Primops.mload(_22);
+    _23 <- tmp341;
+    usr_fReconstructed <- (PurePrimops.addmod usr_fReconstructed _23 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_factor <- (PurePrimops.mulmod usr_factor usr_fReconstructed (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _24 <- (W256.of_int 3936);
+    tmp342 <@ Primops.mload(_24);
+    _25 <- tmp342;
+    usr_factor <- (PurePrimops.mulmod usr_factor _25 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_factor <- ((W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617) - usr_factor);
+    tmp343 <@ Primops.mload((W256.of_int 3744));
+    _26 <- tmp343;
+    usr_factor <- (PurePrimops.mulmod usr_factor _26 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    tmp344 <@ Primops.mload((W256.of_int 4096));
+    _27 <- tmp344;
+    usr_factor <- (PurePrimops.mulmod usr_factor _27 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _28 <- (W256.of_int 3776);
+    tmp345 <@ Primops.mload(_28);
+    _29 <- tmp345;
+    _30 <- (W256.of_int 4128);
+    tmp346 <@ Primops.mload(_30);
+    _31 <- tmp346;
+    _32 <- (PurePrimops.mulmod _31 _29 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_factor <- (PurePrimops.addmod usr_factor _32 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _33 <- (W256.of_int 3808);
+    tmp347 <@ Primops.mload(_33);
+    _34 <- tmp347;
+    _35 <- (W256.of_int 4160);
+    tmp348 <@ Primops.mload(_35);
+    _36 <- tmp348;
+    _37 <- (PurePrimops.mulmod _36 _34 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    usr_factor <- (PurePrimops.addmod usr_factor _37 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    tmp349 <@ Primops.mload(_4);
+    _38 <- tmp349;
+    usr_factor <- (PurePrimops.mulmod usr_factor _38 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
+    _39 <- (W256.of_int 4960);
+    Primops.mstore(_39, usr_factor);
+    }
+  
+  proc shift_right_unsigned(value : uint256): uint256 = {
+    var newValue, _1;
+    _1 <- (W256.of_int 224);
+    newValue <- (PurePrimops.shr _1 value);
+    return newValue;
+    }
+  
+  proc usr_updateTranscript(usr_value : uint256): unit = {
+    var _1, _2, _3, _4, _5, usr_newState0, tmp92, _6, usr_newState1, tmp93, _7, _8;
+    _1 <- (W256.of_int 0);
+    _2 <- (W256.of_int 3395);
+    Primops.mstore8(_2, _1);
+    _3 <- (W256.of_int 3460);
+    Primops.mstore(_3, usr_value);
+    _4 <- (W256.of_int 100);
+    _5 <- (W256.of_int 3392);
+    tmp92 <@ Primops.keccak256(_5, _4);
+    usr_newState0 <- tmp92;
+    _6 <- (W256.of_int 1);
+    Primops.mstore8(_2, _6);
+    tmp93 <@ Primops.keccak256(_5, _4);
+    usr_newState1 <- tmp93;
+    _7 <- (W256.of_int 3428);
+    Primops.mstore(_7, usr_newState1);
+    _8 <- (W256.of_int 3396);
+    Primops.mstore(_8, usr_newState0);
+    }
+  
+  proc revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef(): unit = {
+    var _1;
+    _1 <- (W256.of_int 0);
+    Primops.revert(_1, _1);
+    }
+  
+  proc constructor_IVerifier(): unit = {
+    }
+  
+  proc revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db(): unit = {
+    var _1;
+    _1 <- (W256.of_int 0);
+    Primops.revert(_1, _1);
+    }
+  
+  proc _Verifier_1261_deployed_code1_block11_revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
+    var _1;
+    _1 <- (W256.of_int 0);
+    Primops.revert(_1, _1);
+    }
+  
+  proc cleanup_bool(value : uint256): uint256 = {
+    var cleaned, _1;
+    _1 <- (PurePrimops.iszero value);
+    cleaned <- (PurePrimops.iszero _1);
+    return cleaned;
+    }
+  
+  proc _Verifier_1261_deployed_code1_block11_allocate_unbounded(): uint256 = {
+    var memPtr, _1, tmp16;
+    _1 <- (W256.of_int 64);
+    tmp16 <@ Primops.mload(_1);
+    memPtr <- tmp16;
+    return memPtr;
+    }
   
   proc usr_permutationQuotientContribution(): uint256 = {
     var usr_res, _1, _2, _3, tmp270, _4, _5, tmp271, _6, usr_gamma, tmp272, _7, usr_beta, tmp273, usr_factorMultiplier, _8, _9, tmp274, _10, _11, tmp275, _12, _13, tmp276, _14, _15, tmp277, _16, _17, tmp278, _18, _19, tmp279, _20, _21, tmp280, _22, _23, usr_l0AtZ, tmp281, _24, _25, tmp282, _26;
@@ -75,9 +236,50 @@ module Verifier_1261 = {
     return usr_res;
     }
   
-  proc revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef(): unit = {
+  proc usr_getTranscriptChallenge(usr_numberOfChallenge : uint256): uint256 = {
+    var usr_challenge, _1, _2, _3, _4, _5, _6, _7, _8, _9, tmp94;
+    _1 <- (W256.of_int 2);
+    _2 <- (W256.of_int 3395);
+    Primops.mstore8(_2, _1);
+    _3 <- (W256.of_int 224);
+    _4 <- (PurePrimops.shl _3 usr_numberOfChallenge);
+    _5 <- (W256.of_int 3460);
+    Primops.mstore(_5, _4);
+    _6 <- ((PurePrimops.shl (W256.of_int 253) (W256.of_int 1)) - (W256.of_int 1));
+    _7 <- (W256.of_int 72);
+    _8 <- (W256.of_int 3392);
+    tmp94 <@ Primops.keccak256(_8, _7);
+    _9 <- tmp94;
+    usr_challenge <- (PurePrimops.bit_and _9 _6);
+    return usr_challenge;
+    }
+  
+  proc usr_revertWithMessage(usr_len : uint256, usr_reason : uint256): unit = {
+    var _1, _2, _3, _4, _5, _6, _7;
+    _1 <- (PurePrimops.shl (W256.of_int 229) (W256.of_int 4594637));
+    _2 <- (W256.of_int 0);
+    Primops.mstore(_2, _1);
+    _3 <- (W256.of_int 32);
+    _4 <- (W256.of_int 4);
+    Primops.mstore(_4, _3);
+    _5 <- (W256.of_int 36);
+    Primops.mstore(_5, usr_len);
+    _6 <- (W256.of_int 68);
+    Primops.mstore(_6, usr_reason);
+    _7 <- (W256.of_int 100);
+    Primops.revert(_2, _7);
+    }
+  
+  proc revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74(): unit = {
     var _1;
     _1 <- (W256.of_int 0);
+    Primops.revert(_1, _1);
+    }
+  
+  proc _code0_block0_revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
+    var _1, _2;
+    _1 <- (W256.of_int 0);
+    _2 <- _1;
     Primops.revert(_1, _1);
     }
   
@@ -208,130 +410,12 @@ module Verifier_1261 = {
     Primops.mstore(_82, _81);
     }
   
-  proc usr_revertWithMessage(usr_len : uint256, usr_reason : uint256): unit = {
-    var _1, _2, _3, _4, _5, _6, _7;
-    _1 <- (PurePrimops.shl (W256.of_int 229) (W256.of_int 4594637));
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 32);
-    _4 <- (W256.of_int 4);
-    Primops.mstore(_4, _3);
-    _5 <- (W256.of_int 36);
-    Primops.mstore(_5, usr_len);
-    _6 <- (W256.of_int 68);
-    Primops.mstore(_6, usr_reason);
-    _7 <- (W256.of_int 100);
-    Primops.revert(_2, _7);
-    }
-  
-  proc usr_addAssignLookupLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256): unit = {
-    var _1, usr_factor, tmp330, _2, tmp331, _3, tmp332, _4, _5, tmp333, _6, _7, tmp334, _8, _9, tmp335, _10, _11, tmp336, _12, _13, tmp337, usr_fReconstructed, _14, usr_eta, tmp338, usr_currentEta, _15, _16, _17, _18, tmp339, _19, _20, _21, tmp340, _22, _23, tmp341, _24, _25, tmp342, _26, tmp343, _27, tmp344, _28, _29, tmp345, _30, _31, tmp346, _32, _33, _34, tmp347, _35, _36, tmp348, _37, _38, tmp349, _39;
-    _1 <- (W256.of_int 2912);
-    tmp330 <@ Primops.mload(_1);
-    usr_factor <- tmp330;
-    tmp331 <@ Primops.mload((W256.of_int 3744));
-    _2 <- tmp331;
-    usr_factor <- (PurePrimops.mulmod usr_factor _2 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    tmp332 <@ Primops.mload((W256.of_int 4096));
-    _3 <- tmp332;
-    usr_factor <- (PurePrimops.mulmod usr_factor _3 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _4 <- (W256.of_int 4000);
-    tmp333 <@ Primops.mload(_4);
-    _5 <- tmp333;
-    usr_factor <- (PurePrimops.mulmod usr_factor _5 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _6 <- (W256.of_int 4992);
-    Primops.mstore(_6, usr_factor);
-    _7 <- (W256.of_int 2976);
-    tmp334 <@ Primops.mload(_7);
-    usr_factor <- tmp334;
-    _8 <- (W256.of_int 3872);
-    tmp335 <@ Primops.mload(_8);
-    _9 <- tmp335;
-    usr_factor <- (PurePrimops.mulmod usr_factor _9 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _10 <- (W256.of_int 2944);
-    tmp336 <@ Primops.mload(_10);
-    _11 <- tmp336;
-    usr_factor <- (PurePrimops.addmod usr_factor _11 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _12 <- (W256.of_int 3968);
-    tmp337 <@ Primops.mload(_12);
-    _13 <- tmp337;
-    usr_factor <- (PurePrimops.addmod usr_factor _13 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_fReconstructed <- usr_stateOpening0AtZ;
-    _14 <- (W256.of_int 3840);
-    tmp338 <@ Primops.mload(_14);
-    usr_eta <- tmp338;
-    usr_currentEta <- usr_eta;
-    _15 <- (PurePrimops.mulmod usr_eta usr_stateOpening1AtZ (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_fReconstructed <- (PurePrimops.addmod usr_stateOpening0AtZ _15 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_currentEta <- (PurePrimops.mulmod usr_eta usr_eta (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _16 <- (PurePrimops.mulmod usr_currentEta usr_stateOpening2AtZ (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_fReconstructed <- (PurePrimops.addmod usr_fReconstructed _16 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_currentEta <- (PurePrimops.mulmod usr_currentEta usr_eta (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _17 <- (W256.of_int 3040);
-    tmp339 <@ Primops.mload(_17);
-    _18 <- tmp339;
-    _19 <- (PurePrimops.mulmod _18 usr_currentEta (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_fReconstructed <- (PurePrimops.addmod usr_fReconstructed _19 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _20 <- (W256.of_int 3008);
-    tmp340 <@ Primops.mload(_20);
-    _21 <- tmp340;
-    usr_fReconstructed <- (PurePrimops.mulmod usr_fReconstructed _21 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _22 <- (W256.of_int 3904);
-    tmp341 <@ Primops.mload(_22);
-    _23 <- tmp341;
-    usr_fReconstructed <- (PurePrimops.addmod usr_fReconstructed _23 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_factor <- (PurePrimops.mulmod usr_factor usr_fReconstructed (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _24 <- (W256.of_int 3936);
-    tmp342 <@ Primops.mload(_24);
-    _25 <- tmp342;
-    usr_factor <- (PurePrimops.mulmod usr_factor _25 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_factor <- ((W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617) - usr_factor);
-    tmp343 <@ Primops.mload((W256.of_int 3744));
-    _26 <- tmp343;
-    usr_factor <- (PurePrimops.mulmod usr_factor _26 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    tmp344 <@ Primops.mload((W256.of_int 4096));
-    _27 <- tmp344;
-    usr_factor <- (PurePrimops.mulmod usr_factor _27 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _28 <- (W256.of_int 3776);
-    tmp345 <@ Primops.mload(_28);
-    _29 <- tmp345;
-    _30 <- (W256.of_int 4128);
-    tmp346 <@ Primops.mload(_30);
-    _31 <- tmp346;
-    _32 <- (PurePrimops.mulmod _31 _29 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_factor <- (PurePrimops.addmod usr_factor _32 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _33 <- (W256.of_int 3808);
-    tmp347 <@ Primops.mload(_33);
-    _34 <- tmp347;
-    _35 <- (W256.of_int 4160);
-    tmp348 <@ Primops.mload(_35);
-    _36 <- tmp348;
-    _37 <- (PurePrimops.mulmod _36 _34 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    usr_factor <- (PurePrimops.addmod usr_factor _37 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    tmp349 <@ Primops.mload(_4);
-    _38 <- tmp349;
-    usr_factor <- (PurePrimops.mulmod usr_factor _38 (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617));
-    _39 <- (W256.of_int 4960);
-    Primops.mstore(_39, usr_factor);
-    }
-  
-  proc cleanup_bool(value : uint256): uint256 = {
-    var cleaned, _1;
-    _1 <- (PurePrimops.iszero value);
-    cleaned <- (PurePrimops.iszero _1);
-    return cleaned;
-    }
-  
-  proc revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74(): unit = {
-    var _1;
-    _1 <- (W256.of_int 0);
-    Primops.revert(_1, _1);
-    }
-  
-  proc revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb(): unit = {
-    var _1;
-    _1 <- (W256.of_int 0);
-    Primops.revert(_1, _1);
+  proc _code0_block0_allocate_unbounded(): uint256 = {
+    var memPtr, _1, tmp7;
+    _1 <- (W256.of_int 64);
+    tmp7 <@ Primops.mload(_1);
+    memPtr <- tmp7;
+    return memPtr;
     }
   
   proc revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490(): unit = {
@@ -340,328 +424,46 @@ module Verifier_1261 = {
     Primops.revert(_1, _1);
     }
   
-  proc shift_right_unsigned(value : uint256): uint256 = {
-    var newValue, _1;
-    _1 <- (W256.of_int 224);
-    newValue <- (PurePrimops.shr _1 value);
-    return newValue;
-    }
-  
-  proc revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d(): unit = {
-    var _1;
-    _1 <- (W256.of_int 0);
-    Primops.revert(_1, _1);
-    }
-  
-  proc revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db(): unit = {
-    var _1;
-    _1 <- (W256.of_int 0);
-    Primops.revert(_1, _1);
-    }
-  
-  proc constructor_IVerifier(): unit = {
-    }
-  
-  proc allocate_unbounded(): uint256 = {
-    var memPtr, _1, tmp16;
-    _1 <- (W256.of_int 64);
-    tmp16 <@ Primops.mload(_1);
-    memPtr <- tmp16;
-    return memPtr;
-    }
-  
   proc revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b(): unit = {
     var _1;
     _1 <- (W256.of_int 0);
     Primops.revert(_1, _1);
     }
   
-  proc usr_getTranscriptChallenge(usr_numberOfChallenge : uint256): uint256 = {
-    var usr_challenge, _1, _2, _3, _4, _5, _6, _7, _8, _9, tmp94;
-    _1 <- (W256.of_int 2);
-    _2 <- (W256.of_int 3395);
-    Primops.mstore8(_2, _1);
-    _3 <- (W256.of_int 224);
-    _4 <- (PurePrimops.shl _3 usr_numberOfChallenge);
-    _5 <- (W256.of_int 3460);
-    Primops.mstore(_5, _4);
-    _6 <- ((PurePrimops.shl (W256.of_int 253) (W256.of_int 1)) - (W256.of_int 1));
-    _7 <- (W256.of_int 72);
-    _8 <- (W256.of_int 3392);
-    tmp94 <@ Primops.keccak256(_8, _7);
-    _9 <- tmp94;
-    usr_challenge <- (PurePrimops.bit_and _9 _6);
-    return usr_challenge;
-    }
-  
-  proc usr_updateTranscript(usr_value : uint256): unit = {
-    var _1, _2, _3, _4, _5, usr_newState0, tmp92, _6, usr_newState1, tmp93, _7, _8;
-    _1 <- (W256.of_int 0);
-    _2 <- (W256.of_int 3395);
-    Primops.mstore8(_2, _1);
-    _3 <- (W256.of_int 3460);
-    Primops.mstore(_3, usr_value);
-    _4 <- (W256.of_int 100);
-    _5 <- (W256.of_int 3392);
-    tmp92 <@ Primops.keccak256(_5, _4);
-    usr_newState0 <- tmp92;
-    _6 <- (W256.of_int 1);
-    Primops.mstore8(_2, _6);
-    tmp93 <@ Primops.keccak256(_5, _4);
-    usr_newState1 <- tmp93;
-    _7 <- (W256.of_int 3428);
-    Primops.mstore(_7, usr_newState1);
-    _8 <- (W256.of_int 3396);
-    Primops.mstore(_8, usr_newState0);
-    }
-  
-  proc fun_verificationKeyHash(): uint256 = {
-    var var_vkHash, tmp47, usr_start, usr_end, _1, _2, usr_length, tmp48;
-    Primops.pop(zero_value_for_split_bytes32);
-    tmp47 <@ fun_loadVerificationKey();
-    usr_start <- (W256.of_int 512);
-    usr_end <- (W256.of_int 1792);
-    _1 <- (W256.of_int 32);
-    _2 <- (usr_end - usr_start);
-    usr_length <- (_2 + _1);
-    tmp48 <@ Primops.keccak256(usr_start, usr_length);
-    var_vkHash <- tmp48;
-    return var_vkHash;
-    }
-  
-  proc usr_pointNegate(usr_point : uint256): unit = {
-    var _1, _2, usr_pY, tmp88, tmp89, _3, tmp90, _4, _5, tmp91, _6, _7;
-    _1 <- (W256.of_int 32);
-    _2 <- (usr_point + _1);
-    tmp88 <@ Primops.mload(_2);
-    usr_pY <- tmp88;
-    tmp89 <- usr_pY;
-    if ((tmp89 = (W256.of_int 0)))
+  proc abi_decode_array_uint256_dyn_calldata(offset : uint256, _end : uint256): (uint256 * uint256) = {
+    var arrayPos, length, _1, _2, _3, _4, tmp17, tmp18, _5, _6, tmp19, _7, _8, _9, _10, tmp20;
+    _1 <- (W256.of_int 31);
+    _2 <- (offset + _1);
+    _3 <- (PurePrimops.slt_uint256 _2 _end);
+    _4 <- (PurePrimops.iszero _3);
+    if ((bool_of_uint256 _4))
       {
-      tmp90 <@ Primops.mload(usr_point);
-      _3 <- tmp90;
-      if ((bool_of_uint256 _3))
-        {
-        _4 <- (W256.of_int STRING (*pointNegate: invalid point*));
-        _5 <- (W256.of_int 26);
-        tmp91 <@ usr_revertWithMessage(_5, _4);
-        
-        }
-      
+      tmp17 <@ revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d();
       
       }
     
-    else {
-      _6 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
-      _7 <- (_6 - usr_pY);
-      Primops.mstore(_2, _7);
-      
-      }
-    
-    }
-  
-  proc usr_pointSubAssign(usr_p1 : uint256, usr_p2 : uint256): unit = {
-    var _1, tmp65, _2, _3, _4, _5, tmp66, _6, tmp67, _7, _8, _9, tmp68, _10, _11, _12, _13, _14, _15, tmp69, _16, tmp70, _17, _18, _19, tmp71;
-    tmp65 <@ Primops.mload(usr_p1);
-    _1 <- tmp65;
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 32);
-    _4 <- (usr_p1 + _3);
-    tmp66 <@ Primops.mload(_4);
-    _5 <- tmp66;
-    Primops.mstore(_3, _5);
-    tmp67 <@ Primops.mload(usr_p2);
-    _6 <- tmp67;
-    _7 <- (W256.of_int 64);
-    Primops.mstore(_7, _6);
-    _8 <- (usr_p2 + _3);
-    tmp68 <@ Primops.mload(_8);
-    _9 <- tmp68;
-    _10 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
-    _11 <- (_10 - _9);
-    _12 <- (W256.of_int 96);
-    Primops.mstore(_12, _11);
-    _13 <- (W256.of_int 128);
-    _14 <- (W256.of_int 6);
-    tmp69 <@ Primops.gas();
-    _15 <- tmp69;
-    tmp70 <@ Primops.staticcall(_15, _14, _2, _13, usr_p1, _7);
-    _16 <- tmp70;
-    _17 <- (PurePrimops.iszero _16);
-    if ((bool_of_uint256 _17))
+    tmp18 <@ Primops.calldataload(offset);
+    length <- tmp18;
+    _5 <- (W256.of_int 18446744073709551615);
+    _6 <- (PurePrimops.gt_uint256 length _5);
+    if ((bool_of_uint256 _6))
       {
-      _18 <- (W256.of_int STRING (*pointSubAssign: ecAdd failed*));
-      _19 <- (W256.of_int 28);
-      tmp71 <@ usr_revertWithMessage(_19, _18);
+      tmp19 <@ revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490();
       
       }
     
-    }
-  
-  proc usr_pointMulIntoDest(usr_point : uint256, usr_s : uint256, usr_dest : uint256): unit = {
-    var _1, tmp53, _2, _3, _4, _5, tmp54, _6, _7, _8, _9, tmp55, _10, tmp56, _11, _12, _13, tmp57;
-    tmp53 <@ Primops.mload(usr_point);
-    _1 <- tmp53;
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 32);
-    _4 <- (usr_point + _3);
-    tmp54 <@ Primops.mload(_4);
-    _5 <- tmp54;
-    Primops.mstore(_3, _5);
-    _6 <- (W256.of_int 64);
-    Primops.mstore(_6, usr_s);
-    _7 <- (W256.of_int 96);
-    _8 <- (W256.of_int 7);
-    tmp55 <@ Primops.gas();
-    _9 <- tmp55;
-    tmp56 <@ Primops.staticcall(_9, _8, _2, _7, usr_dest, _6);
-    _10 <- tmp56;
-    _11 <- (PurePrimops.iszero _10);
-    if ((bool_of_uint256 _11))
+    _7 <- (W256.of_int 32);
+    arrayPos <- (offset + _7);
+    _8 <- (length * _7);
+    _9 <- (arrayPos + _8);
+    _10 <- (PurePrimops.gt_uint256 _9 _end);
+    if ((bool_of_uint256 _10))
       {
-      _12 <- (W256.of_int STRING (*pointMulIntoDest: ecMul failed*));
-      _13 <- (W256.of_int 30);
-      tmp57 <@ usr_revertWithMessage(_13, _12);
+      tmp20 <@ revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef();
       
       }
     
-    }
-  
-  proc abi_encode_bytes32_to_bytes32(value : uint256, pos : uint256): unit = {
-    var _1;
-    _1 <- (cleanup_bytes32 value);
-    Primops.mstore(pos, _1);
-    }
-  
-  proc abi_decode(headStart : uint256, dataEnd : uint256): unit = {
-    var _1, _2, _3, tmp38;
-    _1 <- (W256.of_int 0);
-    _2 <- (dataEnd - headStart);
-    _3 <- (PurePrimops.slt_uint256 _2 _1);
-    if ((bool_of_uint256 _3))
-      {
-      tmp38 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
-      
-      }
-    
-    }
-  
-  proc usr_pointAddAssign(usr_p1 : uint256, usr_p2 : uint256): unit = {
-    var _1, tmp72, _2, _3, _4, _5, tmp73, _6, tmp74, _7, _8, _9, tmp75, _10, _11, _12, _13, tmp76, _14, tmp77, _15, _16, _17, tmp78;
-    tmp72 <@ Primops.mload(usr_p1);
-    _1 <- tmp72;
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 32);
-    _4 <- (usr_p1 + _3);
-    tmp73 <@ Primops.mload(_4);
-    _5 <- tmp73;
-    Primops.mstore(_3, _5);
-    tmp74 <@ Primops.mload(usr_p2);
-    _6 <- tmp74;
-    _7 <- (W256.of_int 64);
-    Primops.mstore(_7, _6);
-    _8 <- (usr_p2 + _3);
-    tmp75 <@ Primops.mload(_8);
-    _9 <- tmp75;
-    _10 <- (W256.of_int 96);
-    Primops.mstore(_10, _9);
-    _11 <- (W256.of_int 128);
-    _12 <- (W256.of_int 6);
-    tmp76 <@ Primops.gas();
-    _13 <- tmp76;
-    tmp77 <@ Primops.staticcall(_13, _12, _2, _11, usr_p1, _7);
-    _14 <- tmp77;
-    _15 <- (PurePrimops.iszero _14);
-    if ((bool_of_uint256 _15))
-      {
-      _16 <- (W256.of_int STRING (*pointAddAssign: ecAdd failed*));
-      _17 <- (W256.of_int 28);
-      tmp78 <@ usr_revertWithMessage(_17, _16);
-      
-      }
-    
-    }
-  
-  proc abi_encode_bool_to_bool(value : uint256, pos : uint256): unit = {
-    var _1, tmp31;
-    tmp31 <@ cleanup_bool(value);
-    _1 <- tmp31;
-    Primops.mstore(pos, _1);
-    }
-  
-  proc usr_modexp(usr_value : uint256, usr_power : uint256): uint256 = {
-    var usr_res, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, tmp49, _11, tmp50, _12, _13, _14, tmp51, tmp52;
-    _1 <- (W256.of_int 32);
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    Primops.mstore(_1, _1);
-    _3 <- (W256.of_int 64);
-    Primops.mstore(_3, _1);
-    _4 <- (W256.of_int 96);
-    Primops.mstore(_4, usr_value);
-    _5 <- (W256.of_int 128);
-    Primops.mstore(_5, usr_power);
-    _6 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    _7 <- (W256.of_int 160);
-    Primops.mstore(_7, _6);
-    _8 <- (W256.of_int 192);
-    _9 <- (W256.of_int 5);
-    tmp49 <@ Primops.gas();
-    _10 <- tmp49;
-    tmp50 <@ Primops.staticcall(_10, _9, _2, _8, _2, _1);
-    _11 <- tmp50;
-    _12 <- (PurePrimops.iszero _11);
-    if ((bool_of_uint256 _12))
-      {
-      _13 <- (W256.of_int STRING (*modexp precompile failed*));
-      _14 <- (W256.of_int 24);
-      tmp51 <@ usr_revertWithMessage(_14, _13);
-      
-      }
-    
-    tmp52 <@ Primops.mload(_2);
-    usr_res <- tmp52;
-    return usr_res;
-    }
-  
-  proc usr_pointAddIntoDest(usr_p1 : uint256, usr_p2 : uint256, usr_dest : uint256): unit = {
-    var _1, tmp58, _2, _3, _4, _5, tmp59, _6, tmp60, _7, _8, _9, tmp61, _10, _11, _12, _13, tmp62, _14, tmp63, _15, _16, _17, tmp64;
-    tmp58 <@ Primops.mload(usr_p1);
-    _1 <- tmp58;
-    _2 <- (W256.of_int 0);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 32);
-    _4 <- (usr_p1 + _3);
-    tmp59 <@ Primops.mload(_4);
-    _5 <- tmp59;
-    Primops.mstore(_3, _5);
-    tmp60 <@ Primops.mload(usr_p2);
-    _6 <- tmp60;
-    _7 <- (W256.of_int 64);
-    Primops.mstore(_7, _6);
-    _8 <- (usr_p2 + _3);
-    tmp61 <@ Primops.mload(_8);
-    _9 <- tmp61;
-    _10 <- (W256.of_int 96);
-    Primops.mstore(_10, _9);
-    _11 <- (W256.of_int 128);
-    _12 <- (W256.of_int 6);
-    tmp62 <@ Primops.gas();
-    _13 <- tmp62;
-    tmp63 <@ Primops.staticcall(_13, _12, _2, _11, usr_dest, _7);
-    _14 <- tmp63;
-    _15 <- (PurePrimops.iszero _14);
-    if ((bool_of_uint256 _15))
-      {
-      _16 <- (W256.of_int STRING (*pointAddIntoDest: ecAdd failed*));
-      _17 <- (W256.of_int 30);
-      tmp64 <@ usr_revertWithMessage(_17, _16);
-      
-      }
-    
+    return (arrayPos, length);
     }
   
   proc usr_loadProof(): unit = {
@@ -1147,45 +949,258 @@ module Verifier_1261 = {
     
     }
   
-  proc abi_decode_array_uint256_dyn_calldata(offset : uint256, _end : uint256): (uint256 * uint256) = {
-    var arrayPos, length, _1, _2, _3, _4, tmp17, tmp18, _5, _6, tmp19, _7, _8, _9, _10, tmp20;
-    _1 <- (W256.of_int 31);
-    _2 <- (offset + _1);
-    _3 <- (PurePrimops.slt_uint256 _2 _end);
-    _4 <- (PurePrimops.iszero _3);
-    if ((bool_of_uint256 _4))
+  proc usr_pointNegate(usr_point : uint256): unit = {
+    var _1, _2, usr_pY, tmp88, tmp89, _3, tmp90, _4, _5, tmp91, _6, _7;
+    _1 <- (W256.of_int 32);
+    _2 <- (usr_point + _1);
+    tmp88 <@ Primops.mload(_2);
+    usr_pY <- tmp88;
+    tmp89 <- usr_pY;
+    if ((tmp89 = (W256.of_int 0)))
       {
-      tmp17 <@ revert_error_1b9f4a0a5773e33b91aa01db23bf8c55fce1411167c872835e7fa00a4f17d46d();
+      tmp90 <@ Primops.mload(usr_point);
+      _3 <- tmp90;
+      if ((bool_of_uint256 _3))
+        {
+        _4 <- (W256.of_int STRING (*pointNegate: invalid point*));
+        _5 <- (W256.of_int 26);
+        tmp91 <@ usr_revertWithMessage(_5, _4);
+        
+        }
+      
       
       }
     
-    tmp18 <@ Primops.calldataload(offset);
-    length <- tmp18;
-    _5 <- (W256.of_int 18446744073709551615);
-    _6 <- (PurePrimops.gt_uint256 length _5);
-    if ((bool_of_uint256 _6))
-      {
-      tmp19 <@ revert_error_15abf5612cd996bc235ba1e55a4a30ac60e6bb601ff7ba4ad3f179b6be8d0490();
+    else {
+      _6 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
+      _7 <- (_6 - usr_pY);
+      Primops.mstore(_2, _7);
       
       }
     
-    _7 <- (W256.of_int 32);
-    arrayPos <- (offset + _7);
-    _8 <- (length * _7);
-    _9 <- (arrayPos + _8);
-    _10 <- (PurePrimops.gt_uint256 _9 _end);
-    if ((bool_of_uint256 _10))
+    }
+  
+  proc usr_pointAddAssign(usr_p1 : uint256, usr_p2 : uint256): unit = {
+    var _1, tmp72, _2, _3, _4, _5, tmp73, _6, tmp74, _7, _8, _9, tmp75, _10, _11, _12, _13, tmp76, _14, tmp77, _15, _16, _17, tmp78;
+    tmp72 <@ Primops.mload(usr_p1);
+    _1 <- tmp72;
+    _2 <- (W256.of_int 0);
+    Primops.mstore(_2, _1);
+    _3 <- (W256.of_int 32);
+    _4 <- (usr_p1 + _3);
+    tmp73 <@ Primops.mload(_4);
+    _5 <- tmp73;
+    Primops.mstore(_3, _5);
+    tmp74 <@ Primops.mload(usr_p2);
+    _6 <- tmp74;
+    _7 <- (W256.of_int 64);
+    Primops.mstore(_7, _6);
+    _8 <- (usr_p2 + _3);
+    tmp75 <@ Primops.mload(_8);
+    _9 <- tmp75;
+    _10 <- (W256.of_int 96);
+    Primops.mstore(_10, _9);
+    _11 <- (W256.of_int 128);
+    _12 <- (W256.of_int 6);
+    tmp76 <@ Primops.gas();
+    _13 <- tmp76;
+    tmp77 <@ Primops.staticcall(_13, _12, _2, _11, usr_p1, _7);
+    _14 <- tmp77;
+    _15 <- (PurePrimops.iszero _14);
+    if ((bool_of_uint256 _15))
       {
-      tmp20 <@ revert_error_81385d8c0b31fffe14be1da910c8bd3a80be4cfa248e04f42ec0faea3132a8ef();
+      _16 <- (W256.of_int STRING (*pointAddAssign: ecAdd failed*));
+      _17 <- (W256.of_int 28);
+      tmp78 <@ usr_revertWithMessage(_17, _16);
       
       }
     
-    return (arrayPos, length);
+    }
+  
+  proc usr_pointSubAssign(usr_p1 : uint256, usr_p2 : uint256): unit = {
+    var _1, tmp65, _2, _3, _4, _5, tmp66, _6, tmp67, _7, _8, _9, tmp68, _10, _11, _12, _13, _14, _15, tmp69, _16, tmp70, _17, _18, _19, tmp71;
+    tmp65 <@ Primops.mload(usr_p1);
+    _1 <- tmp65;
+    _2 <- (W256.of_int 0);
+    Primops.mstore(_2, _1);
+    _3 <- (W256.of_int 32);
+    _4 <- (usr_p1 + _3);
+    tmp66 <@ Primops.mload(_4);
+    _5 <- tmp66;
+    Primops.mstore(_3, _5);
+    tmp67 <@ Primops.mload(usr_p2);
+    _6 <- tmp67;
+    _7 <- (W256.of_int 64);
+    Primops.mstore(_7, _6);
+    _8 <- (usr_p2 + _3);
+    tmp68 <@ Primops.mload(_8);
+    _9 <- tmp68;
+    _10 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
+    _11 <- (_10 - _9);
+    _12 <- (W256.of_int 96);
+    Primops.mstore(_12, _11);
+    _13 <- (W256.of_int 128);
+    _14 <- (W256.of_int 6);
+    tmp69 <@ Primops.gas();
+    _15 <- tmp69;
+    tmp70 <@ Primops.staticcall(_15, _14, _2, _13, usr_p1, _7);
+    _16 <- tmp70;
+    _17 <- (PurePrimops.iszero _16);
+    if ((bool_of_uint256 _17))
+      {
+      _18 <- (W256.of_int STRING (*pointSubAssign: ecAdd failed*));
+      _19 <- (W256.of_int 28);
+      tmp71 <@ usr_revertWithMessage(_19, _18);
+      
+      }
+    
     }
   
   proc constructor_Verifier(): unit = {
     var tmp8;
     tmp8 <@ constructor_IVerifier();
+    }
+  
+  proc usr_pointMulIntoDest(usr_point : uint256, usr_s : uint256, usr_dest : uint256): unit = {
+    var _1, tmp53, _2, _3, _4, _5, tmp54, _6, _7, _8, _9, tmp55, _10, tmp56, _11, _12, _13, tmp57;
+    tmp53 <@ Primops.mload(usr_point);
+    _1 <- tmp53;
+    _2 <- (W256.of_int 0);
+    Primops.mstore(_2, _1);
+    _3 <- (W256.of_int 32);
+    _4 <- (usr_point + _3);
+    tmp54 <@ Primops.mload(_4);
+    _5 <- tmp54;
+    Primops.mstore(_3, _5);
+    _6 <- (W256.of_int 64);
+    Primops.mstore(_6, usr_s);
+    _7 <- (W256.of_int 96);
+    _8 <- (W256.of_int 7);
+    tmp55 <@ Primops.gas();
+    _9 <- tmp55;
+    tmp56 <@ Primops.staticcall(_9, _8, _2, _7, usr_dest, _6);
+    _10 <- tmp56;
+    _11 <- (PurePrimops.iszero _10);
+    if ((bool_of_uint256 _11))
+      {
+      _12 <- (W256.of_int STRING (*pointMulIntoDest: ecMul failed*));
+      _13 <- (W256.of_int 30);
+      tmp57 <@ usr_revertWithMessage(_13, _12);
+      
+      }
+    
+    }
+  
+  proc abi_encode_bytes32_to_bytes32(value : uint256, pos : uint256): unit = {
+    var _1;
+    _1 <- (cleanup_bytes32 value);
+    Primops.mstore(pos, _1);
+    }
+  
+  proc abi_encode_bool_to_bool(value : uint256, pos : uint256): unit = {
+    var _1, tmp31;
+    tmp31 <@ cleanup_bool(value);
+    _1 <- tmp31;
+    Primops.mstore(pos, _1);
+    }
+  
+  proc usr_modexp(usr_value : uint256, usr_power : uint256): uint256 = {
+    var usr_res, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, tmp49, _11, tmp50, _12, _13, _14, tmp51, tmp52;
+    _1 <- (W256.of_int 32);
+    _2 <- (W256.of_int 0);
+    Primops.mstore(_2, _1);
+    Primops.mstore(_1, _1);
+    _3 <- (W256.of_int 64);
+    Primops.mstore(_3, _1);
+    _4 <- (W256.of_int 96);
+    Primops.mstore(_4, usr_value);
+    _5 <- (W256.of_int 128);
+    Primops.mstore(_5, usr_power);
+    _6 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    _7 <- (W256.of_int 160);
+    Primops.mstore(_7, _6);
+    _8 <- (W256.of_int 192);
+    _9 <- (W256.of_int 5);
+    tmp49 <@ Primops.gas();
+    _10 <- tmp49;
+    tmp50 <@ Primops.staticcall(_10, _9, _2, _8, _2, _1);
+    _11 <- tmp50;
+    _12 <- (PurePrimops.iszero _11);
+    if ((bool_of_uint256 _12))
+      {
+      _13 <- (W256.of_int STRING (*modexp precompile failed*));
+      _14 <- (W256.of_int 24);
+      tmp51 <@ usr_revertWithMessage(_14, _13);
+      
+      }
+    
+    tmp52 <@ Primops.mload(_2);
+    usr_res <- tmp52;
+    return usr_res;
+    }
+  
+  proc abi_decode(headStart : uint256, dataEnd : uint256): unit = {
+    var _1, _2, _3, tmp38;
+    _1 <- (W256.of_int 0);
+    _2 <- (dataEnd - headStart);
+    _3 <- (PurePrimops.slt_uint256 _2 _1);
+    if ((bool_of_uint256 _3))
+      {
+      tmp38 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
+      
+      }
+    
+    }
+  
+  proc usr_pointAddIntoDest(usr_p1 : uint256, usr_p2 : uint256, usr_dest : uint256): unit = {
+    var _1, tmp58, _2, _3, _4, _5, tmp59, _6, tmp60, _7, _8, _9, tmp61, _10, _11, _12, _13, tmp62, _14, tmp63, _15, _16, _17, tmp64;
+    tmp58 <@ Primops.mload(usr_p1);
+    _1 <- tmp58;
+    _2 <- (W256.of_int 0);
+    Primops.mstore(_2, _1);
+    _3 <- (W256.of_int 32);
+    _4 <- (usr_p1 + _3);
+    tmp59 <@ Primops.mload(_4);
+    _5 <- tmp59;
+    Primops.mstore(_3, _5);
+    tmp60 <@ Primops.mload(usr_p2);
+    _6 <- tmp60;
+    _7 <- (W256.of_int 64);
+    Primops.mstore(_7, _6);
+    _8 <- (usr_p2 + _3);
+    tmp61 <@ Primops.mload(_8);
+    _9 <- tmp61;
+    _10 <- (W256.of_int 96);
+    Primops.mstore(_10, _9);
+    _11 <- (W256.of_int 128);
+    _12 <- (W256.of_int 6);
+    tmp62 <@ Primops.gas();
+    _13 <- tmp62;
+    tmp63 <@ Primops.staticcall(_13, _12, _2, _11, usr_dest, _7);
+    _14 <- tmp63;
+    _15 <- (PurePrimops.iszero _14);
+    if ((bool_of_uint256 _15))
+      {
+      _16 <- (W256.of_int STRING (*pointAddIntoDest: ecAdd failed*));
+      _17 <- (W256.of_int 30);
+      tmp64 <@ usr_revertWithMessage(_17, _16);
+      
+      }
+    
+    }
+  
+  proc fun_verificationKeyHash(): uint256 = {
+    var var_vkHash, tmp47, usr_start, usr_end, _1, _2, usr_length, tmp48;
+    Primops.pop(zero_value_for_split_bytes32);
+    tmp47 <@ fun_loadVerificationKey();
+    usr_start <- (W256.of_int 512);
+    usr_end <- (W256.of_int 1792);
+    _1 <- (W256.of_int 32);
+    _2 <- (usr_end - usr_start);
+    usr_length <- (_2 + _1);
+    tmp48 <@ Primops.keccak256(usr_start, usr_length);
+    var_vkHash <- tmp48;
+    return var_vkHash;
     }
   
   proc usr_pointMulAndAddIntoDest(usr_point : uint256, usr_s : uint256, usr_dest : uint256): unit = {
@@ -1232,74 +1247,6 @@ module Verifier_1261 = {
     
     }
   
-  proc usr_mainGateLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256, usr_stateOpening3AtZ : uint256): unit = {
-    var _1, tmp295, _2, tmp296, _3, tmp297, _4, tmp298, _5, _6, _7, tmp299, _8, _9, tmp300, _10, tmp301, _11, _12, tmp302, _13, tmp303, _14, _15, tmp304, _16, _17, tmp305, usr_coeff, tmp306;
-    _1 <- (W256.of_int 512);
-    tmp295 <@ usr_pointMulIntoDest(_1, usr_stateOpening0AtZ, usr_dest);
-    _2 <- (W256.of_int 576);
-    tmp296 <@ usr_pointMulAndAddIntoDest(_2, usr_stateOpening1AtZ, usr_dest);
-    _3 <- (W256.of_int 640);
-    tmp297 <@ usr_pointMulAndAddIntoDest(_3, usr_stateOpening2AtZ, usr_dest);
-    _4 <- (W256.of_int 704);
-    tmp298 <@ usr_pointMulAndAddIntoDest(_4, usr_stateOpening3AtZ, usr_dest);
-    _5 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    _6 <- (PurePrimops.mulmod usr_stateOpening0AtZ usr_stateOpening1AtZ _5);
-    _7 <- (W256.of_int 768);
-    tmp299 <@ usr_pointMulAndAddIntoDest(_7, _6, usr_dest);
-    _8 <- (PurePrimops.mulmod usr_stateOpening0AtZ usr_stateOpening2AtZ _5);
-    _9 <- (W256.of_int 832);
-    tmp300 <@ usr_pointMulAndAddIntoDest(_9, _8, usr_dest);
-    _10 <- (W256.of_int 896);
-    tmp301 <@ usr_pointAddAssign(usr_dest, _10);
-    _11 <- (W256.of_int 2688);
-    tmp302 <@ Primops.mload(_11);
-    _12 <- tmp302;
-    _13 <- (W256.of_int 960);
-    tmp303 <@ usr_pointMulAndAddIntoDest(_13, _12, usr_dest);
-    _14 <- (W256.of_int 4000);
-    tmp304 <@ Primops.mload(_14);
-    _15 <- tmp304;
-    _16 <- (W256.of_int 2720);
-    tmp305 <@ Primops.mload(_16);
-    _17 <- tmp305;
-    usr_coeff <- (PurePrimops.mulmod _17 _15 _5);
-    tmp306 <@ usr_pointMulIntoDest(usr_dest, usr_coeff, usr_dest);
-    }
-  
-  proc usr_addAssignRescueCustomGateLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256, usr_stateOpening3AtZ : uint256): unit = {
-    var usr_accumulator, usr_intermediateValue, _1, _2, _3, _4, tmp307, _5, _6, _7, tmp308, _8, _9, _10, tmp309, _11, _12, tmp310, _13, tmp311;
-    _1 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    usr_accumulator <- (PurePrimops.mulmod usr_stateOpening0AtZ usr_stateOpening0AtZ _1);
-    _2 <- (_1 - usr_stateOpening1AtZ);
-    usr_accumulator <- (PurePrimops.addmod usr_accumulator _2 _1);
-    _3 <- (W256.of_int 3520);
-    tmp307 <@ Primops.mload(_3);
-    _4 <- tmp307;
-    usr_accumulator <- (PurePrimops.mulmod usr_accumulator _4 _1);
-    usr_intermediateValue <- (PurePrimops.mulmod usr_stateOpening1AtZ usr_stateOpening1AtZ _1);
-    _5 <- (_1 - usr_stateOpening2AtZ);
-    usr_intermediateValue <- (PurePrimops.addmod usr_intermediateValue _5 _1);
-    _6 <- (W256.of_int 3616);
-    tmp308 <@ Primops.mload(_6);
-    _7 <- tmp308;
-    usr_intermediateValue <- (PurePrimops.mulmod usr_intermediateValue _7 _1);
-    usr_accumulator <- (PurePrimops.addmod usr_accumulator usr_intermediateValue _1);
-    usr_intermediateValue <- (PurePrimops.mulmod usr_stateOpening2AtZ usr_stateOpening0AtZ _1);
-    _8 <- (_1 - usr_stateOpening3AtZ);
-    usr_intermediateValue <- (PurePrimops.addmod usr_intermediateValue _8 _1);
-    _9 <- (W256.of_int 3648);
-    tmp309 <@ Primops.mload(_9);
-    _10 <- tmp309;
-    usr_intermediateValue <- (PurePrimops.mulmod usr_intermediateValue _10 _1);
-    usr_accumulator <- (PurePrimops.addmod usr_accumulator usr_intermediateValue _1);
-    _11 <- (W256.of_int 4000);
-    tmp310 <@ Primops.mload(_11);
-    _12 <- tmp310;
-    usr_accumulator <- (PurePrimops.mulmod usr_accumulator _12 _1);
-    _13 <- (W256.of_int 1088);
-    tmp311 <@ usr_pointMulAndAddIntoDest(_13, usr_accumulator, usr_dest);
-    }
-  
   proc abi_encode_bool(headStart : uint256, value0 : uint256): uint256 = {
     var tail, _1, _2, _3, tmp32;
     _1 <- (W256.of_int 32);
@@ -1310,98 +1257,71 @@ module Verifier_1261 = {
     return tail;
     }
   
-  proc usr_updateAggregationChallenge(usr_queriesCommitmentPoint : uint256, usr_valueAtZ : uint256, usr_curAggregationChallenge : uint256, usr_curAggregatedOpeningAtZ : uint256): (uint256 * uint256) = {
-    var usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ, _1, _2, _3, tmp370, _4, tmp371, _5, tmp372, _6;
-    _1 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    _2 <- (W256.of_int 4000);
-    tmp370 <@ Primops.mload(_2);
-    _3 <- tmp370;
-    usr_newAggregationChallenge <- (PurePrimops.mulmod usr_curAggregationChallenge _3 _1);
-    _4 <- (W256.of_int 4480);
-    tmp371 <@ usr_pointMulAndAddIntoDest(usr_queriesCommitmentPoint, usr_newAggregationChallenge, _4);
-    tmp372 <@ Primops.mload(usr_valueAtZ);
-    _5 <- tmp372;
-    _6 <- (PurePrimops.mulmod usr_newAggregationChallenge _5 _1);
-    usr_newAggregatedOpeningAtZ <- (PurePrimops.addmod usr_curAggregatedOpeningAtZ _6 _1);
-    return (usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ);
-    }
   
-  proc usr_updateAggregationChallenge_105(usr_queriesCommitmentPoint : uint256, usr_valueAtZ_Omega : uint256, usr_previousCoeff : uint256, usr_curAggregationChallenge : uint256, usr_curAggregatedOpeningAtZ_Omega : uint256): (uint256 * uint256) = {
-    var usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ_Omega, _1, _2, _3, tmp373, _4, _5, tmp374, _6, usr_finalCoeff, _7, tmp375, _8, tmp376, _9;
-    _1 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    _2 <- (W256.of_int 4000);
-    tmp373 <@ Primops.mload(_2);
-    _3 <- tmp373;
-    usr_newAggregationChallenge <- (PurePrimops.mulmod usr_curAggregationChallenge _3 _1);
-    _4 <- (W256.of_int 4032);
-    tmp374 <@ Primops.mload(_4);
-    _5 <- tmp374;
-    _6 <- (PurePrimops.mulmod usr_newAggregationChallenge _5 _1);
-    usr_finalCoeff <- (PurePrimops.addmod usr_previousCoeff _6 _1);
-    _7 <- (W256.of_int 4544);
-    tmp375 <@ usr_pointMulAndAddIntoDest(usr_queriesCommitmentPoint, usr_finalCoeff, _7);
-    tmp376 <@ Primops.mload(usr_valueAtZ_Omega);
-    _8 <- tmp376;
-    _9 <- (PurePrimops.mulmod usr_newAggregationChallenge _8 _1);
-    usr_newAggregatedOpeningAtZ_Omega <- (PurePrimops.addmod usr_curAggregatedOpeningAtZ_Omega _9 _1);
-    return (usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ_Omega);
-    }
-  
-  proc abi_decode_array_uint256_dyn_calldatat_array_uint256_dyn_calldatat_array_uint256_dyn_calldata(headStart : uint256, dataEnd : uint256): (uint256 * uint256 * uint256 * uint256 * uint256 * uint256) = {
-    var value0, value1, value2, value3, value4, value5, _1, _2, _3, tmp21, _4, _5, offset, tmp22, _6, _7, tmp23, _8, tmp24, _9, _10, offset_1, tmp25, _11, tmp26, _12, tmp27, _13, _14, offset_2, tmp28, _15, tmp29, _16, tmp30;
-    _1 <- (W256.of_int 96);
-    _2 <- (dataEnd - headStart);
-    _3 <- (PurePrimops.slt_uint256 _2 _1);
-    if ((bool_of_uint256 _3))
-      {
-      tmp21 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
-      
-      }
-    
-    _4 <- (W256.of_int 0);
-    _5 <- (headStart + _4);
-    tmp22 <@ Primops.calldataload(_5);
-    offset <- tmp22;
-    _6 <- (W256.of_int 18446744073709551615);
-    _7 <- (PurePrimops.gt_uint256 offset _6);
-    if ((bool_of_uint256 _7))
-      {
-      tmp23 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
-      
-      }
-    
-    _8 <- (headStart + offset);
-    tmp24 <@ abi_decode_array_uint256_dyn_calldata(_8, dataEnd);
-    (value0,value1) <- tmp24;
-    _9 <- (W256.of_int 32);
-    _10 <- (headStart + _9);
-    tmp25 <@ Primops.calldataload(_10);
-    offset_1 <- tmp25;
-    _11 <- (PurePrimops.gt_uint256 offset_1 _6);
-    if ((bool_of_uint256 _11))
-      {
-      tmp26 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
-      
-      }
-    
-    _12 <- (headStart + offset_1);
-    tmp27 <@ abi_decode_array_uint256_dyn_calldata(_12, dataEnd);
-    (value2,value3) <- tmp27;
-    _13 <- (W256.of_int 64);
-    _14 <- (headStart + _13);
-    tmp28 <@ Primops.calldataload(_14);
-    offset_2 <- tmp28;
-    _15 <- (PurePrimops.gt_uint256 offset_2 _6);
-    if ((bool_of_uint256 _15))
-      {
-      tmp29 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
-      
-      }
-    
-    _16 <- (headStart + offset_2);
-    tmp30 <@ abi_decode_array_uint256_dyn_calldata(_16, dataEnd);
-    (value4,value5) <- tmp30;
-    return (value0, value1, value2, value3, value4, value5);
+  proc usr_lookupQuotientContribution(): uint256 = {
+    var usr_res, _1, usr_betaLookup, tmp283, _2, usr_gammaLookup, tmp284, _3, _4, usr_betaPlusOne, usr_betaGamma, _5, _6, _7, _8, tmp285, _9, _10, tmp286, _11, _12, tmp287, _13, _14, _15, usr_lastOmega, tmp288, _16, _17, _18, tmp289, usr_zMinusLastOmega, _19, _20, _21, tmp290, _22, _23, tmp291, usr_intermediateValue, _24, _25, usr_lnMinusOneAtZ, tmp292, usr_betaGammaPowered, tmp293, _26, usr_alphaPower8, tmp294, _27, usr_subtrahend, _28;
+    _1 <- (W256.of_int 3872);
+    tmp283 <@ Primops.mload(_1);
+    usr_betaLookup <- tmp283;
+    _2 <- (W256.of_int 3904);
+    tmp284 <@ Primops.mload(_2);
+    usr_gammaLookup <- tmp284;
+    _3 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    _4 <- (W256.of_int 1);
+    usr_betaPlusOne <- (PurePrimops.addmod usr_betaLookup _4 _3);
+    usr_betaGamma <- (PurePrimops.mulmod usr_betaPlusOne usr_gammaLookup _3);
+    _5 <- (W256.of_int 3936);
+    Primops.mstore(_5, usr_betaPlusOne);
+    _6 <- (W256.of_int 3968);
+    Primops.mstore(_6, usr_betaGamma);
+    _7 <- (W256.of_int 2880);
+    tmp285 <@ Primops.mload(_7);
+    _8 <- tmp285;
+    usr_res <- (PurePrimops.mulmod _8 usr_betaLookup _3);
+    usr_res <- (PurePrimops.addmod usr_res usr_betaGamma _3);
+    _9 <- (W256.of_int 2912);
+    tmp286 <@ Primops.mload(_9);
+    _10 <- tmp286;
+    usr_res <- (PurePrimops.mulmod usr_res _10 _3);
+    _11 <- (W256.of_int 3744);
+    tmp287 <@ Primops.mload(_11);
+    _12 <- tmp287;
+    usr_res <- (PurePrimops.mulmod usr_res _12 _3);
+    _13 <- (W256.of_int 67108864);
+    _14 <- (_13 - _4);
+    _15 <- (W256.of_int 13446667982376394161563610564587413125564757801019538732601045199901075958935);
+    tmp288 <@ usr_modexp(_15, _14);
+    usr_lastOmega <- tmp288;
+    _16 <- (_3 - usr_lastOmega);
+    _17 <- (W256.of_int 4064);
+    tmp289 <@ Primops.mload(_17);
+    _18 <- tmp289;
+    usr_zMinusLastOmega <- (PurePrimops.addmod _18 _16 _3);
+    _19 <- (W256.of_int 4096);
+    Primops.mstore(_19, usr_zMinusLastOmega);
+    usr_res <- (PurePrimops.mulmod usr_res usr_zMinusLastOmega _3);
+    _20 <- (W256.of_int 3776);
+    tmp290 <@ Primops.mload(_20);
+    _21 <- tmp290;
+    _22 <- (W256.of_int 4128);
+    tmp291 <@ Primops.mload(_22);
+    _23 <- tmp291;
+    usr_intermediateValue <- (PurePrimops.mulmod _23 _21 _3);
+    _24 <- (_3 - usr_intermediateValue);
+    usr_res <- (PurePrimops.addmod usr_res _24 _3);
+    _25 <- (W256.of_int 4160);
+    tmp292 <@ Primops.mload(_25);
+    usr_lnMinusOneAtZ <- tmp292;
+    tmp293 <@ usr_modexp(usr_betaGamma, _14);
+    usr_betaGammaPowered <- tmp293;
+    _26 <- (W256.of_int 3808);
+    tmp294 <@ Primops.mload(_26);
+    usr_alphaPower8 <- tmp294;
+    _27 <- (PurePrimops.mulmod usr_lnMinusOneAtZ usr_betaGammaPowered _3);
+    usr_subtrahend <- (PurePrimops.mulmod _27 usr_alphaPower8 _3);
+    _28 <- (_3 - usr_subtrahend);
+    usr_res <- (PurePrimops.addmod usr_res _28 _3);
+    return usr_res;
     }
   
   proc usr_finalPairing(): unit = {
@@ -1517,119 +1437,38 @@ module Verifier_1261 = {
     
     }
   
-  proc usr_evaluateLagrangePolyOutOfDomain(usr_polyNum : uint256, usr_at : uint256): uint256 = {
-    var usr_res, usr_omegaPower, _1, tmp266, _2, _3, _4, _5, _6, tmp267, _7, _8, _9, tmp268, _10, usr_denominator, _11, _12, tmp269;
-    usr_omegaPower <- (W256.of_int 1);
-    if ((bool_of_uint256 usr_polyNum))
-      {
-      _1 <- (W256.of_int 13446667982376394161563610564587413125564757801019538732601045199901075958935);
-      tmp266 <@ usr_modexp(_1, usr_polyNum);
-      usr_omegaPower <- tmp266;
-      
-      }
-    
-    _2 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    _3 <- (W256.of_int 1);
-    _4 <- (_2 - _3);
-    _5 <- (W256.of_int 67108864);
-    tmp267 <@ usr_modexp(usr_at, _5);
-    _6 <- tmp267;
-    usr_res <- (PurePrimops.addmod _6 _4 _2);
-    _7 <- (PurePrimops.iszero usr_res);
-    if ((bool_of_uint256 _7))
-      {
-      _8 <- (W256.of_int STRING (*invalid vanishing polynomial*));
-      _9 <- (W256.of_int 28);
-      tmp268 <@ usr_revertWithMessage(_9, _8);
-      
-      }
-    
-    usr_res <- (PurePrimops.mulmod usr_res usr_omegaPower _2);
-    _10 <- (_2 - usr_omegaPower);
-    usr_denominator <- (PurePrimops.addmod usr_at _10 _2);
-    usr_denominator <- (PurePrimops.mulmod usr_denominator _5 _2);
-    _11 <- (W256.of_int 2);
-    _12 <- (_2 - _11);
-    tmp269 <@ usr_modexp(usr_denominator, _12);
-    usr_denominator <- tmp269;
-    usr_res <- (PurePrimops.mulmod usr_res usr_denominator _2);
-    return usr_res;
-    }
-  
-  proc abi_encode_bytes32(headStart : uint256, value0 : uint256): uint256 = {
-    var tail, _1, _2, _3, tmp39;
-    _1 <- (W256.of_int 32);
-    tail <- (headStart + _1);
-    _2 <- (W256.of_int 0);
-    _3 <- (headStart + _2);
-    tmp39 <@ abi_encode_bytes32_to_bytes32(value0, _3);
-    return tail;
-    }
-  
-  proc usr_lookupQuotientContribution(): uint256 = {
-    var usr_res, _1, usr_betaLookup, tmp283, _2, usr_gammaLookup, tmp284, _3, _4, usr_betaPlusOne, usr_betaGamma, _5, _6, _7, _8, tmp285, _9, _10, tmp286, _11, _12, tmp287, _13, _14, _15, usr_lastOmega, tmp288, _16, _17, _18, tmp289, usr_zMinusLastOmega, _19, _20, _21, tmp290, _22, _23, tmp291, usr_intermediateValue, _24, _25, usr_lnMinusOneAtZ, tmp292, usr_betaGammaPowered, tmp293, _26, usr_alphaPower8, tmp294, _27, usr_subtrahend, _28;
-    _1 <- (W256.of_int 3872);
-    tmp283 <@ Primops.mload(_1);
-    usr_betaLookup <- tmp283;
-    _2 <- (W256.of_int 3904);
-    tmp284 <@ Primops.mload(_2);
-    usr_gammaLookup <- tmp284;
-    _3 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    _4 <- (W256.of_int 1);
-    usr_betaPlusOne <- (PurePrimops.addmod usr_betaLookup _4 _3);
-    usr_betaGamma <- (PurePrimops.mulmod usr_betaPlusOne usr_gammaLookup _3);
-    _5 <- (W256.of_int 3936);
-    Primops.mstore(_5, usr_betaPlusOne);
-    _6 <- (W256.of_int 3968);
-    Primops.mstore(_6, usr_betaGamma);
-    _7 <- (W256.of_int 2880);
-    tmp285 <@ Primops.mload(_7);
-    _8 <- tmp285;
-    usr_res <- (PurePrimops.mulmod _8 usr_betaLookup _3);
-    usr_res <- (PurePrimops.addmod usr_res usr_betaGamma _3);
-    _9 <- (W256.of_int 2912);
-    tmp286 <@ Primops.mload(_9);
-    _10 <- tmp286;
-    usr_res <- (PurePrimops.mulmod usr_res _10 _3);
-    _11 <- (W256.of_int 3744);
-    tmp287 <@ Primops.mload(_11);
-    _12 <- tmp287;
-    usr_res <- (PurePrimops.mulmod usr_res _12 _3);
-    _13 <- (W256.of_int 67108864);
-    _14 <- (_13 - _4);
-    _15 <- (W256.of_int 13446667982376394161563610564587413125564757801019538732601045199901075958935);
-    tmp288 <@ usr_modexp(_15, _14);
-    usr_lastOmega <- tmp288;
-    _16 <- (_3 - usr_lastOmega);
-    _17 <- (W256.of_int 4064);
-    tmp289 <@ Primops.mload(_17);
-    _18 <- tmp289;
-    usr_zMinusLastOmega <- (PurePrimops.addmod _18 _16 _3);
-    _19 <- (W256.of_int 4096);
-    Primops.mstore(_19, usr_zMinusLastOmega);
-    usr_res <- (PurePrimops.mulmod usr_res usr_zMinusLastOmega _3);
-    _20 <- (W256.of_int 3776);
-    tmp290 <@ Primops.mload(_20);
-    _21 <- tmp290;
-    _22 <- (W256.of_int 4128);
-    tmp291 <@ Primops.mload(_22);
-    _23 <- tmp291;
-    usr_intermediateValue <- (PurePrimops.mulmod _23 _21 _3);
-    _24 <- (_3 - usr_intermediateValue);
-    usr_res <- (PurePrimops.addmod usr_res _24 _3);
-    _25 <- (W256.of_int 4160);
-    tmp292 <@ Primops.mload(_25);
-    usr_lnMinusOneAtZ <- tmp292;
-    tmp293 <@ usr_modexp(usr_betaGamma, _14);
-    usr_betaGammaPowered <- tmp293;
-    _26 <- (W256.of_int 3808);
-    tmp294 <@ Primops.mload(_26);
-    usr_alphaPower8 <- tmp294;
-    _27 <- (PurePrimops.mulmod usr_lnMinusOneAtZ usr_betaGammaPowered _3);
-    usr_subtrahend <- (PurePrimops.mulmod _27 usr_alphaPower8 _3);
-    _28 <- (_3 - usr_subtrahend);
-    usr_res <- (PurePrimops.addmod usr_res _28 _3);
-    return usr_res;
+  proc usr_mainGateLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256, usr_stateOpening3AtZ : uint256): unit = {
+    var _1, tmp295, _2, tmp296, _3, tmp297, _4, tmp298, _5, _6, _7, tmp299, _8, _9, tmp300, _10, tmp301, _11, _12, tmp302, _13, tmp303, _14, _15, tmp304, _16, _17, tmp305, usr_coeff, tmp306;
+    _1 <- (W256.of_int 512);
+    tmp295 <@ usr_pointMulIntoDest(_1, usr_stateOpening0AtZ, usr_dest);
+    _2 <- (W256.of_int 576);
+    tmp296 <@ usr_pointMulAndAddIntoDest(_2, usr_stateOpening1AtZ, usr_dest);
+    _3 <- (W256.of_int 640);
+    tmp297 <@ usr_pointMulAndAddIntoDest(_3, usr_stateOpening2AtZ, usr_dest);
+    _4 <- (W256.of_int 704);
+    tmp298 <@ usr_pointMulAndAddIntoDest(_4, usr_stateOpening3AtZ, usr_dest);
+    _5 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    _6 <- (PurePrimops.mulmod usr_stateOpening0AtZ usr_stateOpening1AtZ _5);
+    _7 <- (W256.of_int 768);
+    tmp299 <@ usr_pointMulAndAddIntoDest(_7, _6, usr_dest);
+    _8 <- (PurePrimops.mulmod usr_stateOpening0AtZ usr_stateOpening2AtZ _5);
+    _9 <- (W256.of_int 832);
+    tmp300 <@ usr_pointMulAndAddIntoDest(_9, _8, usr_dest);
+    _10 <- (W256.of_int 896);
+    tmp301 <@ usr_pointAddAssign(usr_dest, _10);
+    _11 <- (W256.of_int 2688);
+    tmp302 <@ Primops.mload(_11);
+    _12 <- tmp302;
+    _13 <- (W256.of_int 960);
+    tmp303 <@ usr_pointMulAndAddIntoDest(_13, _12, usr_dest);
+    _14 <- (W256.of_int 4000);
+    tmp304 <@ Primops.mload(_14);
+    _15 <- tmp304;
+    _16 <- (W256.of_int 2720);
+    tmp305 <@ Primops.mload(_16);
+    _17 <- tmp305;
+    usr_coeff <- (PurePrimops.mulmod _17 _15 _5);
+    tmp306 <@ usr_pointMulIntoDest(usr_dest, usr_coeff, usr_dest);
     }
   
   proc usr_initializeTranscript(): unit = {
@@ -1866,6 +1705,162 @@ module Verifier_1261 = {
     Primops.mstore(_119, _118);
     }
   
+  proc usr_addAssignRescueCustomGateLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256, usr_stateOpening3AtZ : uint256): unit = {
+    var usr_accumulator, usr_intermediateValue, _1, _2, _3, _4, tmp307, _5, _6, _7, tmp308, _8, _9, _10, tmp309, _11, _12, tmp310, _13, tmp311;
+    _1 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    usr_accumulator <- (PurePrimops.mulmod usr_stateOpening0AtZ usr_stateOpening0AtZ _1);
+    _2 <- (_1 - usr_stateOpening1AtZ);
+    usr_accumulator <- (PurePrimops.addmod usr_accumulator _2 _1);
+    _3 <- (W256.of_int 3520);
+    tmp307 <@ Primops.mload(_3);
+    _4 <- tmp307;
+    usr_accumulator <- (PurePrimops.mulmod usr_accumulator _4 _1);
+    usr_intermediateValue <- (PurePrimops.mulmod usr_stateOpening1AtZ usr_stateOpening1AtZ _1);
+    _5 <- (_1 - usr_stateOpening2AtZ);
+    usr_intermediateValue <- (PurePrimops.addmod usr_intermediateValue _5 _1);
+    _6 <- (W256.of_int 3616);
+    tmp308 <@ Primops.mload(_6);
+    _7 <- tmp308;
+    usr_intermediateValue <- (PurePrimops.mulmod usr_intermediateValue _7 _1);
+    usr_accumulator <- (PurePrimops.addmod usr_accumulator usr_intermediateValue _1);
+    usr_intermediateValue <- (PurePrimops.mulmod usr_stateOpening2AtZ usr_stateOpening0AtZ _1);
+    _8 <- (_1 - usr_stateOpening3AtZ);
+    usr_intermediateValue <- (PurePrimops.addmod usr_intermediateValue _8 _1);
+    _9 <- (W256.of_int 3648);
+    tmp309 <@ Primops.mload(_9);
+    _10 <- tmp309;
+    usr_intermediateValue <- (PurePrimops.mulmod usr_intermediateValue _10 _1);
+    usr_accumulator <- (PurePrimops.addmod usr_accumulator usr_intermediateValue _1);
+    _11 <- (W256.of_int 4000);
+    tmp310 <@ Primops.mload(_11);
+    _12 <- tmp310;
+    usr_accumulator <- (PurePrimops.mulmod usr_accumulator _12 _1);
+    _13 <- (W256.of_int 1088);
+    tmp311 <@ usr_pointMulAndAddIntoDest(_13, usr_accumulator, usr_dest);
+    }
+  
+  proc usr_updateAggregationChallenge(usr_queriesCommitmentPoint : uint256, usr_valueAtZ : uint256, usr_curAggregationChallenge : uint256, usr_curAggregatedOpeningAtZ : uint256): (uint256 * uint256) = {
+    var usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ, _1, _2, _3, tmp370, _4, tmp371, _5, tmp372, _6;
+    _1 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    _2 <- (W256.of_int 4000);
+    tmp370 <@ Primops.mload(_2);
+    _3 <- tmp370;
+    usr_newAggregationChallenge <- (PurePrimops.mulmod usr_curAggregationChallenge _3 _1);
+    _4 <- (W256.of_int 4480);
+    tmp371 <@ usr_pointMulAndAddIntoDest(usr_queriesCommitmentPoint, usr_newAggregationChallenge, _4);
+    tmp372 <@ Primops.mload(usr_valueAtZ);
+    _5 <- tmp372;
+    _6 <- (PurePrimops.mulmod usr_newAggregationChallenge _5 _1);
+    usr_newAggregatedOpeningAtZ <- (PurePrimops.addmod usr_curAggregatedOpeningAtZ _6 _1);
+    return (usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ);
+    }
+  
+  proc usr_evaluateLagrangePolyOutOfDomain(usr_polyNum : uint256, usr_at : uint256): uint256 = {
+    var usr_res, usr_omegaPower, _1, tmp266, _2, _3, _4, _5, _6, tmp267, _7, _8, _9, tmp268, _10, usr_denominator, _11, _12, tmp269;
+    usr_omegaPower <- (W256.of_int 1);
+    if ((bool_of_uint256 usr_polyNum))
+      {
+      _1 <- (W256.of_int 13446667982376394161563610564587413125564757801019538732601045199901075958935);
+      tmp266 <@ usr_modexp(_1, usr_polyNum);
+      usr_omegaPower <- tmp266;
+      
+      }
+    
+    _2 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    _3 <- (W256.of_int 1);
+    _4 <- (_2 - _3);
+    _5 <- (W256.of_int 67108864);
+    tmp267 <@ usr_modexp(usr_at, _5);
+    _6 <- tmp267;
+    usr_res <- (PurePrimops.addmod _6 _4 _2);
+    _7 <- (PurePrimops.iszero usr_res);
+    if ((bool_of_uint256 _7))
+      {
+      _8 <- (W256.of_int STRING (*invalid vanishing polynomial*));
+      _9 <- (W256.of_int 28);
+      tmp268 <@ usr_revertWithMessage(_9, _8);
+      
+      }
+    
+    usr_res <- (PurePrimops.mulmod usr_res usr_omegaPower _2);
+    _10 <- (_2 - usr_omegaPower);
+    usr_denominator <- (PurePrimops.addmod usr_at _10 _2);
+    usr_denominator <- (PurePrimops.mulmod usr_denominator _5 _2);
+    _11 <- (W256.of_int 2);
+    _12 <- (_2 - _11);
+    tmp269 <@ usr_modexp(usr_denominator, _12);
+    usr_denominator <- tmp269;
+    usr_res <- (PurePrimops.mulmod usr_res usr_denominator _2);
+    return usr_res;
+    }
+  
+  proc abi_encode_bytes32(headStart : uint256, value0 : uint256): uint256 = {
+    var tail, _1, _2, _3, tmp39;
+    _1 <- (W256.of_int 32);
+    tail <- (headStart + _1);
+    _2 <- (W256.of_int 0);
+    _3 <- (headStart + _2);
+    tmp39 <@ abi_encode_bytes32_to_bytes32(value0, _3);
+    return tail;
+    }
+  
+  proc abi_decode_array_uint256_dyn_calldatat_array_uint256_dyn_calldatat_array_uint256_dyn_calldata(headStart : uint256, dataEnd : uint256): (uint256 * uint256 * uint256 * uint256 * uint256 * uint256) = {
+    var value0, value1, value2, value3, value4, value5, _1, _2, _3, tmp21, _4, _5, offset, tmp22, _6, _7, tmp23, _8, tmp24, _9, _10, offset_1, tmp25, _11, tmp26, _12, tmp27, _13, _14, offset_2, tmp28, _15, tmp29, _16, tmp30;
+    _1 <- (W256.of_int 96);
+    _2 <- (dataEnd - headStart);
+    _3 <- (PurePrimops.slt_uint256 _2 _1);
+    if ((bool_of_uint256 _3))
+      {
+      tmp21 <@ revert_error_dbdddcbe895c83990c08b3492a0e83918d802a52331272ac6fdb6a7c4aea3b1b();
+      
+      }
+    
+    _4 <- (W256.of_int 0);
+    _5 <- (headStart + _4);
+    tmp22 <@ Primops.calldataload(_5);
+    offset <- tmp22;
+    _6 <- (W256.of_int 18446744073709551615);
+    _7 <- (PurePrimops.gt_uint256 offset _6);
+    if ((bool_of_uint256 _7))
+      {
+      tmp23 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
+      
+      }
+    
+    _8 <- (headStart + offset);
+    tmp24 <@ abi_decode_array_uint256_dyn_calldata(_8, dataEnd);
+    (value0,value1) <- tmp24;
+    _9 <- (W256.of_int 32);
+    _10 <- (headStart + _9);
+    tmp25 <@ Primops.calldataload(_10);
+    offset_1 <- tmp25;
+    _11 <- (PurePrimops.gt_uint256 offset_1 _6);
+    if ((bool_of_uint256 _11))
+      {
+      tmp26 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
+      
+      }
+    
+    _12 <- (headStart + offset_1);
+    tmp27 <@ abi_decode_array_uint256_dyn_calldata(_12, dataEnd);
+    (value2,value3) <- tmp27;
+    _13 <- (W256.of_int 64);
+    _14 <- (headStart + _13);
+    tmp28 <@ Primops.calldataload(_14);
+    offset_2 <- tmp28;
+    _15 <- (PurePrimops.gt_uint256 offset_2 _6);
+    if ((bool_of_uint256 _15))
+      {
+      tmp29 <@ revert_error_c1322bf8034eace5e0b5c7295db60986aa89aae5e0ea0873e4689e076861a5db();
+      
+      }
+    
+    _16 <- (headStart + offset_2);
+    tmp30 <@ abi_decode_array_uint256_dyn_calldata(_16, dataEnd);
+    (value4,value5) <- tmp30;
+    return (value0, value1, value2, value3, value4, value5);
+    }
+  
   proc usr_addAssignPermutationLinearisationContributionWithV(usr_dest : uint256, usr_stateOpening0AtZ : uint256, usr_stateOpening1AtZ : uint256, usr_stateOpening2AtZ : uint256, usr_stateOpening3AtZ : uint256): unit = {
     var usr_factor, tmp312, _1, tmp313, _2, _3, tmp314, usr_gamma, tmp315, _4, usr_intermediateValue, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, usr_l0AtZ, tmp316, _15, _16, tmp317, _17, _18, tmp318, _19, _20, tmp319, _21, tmp320, _22, _23, tmp321, usr_beta, tmp322, usr_gamma_1, tmp323, _24, _25, tmp324, _26, _27, usr_intermediateValue_1, _28, _29, tmp325, _30, _31, _32, _33, tmp326, _34, _35, _36, tmp327, _37, _38, tmp328, tmp329;
     tmp312 <@ Primops.mload((W256.of_int 3680));
@@ -1951,6 +1946,27 @@ module Verifier_1261 = {
     tmp329 <@ usr_pointSubAssign(usr_dest, _37);
     }
   
+  proc usr_updateAggregationChallenge_105(usr_queriesCommitmentPoint : uint256, usr_valueAtZ_Omega : uint256, usr_previousCoeff : uint256, usr_curAggregationChallenge : uint256, usr_curAggregatedOpeningAtZ_Omega : uint256): (uint256 * uint256) = {
+    var usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ_Omega, _1, _2, _3, tmp373, _4, _5, tmp374, _6, usr_finalCoeff, _7, tmp375, _8, tmp376, _9;
+    _1 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    _2 <- (W256.of_int 4000);
+    tmp373 <@ Primops.mload(_2);
+    _3 <- tmp373;
+    usr_newAggregationChallenge <- (PurePrimops.mulmod usr_curAggregationChallenge _3 _1);
+    _4 <- (W256.of_int 4032);
+    tmp374 <@ Primops.mload(_4);
+    _5 <- tmp374;
+    _6 <- (PurePrimops.mulmod usr_newAggregationChallenge _5 _1);
+    usr_finalCoeff <- (PurePrimops.addmod usr_previousCoeff _6 _1);
+    _7 <- (W256.of_int 4544);
+    tmp375 <@ usr_pointMulAndAddIntoDest(usr_queriesCommitmentPoint, usr_finalCoeff, _7);
+    tmp376 <@ Primops.mload(usr_valueAtZ_Omega);
+    _8 <- tmp376;
+    _9 <- (PurePrimops.mulmod usr_newAggregationChallenge _8 _1);
+    usr_newAggregatedOpeningAtZ_Omega <- (PurePrimops.addmod usr_curAggregatedOpeningAtZ_Omega _9 _1);
+    return (usr_newAggregationChallenge, usr_newAggregatedOpeningAtZ_Omega);
+    }
+  
   proc usr_verifyQuotientEvaluation(): unit = {
     var _1, usr_alpha, tmp253, _2, usr_currentAlpha, _3, _4, _5, _6, _7, _8, _9, _10, usr_stateZ, tmp254, _11, _12, tmp255, _13, _14, _15, _16, _17, tmp256, _18, _19, _20, tmp257, _21, tmp258, usr_stateT, _22, _23, tmp259, usr_result, _24, tmp260, _25, tmp261, _26, _27, tmp262, _28, _29, _30, tmp263, usr_vanishing, _31, _32, tmp264, usr_lhs, _33, _34, _35, _36, tmp265;
     _1 <- (W256.of_int 3520);
@@ -2034,13 +2050,79 @@ module Verifier_1261 = {
     
     }
   
+  proc usr_prepareQueries(): unit = {
+    var _1, usr_zInDomainSize, tmp350, usr_currentZ, _2, _3, tmp351, _4, _5, _6, tmp352, _7, _8, tmp353, _9, _10, tmp354, _11, tmp355, _12, usr_stateOpening0AtZ, tmp356, _13, usr_stateOpening1AtZ, tmp357, _14, usr_stateOpening2AtZ, tmp358, _15, usr_stateOpening3AtZ, tmp359, _16, tmp360, tmp361, tmp362, tmp363, _17, _18, tmp364, _19, _20, _21, tmp365, _22, _23, usr_eta, tmp366, usr_currentEta, _24, tmp367, _25, tmp368, _26, tmp369;
+    _1 <- (W256.of_int 4192);
+    tmp350 <@ Primops.mload(_1);
+    usr_zInDomainSize <- tmp350;
+    usr_currentZ <- usr_zInDomainSize;
+    _2 <- (W256.of_int 2304);
+    tmp351 <@ Primops.mload(_2);
+    _3 <- tmp351;
+    _4 <- (W256.of_int 4288);
+    Primops.mstore(_4, _3);
+    _5 <- (W256.of_int 2336);
+    tmp352 <@ Primops.mload(_5);
+    _6 <- tmp352;
+    _7 <- (W256.of_int 4320);
+    Primops.mstore(_7, _6);
+    _8 <- (W256.of_int 2368);
+    tmp353 <@ usr_pointMulAndAddIntoDest(_8, usr_zInDomainSize, _4);
+    _9 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
+    usr_currentZ <- (PurePrimops.mulmod usr_zInDomainSize usr_zInDomainSize _9);
+    _10 <- (W256.of_int 2432);
+    tmp354 <@ usr_pointMulAndAddIntoDest(_10, usr_currentZ, _4);
+    usr_currentZ <- (PurePrimops.mulmod usr_currentZ usr_zInDomainSize _9);
+    _11 <- (W256.of_int 2496);
+    tmp355 <@ usr_pointMulAndAddIntoDest(_11, usr_currentZ, _4);
+    _12 <- (W256.of_int 2560);
+    tmp356 <@ Primops.mload(_12);
+    usr_stateOpening0AtZ <- tmp356;
+    _13 <- (W256.of_int 2592);
+    tmp357 <@ Primops.mload(_13);
+    usr_stateOpening1AtZ <- tmp357;
+    _14 <- (W256.of_int 2624);
+    tmp358 <@ Primops.mload(_14);
+    usr_stateOpening2AtZ <- tmp358;
+    _15 <- (W256.of_int 2656);
+    tmp359 <@ Primops.mload(_15);
+    usr_stateOpening3AtZ <- tmp359;
+    _16 <- (W256.of_int 4352);
+    tmp360 <@ usr_mainGateLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ, usr_stateOpening3AtZ);
+    tmp361 <@ usr_addAssignRescueCustomGateLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ, usr_stateOpening3AtZ);
+    tmp362 <@ usr_addAssignPermutationLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ, usr_stateOpening3AtZ);
+    tmp363 <@ usr_addAssignLookupLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ);
+    _17 <- (W256.of_int 1472);
+    tmp364 <@ Primops.mload(_17);
+    _18 <- tmp364;
+    _19 <- (W256.of_int 4416);
+    Primops.mstore(_19, _18);
+    _20 <- (W256.of_int 1504);
+    tmp365 <@ Primops.mload(_20);
+    _21 <- tmp365;
+    _22 <- (W256.of_int 4448);
+    Primops.mstore(_22, _21);
+    _23 <- (W256.of_int 3840);
+    tmp366 <@ Primops.mload(_23);
+    usr_eta <- tmp366;
+    usr_currentEta <- usr_eta;
+    _24 <- (W256.of_int 1536);
+    tmp367 <@ usr_pointMulAndAddIntoDest(_24, usr_eta, _19);
+    usr_currentEta <- (PurePrimops.mulmod usr_eta usr_eta _9);
+    _25 <- (W256.of_int 1600);
+    tmp368 <@ usr_pointMulAndAddIntoDest(_25, usr_currentEta, _19);
+    usr_currentEta <- (PurePrimops.mulmod usr_currentEta usr_eta _9);
+    _26 <- (W256.of_int 1664);
+    tmp369 <@ usr_pointMulAndAddIntoDest(_26, usr_currentEta, _19);
+    }
+  
   proc external_fun_verificationKeyHash(): unit = {
     var _1, tmp40, tmp41, _2, tmp42, _3, tmp43, ret, tmp44, memPos, tmp45, memEnd, tmp46, _4;
     tmp40 <@ Primops.callvalue();
     _1 <- tmp40;
     if ((bool_of_uint256 _1))
       {
-      tmp41 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
+      tmp41 <@ _Verifier_1261_deployed_code1_block11_revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
       
       }
     
@@ -2050,7 +2132,7 @@ module Verifier_1261 = {
     tmp43 <@ abi_decode(_3, _2);
     tmp44 <@ fun_verificationKeyHash();
     ret <- tmp44;
-    tmp45 <@ allocate_unbounded();
+    tmp45 <@ _Verifier_1261_deployed_code1_block11_allocate_unbounded();
     memPos <- tmp45;
     tmp46 <@ abi_encode_bytes32(memPos, ret);
     memEnd <- tmp46;
@@ -2203,72 +2285,6 @@ module Verifier_1261 = {
     tmp411 <@ usr_pointMulIntoDest(_70, usr_aggregatedValue, _70);
     }
   
-  proc usr_prepareQueries(): unit = {
-    var _1, usr_zInDomainSize, tmp350, usr_currentZ, _2, _3, tmp351, _4, _5, _6, tmp352, _7, _8, tmp353, _9, _10, tmp354, _11, tmp355, _12, usr_stateOpening0AtZ, tmp356, _13, usr_stateOpening1AtZ, tmp357, _14, usr_stateOpening2AtZ, tmp358, _15, usr_stateOpening3AtZ, tmp359, _16, tmp360, tmp361, tmp362, tmp363, _17, _18, tmp364, _19, _20, _21, tmp365, _22, _23, usr_eta, tmp366, usr_currentEta, _24, tmp367, _25, tmp368, _26, tmp369;
-    _1 <- (W256.of_int 4192);
-    tmp350 <@ Primops.mload(_1);
-    usr_zInDomainSize <- tmp350;
-    usr_currentZ <- usr_zInDomainSize;
-    _2 <- (W256.of_int 2304);
-    tmp351 <@ Primops.mload(_2);
-    _3 <- tmp351;
-    _4 <- (W256.of_int 4288);
-    Primops.mstore(_4, _3);
-    _5 <- (W256.of_int 2336);
-    tmp352 <@ Primops.mload(_5);
-    _6 <- tmp352;
-    _7 <- (W256.of_int 4320);
-    Primops.mstore(_7, _6);
-    _8 <- (W256.of_int 2368);
-    tmp353 <@ usr_pointMulAndAddIntoDest(_8, usr_zInDomainSize, _4);
-    _9 <- (W256.of_int 21888242871839275222246405745257275088548364400416034343698204186575808495617);
-    usr_currentZ <- (PurePrimops.mulmod usr_zInDomainSize usr_zInDomainSize _9);
-    _10 <- (W256.of_int 2432);
-    tmp354 <@ usr_pointMulAndAddIntoDest(_10, usr_currentZ, _4);
-    usr_currentZ <- (PurePrimops.mulmod usr_currentZ usr_zInDomainSize _9);
-    _11 <- (W256.of_int 2496);
-    tmp355 <@ usr_pointMulAndAddIntoDest(_11, usr_currentZ, _4);
-    _12 <- (W256.of_int 2560);
-    tmp356 <@ Primops.mload(_12);
-    usr_stateOpening0AtZ <- tmp356;
-    _13 <- (W256.of_int 2592);
-    tmp357 <@ Primops.mload(_13);
-    usr_stateOpening1AtZ <- tmp357;
-    _14 <- (W256.of_int 2624);
-    tmp358 <@ Primops.mload(_14);
-    usr_stateOpening2AtZ <- tmp358;
-    _15 <- (W256.of_int 2656);
-    tmp359 <@ Primops.mload(_15);
-    usr_stateOpening3AtZ <- tmp359;
-    _16 <- (W256.of_int 4352);
-    tmp360 <@ usr_mainGateLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ, usr_stateOpening3AtZ);
-    tmp361 <@ usr_addAssignRescueCustomGateLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ, usr_stateOpening3AtZ);
-    tmp362 <@ usr_addAssignPermutationLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ, usr_stateOpening3AtZ);
-    tmp363 <@ usr_addAssignLookupLinearisationContributionWithV(_16, usr_stateOpening0AtZ, usr_stateOpening1AtZ, usr_stateOpening2AtZ);
-    _17 <- (W256.of_int 1472);
-    tmp364 <@ Primops.mload(_17);
-    _18 <- tmp364;
-    _19 <- (W256.of_int 4416);
-    Primops.mstore(_19, _18);
-    _20 <- (W256.of_int 1504);
-    tmp365 <@ Primops.mload(_20);
-    _21 <- tmp365;
-    _22 <- (W256.of_int 4448);
-    Primops.mstore(_22, _21);
-    _23 <- (W256.of_int 3840);
-    tmp366 <@ Primops.mload(_23);
-    usr_eta <- tmp366;
-    usr_currentEta <- usr_eta;
-    _24 <- (W256.of_int 1536);
-    tmp367 <@ usr_pointMulAndAddIntoDest(_24, usr_eta, _19);
-    usr_currentEta <- (PurePrimops.mulmod usr_eta usr_eta _9);
-    _25 <- (W256.of_int 1600);
-    tmp368 <@ usr_pointMulAndAddIntoDest(_25, usr_currentEta, _19);
-    usr_currentEta <- (PurePrimops.mulmod usr_currentEta usr_eta _9);
-    _26 <- (W256.of_int 1664);
-    tmp369 <@ usr_pointMulAndAddIntoDest(_26, usr_currentEta, _19);
-    }
-  
   proc fun_verify(var__offset : uint256, var_length : uint256, var_offset : uint256, var__length : uint256, var_1250_offset : uint256, var_1250_length : uint256): uint256 = {
     var _var, zero_bool, tmp434, tmp435, tmp436, tmp437, tmp438, tmp439, tmp440, _1, _2, _3;
     zero_bool <- zero_value_for_split_bool;
@@ -2294,7 +2310,7 @@ module Verifier_1261 = {
     _1 <- tmp33;
     if ((bool_of_uint256 _1))
       {
-      tmp34 <@ revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
+      tmp34 <@ _Verifier_1261_deployed_code1_block11_revert_error_ca66f745a3ce8ff40e2ccaf1ad45db7774001b90d25810abd9040049be7bf4bb();
       
       }
     
@@ -2307,45 +2323,6 @@ module Verifier_1261 = {
     Primops.pop(tmp37);
     }
   
-  proc _BODY(): unit = {
-    var tmp10, tmp12, tmp13, tmp14, tmp15, _1, _2, _3, _4, _5, _6, _7, _8, tmp9, tmp11, selector;
-    _1 <- (W256.of_int 128);
-    _2 <- (W256.of_int 64);
-    Primops.mstore(_2, _1);
-    _3 <- (W256.of_int 4);
-    tmp9 <@ Primops.calldatasize();
-    _4 <- tmp9;
-    _5 <- (PurePrimops.lt_uint256 _4 _3);
-    _6 <- (PurePrimops.iszero _5);
-    if ((bool_of_uint256 _6))
-      {
-      _7 <- (W256.of_int 0);
-      tmp10 <@ Primops.calldataload(_7);
-      _8 <- tmp10;
-      tmp11 <@ shift_right_unsigned(_8);
-      selector <- tmp11;
-      tmp12 <- selector;
-      if ((tmp12 = (W256.of_int 2279198755)))
-        {
-        tmp13 <@ external_fun_verify();
-        
-        }
-      
-      else {
-        if ((tmp12 = (W256.of_int 2659796434)))
-          {
-          tmp14 <@ external_fun_verificationKeyHash();
-          
-          }
-        
-        
-        }
-      
-      
-      }
-    
-    tmp15 <@ revert_error_42b3090547df1d2001c96683413b8cf91c1b902ef5e3cb8d9f6f304cf7446f74();
-    }
   
   
   }.
