@@ -82,20 +82,21 @@ module Primops = {
         }
       } else {
         if (addr = W256.of_int 6) {
-          x1 <@ mload(argOff);
-          y1 <@ mload(argOff + W256.of_int 32);
-          x2 <@ mload(argOff + W256.of_int 64);
-          y2 <@ mload(argOff + W256.of_int 96);
-          x1_F <- ZModField.inzmod (W256.to_sint x1);
-          y1_F <- ZModField.inzmod (W256.to_sint y1);
-          x2_F <- ZModField.inzmod (W256.to_sint x2);
-          y2_F <- ZModField.inzmod (W256.to_sint y2);
-          if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
-            succ <- W256.zero;
-          } else {
-              if (!(on_curve (x1_F, y1_F)) \/ !(on_curve ((x2_F, y2_F)))) {
-                 succ <- W256.zero;
+          if (retSize = (W256.of_int 64) /\ argSize = (W256.of_int 128)) {
+            x1 <@ mload(argOff);
+            y1 <@ mload(argOff + W256.of_int 32);
+            x2 <@ mload(argOff + W256.of_int 64);
+            y2 <@ mload(argOff + W256.of_int 96);
+            x1_F <- ZModField.inzmod (W256.to_uint x1);
+            y1_F <- ZModField.inzmod (W256.to_uint y1);
+            x2_F <- ZModField.inzmod (W256.to_uint x2);
+            y2_F <- ZModField.inzmod (W256.to_uint y2);
+            if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
+              succ <- W256.zero;
             } else {
+              if (!(on_curve (x1_F, y1_F)) \/ !(on_curve ((x2_F, y2_F)))) {
+                succ <- W256.zero;
+              } else {
                 result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
                 if (is_none result) {
                   succ <- W256.zero;
@@ -104,23 +105,27 @@ module Primops = {
                     mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
                     mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
                     succ <- W256.one;
-                }
+                }                
+              }
             }
-          }
+          } else {
+            succ <- W256.zero;
+          } 
         } else {
           if (addr = W256.of_int 7) {
-            x1 <@ mload(argOff);
-            y1 <@ mload(argOff + W256.of_int 32);
-            s <@ mload(argOff + W256.of_int 64);
-            x1_F <- ZModField.inzmod (W256.to_sint x1);
-            y1_F <- ZModField.inzmod (W256.to_sint y1);
-            s_F <- ZModField.inzmod (W256.to_sint s);
-            if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
-              succ <- W256.zero;
-            } else {
+            if (retSize = (W256.of_int 64) /\ argSize = (W256.of_int 96)) {
+              x1 <@ mload(argOff);
+              y1 <@ mload(argOff + W256.of_int 32);
+              s <@ mload(argOff + W256.of_int 64);
+              x1_F <- ZModField.inzmod (W256.to_uint x1);
+              y1_F <- ZModField.inzmod (W256.to_uint y1);
+              s_F <- ZModField.inzmod (W256.to_uint s);
+              if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
+                succ <- W256.zero;
+              } else {
                 if (!(on_curve (x1_F, y1_F))) {
                   succ <- W256.zero;
-              } else {
+                } else {
                   result <- ecMul_precompile x1_F y1_F s_F;
                   if (is_none result) {
                     succ <- W256.zero;
@@ -129,7 +134,8 @@ module Primops = {
                       mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
                       mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
                       succ <- W256.one;
-                  }
+                  }                
+                }
               }
             }
           } else {
@@ -308,19 +314,19 @@ pred point_wellformed (pnt: uint256*uint256) =
     pnt.`1 = pnt.`1 %% W256.of_int p /\
     pnt.`2 = pnt.`2 %% W256.of_int p.
 pred point_oncurve (pnt: uint256*uint256) =
-    on_curve ((ZModField.inzmod(to_sint pnt.`1)), (ZModField.inzmod(to_sint pnt.`2))).
+    on_curve ((ZModField.inzmod(to_uint pnt.`1)), (ZModField.inzmod(to_uint pnt.`2))).
 pred staticcall_ec_add_should_succeed (p1 p2: uint256 * uint256) =
     point_wellformed p1 /\
     point_wellformed p2 /\
     point_oncurve p1 /\
     point_oncurve p2 /\
-    is_some (ecAdd_precompile (ZModField.inzmod(to_sint p1.`1)) (ZModField.inzmod(to_sint p1.`2)) (ZModField.inzmod(to_sint p2.`1)) (ZModField.inzmod(to_sint p2.`2))).
+    is_some (ecAdd_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (ZModField.inzmod(to_uint p2.`1)) (ZModField.inzmod(to_uint p2.`2))).
 
 op ecAdd_precompile_unsafe_cast (p1 p2: uint256 * uint256): (uint256*uint256) =
-  let x1 = ZModField.inzmod(to_sint p1.`1) in
-  let y1 = ZModField.inzmod(to_sint p1.`2) in
-  let x2 = ZModField.inzmod(to_sint p2.`1) in
-  let y2 = ZModField.inzmod(to_sint p2.`2) in
+  let x1 = ZModField.inzmod(to_uint p1.`1) in
+  let y1 = ZModField.inzmod(to_uint p1.`2) in
+  let x2 = ZModField.inzmod(to_uint p2.`1) in
+  let y2 = ZModField.inzmod(to_uint p2.`2) in
   let ret = ecAdd_precompile x1 y1 x2 y2 in
   let ret_unwrapped = odflt (ZModField.zero, ZModField.zero) ret in
   let x_ret = W256.of_int (ZModField.asint ret_unwrapped.`1) in
@@ -354,7 +360,9 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       inline *.
       rcondf 1. skip. progress. by smt(@W256).
       rcondt 1. skip. by progress.
-    case (staticcall_ec_add_should_succeed p1 p2).
+      case (staticcall_ec_add_should_succeed p1 p2).
+      rewrite /staticcall_ec_add_should_succeed /point_oncurve /point_wellformed.
+      rcondt 1. skip. by progress.
       rcondf 13. wp. skip. progress. by smt().
       rcondf 13. wp. skip. progress. by smt ().
       rcondf 14. wp. skip. progress. by smt (is_none_iff_not_is_some).
@@ -364,8 +372,10 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       smt ().
       smt (). smt ().
     case (!point_wellformed p1 \/ !point_wellformed p2).
+      rcondt 1. skip. by progress.
       rcondt 13. wp. skip. progress. by smt ().
       wp. skip. by progress.
+      rcondt 1. skip. by progress.
       rcondf 13. wp. skip. progress. by smt ().
     case (!point_oncurve p1 \/ !point_oncurve p2).
       rcondt 13. wp. skip. progress. by smt ().
