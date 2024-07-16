@@ -54,32 +54,184 @@ lemma neq_small (x y: int):
       by progress.
     qed.
 
+lemma uint256_eq_of_eq (a b : uint256) : W256.to_uint a = W256.to_uint b => a = b.
+    smt.
+  qed.
+    
+lemma uint256_neq_of_neq (a b : uint256) : W256.to_uint a <> W256.to_uint b => a <> b.
+    smt.
+  qed.
+  
+lemma uint256_lt_of_lt (a b : uint256) : W256.to_uint a < W256.to_uint b => a < b.
+    smt.
+  qed.
+
+lemma uint256_lt_of_lt' (a b : uint256) : a < b => W256.to_uint a < W256.to_uint b.
+    smt.
+  qed.
+
+lemma uint256_le_of_le (a b : uint256) : W256.to_uint a <= W256.to_uint b => a <= b.
+    smt.
+  qed.
+
+lemma uint256_le_of_le' (a b : uint256) : a <= b => W256.to_uint a <= W256.to_uint b.
+    smt.
+  qed.
+    
+lemma uint256_cast_add (a b : uint256) : (a + b) = W256.of_int ((W256.to_uint a + W256.to_uint b) %% W256.modulus).
+    rewrite addE /ulift2. smt.
+  qed.
+
+lemma uint256_cast_neg (a : uint256) : - a = W256.of_int ((- (W256.to_uint a)) %% W256.modulus).
+    rewrite oppE /ulift1. smt.
+  qed.
+  
+lemma uint_256_cast_sub (a b : uint256) : (a - b) = W256.of_int ((W256.to_uint a - W256.to_uint b) %% W256.modulus).
+    rewrite oppE /ulift1 uint256_cast_add.
+    apply uint256_eq_of_eq.
+    rewrite of_uintK of_uintK of_uintK.
+    pose ai := to_uint a.
+    pose bi := to_uint b.
+    smt (@IntDiv).
+  qed.
+
+lemma uint_256_cast_mul (a b : uint256) : (a * b) = W256.of_int ((W256.to_uint a * W256.to_uint b) %% W256.modulus).
+    rewrite mulE /ulift2. smt.
+  qed.
+
+lemma mod_mod_eq_mod' (a m : int) : (a %% m) %% m = a %% m.
+    smt (@IntDiv).
+  qed.
+
+lemma mod_lt_of_ge (a b m : int) : a < m => b < m => m < a + b => (a + b)%%m < b.
+    progress.
+    smt.
+  qed.
+
+lemma overflow_lem (a b m : int) : a < m => b < m => m <= a + b => (a + b) %% m = a + b - m.
+    progress.
+    smt.
+  qed.
+  
+lemma uint256_ord1 (a b c : uint256) : W256.to_uint a + W256.to_uint c <= W256.to_uint b => c <= b => a <= b - c.
+    progress.
+    smt.
+  qed.
+    
+
+lemma uint256_size (a : uint256) : W256.to_uint a < W256.modulus.
+    have H := W256.to_uint_cmp a. smt. qed.
+  
+lemma uint256_ord2 (a b : uint256) : a < b => a < a - b.
+    progress.
+    rewrite uint_256_cast_sub.
+    apply uint256_lt_of_lt.
+    rewrite of_uintK mod_mod_eq_mod'.
+    have H' : to_uint a < to_uint b. smt.
+    have HA : W256.to_uint a < W256.modulus. exact uint256_size.
+    have HB : W256.to_uint a < W256.modulus. exact uint256_size.
+    have H0 : - W256.modulus < to_uint a - to_uint b. smt.
+    have H'' : (to_uint a - to_uint b) %% W256.modulus = W256.modulus + to_uint a - to_uint b.
+    smt.
+    rewrite H''. smt.
+  qed.
+
+lemma uint256_ord2' (a b : uint256) : a < b => a <= a - b.
+    progress.
+    have H1 := uint256_ord2 _ _ H.
+    smt (@W256).
+  qed.
+
+lemma neg_eq (a : uint256) : - a = W256.of_int (W256.modulus - W256.to_uint a).
+    smt.
+  qed.
+
+  
+lemma uint256_ord3 (a b : uint256) : W256.zero < a => a < b => - b < - a.
+    progress.
+    rewrite neg_eq neg_eq.
+    have H' := uint256_lt_of_lt' a b H0.
+    apply uint256_lt_of_lt.
+    rewrite of_uintK of_uintK.
+    have HA : W256.to_uint a < W256.modulus. exact uint256_size.
+    have HB : W256.to_uint b < W256.modulus. exact uint256_size.
+    have HA' : W256.modulus - to_uint a < W256.modulus. smt.
+    have HB' : W256.modulus - to_uint b < W256.modulus. smt.
+    have HA'' : (W256.modulus - to_uint a) %% W256.modulus = W256.modulus - to_uint a. smt.
+    have HB'' : (W256.modulus - to_uint b) %% W256.modulus = W256.modulus - to_uint b. smt.
+    rewrite HA'' HB''.
+    smt ().
+  qed.
 
 lemma add_neq:
     forall (x: uint256) (y: int),
-    1 <= y /\ y < 32 => x <> x + W256.of_int y.
+    1 <= y /\ y < W256.modulus => x <> x + W256.of_int y.
     proof.
       progress.
-      smt timeout=100.
+      rewrite uint256_cast_add.
+      rewrite of_uintK uint256_neq_of_neq.
+      rewrite W256.to_uint_small.
+      smt (@IntDiv).
+      pose xi := to_uint x.
+      smt (@IntDiv).
+      trivial.
     qed.
 
 lemma add_2_neq (x y: int) (a: uint256):
     0 <= x =>
     0 <= y =>
-    x < 32 =>
-    y < 32 =>
+    x < W256.modulus =>
+    y < W256.modulus =>
     x <> y =>
     a + W256.of_int x <> a + W256.of_int y.
     proof.
       progress.
-      smt timeout=100.
+      rewrite uint256_cast_add.
+      rewrite of_uintK.
+      rewrite uint256_cast_add.
+      rewrite of_uintK.
+      rewrite uint256_neq_of_neq.
+      rewrite W256.to_uint_small.
+      smt (@IntDiv).
+      pose ai := to_uint a.
+      rewrite W256.to_uint_small.
+      smt (@IntDiv).
+      smt (@IntDiv).
+      trivial.
+  qed.
+
+lemma add_2_neq' (x y: int) (a: uint256):
+    (x %% W256.modulus) <> (y %% W256.modulus) =>
+    a + W256.of_int x <> a + W256.of_int y.
+    proof.
+      progress.
+      rewrite uint256_cast_add.
+      rewrite of_uintK.
+      rewrite uint256_cast_add.
+      rewrite of_uintK.
+      rewrite uint256_neq_of_neq.
+      rewrite W256.to_uint_small.
+      smt (@IntDiv).
+      pose ai := to_uint a.
+      rewrite W256.to_uint_small.
+      smt (@IntDiv).
+      smt (@IntDiv).
+      trivial.
   qed.
 
 lemma neq_of_lt (idx idx2: uint256):
     W256.of_int 31 < idx2 - idx => idx2 <> idx.
 proof.
-    progress.
-    smt timeout=100.
+  progress.
+  have H' : (of_int 31)%W256 < (of_int ((to_uint idx2 - to_uint idx) %% W256.modulus))%W256.
+  have BLU := uint_256_cast_sub idx2 idx.
+  rewrite -BLU. exact H.
+  have H'' := uint256_lt_of_lt' _ _ H'.
+  rewrite of_uintK of_uintK mod_mod_eq_mod' in H''.
+  apply uint256_neq_of_neq.
+  pose idxv := to_uint idx.
+  pose idx2v := to_uint idx2.
+  smt (@IntDiv).
 qed.
 
 lemma neg_add_eq (a: uint256): (-a) + a = W256.zero.
@@ -108,7 +260,7 @@ lemma add_neq_of_diff (idx idx2: uint256) (i: int):
       rewrite pmod_small in H'. smt().
       smt().
   qed.
-
+  
 lemma add_2_neq_of_diff (idx idx2: uint256) (a b: int):
     W256.of_int 32 <= idx2 - idx =>
     W256.of_int 32 <= idx - idx2 =>
@@ -119,6 +271,21 @@ lemma add_2_neq_of_diff (idx idx2: uint256) (a b: int):
     idx2 + (W256.of_int a) <> idx + W256.of_int b.
     proof.
       progress.
+      rewrite uint256_cast_add uint256_cast_add of_uintK of_uintK.
+      apply uint256_neq_of_neq.
+      rewrite of_uintK of_uintK mod_mod_eq_mod' mod_mod_eq_mod'.
+      rewrite uint_256_cast_sub in H.
+      rewrite uint_256_cast_sub in H0.
+      have L1 : 32 %% W256.modulus = 32. smt ().
+      have H' := uint256_le_of_le' _ _ H.
+      have H0' := uint256_le_of_le' _ _ H0.
+      rewrite of_uintK of_uintK mod_mod_eq_mod' in H'.
+      rewrite of_uintK of_uintK mod_mod_eq_mod' in H0'.
+      rewrite L1 in H'.
+      rewrite L1 in H0'.
+  
+      pose idx2v := to_uint idx2.
+      pose idxv := to_uint idx.
       smt timeout=100.
     qed.
 
