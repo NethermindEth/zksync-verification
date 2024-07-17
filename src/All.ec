@@ -12,8 +12,16 @@ require VerifierMem.
 require VerifierVars.
 require YulPrimops.
 require YulTests.
-(* specs *)
+  (* specs *)
+require AddAssignLookupLinearisationContributionWithV.
+require AddAssignPermutationLinearisationContributionWithV.
+require AddAssignRescueCustomGateLinearisationContributionWithV.
 require EvaluateLagrangePolyOutOfDomain.
+require FinalPairing.
+require GetTranscriptChallenge.
+require InitializeTranscript.
+require LoadProof.
+require LoadVerificationKey.
 require LookupQuotientContribution.
 require MainGateLinearisationContributionWithV.
 require Modexp.
@@ -24,5 +32,11 @@ require PointMulAndAddIntoDest.
 require PointMulIntoDest.
 require PointNegate.
 require PointSubAssign.
+require PrepareAggregatedCommitment.
+require PrepareQueries.
 require RevertWithMessage.
+require UpdateAggregationChallenge.
+require UpdateAggregationChallenge105.
+require UpdateTranscript.
+require Verify.
 require VerifyQuotientEvaluation.
