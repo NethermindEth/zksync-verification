@@ -38,12 +38,18 @@ lemma neq_sub_of_add_neq (x y z : uint256) : x + y <> z => x <> z - y.
     smt (@W256).
   qed.
 
+lemma uint256_lt_or_eq_of_le (a l : uint256) : a <= l => a < l \/ a = l.
+    progress. smt.
+  qed.
+  
 lemma lt_or_eq_of_lt_succ (a l : uint256) : a < l + W256.one => a < l \/ a = l.
   proof.
     case (a < l).
     progress.
     progress.
-    admit.
+    have H' : a <= l. smt (@W256).
+    have H'' : a < l \/ a = l. apply uint256_lt_or_eq_of_le. exact H'.
+    smt ().
   qed.
 
 lemma zero_of_to_uint_zero (x: uint256): to_uint x = 0 => x = W256.zero.
