@@ -2,15 +2,16 @@ require        Constants.
 require import PurePrimops.
 require import UInt256.
 require import Verifier.
+require import VerifierConsts.
 require import YulPrimops.
 
 module GetTranscriptChallenge = {
   proc low(numberOfChallenge : uint256): uint256 = {
     var challenge, _6, _9;
-    Primops.mstore8(W256.of_int 3395, W256.of_int 2);
-    Primops.mstore(W256.of_int 3460, PurePrimops.shl (W256.of_int 224) numberOfChallenge);
+    Primops.mstore8(TRANSCRIPT_DST_BYTE_SLOT, W256.of_int 2);
+    Primops.mstore(TRANSCRIPT_CHALLENGE_SLOT, PurePrimops.shl (W256.of_int 224) numberOfChallenge);
     _6 <- ((PurePrimops.shl (W256.of_int 253) (W256.of_int 1)) - (W256.of_int 1));
-    _9 <@ Primops.keccak256(W256.of_int 3392, W256.of_int 72);
+    _9 <@ Primops.keccak256(TRANSCRIPT_BEGIN_SLOT, W256.of_int 72);
     challenge <- (PurePrimops.bit_and _9 _6);
     return challenge;
     }

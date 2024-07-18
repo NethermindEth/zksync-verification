@@ -6,6 +6,7 @@ require import PurePrimops.
 require import RevertWithMessage.
 require import UInt256.
 require import Verifier.
+require import VerifierConsts.
 require import YulPrimops.
 
 module EvaluateLagrangePolyOutOfDomain = {
@@ -14,22 +15,22 @@ module EvaluateLagrangePolyOutOfDomain = {
     omegaPower <- (W256.of_int 1);
     if ((bool_of_uint256 polyNum))
     {
-      omegaPower <@ Modexp.low((W256.of_int Constants.OMEGA), polyNum);
+      omegaPower <@ Modexp.low(OMEGA, polyNum);
     }
     
-    tmp267 <@ Modexp.low(at, (W256.of_int Constants.DOMAIN_SIZE));
-    ret <- (PurePrimops.addmod tmp267 ((W256.of_int Constants.R) - W256.one) (W256.of_int Constants.R));
+    tmp267 <@ Modexp.low(at, DOMAIN_SIZE);
+    ret <- (PurePrimops.addmod tmp267 (R_MOD - W256.one) R_MOD);
     if ((bool_of_uint256 (PurePrimops.iszero ret)))
     {
       RevertWithMessage.low(W256.of_int 28, W256.of_int STRING);
     }
     
-    ret <- (PurePrimops.mulmod ret omegaPower (W256.of_int Constants.R));
-    _10 <- ((W256.of_int Constants.R) - omegaPower);
-    denominator <- (PurePrimops.addmod at _10 (W256.of_int Constants.R));
-    denominator <- (PurePrimops.mulmod denominator (W256.of_int Constants.DOMAIN_SIZE) (W256.of_int Constants.R));
-    denominator <@ Modexp.low(denominator, ((W256.of_int Constants.R) - (W256.of_int 2)));
-    ret <- (PurePrimops.mulmod ret denominator (W256.of_int Constants.R));
+    ret <- (PurePrimops.mulmod ret omegaPower R_MOD);
+    _10 <- (R_MOD - omegaPower);
+    denominator <- (PurePrimops.addmod at _10 R_MOD);
+    denominator <- (PurePrimops.mulmod denominator DOMAIN_SIZE R_MOD);
+    denominator <@ Modexp.low(denominator, (R_MOD - (W256.of_int 2)));
+    ret <- (PurePrimops.mulmod ret denominator R_MOD);
     return ret;
   }
 }.
@@ -55,7 +56,7 @@ lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
       (* finished seq 2 2 *)
         wp.
         call modexp_extracted_equiv_low.
-        seq 8 2: (#pre /\ ={tmp267} /\ usr_res{1} = ret{2} /\ _7{1} = PurePrimops.iszero (usr_res{1}) /\ _2{1} = W256.of_int Constants.R /\ _5{1} = W256.of_int Constants.DOMAIN_SIZE ).
+        seq 8 2: (#pre /\ ={tmp267} /\ usr_res{1} = ret{2} /\ _7{1} = PurePrimops.iszero (usr_res{1}) /\ _2{1} = R_MOD /\ _5{1} = DOMAIN_SIZE ).
         wp. sp.
         call modexp_extracted_equiv_low. skip. progress.
         rewrite /Constants.DOMAIN_SIZE. by reflexivity.
