@@ -4,8 +4,11 @@ require import AllCore.
 require import Array.
 require import Logic.
 require import UInt256.
+import StdOrder.
 
 (* Some potentially useful lemmas to prove mid-level specs *)
+
+lemma lt_trans : forall (a b c : int), a < b => b < c => a < c. progress. smt (). qed.
 
 lemma mod_m_lt_m :
     forall (a m : int), 0 < m => a %% m < m.
@@ -146,6 +149,7 @@ lemma neg_eq (a : uint256) : - a = W256.of_int (W256.modulus - W256.to_uint a).
     smt.
   qed.
 
+
   
 lemma uint256_ord3 (a b : uint256) : W256.zero < a => a < b => - b < - a.
     progress.
@@ -163,6 +167,34 @@ lemma uint256_ord3 (a b : uint256) : W256.zero < a => a < b => - b < - a.
     smt ().
   qed.
 
+lemma uint256_mod_eq_of_lt (a m : uint256) : a < m => a %% m = a.
+    proof.
+      progress. rewrite umodE /ulift2.
+      have H' : W256.to_uint a < W256.to_uint m. apply uint256_lt_of_lt'. exact H.
+      apply uint256_eq_of_eq.
+      rewrite of_uintK.
+      rewrite mod_mod_eq_mod. smt (@W256). have T := uint256_size m.
+      have T' : forall (a b : int), a < b => a <= b. smt ().
+      apply T'. exact T.
+      pose av := to_uint a.
+      pose mv := to_uint m.
+      have H12 : 0 <= to_uint a. smt (@W256).
+      smt (@IntDiv).
+  qed.
+
+lemma cast_uint256_mod_eq_of_lt (a p : int) : 0 <= a < p < W256.modulus => W256.of_int a = (W256.of_int a) %% (W256.of_int p).
+    proof.
+      progress.
+      rewrite uint256_mod_eq_of_lt.
+      apply uint256_lt_of_lt.
+      rewrite to_uint_small.
+      smt ().
+      rewrite to_uint_small.
+      smt ().
+      exact H0.
+      reflexivity.
+  qed.
+  
 lemma add_neq:
     forall (x: uint256) (y: int),
     1 <= y /\ y < W256.modulus => x <> x + W256.of_int y.
@@ -224,8 +256,8 @@ lemma neq_of_lt (idx idx2: uint256):
 proof.
   progress.
   have H' : (of_int 31)%W256 < (of_int ((to_uint idx2 - to_uint idx) %% W256.modulus))%W256.
-  have BLU := uint_256_cast_sub idx2 idx.
-  rewrite -BLU. exact H.
+  have H''' := uint_256_cast_sub idx2 idx.
+  rewrite -H'''. exact H.
   have H'' := uint256_lt_of_lt' _ _ H'.
   rewrite of_uintK of_uintK mod_mod_eq_mod' in H''.
   apply uint256_neq_of_neq.

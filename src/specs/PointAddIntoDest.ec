@@ -361,13 +361,62 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
         rcondt {1} 1.
         progress. skip. progress. rewrite /iszero /bool_of_uint256. smt (@W256).
         inline RevertWithMessage.low Primops.mstore Primops.revert.
-        sp. skip. progress. smt.
+        sp. skip. progress. smt (@W256).
     have J : (ecAdd_precompile ((ZModField.inzmod x1{2})) ((ZModField.inzmod y1{2}))
-      ((ZModField.inzmod x2{2})) ((ZModField.inzmod y2{2}))) = None. admit.
-        rewrite J. smt.
+      ((ZModField.inzmod x2{2})) ((ZModField.inzmod y2{2}))) = None.
+        have T0 : ((of_int x1{2})%W256, (of_int y1{2})%W256).`1 = W256.of_int x1{2}. smt ().
+        have T1 : ((of_int x1{2})%W256, (of_int y1{2})%W256).`2 = W256.of_int y1{2}. smt ().
+        have T2 : ((of_int x2{2})%W256, (of_int y2{2})%W256).`1 = W256.of_int x2{2}. smt ().
+        have T3 : ((of_int x2{2})%W256, (of_int y2{2})%W256).`2 = W256.of_int y2{2}. smt ().
+        have J' : ! (ConcretePrimops.staticcall_ec_add_should_succeed
+         ((of_int x1{2})%W256, (of_int y1{2})%W256)
+         ((of_int x2{2})%W256, (of_int y2{2})%W256)). smt (@W256). 
+           rewrite /ConcretePrimops.staticcall_ec_add_should_succeed /ConcretePrimops.point_oncurve /ConcretePrimops.point_wellformed in J'.
+           simplify J'.
+           rewrite T0 T1 T2 T3 in J'.
+           rewrite W256.to_uint_small in J'.  progress. apply (lt_trans _ p _). exact H0. exact p_lt_W256_mod.
+           have T0' : to_uint ((of_int x1{2}))%W256 = x1{2}. rewrite W256.to_uint_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           have T1' : to_uint ((of_int y1{2}))%W256 = y1{2}. rewrite W256.to_uint_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           have T2' : to_uint ((of_int x2{2}))%W256 = x2{2}. rewrite W256.to_uint_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           have T3' : to_uint ((of_int y2{2}))%W256 = y2{2}. rewrite W256.to_uint_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           have J'' : ! (on_curve
+         ((ZModField.inzmod (to_uint ((of_int x1{2}))%W256)),
+           (ZModField.inzmod (to_uint ((of_int y1{2}))%W256))) /\
+             on_curve
+         ((ZModField.inzmod (to_uint ((of_int x2{2}))%W256)),
+           (ZModField.inzmod (to_uint ((of_int y2{2}))%W256))) /\
+             is_some
+         (ecAdd_precompile ((ZModField.inzmod x1{2}))
+           ((ZModField.inzmod (to_uint ((of_int y1{2}))%W256)))
+           ((ZModField.inzmod (to_uint ((of_int x2{2}))%W256)))
+           ((ZModField.inzmod (to_uint ((of_int y2{2}))%W256))))).
+             have INT : (of_int x1{2})%W256 = (of_int x1{2})%W256 %% (of_int p)%W256 /\
+       (of_int y1{2})%W256 = (of_int y1{2})%W256 %% (of_int p)%W256 /\
+       (of_int x2{2})%W256 = (of_int x2{2})%W256 %% (of_int p)%W256 /\
+       (of_int y2{2})%W256 = (of_int y2{2})%W256 %% (of_int p)%W256.
+         do 4! (rewrite -cast_uint256_mod_eq_of_lt; first progress; exact p_lt_W256_mod).
+         progress.
+         smt ().
+         rewrite T1' T2' T3' in J''.
+       have J''' : ! (on_curve
+          ((ZModField.inzmod (to_uint ((of_int x1{2}))%W256)),
+           (ZModField.inzmod y1{2}))) \/
+        ! (on_curve ((ZModField.inzmod x2{2}), (ZModField.inzmod y2{2}))) \/
+        ! (is_some
+          (ecAdd_precompile ((ZModField.inzmod x1{2}))
+             ((ZModField.inzmod y1{2})) ((ZModField.inzmod x2{2}))
+             ((ZModField.inzmod y2{2})))). smt ().
+               case J'''.
+               smt (@EllipticCurve).
+         move=>J'''.
+               case J'''.
+               smt (@EllipticCurve).
+               smt ().
+
+        rewrite J. smt ().
 
         rcondf {1} 1.
-        progress. skip. progress. rewrite /iszero /bool_of_uint256. smt.
+        progress. skip. progress. rewrite /iszero /bool_of_uint256. smt (@W256).
         sp. skip. progress. 
     
         exists ((PurePrimops.mstore
@@ -378,23 +427,23 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
           ((of_int 64))%W256 ((of_int x2{2}))%W256))
       ((of_int 96))%W256 ((of_int y2{2}))%W256)).
         progress. left. progress.
-
-        simplify. admit.
-        simplify. admit.
-        simplify. admit.
-        simplify. admit.
-        smt.
-        smt.
-        smt.
+  
+        simplify. apply cast_uint256_mod_eq_of_lt. progress. exact p_lt_W256_mod.
+        simplify. apply cast_uint256_mod_eq_of_lt. progress. exact p_lt_W256_mod.
+        simplify. apply cast_uint256_mod_eq_of_lt. progress. exact p_lt_W256_mod.
+        simplify. apply cast_uint256_mod_eq_of_lt. progress. exact p_lt_W256_mod.
+        smt ().
+        smt ().
+        smt ().
   have J1 : ConcretePrimops.staticcall_ec_add_should_succeed
        ((of_int x1{2})%W256, (of_int y1{2})%W256)
-       ((of_int x2{2})%W256, (of_int y2{2})%W256). smt.
+       ((of_int x2{2})%W256, (of_int y2{2})%W256). smt ().
   rewrite /ConcretePrimops.staticcall_ec_add_should_succeed in J1.
   have J2 : exists (p : F * F), ecAdd_precompile
          ((ZModField.inzmod (to_uint ((of_int x1{2})%W256, (of_int y1{2})%W256).`1)))
          ((ZModField.inzmod (to_uint ((of_int x1{2})%W256, (of_int y1{2})%W256).`2)))
          ((ZModField.inzmod (to_uint ((of_int x2{2})%W256, (of_int y2{2})%W256).`1)))
-         ((ZModField.inzmod (to_uint ((of_int x2{2})%W256, (of_int y2{2})%W256).`2))) = Some p. apply exists_of_is_some. smt.
+         ((ZModField.inzmod (to_uint ((of_int x2{2})%W256, (of_int y2{2})%W256).`2))) = Some p. apply exists_of_is_some. smt ().
    case J2.
    move=> pt.
    pose x := pt.`1.
@@ -402,14 +451,17 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
            progress.
            exists x. exists y. progress.
            rewrite of_uintK of_uintK of_uintK of_uintK in H10.
-           have J3 : (x, y) = pt. smt.
+           have J3 : (x, y) = pt. smt ().
            rewrite J3. rewrite -H10. congr.
-           rewrite pmod_small. progress. smt. reflexivity.
-           rewrite pmod_small. progress. smt. reflexivity.
-           rewrite pmod_small. progress. smt. reflexivity.
-           rewrite pmod_small. progress. smt. reflexivity.
+           rewrite pmod_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           rewrite pmod_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           rewrite pmod_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
+           rewrite pmod_small. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod. reflexivity.
            rewrite of_uintK of_uintK of_uintK of_uintK in H10.
-           do 4! (rewrite pmod_small in H10; first progress; first smt).
+           rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
+           rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
+           rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
+           rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
            rewrite H10 /topoint. simplify. smt ().
            have J4 : Primops.memory{1} =
          (PurePrimops.mstore
