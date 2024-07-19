@@ -3,12 +3,13 @@ require import Group.
 require import Int.
 require import IntDiv.
 require import ZModP. 
-
+require import UInt256.
 
 type g.
 
 op p: int.
 axiom prime_p : prime p.
+axiom p_lt_W256_mod : p < W256.modulus.
 
 clone ZModField with
   op p <- p
