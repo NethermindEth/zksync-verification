@@ -41,19 +41,14 @@ module PointNegate = {
     }
   }
 
-  proc mid(point_x: int, point_y: int) : int * int = {
-    var ret_x, ret_y;
-    ret_x <- point_x;
-    ret_y <- point_y;
-    if (point_y = 0) {
-      if (point_x <> 0 ){
-        Primops.reverted <- true;
-      }
-      (* ... *)
+  proc mid(point: int*int) : (int * int) option = {
+    var ret;
+    if (point.`1 <> 0 /\ point.`2 = 0) {
+      ret <- None;
     } else {
-      ret_y <- (-point_y) %% Constants.Q;
+      ret <- Some (point.`1, (-point.`2) %% Constants.Q);
     }
-    return (ret_x, ret_y);
+    return ret;
   }
 }.
 
@@ -84,49 +79,65 @@ lemma aux (x : int): 0 < x => x < Constants.Q => (-x) %% Constants.Q = Constants
 proof. progress. rewrite -modzDl pmod_small. split. smt ().
 progress.  smt (). reflexivity. qed.
     
-lemma pointNegate_low_equiv_mid (memory: mem) (point_address: uint256) (point_x_int point_y_int: int): equiv [
-    PointNegate.low ~ PointNegate.mid :
+lemma pointNegate_low_equiv_mid (memory: mem) (point_address: uint256) (point_x_int point_y_int: int):
+    equiv [
+      PointNegate.low ~ PointNegate.mid :
       arg{2} = (point_x_int, point_y_int) /\
       arg{1} = point_address /\
       point_y_int < Constants.Q /\
       Primops.memory{1} = memory /\
       W256.to_uint(PurePrimops.mload memory point_address) = point_x_int /\
       W256.to_uint(PurePrimops.mload memory (point_address + W256.of_int 32)) = point_y_int /\
-      !Primops.reverted{1} /\
-      !Primops.reverted{2}
+      !Primops.reverted{1}
       ==>
-      (Primops.reverted{1} <=> Primops.reverted{2}) /\ (
-        (!Primops.reverted{1} /\ (
-          Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore memory point_address (W256.of_int res{2}.`1)) (point_address + W256.of_int 32) (W256.of_int res{2}.`2)))
-        \/
-        (Primops.reverted{1} /\ point_y_int = 0 /\ point_x_int <> 0)
+      (
+        (res{2} = None /\ Primops.reverted{1}) \/
+        (exists p,
+          res{2} = Some p /\
+          !Primops.reverted{1} /\
+          Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore memory point_address (W256.of_int p.`1)) (point_address + W256.of_int 32) (W256.of_int p.`2)
+        )
      )
-].
-proof. proc.
-seq 2 2 : (#pre /\ _2{1} = (usr_point{1} + W256.of_int 32) /\ ret_x{2} = point_x{2} /\ ret_y{2} = point_y{2} /\ W256.to_uint usr_pY{1} = point_y{2}).
-call {1} (ConcretePrimops.mload_pspec memory (point_address + W256.of_int 32)). wp. skip. progress.
+   ].
+   proof. proc.
+     inline Primops.mload Primops.mstore.
+     (* case (point{2}.`1 = 0).
+     case (point{2}.`2 = 0).
+     rcondt{1} 4. progress. wp. skip. progress. smt (@W256).
+     rcondf{1} 6. progress. wp. skip. progress. smt (@W256).
+     rcondf{2} 1. progress. skip. progress. smt (@W256).
+     sp. skip. progress. rewrite H1 H2. exists (0,0). progress.
+     have H_x: W256.zero = load Primops.memory{1} usr_point{1} by smt(@W256).
+     have H_y: W256.zero = load Primops.memory{1} (usr_point{1} + W256.of_int 32) by smt(@W256). *)
 
-if. smt (@W256).
-seq 1 0 : (#pre /\ W256.to_uint tmp90{1} = point_x{2} /\ point_y{2} = 0).
-call {1} (ConcretePrimops.mload_pspec memory point_address). skip. progress; try smt (@W256).
-
-case (point_x_int <> 0).
-rcondt {1} 1.
-progress. skip. progress. smt ().
-rcondt {2} 1.
-progress.
-call{1} revertWithMessage_low_pspec.
-wp. skip. progress. by smt ().
-rcondf {1} 1.
-progress. skip. progress. rewrite -W256.to_uintK H3 H5. smt ().
-rcondf {2} 1.
-progress. skip. progress. smt (). smt (). left. progress. 
-do 2! (rewrite store_loaded_val). reflexivity.
-
-    simplify.
-exists* _2{1},  usr_pY{1}. elim*. move => _2_l usr_pY_l.
-call {1} (ConcretePrimops.mstore_pspec memory _2_l ((of_int Constants.Q)%W256 - usr_pY_l)).
-wp. skip. progress. smt (). smt (). left. progress.
-rewrite store_loaded_val. congr.
-rewrite -W256.to_uintK -H2. rewrite aux. smt (@W256). smt (@W256). smt (@W256).
+   
+     case (point_x_int <> 0 /\ point_y_int = 0).
+     rcondt{2} 1. by progress.
+     sp. rcondt{1} 1. progress. skip. progress. rewrite - W256.to_uintK.
+     rewrite H2. reflexivity.
+     sp. rcondt{1} 1. progress. skip. progress. rewrite /bool_of_uint256.
+     rewrite - W256.to_uintK. smt(@W256).
+     call{1} (revertWithMessage_low_pspec).
+     skip. by progress.
+     rcondf{2} 1. by progress.
+     case (point_y_int = 0).
+     rcondt{1} 4. progress. sp. skip. progress. rewrite - W256.to_uintK. rewrite H2. reflexivity.
+     sp. rcondf{1} 1. progress. skip. progress. smt (@W256).
+     skip. progress. rewrite H2. simplify.
+     exists (W256.to_uint (load Primops.memory{1} usr_point{1}), 0).
+     progress.
+     rewrite - H2. rewrite W256.to_uintK.
+     rewrite MemoryMap.store_loaded_val.
+     rewrite MemoryMap.store_loaded_val.
+     reflexivity.
+     sp. rcondf{1} 1. progress. skip. progress. smt(@W256).
+     sp. skip. progress.
+     exists (W256.to_uint (load memory usr_point{1}), (- W256.to_uint (load memory (usr_point{1} + (W256.of_int 32)))) %% Constants.Q).
+     progress. congr. rewrite MemoryMap.store_loaded_val. reflexivity.
+     pose y := mload memory (usr_point{1} + W256.of_int 32).
+     rewrite aux.
+     smt (@W256).
+     smt ().
+     smt (@W256).
 qed.
+
