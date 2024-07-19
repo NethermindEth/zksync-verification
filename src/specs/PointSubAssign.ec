@@ -5,6 +5,7 @@ require        Constants.
 require import EllipticCurve.
 require import Logic.
 require import Memory.
+require import PointNegate.
 require import PurePrimops.
 require import Real.
 require import RevertWithMessage.
@@ -12,6 +13,11 @@ require import UInt256.
 require import Utils.
 require import YulPrimops.
 require import Verifier.
+
+import MemoryMap.
+
+op to_point (p: int*int): (F*F) = (ZModField.inzmod p.`1, ZModField.inzmod p.`2).
+op from_point (p: F*F): int*int = (ZModField.asint p.`1, ZModField.asint p.`2).
 
 module PointSubAssign = {
   proc low(p1, p2) =
@@ -32,6 +38,20 @@ module PointSubAssign = {
       RevertWithMessage.low(W256.of_int 28, (W256.of_int STRING));
     }
   }
+
+  proc mid(p1: int*int, p2: int*int): (int*int) option = {
+    var neg_p2, neg_p2_F, neg_p2_opt, p1_F, ret;
+    neg_p2_opt <@ PointNegate.mid(p2);
+    if (neg_p2_opt = None) {
+      ret <- None;
+    } else {
+      neg_p2 <- odflt (0,0) neg_p2_opt;
+      neg_p2_F <- to_point neg_p2;
+      p1_F <- to_point p1;
+      ret <- ecAdd_precompile p1_F.`1 p1_F.`2 neg_p2_F.`1 neg_p2_F.`2;
+    }
+    return (omap from_point ret);
+  }
 }.
 
 lemma pointSubAssign_extracted_equiv_low :
@@ -46,3 +66,30 @@ proof.
   inline*. wp. skip. rewrite /Constants.Q. by progress.
   inline*. wp. skip. by progress.
 qed.  
+
+op pointSubAssign_memory_footprint (memory: mem) (p1: uint256): mem. (* =
+  let mem_1 = store memory W256.zero (load memory p1) in
+  let mem_2 = store mem_1 (W256.of_int 32) (load memory (p1 + W256.of_int 32)) in
+  let mem_*)
+
+lemma pointSubAssign_low_equiv_mid (memory: mem) (p1_addr: uint256) :
+    equiv [
+      PointSubAssign.low ~ PointSubAssign.mid:
+      !Primops.reverted{1} /\
+      Primops.memory{1} = memory /\
+      arg{1}.`1 = p1_addr /\
+      W256.to_uint (load memory arg{1}.`1) = arg{2}.`1.`1 /\
+      W256.to_uint (load memory (arg{1}.`1 + W256.of_int 32)) = arg{2}.`1.`2 /\
+      W256.to_uint (load memory arg{1}.`2) = arg{2}.`2.`1 /\
+      W256.to_uint (load memory (arg{1}.`2 + W256.of_int 32)) = arg{2}.`2.`2 /\
+      ! (arg{2}.`2.`1 <> 0 /\ arg{2}.`2.`2 = 0) ==>
+      (res{2} = None /\ Primops.reverted{1}) \/
+      (exists p,
+        res{2} = Some p /\
+        !Primops.reverted{1} /\
+        Primops.memory{1} = pointSubAssign_memory_footprint memory p1_addr
+      )
+    ].
+    proof.
+    proc.
+      
