@@ -5,6 +5,7 @@ require        Constants.
 require import EllipticCurve.
 require import Logic.
 require import Memory.
+require import PointAddAssign.
 require import PointNegate.
 require import PurePrimops.
 require import Real.
@@ -46,9 +47,7 @@ module PointSubAssign = {
       ret <- None;
     } else {
       neg_p2 <- odflt (0,0) neg_p2_opt;
-      neg_p2_F <- to_point neg_p2;
-      p1_F <- to_point p1;
-      ret <- ecAdd_precompile p1_F.`1 p1_F.`2 neg_p2_F.`1 neg_p2_F.`2;
+      ret <@ PointAddAssign.mid(p1, neg_p2);
     }
     return (omap from_point ret);
   }

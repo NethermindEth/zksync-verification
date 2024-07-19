@@ -95,7 +95,8 @@ lemma uint256_ord3' (a b : uint256) : W256.zero < a => a < - b => b < - a.
     exact H.
     exact H0.
   qed.
-  
+
+(* Needs changing to <= *)
 lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equiv [
     PointAddIntoDest.low ~ PointAddIntoDest.low':
       ={arg, glob PointAddIntoDest} /\

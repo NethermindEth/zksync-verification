@@ -89,7 +89,7 @@ lemma uint256_cast_neg (a : uint256) : - a = W256.of_int ((- (W256.to_uint a)) %
     rewrite oppE /ulift1. smt.
   qed.
   
-lemma uint_256_cast_sub (a b : uint256) : (a - b) = W256.of_int ((W256.to_uint a - W256.to_uint b) %% W256.modulus).
+lemma uint256_cast_sub (a b : uint256) : (a - b) = W256.of_int ((W256.to_uint a - W256.to_uint b) %% W256.modulus).
     rewrite oppE /ulift1 uint256_cast_add.
     apply uint256_eq_of_eq.
     rewrite of_uintK of_uintK of_uintK.
@@ -98,7 +98,7 @@ lemma uint_256_cast_sub (a b : uint256) : (a - b) = W256.of_int ((W256.to_uint a
     smt (@IntDiv).
   qed.
 
-lemma uint_256_cast_mul (a b : uint256) : (a * b) = W256.of_int ((W256.to_uint a * W256.to_uint b) %% W256.modulus).
+lemma uint256_cast_mul (a b : uint256) : (a * b) = W256.of_int ((W256.to_uint a * W256.to_uint b) %% W256.modulus).
     rewrite mulE /ulift2. smt.
   qed.
 
@@ -127,7 +127,7 @@ lemma uint256_size (a : uint256) : W256.to_uint a < W256.modulus.
   
 lemma uint256_ord2 (a b : uint256) : a < b => a < a - b.
     progress.
-    rewrite uint_256_cast_sub.
+    rewrite uint256_cast_sub.
     apply uint256_lt_of_lt.
     rewrite of_uintK mod_mod_eq_mod'.
     have H' : to_uint a < to_uint b. smt.
@@ -256,7 +256,7 @@ lemma neq_of_lt (idx idx2: uint256):
 proof.
   progress.
   have H' : (of_int 31)%W256 < (of_int ((to_uint idx2 - to_uint idx) %% W256.modulus))%W256.
-  have H''' := uint_256_cast_sub idx2 idx.
+  have H''' := uint256_cast_sub idx2 idx.
   rewrite -H'''. exact H.
   have H'' := uint256_lt_of_lt' _ _ H'.
   rewrite of_uintK of_uintK mod_mod_eq_mod' in H''.
@@ -306,8 +306,8 @@ lemma add_2_neq_of_diff (idx idx2: uint256) (a b: int):
       rewrite uint256_cast_add uint256_cast_add of_uintK of_uintK.
       apply uint256_neq_of_neq.
       rewrite of_uintK of_uintK mod_mod_eq_mod' mod_mod_eq_mod'.
-      rewrite uint_256_cast_sub in H.
-      rewrite uint_256_cast_sub in H0.
+      rewrite uint256_cast_sub in H.
+      rewrite uint256_cast_sub in H0.
       have L1 : 32 %% W256.modulus = 32. smt ().
       have H' := uint256_le_of_le' _ _ H.
       have H0' := uint256_le_of_le' _ _ H0.
