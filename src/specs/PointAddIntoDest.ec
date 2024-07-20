@@ -12,8 +12,6 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
-op topoint (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
-
 module PointAddIntoDest = {
   proc low(p1, p2, dest) =
   {
@@ -60,7 +58,7 @@ module PointAddIntoDest = {
       x2_F <- ZModField.inzmod x2;
       y2_F <- ZModField.inzmod y2;
       result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
-      return (omap topoint result);
+      return (omap F_to_uint256_point result);
   }
 }.
 
@@ -75,26 +73,6 @@ proof.
   inline*. wp. skip. by progress.
   inline*. wp. skip. by progress.
 qed.
-
-lemma uint256_eq (a : uint256) : a = - (- a).
-    smt (@W256).
-  qed.
-
-lemma uint256_zero_sub_eq_sub (a : uint256) : W256.zero - a = - a.
-    smt (@W256).
-  qed.
-
-lemma uint256_sub_distr2 (a b c : uint256) : a - (b + c) = (a - c) - b.
-    smt (@W256).
-  qed.
-  
-lemma uint256_ord3' (a b : uint256) : W256.zero < a => a < - b => b < - a.
-    progress.
-    rewrite (uint256_eq b).
-    apply uint256_ord3.
-    exact H.
-    exact H0.
-  qed.
   
 lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equiv [
     PointAddIntoDest.low ~ PointAddIntoDest.low':
@@ -251,8 +229,6 @@ lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equ
 
         smt ().
   qed.
-
-lemma exists_of_is_some ['a] (ov : 'a option) : is_some ov => exists (v : 'a), ov = Some v. progress. smt. qed.
 
 lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointAddIntoDest.low' ~ PointAddIntoDest.mid :

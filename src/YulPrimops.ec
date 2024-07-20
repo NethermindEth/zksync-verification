@@ -305,11 +305,6 @@ lemma staticcall_modexp_pspec (memory: mem) (a b c gas argOff retOff: uint256):
       reflexivity.
   qed.
 
-lemma is_none_iff_not_is_some (a: 'a option): is_none a <=> !is_some a.
-    proof.
-      case (a = None). smt (). smt ().
-    qed.
-
 pred point_wellformed (pnt: uint256*uint256) =
     pnt.`1 = pnt.`1 %% W256.of_int p /\
     pnt.`2 = pnt.`2 %% W256.of_int p.
@@ -405,7 +400,34 @@ lemma ecMul_precomp_is_some_of_should_succeed (p : uint256 * uint256) (s : uint2
       (ecMul_precompile ((ZModField.inzmod (W256.to_uint p.`1)))
          ((ZModField.inzmod (to_uint p.`2)))
          (to_uint s)). progress. smt (). qed.
-  
+
+lemma ecMul_precomp_is_none_of_should_not_succeed (p1 : uint256 * uint256) (s : uint256) :
+    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\ 
+    ! (staticcall_ec_mul_should_succeed p1 s)) =>
+    is_none
+      (ecMul_precompile ((ZModField.inzmod (W256.to_uint p1.`1)))
+         ((ZModField.inzmod (to_uint p1.`2)))
+         (to_uint s)). progress.
+           have H2 :
+       (
+         ! point_wellformed p1 \/
+         ! point_oncurve p1 \/
+         ! is_some (ecMul_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (to_uint s))
+       ). smt ().
+           case H2.
+           progress. rewrite /point_wellformed in H2.
+           have H3 : (p1.`1 <> p1.`1 %% (of_int p)%W256 \/ p1.`2 <> p1.`2 %% (of_int p)%W256). smt ().
+           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H.
+           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H0. smt ().
+       move=> [J | J'].
+           rewrite /point_oncurve in J.
+           apply is_none_of_eq_none.
+           apply ecMul_fail. exact J.
+           rewrite is_none_iff_not_is_some.
+           exact J'.
+     qed.
+       
+     
 lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256) (argOff retOff: uint256):
     phoare [ Primops.staticcall :
       arg = (gas, W256.of_int 7, argOff, W256.of_int 96, retOff, W256.of_int 64) /\
@@ -445,9 +467,5 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
       rewrite neg_none_eq_some in H5. smt ().
       rewrite neg_none_eq_some in H5. smt ().
   qed.
-
-    
-    
-
 
 end ConcretePrimops.
