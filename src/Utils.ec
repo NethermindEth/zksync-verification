@@ -159,8 +159,8 @@ lemma uint256_ord3 (a b : uint256) : W256.zero < a => a < b => - b < - a.
     rewrite of_uintK of_uintK.
     have HA : W256.to_uint a < W256.modulus. exact uint256_size.
     have HB : W256.to_uint b < W256.modulus. exact uint256_size.
-    have HA' : W256.modulus - to_uint a < W256.modulus. smt.
-    have HB' : W256.modulus - to_uint b < W256.modulus. smt.
+    have HA' : W256.modulus - to_uint a < W256.modulus. smt (@W256).
+    have HB' : W256.modulus - to_uint b < W256.modulus. smt (@W256).
     have HA'' : (W256.modulus - to_uint a) %% W256.modulus = W256.modulus - to_uint a. smt.
     have HB'' : (W256.modulus - to_uint b) %% W256.modulus = W256.modulus - to_uint b. smt.
     rewrite HA'' HB''.
@@ -388,6 +388,8 @@ lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
 lemma weaken_and_left (a b): a /\ b => a. proof. by smt(). qed.
 lemma weaken_and_right (a b): a /\ b => b. proof. by smt(). qed.
 
+lemma neg_none_eq_some ['a] (o : 'a option) : (!(is_none o)) = is_some o. smt (). qed.
+  
 require import Constants.
   
 lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.

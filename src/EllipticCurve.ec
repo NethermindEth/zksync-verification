@@ -45,7 +45,7 @@ op ( + ) = G.( * ).
 op ( * ) x y = G.( ^ ) y x.
 
 op ecAdd_precompile (x1 y1 x2 y2 : F) : (F * F) option.  
-op ecMul_precompile (x y s : F) : (F * F) option.
+op ecMul_precompile (x y : F) (s : int) : (F * F) option.
 
 axiom ecAdd_def (x1 y1 x2 y2 : F) (p1 p2 : g) :
   aspoint_G1 p1 = (x1, y1)
@@ -55,9 +55,9 @@ axiom ecAdd_def (x1 y1 x2 y2 : F) (p1 p2 : g) :
 axiom ecAdd_fail (x1 y1 x2 y2 : F) :
   !(on_curve (x1, y1)) \/ !(on_curve (x2, y2)) => ecAdd_precompile x1 y1 x2 y2 = None.
 
-axiom ecMul_def (x y s : F) (p : g):
+axiom ecMul_def (x y : F) (s : int) (p : g):
   aspoint_G1 p = (x, y)
-    => Some (aspoint_G1 (ZModField.asint s * p)) = ecMul_precompile x y s.
+    => Some (aspoint_G1 (s * p)) = ecMul_precompile x y s.
 
-axiom ecMul_fail (x y s : F) :
+axiom ecMul_fail (x y : F) (s : int) :
   !(on_curve (x, y)) => ecMul_precompile x y s = None.
