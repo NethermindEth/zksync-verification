@@ -56,10 +56,10 @@ lemma PointAddIntoDest_mid_of_low (x1v y1v sv : int) (p1u destu : uint256) (memo
     PointMulIntoDest.low ~ PointMulIntoDest.mid :
     Primops.memory{1} = memory0 /\
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\
-      (of_int 128)%W256 < p1u /\
-      (of_int 128)%W256 < -p1u /\
-      (of_int 128)%W256 < p1u + (of_int 32)%W256 /\
-      (of_int 128)%W256 < - (p1u + (of_int 32)%W256) /\
+      (of_int 128)%W256 <= p1u /\
+      (of_int 128)%W256 <= -p1u /\
+      (of_int 128)%W256 <= p1u + (of_int 32)%W256 /\
+      (of_int 128)%W256 <= - (p1u + (of_int 32)%W256) /\
     PurePrimops.mload memory0 p1u = W256.of_int x1v /\
     PurePrimops.mload memory0 (p1u + W256.of_int 32) = W256.of_int y1v /\
       arg{1} = (p1u, W256.of_int sv, destu) /\ arg{2} = (x1v, y1v, sv) /\ !Primops.reverted{1}
@@ -92,8 +92,8 @@ lemma PointAddIntoDest_mid_of_low (x1v y1v sv : int) (p1u destu : uint256) (memo
         inline *. wp. skip. progress.
 
         rewrite MemoryMap.load_store_diff. rewrite uint256_sub_zero_eq.
-        apply (uint256_le_lt_trans _ (W256.of_int 128) _). smt (@UInt256). exact H7.
-        rewrite uint256_zero_sub_eq_sub. apply (uint256_le_lt_trans _ (W256.of_int 128) _). smt (@UInt256). exact H8. rewrite H9 H10. reflexivity.
+        apply (uint256_le_le_trans _ (W256.of_int 128) _). smt (@UInt256). exact H7.
+        rewrite uint256_zero_sub_eq_sub. apply (uint256_le_le_trans _ (W256.of_int 128) _). smt (@UInt256). exact H8. rewrite H9 H10. reflexivity.
 
         case (ConcretePrimops.staticcall_ec_mul_should_succeed (W256.of_int x1v, W256.of_int y1v) (W256.of_int sv)).
         exists* Primops.memory{1}.

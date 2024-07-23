@@ -149,7 +149,8 @@ lemma uint256_sub_zero_eq (a : uint256) : a - W256.zero = a.
 lemma uint256_sub_distr2 (a b c : uint256) : a - (b + c) = (a - c) - b.
     smt (@W256).
   qed.
-  
+
+lemma uint256_le_le_trans (a b c : uint256) : a <= b => b <= c => a <= c. smt (@W256). qed.
 lemma uint256_le_lt_trans (a b c : uint256) : a <= b => b < c => a <= c. smt (@W256). qed.
 lemma uint256_lt_lt_trans (a b c : uint256) : a < b => b < c => a < c. smt (@W256). qed.
   
