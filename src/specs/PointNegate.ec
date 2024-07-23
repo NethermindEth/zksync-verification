@@ -11,6 +11,7 @@ require import RevertWithMessage.
 require import UInt256.
 require import Utils.
 require import Verifier.
+require import VerifierConsts.
 require import YulPrimops.
 
 import FieldQ.
@@ -37,7 +38,7 @@ module PointNegate = {
       }
     }
     else {
-      Primops.mstore(_2, ((W256.of_int Constants.Q) - usr_pY));
+      Primops.mstore(_2, (Q_MOD - usr_pY));
     }
   }
 
