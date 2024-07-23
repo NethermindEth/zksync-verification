@@ -380,6 +380,30 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       wp. skip. by progress.
     qed.
 
+lemma ecAdd_precomp_is_some_of_should_succeed (p1 p2 : uint256 * uint256) :
+    staticcall_ec_add_should_succeed p1 p2 =>
+    is_some
+    (ecAdd_precompile
+      (ZModField.inzmod (W256.to_uint p1.`1))
+      (ZModField.inzmod (W256.to_uint p1.`2))
+      (ZModField.inzmod (W256.to_uint p2.`1))
+      (ZModField.inzmod (W256.to_uint p2.`2))
+    ). progress. smt (). qed.
+
+lemma ecAdd_precomp_is_none_of_should_not_succeed (p1 p2 : uint256 * uint256) :
+    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\
+      (W256.to_uint p2.`1) < p /\ W256.to_uint p2.`2 < p /\ 
+    ! (staticcall_ec_add_should_succeed p1 p2)) =>
+    is_none
+      (ecAdd_precompile
+        ((ZModField.inzmod (W256.to_uint p1.`1)))
+        ((ZModField.inzmod (W256.to_uint p1.`2)))
+        ((ZModField.inzmod (W256.to_uint p2.`1)))
+        ((ZModField.inzmod (W256.to_uint p2.`2)))
+      ). progress.
+          admit.
+     qed.
+    
 pred staticcall_ec_mul_should_succeed (p : uint256 * uint256) (s : uint256) =
     point_wellformed p /\
     point_oncurve p /\
