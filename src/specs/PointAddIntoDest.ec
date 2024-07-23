@@ -12,7 +12,7 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
-op topoint (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
+op from_point (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
 
 module PointAddIntoDest = {
   proc low(p1, p2, dest) =
@@ -60,7 +60,7 @@ module PointAddIntoDest = {
       x2_F <- ZModField.inzmod x2;
       y2_F <- ZModField.inzmod y2;
       result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
-      return (omap topoint result);
+      return (omap from_point result);
   }
 }.
 
