@@ -2,17 +2,17 @@ digraph zk {
     { node [style=filled fillcolor="yellow"]
         modexp 
         permutationQuotientContribution 
-        pointNegate 
+        pointNegate
+        pointAddIntoDest
+        pointMulIntoDest
+        pointAddAssign
     }
     { node [style=filled fillcolor="red"] 
         evaluateLagrangePolyOutOfDomain 
         lookupQuotientContribution 
         mainGateLinearisationContributionWithV
-        pointAddAssign
-        pointAddIntoDest
         pointSubAssign
         pointMulAndAddIntoDest
-        pointMulIntoDest
         verifyQuotientEvaluation
         addAssignLookupLinearisationContributionWithV
         addAssignPermutationLinearisationContributionWithV
