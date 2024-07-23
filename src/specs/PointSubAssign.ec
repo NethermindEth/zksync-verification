@@ -41,20 +41,6 @@ module PointSubAssign = {
     }
   }
 
-  proc low'(p1, p2) = {
-    var _1, _5, _6, _9;
-    _1 <@ Primops.mload(p1);
-    Primops.mstore(W256.zero, _1);
-    _5 <@ Primops.mload(p1 + W256.of_int 32);
-    Primops.mstore(W256.of_int 32, _5);
-    _6 <@ Primops.mload(p2);
-    Primops.mstore(W256.of_int 64, _6);
-    _9 <@ Primops.mload(p2 + W256.of_int 32);
-    Primops.mstore(W256.of_int 96, _9);
-    PointNegate.low(W256.of_int 64);
-    PointAddIntoDest.low(W256.zero, W256.of_int 64, p1);
-  }
-
   proc mid(p1: int*int, p2: int*int): (int*int) option = {
     var neg_p2, neg_p2_opt, ret;
 
@@ -83,87 +69,81 @@ proof.
   inline*. wp. skip. by progress.
 qed.
 
-lemma pointSubAssign_low_equiv_low' :
-    equiv [
-      PointSubAssign.low ~ PointSubAssign.low':
-      ={arg, glob PointSubAssign} ==>
-      (Primops.reverted{1} /\ Primops.reverted{2}) \/
-      ={res, glob PointSubAssign}
-    ].
-    proof.
-      proc.
-      seq 7 7: (#pre /\ ={_9}). inline*. wp. skip. by progress.
-      inline PointAddIntoDest.low.
-    case (_9{1} = W256.zero).
-      seq 4 0: (Primops.reverted{1}).
-      inline Primops.mstore Primops.gas.
-      exists* p1{1}.
-      sp. elim* => memory p1.
-      seq 1 0: (_16{1} = W256.zero).
-      call{1} (
-        ConcretePrimops.staticcall_ec_add_pspec
-        (store memory (W256.of_int 96) (W256.of_int Constants.Q))
-        (load memory W256.zero, load memory (W256.of_int 32))
-        (load memory (W256.of_int 64), W256.of_int Constants.Q)
-        W256.zero
-        p1
-      ).
-          skip. progress.
-          rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils). reflexivity.
-          rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils). reflexivity.
-          rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils). reflexivity.
-          rewrite load_store_same. reflexivity.
-      apply (weaken_and_left (result = W256.zero) (memory_L = store Primops.memory{2} (W256.of_int 96) (W256.of_int Constants.Q))).
-          apply H4. rewrite /staticcall_ec_add_should_succeed.
-          have H_malformed: !(ConcretePrimops.point_wellformed (load Primops.memory{2} (W256.of_int 64), W256.of_int Constants.Q)).
-      rewrite /point_wellformed.
-      
+op pointSubAssign_memory_footprint (memory: mem): mem.
 
-
-    
-      seq 8 0: (load Primops.memory{1} (W256.of_int 96) = (W256.of_int Constants.Q)).
-      inline*. wp. skip. progress. rewri
-      seq 8 9: ((Primops.reverted{1} /\ Primops.reverted{2}
-      (* exists* Primops.memory{2}, p1{2}, p2{2}.
-      elim*=> memory p1 p2.
-      pose p1_x := load memory p1.
-      pose p1_y := load memory (p1 + W256.of_int 32).
-      pose p2_x := load memory p2.
-      pose p2_y := load memory (p2 + W256.of_int 32).
-      pose mem_1 := store memory W256.zero p1_x.
-      pose mem_2 := store mem_1 (W256.of_int 32) p1_y.
-      pose mem_3 := store mem_2 (W256.of_int 64) p2_x.
-      seq 7 7: (
-        Primops.memory{1} = mem_3 /\ Primops.memory{2} = mem_3 /\
-        _9{1} = p2_y /\ _9{2} = p2_y
-      ). inline*. wp. skip. progress. *)
-        seq 1 2: ((Primops.reverted{1} /\ Primops.reverted{2}) \/ ={Primops.memory}).
-      inline Primops.mstore. sp.
-      call{2} (pointNegate_low_equiv_mid Primops.memory{2} (W256.of_int 64).
-
-op pointSubAssign_memory_footprint (memory: mem) (p1: uint256): mem. (* =
-  let mem_1 = store memory W256.zero (load memory p1) in
-  let mem_2 = store mem_1 (W256.of_int 32) (load memory (p1 + W256.of_int 32)) in
-  let mem_*)
-
-lemma pointSubAssign_low_equiv_mid (memory: mem) (p1_addr: uint256) :
+lemma pointSubAssign_low_equiv_mid_fail_case (memory: mem) (point_addr_1, point_addr_2: uint256) (point1 point2: int*int) :
+    point2.`2 = 0 =>
     equiv [
       PointSubAssign.low ~ PointSubAssign.mid:
-      !Primops.reverted{1} /\
+      arg{1}.`1 = point_addr_1 /\
+      arg{1}.`2 = point_addr_2 /\
+      arg{2}.`1 = point1 /\
+      arg{2}.`2 = point2 /\
       Primops.memory{1} = memory /\
-      arg{1}.`1 = p1_addr /\
-      W256.to_uint (load memory arg{1}.`1) = arg{2}.`1.`1 /\
-      W256.to_uint (load memory (arg{1}.`1 + W256.of_int 32)) = arg{2}.`1.`2 /\
-      W256.to_uint (load memory arg{1}.`2) = arg{2}.`2.`1 /\
-      W256.to_uint (load memory (arg{1}.`2 + W256.of_int 32)) = arg{2}.`2.`2 /\
-      ! (arg{2}.`2.`1 <> 0 /\ arg{2}.`2.`2 = 0) ==>
-      (res{2} = None /\ Primops.reverted{1}) \/
-      (exists p,
+      128 <= W256.to_uint point_addr_1 /\
+      128 <= W256.to_uint point_addr_2 /\
+      64 <= W256.to_uint (-point_addr_1) /\
+      64 <= W256.to_uint (-point_addr_2) /\
+      W256.to_uint (load Primops.memory{1} point_addr_1) = point1.`1 /\
+      W256.to_uint (load Primops.memory{1} (point_addr_1 + W256.of_int 32)) = point1.`2 /\
+      W256.to_uint (load Primops.memory{1} point_addr_2) = point2.`1 /\
+      W256.to_uint (load Primops.memory{1} (point_addr_2 + W256.of_int 32)) = point2.`2 /\
+      !Primops.reverted{1}
+      ==>
+      (Primops.reverted{1} /\ res{2} = None) \/
+      (!Primops.reverted{1} /\ exists p,
         res{2} = Some p /\
-        !Primops.reverted{1} /\
-        Primops.memory{1} = pointSubAssign_memory_footprint memory p1_addr
+        Primops.memory{1} = pointSubAssign_memory_footprint memory
       )
     ].
     proof.
-    proc.
+    move=>H_y_eq_0.
+      proc.
+      seq 9 0: (load Primops.memory{1} (W256.of_int 96) = W256.of_int Constants.Q /\ p2{2} = point2).
+      inline Primops.gas. wp.
+      inline Primops.mstore Primops.mload. wp. skip.
+      progress.
+      pose mem_1 := store Primops.memory{1} W256.zero (load Primops.memory{1} p1{1}).
+      pose mem_2 := store mem_1 (W256.of_int 32) (load mem_1 (p1{1} + W256.of_int 32)).
+      pose mem_3 := store mem_2 (W256.of_int 64) (load mem_2 p2{1}).
+      rewrite load_store_same.
+      have H_load_eq_0 : load mem_3 (p2{1} + (W256.of_int 32)) = W256.zero.
+      rewrite /mem_3. rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils).
+      rewrite /mem_2. rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils).
+      rewrite /mem_1. rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils).
+      smt (@W256 @Utils).
+      rewrite H_load_eq_0. smt (@W256 @Utils).
+      seq 1 0: (_16{1} = W256.zero /\ p2{2} = point2).
+      exists* Primops.memory{1}.
+      elim*=>memory_pre_staticcall.
+      exists* p1{1}.
+      elim*=>p1_addr.
+      call{1} (
+        ConcretePrimops.staticcall_ec_add_pspec
+        memory_pre_staticcall
+        ((load memory_pre_staticcall W256.zero),
+        (load memory_pre_staticcall (W256.of_int 32)))
+        ((load memory_pre_staticcall (W256.of_int 64)),
+        W256.of_int Constants.Q)
+        W256.zero
+        p1_addr
+      ).
+          skip.
+          progress. smt ().
+          have H_staticcall_should_not_success : forall (a b c: uint256), ! (ConcretePrimops.staticcall_ec_add_should_succeed (a, b) (c, W256.of_int Constants.Q)).
+          progress. rewrite /ConcretePrimops.staticcall_ec_add_should_succeed.
+          have H_not_wellformed: !ConcretePrimops.point_wellformed(c, W256.of_int Constants.Q).
+          rewrite /point_wellformed.
+          have H_Q_eq_p: Constants.Q =  p by Constants.q_eq_elliptic_curve_p.
+          simplify.
+          have H_Q_neq_q_mod_p : W256.of_int Constants.Q <> (W256.of_int Constants.Q %% W256.of_int p).
+          rewrite H_Q_eq_p. rewrite /W256.\umod. rewrite /W256.ulift2. smt. smt(). smt(). smt().
+      rcondt{1} 1. progress. skip. rewrite /iszero /bool_of_uint256. progress. smt (@W256 @Utils).
+      call{1} revertWithMessage_low_pspec.
+      rcondt{2} 1. by progress.
+      wp. skip. by progress.
+    qed.
+
+  lemma pointSubAssign_low_equiv_mid_success_case (memory: mem) (point_addr_1, point_addr_2) (point1 point2: int*int) :
       
+    

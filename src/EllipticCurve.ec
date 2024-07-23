@@ -9,6 +9,7 @@ type g.
 
 op p: int.
 axiom prime_p : prime p.
+axiom zero_lt_p : 0 < p.
 axiom p_lt_W256_mod : p < W256.modulus.
 
 clone ZModField with
