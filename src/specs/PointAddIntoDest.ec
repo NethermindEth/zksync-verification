@@ -100,10 +100,10 @@ lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equ
     PointAddIntoDest.low ~ PointAddIntoDest.low':
       ={arg, glob PointAddIntoDest} /\
       arg{1} = (p1, p2, dest_address) /\
-        W256.of_int 128 < p1 /\ W256.of_int 128 < - p1 /\
-        W256.of_int 128 < (p1 + W256.of_int 32) /\ W256.of_int 128 < -(p1 + W256.of_int 32) /\
-        W256.of_int 128 < p2 /\ W256.of_int 128 < - p2 /\
-        W256.of_int 128 < (p2 + W256.of_int 32) /\ W256.of_int 128 < -(p2 + W256.of_int 32)
+        W256.of_int 128 <= p1 /\ W256.of_int 128 <= - p1 /\
+        W256.of_int 128 <= (p1 + W256.of_int 32) /\ W256.of_int 128 <= -(p1 + W256.of_int 32) /\
+        W256.of_int 128 <= p2 /\ W256.of_int 128 <= - p2 /\
+        W256.of_int 128 <= (p2 + W256.of_int 32) /\ W256.of_int 128 <= -(p2 + W256.of_int 32)
       ==>
       ={res, glob PointAddIntoDest}
     ].
@@ -129,14 +129,14 @@ lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equ
       ={Primops.memory} /\ ={dest} /\ ={Primops.reverted} /\ dest{1} = dest_address /\ ={_13} /\
       Primops.memory{1} =
       PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory W256.zero x1) (W256.of_int 32) y1) (W256.of_int 64) x2) (W256.of_int 96) y2 /\
-      (of_int 128)%W256 < p1 /\
-      (of_int 128)%W256 < -p1 /\
-      (of_int 128)%W256 < p1 + (of_int 32)%W256 /\
-      (of_int 128)%W256 < - (p1 + (of_int 32)%W256) /\
-      (of_int 128)%W256 < p2 /\
-      (of_int 128)%W256 < -p2 /\
-      (of_int 128)%W256 < p2 + (of_int 32)%W256 /\
-      (of_int 128)%W256 < - (p2 + (of_int 32)%W256)
+      (of_int 128)%W256 <= p1 /\
+      (of_int 128)%W256 <= -p1 /\
+      (of_int 128)%W256 <= p1 + (of_int 32)%W256 /\
+      (of_int 128)%W256 <= - (p1 + (of_int 32)%W256) /\
+      (of_int 128)%W256 <= p2 /\
+      (of_int 128)%W256 <= -p2 /\
+      (of_int 128)%W256 <= p2 + (of_int 32)%W256 /\
+      (of_int 128)%W256 <= - (p2 + (of_int 32)%W256)
     ).
         inline Primops.mload Primops.mstore Primops.gas.
         wp. skip. progress.
