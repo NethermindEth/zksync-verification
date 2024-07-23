@@ -86,31 +86,31 @@ lemma pointMulAndAddIntoDest_low_equiv_low':
         memory1
         ((load memory1 W256.zero),
         (load memory1 (W256.of_int 32)))
-        ((load memory1 (W256.of_int 64)),
-        (load memory1 (W256.of_int 96)))
+        (load memory1 (W256.of_int 64))
         W256.zero
-        (W256.of_int 64)
+        W256.zero
       ).
       call{2} (
         ConcretePrimops.staticcall_ec_mul_pspec
         memory2
         ((load memory2 W256.zero),
         (load memory2 (W256.of_int 32)))
-        ((load memory2 (W256.of_int 64)),
-        (load memory2 (W256.of_int 96)))
+        (load memory2 (W256.of_int 64))
         W256.zero
-        (W256.of_int 64)
+        W256.zero
       ).
-      skip. progress.
-          inline Primops.staticcall.
-      sp.
-      rcondf{1} 1. progress. skip. progress. smt (@W256 @Utils).
-      rcondf{2} 1. progress. skip. progress. smt (@W256 @Utils).
-      rcondf{1} 1. progress. skip. progress. smt (@W256 @Utils).
-      rcondf{2} 1. progress. skip. progress. smt (@W256 @Utils).
-      rcondt{1} 1. by progress.
-      rcondt{2} 1. by progress.
-      rcondt{1} 1. by progress.
-      rcondt{2} 1. by progress.
-      wp. sim. progress.
+      skip. progress. smt (). smt().
+      exists* success{1}.
+          elim*=> mul_success.
+      case (mul_success = W256.zero).
+          rcondt{2} 1. progress. skip. progress. rewrite /iszero /bool_of_uint256. progress. smt (@W256 @Utils).
+          seq 5 0: (success{1} = W256.zero). inline*. wp. skip. by progress.
+          seq 1 0: (success{1} = W256.zero). inline*. wp. skip. by progress.
+          seq 1 0: (success{1} = W256.zero). wp. skip. progress. smt (@W256).
+          rcondt{1} 1. progress. skip. rewrite /iszero /bool_of_uint256. progress. smt (@W256 @Utils).
+          call{1} revertWithMessage_low_pspec.
+          seq 0 1: (Primops.reverted{2}).
+          call{2} revertWithMessage_low_pspec.
+          skip. by progress.
+      
       
