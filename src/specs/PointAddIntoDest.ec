@@ -58,7 +58,7 @@ module PointAddIntoDest = {
       x2_F <- ZModField.inzmod x2;
       y2_F <- ZModField.inzmod y2;
       result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
-      return (omap F_to_uint256_point result);
+      return (omap F_to_int_point result);
   }
 }.
 

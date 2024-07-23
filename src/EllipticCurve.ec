@@ -63,4 +63,4 @@ axiom ecMul_def (x y : F) (s : int) (p : g):
 axiom ecMul_fail (x y : F) (s : int) :
   !(on_curve (x, y)) => ecMul_precompile x y s = None.
 
-op F_to_uint256_point (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
+op F_to_int_point (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).

@@ -35,7 +35,7 @@ module PointMulIntoDest = {
     x_F <- ZModField.inzmod x;
     y_F <- ZModField.inzmod y;
     result <- ecMul_precompile x_F y_F s;
-    return (omap F_to_uint256_point result);
+    return (omap F_to_int_point result);
   }
 }.
 
