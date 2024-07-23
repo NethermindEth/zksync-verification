@@ -4,6 +4,8 @@ require import Array.
 require import EllipticCurve.
 require import Logic.
 require import Memory.
+require import PointAddIntoDest.
+require import PointMulIntoDest.
 require import PurePrimops.
 require import Real.
 require import RevertWithMessage.
@@ -11,6 +13,8 @@ require import UInt256.
 require import Utils.
 require import YulPrimops.
 require import Verifier.
+
+import MemoryMap.
 
 module PointMulAndAddIntoDest = {
   proc low(point, s, dest) =
@@ -35,6 +39,11 @@ module PointMulAndAddIntoDest = {
       RevertWithMessage.low(W256.of_int 22, W256.of_int STRING);
     }
   }
+
+  proc low'(point, s, dest) = {
+    PointMulIntoDest.low(point, s, W256.zero);
+    PointAddIntoDest.low(W256.zero, dest, dest);
+  }
 }.
 
 lemma pointMulAndAddIntoDest_extracted_equiv_low :
@@ -53,3 +62,55 @@ proof.
   inline*. wp. skip. by progress.
   inline*. wp. skip. by progress.
 qed.
+
+lemma pointMulAndAddIntoDest_low_equiv_low':
+    equiv [
+      PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.low' :
+      ={arg, glob PointMulAndAddIntoDest} ==>
+      (
+        (!Primops.reverted{1} /\ !Primops.reverted{2}) \/
+        ={res, glob PointMulAndAddIntoDest}
+      )
+    ].
+    proof.
+      proc.
+      inline PointMulIntoDest.low.
+      seq 6 9: (#pre /\ ={_9} /\ ={dest} /\ dest0{2} = W256.zero). (*lead up to the first static call *)
+      sp.
+      inline*. wp. skip. by progress.
+      seq 1 1: (#pre /\ success{1} = _10{2}).
+      exists* Primops.memory{1}, Primops.memory{2}.
+      elim*=> memory1 memory2.
+      call{1} (
+        ConcretePrimops.staticcall_ec_mul_pspec
+        memory1
+        ((load memory1 W256.zero),
+        (load memory1 (W256.of_int 32)))
+        ((load memory1 (W256.of_int 64)),
+        (load memory1 (W256.of_int 96)))
+        W256.zero
+        (W256.of_int 64)
+      ).
+      call{2} (
+        ConcretePrimops.staticcall_ec_mul_pspec
+        memory2
+        ((load memory2 W256.zero),
+        (load memory2 (W256.of_int 32)))
+        ((load memory2 (W256.of_int 64)),
+        (load memory2 (W256.of_int 96)))
+        W256.zero
+        (W256.of_int 64)
+      ).
+      skip. progress.
+          inline Primops.staticcall.
+      sp.
+      rcondf{1} 1. progress. skip. progress. smt (@W256 @Utils).
+      rcondf{2} 1. progress. skip. progress. smt (@W256 @Utils).
+      rcondf{1} 1. progress. skip. progress. smt (@W256 @Utils).
+      rcondf{2} 1. progress. skip. progress. smt (@W256 @Utils).
+      rcondt{1} 1. by progress.
+      rcondt{2} 1. by progress.
+      rcondt{1} 1. by progress.
+      rcondt{2} 1. by progress.
+      wp. sim. progress.
+      
