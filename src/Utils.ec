@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import AllCore.
 require import Array.
+require import EllipticCurve.
 require import Logic.
 require import UInt256.
 import StdOrder.
@@ -10,6 +11,8 @@ import StdOrder.
 
 lemma exists_of_is_some ['a] (ov : 'a option) : is_some ov => exists (v : 'a), ov = Some v. progress. smt. qed.
 
+lemma odflt_some_eq ['a] (a b : 'a) : odflt a (Some b) = b. smt (). qed.
+  
 lemma is_none_iff_not_is_some (a: 'a option): is_none a <=> !is_some a.
     proof.
       case (a = None). smt (). smt ().
@@ -30,7 +33,9 @@ lemma mod_m_lt_m :
 
 lemma mod_eq_self : forall (a m : int), 0 < m => 0 <= a => a < m => a %% m = a.
     smt ().
-    qed.
+  qed.
+
+lemma mod_plus : forall (a m : int), a %% m = (a + m) %% m. progress. smt (@IntDiv). qed.
 
 lemma mod_mod_eq_mod :
     forall (m1 m2 v : int), 0 < m1 => m1 <= m2 => (v %% m1) %% m2 = v %% m1.
@@ -38,6 +43,9 @@ lemma mod_mod_eq_mod :
     smt ().
   qed.
 
+      (* tuples *)
+lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
+lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
   
 (* uint256 lemmas *)
 
