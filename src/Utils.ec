@@ -43,7 +43,9 @@ lemma mod_mod_eq_mod :
     smt ().
   qed.
 
-      (* tuples *)
+lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt(). qed.
+
+ (* tuples *)
 lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
 lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
   
@@ -51,6 +53,8 @@ lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
 
 lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
 
+lemma uint256_distrib_sub (a b c : uint256) : a - (b + c) = (a - c) - b. smt (@W256). qed.
+    
 lemma neq_small (x y: int):
     0 <= x < W256.modulus =>
     0 <= y < W256.modulus =>
@@ -442,3 +446,6 @@ require import Constants.
   
 lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.
 lemma R_mod_W256_R : R %% W256.modulus = R. by smt(). qed.      
+
+ (* Finite field lemmas *)
+lemma F_eq_inzmod_asint (x : F) : ZModField.inzmod (ZModField.asint x) = x. smt (@ZModField). qed.
