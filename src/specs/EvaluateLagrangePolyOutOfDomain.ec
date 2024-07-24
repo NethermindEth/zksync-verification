@@ -67,23 +67,26 @@ module EvaluateLagrangePolyOutOfDomain = {
   proc mid(polyNum: int, at: int): int option = {
     var r, omegaPolyNum, atDomainSize, zd1, num, den, inv;
 
-    omegaPolyNum <- (OMEGA ^ polyNum) %% R; 
+    omegaPolyNum <- (OMEGA ^ polyNum) %% R; (* Modexp.mid(..., ...) *)
     atDomainSize <- (at ^ DOMAIN_SIZE) %% R; 
-    
     zd1 <- (atDomainSize - 1) %% R;
     
-    if(zd1 = 0) {
+    if(zd1 = 0) { (* (at ^ DOMAIN_SIZE) - 1 = 0 *)
       r <- None;
     } else {
       num <- (omegaPolyNum * zd1) %% R;
       den <- (DOMAIN_SIZE * (at - omegaPolyNum)) %% R;
       inv <- den^(R - 2) %% R;
       r <- Some ((num * inv) %% R);
+      (* ((OMEGA ^ polyNum) * (atDomainSize - 1))
+        ----------------------------------------
+        (DOMAIN_SIZE * (at - (OMEGA ^ polyNum)))
+      *)
     }  
     return r;
   }
 }.
-    
+
 lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
     equiv [
       Verifier_1261.usr_evaluateLagrangePolyOutOfDomain ~ EvaluateLagrangePolyOutOfDomain.low :
