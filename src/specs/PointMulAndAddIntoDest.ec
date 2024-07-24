@@ -91,19 +91,14 @@ lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
     have HB' : 0 <= bv. smt (@W256).
     have HC' : 0 <= cv. smt (@W256).
     rewrite mod_eq_self. smt (). smt ().
-    have INT : av - cv <= av. smt ().
-    smt.
+    apply (StdOrder.IntOrder.ler_lt_trans av).
+    smt (). exact HA.
     rewrite mod_eq_self. smt (). smt ().
     have INT : bv - cv <= bv. smt ().
-    smt.
+    apply (StdOrder.IntOrder.ler_lt_trans bv).
+    smt (). exact HB.
     smt ().
   qed.
-
-lemma F_eq_inzmod_asint (x : F) : ZModField.inzmod (ZModField.asint x) = x. smt (@ZModField). qed.
-
-lemma uint256_distrib_sub (a b c : uint256) : a - (b + c) = (a - c) - b. smt (@W256 @Utils). qed.
-
-lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt(). qed.
   
 lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
