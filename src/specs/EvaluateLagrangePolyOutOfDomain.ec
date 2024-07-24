@@ -254,59 +254,39 @@ atDomainSize{2} = at{2} ^ DOMAIN_SIZE %% R /\
 ret{1} = (of_int num{2})%W256 /\
 num{2} = omegaPolyNum{2} * zd1{2} %% R /\
 zd1{2} = (atDomainSize{2} - 1) %% R /\ zd1{2} <> 0 /\
-denominator{1} = (of_int den{2})%W256 /\
 den{2} = DOMAIN_SIZE * (at{2} - omegaPolyNum{2}) %% R /\
-Primops.memory{1} = modexp_memory_footprint memory at{1} ((W256.of_int R) - (W256.of_int 2)) denominator{1} /\
+Primops.memory{1} = modexp_memory_footprint memory (of_int den{2})%W256 (W256.of_int (R - 2)) denominator{1} /\
 denominator{1} = W256.of_int inv{2} /\ inv{2} = (den{2} ^ (R - 2)) %% R
 ).
+sp.
+exists* tmp267{1}. elim* => tmp. exists* denominator{1}. elim* => d.
+pose mem' := modexp_memory_footprint memory at256 ((of_int DOMAIN_SIZE))%W256 tmp.
+call{1} (modexp_pspec mem' d ((W256.of_int R) - (W256.of_int 2))). 
+skip. progress. rewrite /mem'. apply modexp_same.
+rewrite !W256.of_uintK !mod_R_W256_mod_R.
+have ->: (R - 2) %% W256.modulus = R - 2. by smt(). by reflexivity.
 
-
-
-call (modexp_low_equiv_mid memory (W256.of_int OMEGA) poly256).
-skip. progress. by smt. by smt. 
-(* polyNum = 0 *)
-rcondf{1} 1. by progress.
-inline Modexp.mid. wp. skip. progress. by smt.
-have ->: polyNum{1} = W256.zero. by smt. progress. by smt.
-
-(* ((poly256 <> W256.zero /\ *)
-  (*   Primops.memory{1} = modexp_memory_footprint mem' at{1} (W256.of_int DOMAIN_SIZE) tmp267{1}) \/ *)
-  (*  (poly256 = W256.zero /\ *)
-  (*    Primops.memory{1} = modexp_memory_footprint memory at{1} (W256.of_int DOMAIN_SIZE) tmp267{1}) *)
-  (* ) *)
-
-seq 1 1 : (
-  (polyNum{1}, at{1}) = (poly256, at256) /\
-  (polyNum{2}, at{2}) = (to_uint poly256, to_uint at256) /\
-  !Primops.reverted{1} /\
-  omegaPower{1} = W256.of_int omegaPolyNum{2} /\
-  Primops.memory{1} = modexp_memory_footprint memory at{1} (W256.of_int DOMAIN_SIZE) tmp267{1} /\
-  tmp267{1} = W256.of_int atDomainSize{2}
+seq 1 1: (
+(polyNum{1}, at{1}) = (poly256, at256) /\
+(polyNum{2}, at{2}) = (to_uint poly256, to_uint at256) /\
+!Primops.reverted{1} /\
+omegaPower{1} = (of_int omegaPolyNum{2})%W256 /\
+omegaPolyNum{2} = OMEGA ^ polyNum{2} %% R /\
+tmp267{1} = (of_int atDomainSize{2})%W256 /\
+atDomainSize{2} = at{2} ^ DOMAIN_SIZE %% R /\
+(* ret{1} = (of_int num{2})%W256 /\ *)
+num{2} = omegaPolyNum{2} * zd1{2} %% R /\
+zd1{2} = (atDomainSize{2} - 1) %% R /\ zd1{2} <> 0 /\
+den{2} = DOMAIN_SIZE * (at{2} - omegaPolyNum{2}) %% R /\
+Primops.memory{1} = modexp_memory_footprint memory (of_int den{2})%W256 (W256.of_int (R - 2)) denominator{1} /\
+denominator{1} = W256.of_int inv{2} /\ inv{2} = (den{2} ^ (R - 2)) %% R /\
+ret{1} = (of_int ((num{2} * inv{2}) %% R))%W256 /\ r{2} = Some ((num{2} * inv{2}) %% R)
 ).
-
-exists* omegaPower{1}. elim* => oP.
-pose mem' := (modexp_memory_footprint memory ((of_int OMEGA))%W256 poly256 oP).
-case (poly256 = W256.zero).
-call (modexp_low_equiv_mid memory at256 (W256.of_int DOMAIN_SIZE)).
-skip. progress. by smt. by auto. 
-call (modexp_low_equiv_mid mem' at256 (W256.of_int DOMAIN_SIZE)).
-skip. progress. by smt. rewrite /mem'. case H0. progress. move => [? ?]. auto. apply modexp_same.
-
-seq 1 1: (#pre /\ ret{1} = W256.of_int zd1{2}). wp. skip. progress.
-rewrite /addmod. progress.
-rewrite !W256.of_uintK !R_mod_W256_R.  -(modzDm _ (-1) R) modNz. by smt(). by smt().
-simplify.
-
-    rewrite (modNz 1).
-
-
-
-have ->: (R - 1) %% W256.modulus = R - 1. by smt(). 
-have ->: (atDomainSize{2} %% W256.modulus + (R - 1)) = (atDomainSize{2} %% W256.modulus + (R - 1) %% W256.modulus). by smt().
-
-have : forall W256.of_int (a %% R)
-have ->: (atDomainSize{2} %% W256.modulus + (R - 1) %% W256.modulus) = (atDomainSize{2} + (R - 1)) %% W256.modulus.  
-
-    rcondf{1} 1. by progress.
-inline Modexp.mid. wp. skip. progress. rewrite /bool_of_uint256 in H0. by smt.
+wp. skip. progress. 
+rewrite /mulmod. progress. 
+rewrite !W256.of_uintK !mod_R_W256_mod_R !R_mod_W256_R. by reflexivity.
+skip. progress.
+by smt().
+by smt.
+qed.
 
