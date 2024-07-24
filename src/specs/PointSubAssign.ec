@@ -15,6 +15,7 @@ require import UInt256.
 require import Utils.
 require import YulPrimops.
 require import Verifier.
+require import VerifierConsts.
 
 import MemoryMap.
 

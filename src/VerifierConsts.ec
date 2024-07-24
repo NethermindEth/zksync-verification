@@ -186,9 +186,9 @@ op PAIRING_BUFFER_POINT_X_SLOT : uint256 = W256.of_int (512 + 1312 + 1568 + 128 
 op PAIRING_BUFFER_POINT_Y_SLOT : uint256 = W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 192 + 32).
 
 op PAIRING_PAIR_WITH_GENERATOR_X_SLOT =
-        512 + 1312 + 1568 + 128 + 704 + 256 + 192 + 64.
+        W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 192 + 64).
 op PAIRING_PAIR_WITH_GENERATOR_Y_SLOT =
-        512 + 1312 + 1568 + 128 + 704 + 256 + 192 + 96.
+        W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 192 + 96).
 
 op PAIRING_PAIR_WITH_X_X_SLOT : uint256 = W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 128).
 op PAIRING_PAIR_WITH_X_Y_SLOT : uint256 = W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 160).
@@ -198,11 +198,11 @@ op PAIRING_PAIR_WITH_X_Y_SLOT : uint256 = W256.of_int (512 + 1312 + 1568 + 128 +
     //////////////////////////////////////////////////////////////*/ *)
 
 op COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF =
-        512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 192.
+        W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 192).
 op LOOKUP_GRAND_PRODUCT_FIRST_AGGREGATED_COMMITMENT_COEFF =
-        512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 224.
+        W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 224).
 op LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF =
-        512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 256.
+        W256.of_int (512 + 1312 + 1568 + 128 + 704 + 256 + 256 + 256).
 
 (*    /*//////////////////////////////////////////////////////////////
                              Constants

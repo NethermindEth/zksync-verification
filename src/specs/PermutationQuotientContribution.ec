@@ -15,36 +15,36 @@ module PermutationQuotientContribution = {
     var _res, tmp270, tmp271, _gamma, _beta, _factorMultiplier, tmp274, tmp275, tmp276, tmp277, tmp278, tmp279, tmp280, _22, _l0AtZ, tmp282, _26;
     tmp270 <@ Primops.mload(STATE_POWER_OF_ALPHA_4_SLOT);
     tmp271 <@ Primops.mload(PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT);
-    _res <- (PurePrimops.mulmod tmp271 tmp270 (W256.of_int Constants.R));
+    _res <- (PurePrimops.mulmod tmp271 tmp270 R_MOD);
     _gamma <@ Primops.mload(STATE_GAMMA_SLOT);
     _beta <@ Primops.mload(STATE_BETA_SLOT);
     tmp274 <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT);
-    _factorMultiplier <- (PurePrimops.mulmod tmp274 _beta (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma (W256.of_int Constants.R));
+    _factorMultiplier <- (PurePrimops.mulmod tmp274 _beta R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma R_MOD);
     tmp275 <@ Primops.mload(PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT);
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier tmp275 (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier tmp275 R_MOD);
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
     tmp276 <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT);
-    _factorMultiplier <- (PurePrimops.mulmod tmp276 _beta (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma (W256.of_int Constants.R));
+    _factorMultiplier <- (PurePrimops.mulmod tmp276 _beta R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma R_MOD);
     tmp277 <@ Primops.mload(PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT);
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier tmp277 (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier tmp277 R_MOD);
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
     tmp278 <@ Primops.mload(PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT);
-    _factorMultiplier <- (PurePrimops.mulmod tmp278 _beta (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma (W256.of_int Constants.R));
+    _factorMultiplier <- (PurePrimops.mulmod tmp278 _beta R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma R_MOD);
     tmp279 <@ Primops.mload(PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT);
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier tmp279 (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier tmp279 R_MOD);
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
     tmp280 <@ Primops.mload(PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT);
-    _22 <- (PurePrimops.addmod tmp280 _gamma (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _22 (W256.of_int Constants.R));
-    _res <- ((W256.of_int Constants.R) - _res);
+    _22 <- (PurePrimops.addmod tmp280 _gamma R_MOD);
+    _res <- (PurePrimops.mulmod _res _22 R_MOD);
+    _res <- (R_MOD - _res);
     _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     tmp282 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
-    _l0AtZ <- (PurePrimops.mulmod _l0AtZ tmp282 (W256.of_int Constants.R));
-    _26 <- ((W256.of_int Constants.R) - _l0AtZ);
-    _res <- (PurePrimops.addmod _res _26 (W256.of_int Constants.R));
+    _l0AtZ <- (PurePrimops.mulmod _l0AtZ tmp282 R_MOD);
+    _26 <- (R_MOD - _l0AtZ);
+    _res <- (PurePrimops.addmod _res _26 R_MOD);
     return _res;
   }
 
@@ -92,25 +92,25 @@ local module TMP = {
     _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
-    _res <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.mulmod _sigma0_z _beta (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _a_z (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.mulmod _sigma1_z _beta (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _b_z (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.mulmod _sigma2_z _beta (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma (W256.of_int Constants.R));
-    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _c_z (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
-    _22 <- (PurePrimops.addmod _sigma3_z _gamma (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res _22 (W256.of_int Constants.R));
-    _res <- ((W256.of_int Constants.R) - _res);
-    _l0AtZ <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
-    _26 <- ((W256.of_int Constants.R) - _l0AtZ);
-    _res <- (PurePrimops.addmod _res _26 (W256.of_int Constants.R));
+    _res <- (PurePrimops.mulmod _zperm_zOmega _alpha4 R_MOD);
+    _factorMultiplier <- (PurePrimops.mulmod _sigma0_z _beta R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _a_z R_MOD);
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
+    _factorMultiplier <- (PurePrimops.mulmod _sigma1_z _beta R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _b_z R_MOD);
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
+    _factorMultiplier <- (PurePrimops.mulmod _sigma2_z _beta R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _gamma R_MOD);
+    _factorMultiplier <- (PurePrimops.addmod _factorMultiplier _c_z R_MOD);
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
+    _22 <- (PurePrimops.addmod _sigma3_z _gamma R_MOD);
+    _res <- (PurePrimops.mulmod _res _22 R_MOD);
+    _res <- (R_MOD - _res);
+    _l0AtZ <- (PurePrimops.mulmod _l0AtZ _alpha5 R_MOD);
+    _26 <- (R_MOD - _l0AtZ);
+    _res <- (PurePrimops.addmod _res _26 R_MOD);
     return _res;
   }
 
@@ -132,36 +132,36 @@ local module TMP = {
     _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
-    _res <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
+    _res <- (PurePrimops.mulmod _zperm_zOmega _alpha4 R_MOD);
     
-    s0BGa <- (PurePrimops.mulmod _sigma0_z _beta (W256.of_int Constants.R));
-    s0BGa <- (PurePrimops.addmod s0BGa _gamma (W256.of_int Constants.R));
-    s0BGa <- (PurePrimops.addmod s0BGa _a_z (W256.of_int Constants.R));
+    s0BGa <- (PurePrimops.mulmod _sigma0_z _beta R_MOD);
+    s0BGa <- (PurePrimops.addmod s0BGa _gamma R_MOD);
+    s0BGa <- (PurePrimops.addmod s0BGa _a_z R_MOD);
 
     _factorMultiplier <- s0BGa;
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
     
-    s1BGb <- (PurePrimops.mulmod _sigma1_z _beta (W256.of_int Constants.R));
-    s1BGb <- (PurePrimops.addmod s1BGb _gamma (W256.of_int Constants.R));
-    s1BGb <- (PurePrimops.addmod s1BGb _b_z (W256.of_int Constants.R));
+    s1BGb <- (PurePrimops.mulmod _sigma1_z _beta R_MOD);
+    s1BGb <- (PurePrimops.addmod s1BGb _gamma R_MOD);
+    s1BGb <- (PurePrimops.addmod s1BGb _b_z R_MOD);
 
     _factorMultiplier <- s1BGb;
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
 
-    s2BGc <- (PurePrimops.mulmod _sigma2_z _beta (W256.of_int Constants.R));
-    s2BGc <- (PurePrimops.addmod s2BGc _gamma (W256.of_int Constants.R));
-    s2BGc <- (PurePrimops.addmod s2BGc _c_z (W256.of_int Constants.R));
+    s2BGc <- (PurePrimops.mulmod _sigma2_z _beta R_MOD);
+    s2BGc <- (PurePrimops.addmod s2BGc _gamma R_MOD);
+    s2BGc <- (PurePrimops.addmod s2BGc _c_z R_MOD);
 
     _factorMultiplier <- s2BGc;
-    _res <- (PurePrimops.mulmod _res _factorMultiplier (W256.of_int Constants.R));
+    _res <- (PurePrimops.mulmod _res _factorMultiplier R_MOD);
 
-    s3G   <- (PurePrimops.addmod _sigma3_z _gamma (W256.of_int Constants.R));
-    _res <- (PurePrimops.mulmod _res s3G (W256.of_int Constants.R));
+    s3G   <- (PurePrimops.addmod _sigma3_z _gamma R_MOD);
+    _res <- (PurePrimops.mulmod _res s3G R_MOD);
     
-    _res <- ((W256.of_int Constants.R) - _res);
-    _l0AtZ <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
-    _26 <- ((W256.of_int Constants.R) - _l0AtZ);
-    _res <- (PurePrimops.addmod _res _26 (W256.of_int Constants.R));
+    _res <- (R_MOD - _res);
+    _l0AtZ <- (PurePrimops.mulmod _l0AtZ _alpha5 R_MOD);
+    _26 <- (R_MOD - _l0AtZ);
+    _res <- (PurePrimops.addmod _res _26 R_MOD);
     return _res;
   }
 
@@ -184,34 +184,34 @@ local module TMP = {
     _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
-    _res1 <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
+    _res1 <- (PurePrimops.mulmod _zperm_zOmega _alpha4 R_MOD);
     
-    s0BGa <- (PurePrimops.mulmod _sigma0_z _beta (W256.of_int Constants.R));
-    s0BGa <- (PurePrimops.addmod s0BGa _gamma (W256.of_int Constants.R));
-    s0BGa <- (PurePrimops.addmod s0BGa _a_z (W256.of_int Constants.R));
+    s0BGa <- (PurePrimops.mulmod _sigma0_z _beta R_MOD);
+    s0BGa <- (PurePrimops.addmod s0BGa _gamma R_MOD);
+    s0BGa <- (PurePrimops.addmod s0BGa _a_z R_MOD);
 
-    _res1 <- (PurePrimops.mulmod _res1 s0BGa (W256.of_int Constants.R));
+    _res1 <- (PurePrimops.mulmod _res1 s0BGa R_MOD);
     
-    s1BGb <- (PurePrimops.mulmod _sigma1_z _beta (W256.of_int Constants.R));
-    s1BGb <- (PurePrimops.addmod s1BGb _gamma (W256.of_int Constants.R));
-    s1BGb <- (PurePrimops.addmod s1BGb _b_z (W256.of_int Constants.R));
+    s1BGb <- (PurePrimops.mulmod _sigma1_z _beta R_MOD);
+    s1BGb <- (PurePrimops.addmod s1BGb _gamma R_MOD);
+    s1BGb <- (PurePrimops.addmod s1BGb _b_z R_MOD);
 
-    _res1 <- (PurePrimops.mulmod _res1 s1BGb (W256.of_int Constants.R));
+    _res1 <- (PurePrimops.mulmod _res1 s1BGb R_MOD);
 
-    s2BGc <- (PurePrimops.mulmod _sigma2_z _beta (W256.of_int Constants.R));
-    s2BGc <- (PurePrimops.addmod s2BGc _gamma (W256.of_int Constants.R));
-    s2BGc <- (PurePrimops.addmod s2BGc _c_z (W256.of_int Constants.R));
+    s2BGc <- (PurePrimops.mulmod _sigma2_z _beta R_MOD);
+    s2BGc <- (PurePrimops.addmod s2BGc _gamma R_MOD);
+    s2BGc <- (PurePrimops.addmod s2BGc _c_z R_MOD);
 
-    _res1 <- (PurePrimops.mulmod _res1 s2BGc (W256.of_int Constants.R));
+    _res1 <- (PurePrimops.mulmod _res1 s2BGc R_MOD);
 
-    s3G   <- (PurePrimops.addmod _sigma3_z _gamma (W256.of_int Constants.R));
-    _res1 <- (PurePrimops.mulmod _res1 s3G (W256.of_int Constants.R));
-    inv1 <- ((W256.of_int Constants.R) - _res1);
+    s3G   <- (PurePrimops.addmod _sigma3_z _gamma R_MOD);
+    _res1 <- (PurePrimops.mulmod _res1 s3G R_MOD);
+    inv1 <- (R_MOD - _res1);
     
-    _res2 <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
-    inv2 <- ((W256.of_int Constants.R) - _res2);
+    _res2 <- (PurePrimops.mulmod _l0AtZ _alpha5 R_MOD);
+    inv2 <- (R_MOD - _res2);
 
-    return (PurePrimops.addmod inv1 inv2 (W256.of_int Constants.R));
+    return (PurePrimops.addmod inv1 inv2 R_MOD);
   }
 
   proc low4(): uint256 = {
@@ -233,31 +233,31 @@ local module TMP = {
     _l0AtZ <@ Primops.mload(STATE_L_0_AT_Z_SLOT);
     _alpha5 <@ Primops.mload(STATE_POWER_OF_ALPHA_5_SLOT);
     
-    s0BGa <- (PurePrimops.mulmod _sigma0_z _beta (W256.of_int Constants.R));
-    s0BGa <- (PurePrimops.addmod s0BGa _gamma (W256.of_int Constants.R));
-    s0BGa <- (PurePrimops.addmod s0BGa _a_z (W256.of_int Constants.R));
+    s0BGa <- (PurePrimops.mulmod _sigma0_z _beta R_MOD);
+    s0BGa <- (PurePrimops.addmod s0BGa _gamma R_MOD);
+    s0BGa <- (PurePrimops.addmod s0BGa _a_z R_MOD);
     
-    s1BGb <- (PurePrimops.mulmod _sigma1_z _beta (W256.of_int Constants.R));
-    s1BGb <- (PurePrimops.addmod s1BGb _gamma (W256.of_int Constants.R));
-    s1BGb <- (PurePrimops.addmod s1BGb _b_z (W256.of_int Constants.R));
+    s1BGb <- (PurePrimops.mulmod _sigma1_z _beta R_MOD);
+    s1BGb <- (PurePrimops.addmod s1BGb _gamma R_MOD);
+    s1BGb <- (PurePrimops.addmod s1BGb _b_z R_MOD);
 
-    s2BGc <- (PurePrimops.mulmod _sigma2_z _beta (W256.of_int Constants.R));
-    s2BGc <- (PurePrimops.addmod s2BGc _gamma (W256.of_int Constants.R));
-    s2BGc <- (PurePrimops.addmod s2BGc _c_z (W256.of_int Constants.R));
+    s2BGc <- (PurePrimops.mulmod _sigma2_z _beta R_MOD);
+    s2BGc <- (PurePrimops.addmod s2BGc _gamma R_MOD);
+    s2BGc <- (PurePrimops.addmod s2BGc _c_z R_MOD);
 
-    s3G   <- (PurePrimops.addmod _sigma3_z _gamma (W256.of_int Constants.R));
+    s3G   <- (PurePrimops.addmod _sigma3_z _gamma R_MOD);
 
-    _res1 <- (PurePrimops.mulmod _zperm_zOmega _alpha4 (W256.of_int Constants.R));
-    _res1 <- (PurePrimops.mulmod _res1 s0BGa (W256.of_int Constants.R));
-    _res1 <- (PurePrimops.mulmod _res1 s1BGb (W256.of_int Constants.R));
-    _res1 <- (PurePrimops.mulmod _res1 s2BGc (W256.of_int Constants.R));
-    _res1 <- (PurePrimops.mulmod _res1 s3G (W256.of_int Constants.R));
-    inv1 <- ((W256.of_int Constants.R) - _res1);
+    _res1 <- (PurePrimops.mulmod _zperm_zOmega _alpha4 R_MOD);
+    _res1 <- (PurePrimops.mulmod _res1 s0BGa R_MOD);
+    _res1 <- (PurePrimops.mulmod _res1 s1BGb R_MOD);
+    _res1 <- (PurePrimops.mulmod _res1 s2BGc R_MOD);
+    _res1 <- (PurePrimops.mulmod _res1 s3G R_MOD);
+    inv1 <- (R_MOD - _res1);
     
-    _res2 <- (PurePrimops.mulmod _l0AtZ _alpha5 (W256.of_int Constants.R));
-    inv2 <- ((W256.of_int Constants.R) - _res2);
+    _res2 <- (PurePrimops.mulmod _l0AtZ _alpha5 R_MOD);
+    inv2 <- (R_MOD - _res2);
 
-    return (PurePrimops.addmod inv1 inv2 (W256.of_int Constants.R));
+    return (PurePrimops.addmod inv1 inv2 R_MOD);
   }
 }.
 

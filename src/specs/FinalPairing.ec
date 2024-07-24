@@ -6,44 +6,44 @@ require import PurePrimops.
 require import RevertWithMessage.
 require import Utils.
 require import Verifier.
-require        VerifierConsts.
+require import VerifierConsts.
 require import YulPrimops.
 
 module FinalPairing = {
   proc low(): unit = {
     var u, z, _5, zOmega, _11, _14, _17, uu, _20, _23, _33, _35, _47, success, _50;
-    u <@ Primops.mload(W256.of_int 4032);
-    z <@ Primops.mload(W256.of_int 4064);
-    _5 <@ Primops.mload(W256.of_int 4064);
-    zOmega <- (PurePrimops.mulmod _5 (W256.of_int Constants.OMEGA) (W256.of_int Constants.R));
-    PointSubAssign.low(W256.of_int 4736, W256.of_int 4672);
-    PointMulAndAddIntoDest.low(W256.of_int 3136, z, W256.of_int 4736);
-    PointMulAndAddIntoDest.low(W256.of_int 3200, (PurePrimops.mulmod zOmega u (W256.of_int Constants.R)), W256.of_int 4736);
-    _11 <@ Primops.mload(W256.of_int 3136);
-    Primops.mstore(W256.of_int 4864, _11);
-    _14 <@ Primops.mload(W256.of_int 3168);
-    Primops.mstore(W256.of_int 4896, _14);
-    PointMulAndAddIntoDest.low(W256.of_int 3200, u, W256.of_int 4864);
-    PointNegate.low(W256.of_int 4864);
-    _17 <@ Primops.mload(W256.of_int 1792);
-    if ((bool_of_uint256 _17))
+    u <@ Primops.mload(STATE_U_SLOT);
+    z <@ Primops.mload(STATE_Z_SLOT);
+    _5 <@ Primops.mload(STATE_Z_SLOT);
+    zOmega <- (PurePrimops.mulmod _5 OMEGA R_MOD);
+    PointSubAssign.low(PAIRING_PAIR_WITH_GENERATOR_X_SLOT, PAIRING_BUFFER_POINT_X_SLOT);
+    PointMulAndAddIntoDest.low(PROOF_OPENING_PROOF_AT_Z_X_SLOT, z, PAIRING_PAIR_WITH_GENERATOR_X_SLOT);
+    PointMulAndAddIntoDest.low(PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT, (PurePrimops.mulmod zOmega u R_MOD), PAIRING_PAIR_WITH_GENERATOR_X_SLOT);
+    _11 <@ Primops.mload(PROOF_OPENING_PROOF_AT_Z_X_SLOT);
+    Primops.mstore(PAIRING_PAIR_WITH_X_X_SLOT, _11);
+    _14 <@ Primops.mload(PROOF_OPENING_PROOF_AT_Z_Y_SLOT);
+    Primops.mstore(PAIRING_PAIR_WITH_X_Y_SLOT, _14);
+    PointMulAndAddIntoDest.low(PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT, u, PAIRING_PAIR_WITH_X_X_SLOT);
+    PointNegate.low(PAIRING_PAIR_WITH_X_X_SLOT);
+    _17 <@ Primops.mload(VK_RECURSIVE_FLAG_SLOT);
+    if (bool_of_uint256 _17)
     {
-      uu <- (PurePrimops.mulmod u u (W256.of_int Constants.R));
-      PointMulAndAddIntoDest.low(W256.of_int 3264, uu, W256.of_int 4736);
-      PointMulAndAddIntoDest.low(W256.of_int 3328, uu, W256.of_int 4864);
+      uu <- (PurePrimops.mulmod u u R_MOD);
+      PointMulAndAddIntoDest.low(PROOF_RECURSIVE_PART_P1_X_SLOT, uu, PAIRING_PAIR_WITH_GENERATOR_X_SLOT);
+      PointMulAndAddIntoDest.low(PROOF_RECURSIVE_PART_P2_X_SLOT, uu, PAIRING_PAIR_WITH_X_X_SLOT);
     }
     
-    _20 <@ Primops.mload(W256.of_int 4736);
+    _20 <@ Primops.mload(PAIRING_PAIR_WITH_GENERATOR_X_SLOT);
     Primops.mstore(W256.zero, _20);
-    _23 <@ Primops.mload(W256.of_int 4768);
+    _23 <@ Primops.mload(PAIRING_PAIR_WITH_GENERATOR_Y_SLOT);
     Primops.mstore(W256.of_int 32, _23);
     Primops.mstore(W256.of_int 64, VerifierConsts.G2_ELEMENTS_0_X1);
     Primops.mstore(W256.of_int 96, VerifierConsts.G2_ELEMENTS_0_X2);
     Primops.mstore(W256.of_int 128, VerifierConsts.G2_ELEMENTS_0_Y1);
     Primops.mstore(W256.of_int 160, VerifierConsts.G2_ELEMENTS_0_Y2);
-    _33 <@ Primops.mload(W256.of_int 4864);
+    _33 <@ Primops.mload(PAIRING_PAIR_WITH_X_X_SLOT);
     Primops.mstore(W256.of_int 192, _33);
-    _35 <@ Primops.mload(W256.of_int 4896);
+    _35 <@ Primops.mload(PAIRING_PAIR_WITH_X_Y_SLOT);
     Primops.mstore(W256.of_int 224, _35);
     Primops.mstore(W256.of_int 256, VerifierConsts.G2_ELEMENTS_1_X1);
     Primops.mstore(W256.of_int 288, VerifierConsts.G2_ELEMENTS_1_X2);
@@ -51,13 +51,13 @@ module FinalPairing = {
     Primops.mstore(W256.of_int 352, VerifierConsts.G2_ELEMENTS_1_Y2);
     _47 <@ Primops.gas();
     success <@ Primops.staticcall(_47, W256.of_int 8, W256.zero, W256.of_int 384, W256.zero, W256.of_int 32);
-    if ((bool_of_uint256 (PurePrimops.iszero success)))
+    if (bool_of_uint256 (PurePrimops.iszero success))
     {
       RevertWithMessage.low(W256.of_int 32, W256.of_int STRING (*finalPairing: precompile failure*));
     }
     
     _50 <@ Primops.mload(W256.zero);
-    if ((bool_of_uint256 (PurePrimops.iszero _50)))
+    if (bool_of_uint256 (PurePrimops.iszero _50))
     {
       RevertWithMessage.low(W256.of_int 29, W256.of_int STRING (*finalPairing: pairing failure*));
     }
@@ -73,7 +73,7 @@ lemma finalPairing_extracted_equiv_low:
     proof.
       proc.
       inline Primops.mstore Primops.mload.
-      seq 39 22 : (#pre /\ usr_u{1} = u{2} /\ _3{1} = W256.of_int Constants.R /\ _7{1} = W256.of_int 4736 /\ _12{1} = W256.of_int 4864 /\ _15{1} = W256.of_int 4896).
+      seq 39 22 : (#pre /\ usr_u{1} = u{2} /\ _3{1} = R_MOD /\ _7{1} = PAIRING_PAIR_WITH_GENERATOR_X_SLOT /\ _12{1} = PAIRING_PAIR_WITH_X_X_SLOT /\ _15{1} = PAIRING_PAIR_WITH_X_Y_SLOT).
       call pointNegate_extracted_equiv_low.
       call pointMulAndAddIntoDest_extracted_equiv_low.
       wp.

@@ -8,42 +8,43 @@ require import PointMulAndAddIntoDest.
 require import PurePrimops.
 require import UInt256.
 require import Verifier.
+require import VerifierConsts.
 require import YulPrimops.
 
 module PrepareQueries = {
   proc low(): unit = {
     var _1, zInDomainSize, currentZ, _3, _6, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ, _18, _21, eta', currentEta;
     _1 <- ();
-    zInDomainSize <@ Primops.mload(W256.of_int 4192);
+    zInDomainSize <@ Primops.mload(STATE_Z_IN_DOMAIN_SIZE);
     currentZ <- zInDomainSize;
-    _3 <@ Primops.mload(W256.of_int 2304);
-    Primops.mstore(W256.of_int 4288, _3);
-    _6 <@ Primops.mload(W256.of_int 2336);
-    Primops.mstore(W256.of_int 4320, _6);
-    PointMulAndAddIntoDest.low(W256.of_int 2368, zInDomainSize, W256.of_int 4288);
-    currentZ <- (PurePrimops.mulmod zInDomainSize zInDomainSize (W256.of_int Constants.R));
-    PointMulAndAddIntoDest.low(W256.of_int 2432, currentZ, W256.of_int 4288);
-    currentZ <- (PurePrimops.mulmod currentZ zInDomainSize (W256.of_int Constants.R));
-    PointMulAndAddIntoDest.low(W256.of_int 2496, currentZ, W256.of_int 4288);
-    stateOpening0AtZ <@ Primops.mload(W256.of_int 2560);
-    stateOpening1AtZ <@ Primops.mload(W256.of_int 2592);
-    stateOpening2AtZ <@ Primops.mload(W256.of_int 2624);
-    stateOpening3AtZ <@ Primops.mload(W256.of_int 2656);
-    MainGateLinearisationContributionWithV.low(W256.of_int 4352, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ);
-    AddAssignRescueCustomGateLinearisationContributionWithV.low(W256.of_int 4352, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ);
-    AddAssignPermutationLinearisationContributionWithV.low(W256.of_int 4352, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ);
-    AddAssignLookupLinearisationContributionWithV.low(W256.of_int 4352, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ);
-    _18 <@ Primops.mload(W256.of_int 1472);
-    Primops.mstore(W256.of_int 4416, _18);
-    _21 <@ Primops.mload(W256.of_int 1504);
-    Primops.mstore(W256.of_int 4448, _21);
-    eta' <@ Primops.mload(W256.of_int 3840);
+    _3 <@ Primops.mload(PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT);
+    Primops.mstore(QUERIES_AT_Z_0_X_SLOT, _3);
+    _6 <@ Primops.mload(PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT);
+    Primops.mstore(QUERIES_AT_Z_0_Y_SLOT, _6);
+    PointMulAndAddIntoDest.low(PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT, zInDomainSize, QUERIES_AT_Z_0_X_SLOT);
+    currentZ <- (PurePrimops.mulmod zInDomainSize zInDomainSize R_MOD);
+    PointMulAndAddIntoDest.low(PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT, currentZ, QUERIES_AT_Z_0_X_SLOT);
+    currentZ <- (PurePrimops.mulmod currentZ zInDomainSize R_MOD);
+    PointMulAndAddIntoDest.low(PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT, currentZ, QUERIES_AT_Z_0_X_SLOT);
+    stateOpening0AtZ <@ Primops.mload(PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT);
+    stateOpening1AtZ <@ Primops.mload(PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT);
+    stateOpening2AtZ <@ Primops.mload(PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT);
+    stateOpening3AtZ <@ Primops.mload(PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT);
+    MainGateLinearisationContributionWithV.low(QUERIES_AT_Z_1_X_SLOT, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ);
+    AddAssignRescueCustomGateLinearisationContributionWithV.low(QUERIES_AT_Z_1_X_SLOT, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ);
+    AddAssignPermutationLinearisationContributionWithV.low(QUERIES_AT_Z_1_X_SLOT, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ);
+    AddAssignLookupLinearisationContributionWithV.low(QUERIES_AT_Z_1_X_SLOT, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ);
+    _18 <@ Primops.mload(VK_LOOKUP_TABLE_0_X_SLOT);
+    Primops.mstore(QUERIES_T_POLY_AGGREGATED_X_SLOT, _18);
+    _21 <@ Primops.mload(VK_LOOKUP_TABLE_0_Y_SLOT);
+    Primops.mstore(QUERIES_T_POLY_AGGREGATED_Y_SLOT, _21);
+    eta' <@ Primops.mload(STATE_ETA_SLOT);
     currentEta <- eta';
-    PointMulAndAddIntoDest.low(W256.of_int 1536, eta', W256.of_int 4416);
-    currentEta <- (PurePrimops.mulmod eta' eta' (W256.of_int Constants.R));
-    PointMulAndAddIntoDest.low(W256.of_int 1600, currentEta, W256.of_int 4416);
-    currentEta <- (PurePrimops.mulmod currentEta eta' (W256.of_int Constants.R));
-    PointMulAndAddIntoDest.low(W256.of_int 1664, currentEta, W256.of_int 4416);
+    PointMulAndAddIntoDest.low(VK_LOOKUP_TABLE_1_X_SLOT, eta', QUERIES_T_POLY_AGGREGATED_X_SLOT);
+    currentEta <- (PurePrimops.mulmod eta' eta' R_MOD);
+    PointMulAndAddIntoDest.low(VK_LOOKUP_TABLE_2_X_SLOT, currentEta, QUERIES_T_POLY_AGGREGATED_X_SLOT);
+    currentEta <- (PurePrimops.mulmod currentEta eta' R_MOD);
+    PointMulAndAddIntoDest.low(VK_LOOKUP_TABLE_3_X_SLOT, currentEta, QUERIES_T_POLY_AGGREGATED_X_SLOT);
   }
 }.
 
