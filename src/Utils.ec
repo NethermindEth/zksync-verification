@@ -6,6 +6,19 @@ require import Logic.
 require import UInt256.
 import StdOrder.
 
+  (* option *)
+
+lemma exists_of_is_some ['a] (ov : 'a option) : is_some ov => exists (v : 'a), ov = Some v. progress. smt. qed.
+
+lemma is_none_iff_not_is_some (a: 'a option): is_none a <=> !is_some a.
+    proof.
+      case (a = None). smt (). smt ().
+  qed.
+
+lemma is_none_of_eq_none ['a] (o : 'a option) : o = None => is_none o. smt (). qed.
+
+lemma eq_none_of_is_none ['a] (o : 'a option) : is_none o => o = None. smt (). qed.
+
 (* Some potentially useful lemmas to prove mid-level specs *)
 
 lemma lt_trans : forall (a b c : int), a < b => b < c => a < c. progress. smt (). qed.
@@ -115,6 +128,31 @@ lemma overflow_lem (a b m : int) : a < m => b < m => m <= a + b => (a + b) %% m 
     progress.
     smt.
   qed.
+
+
+lemma neg_eq (a : uint256) : - a = W256.of_int (W256.modulus - W256.to_uint a).
+    smt.
+  qed.
+
+lemma uint256_eq (a : uint256) : a = - (- a).
+    smt (@W256).
+  qed.
+
+lemma uint256_zero_sub_eq_sub (a : uint256) : W256.zero - a = - a.
+    smt (@W256).
+  qed.
+
+lemma uint256_sub_zero_eq (a : uint256) : a - W256.zero = a.
+    smt (@W256).
+  qed.
+
+lemma uint256_sub_distr2 (a b c : uint256) : a - (b + c) = (a - c) - b.
+    smt (@W256).
+  qed.
+
+lemma uint256_le_le_trans (a b c : uint256) : a <= b => b <= c => a <= c. smt (@W256). qed.
+lemma uint256_le_lt_trans (a b c : uint256) : a <= b => b < c => a <= c. smt (@W256). qed.
+lemma uint256_lt_lt_trans (a b c : uint256) : a < b => b < c => a < c. smt (@W256). qed.
   
 lemma uint256_ord1 (a b c : uint256) : W256.to_uint a + W256.to_uint c <= W256.to_uint b => c <= b => a <= b - c.
     progress.
@@ -144,13 +182,7 @@ lemma uint256_ord2' (a b : uint256) : a < b => a <= a - b.
     have H1 := uint256_ord2 _ _ H.
     smt (@W256).
   qed.
-
-lemma neg_eq (a : uint256) : - a = W256.of_int (W256.modulus - W256.to_uint a).
-    smt.
-  qed.
-
-
-  
+    
 lemma uint256_ord3 (a b : uint256) : W256.zero < a => a < b => - b < - a.
     progress.
     rewrite neg_eq neg_eq.
@@ -159,12 +191,20 @@ lemma uint256_ord3 (a b : uint256) : W256.zero < a => a < b => - b < - a.
     rewrite of_uintK of_uintK.
     have HA : W256.to_uint a < W256.modulus. exact uint256_size.
     have HB : W256.to_uint b < W256.modulus. exact uint256_size.
-    have HA' : W256.modulus - to_uint a < W256.modulus. smt.
-    have HB' : W256.modulus - to_uint b < W256.modulus. smt.
+    have HA' : W256.modulus - to_uint a < W256.modulus. smt (@W256).
+    have HB' : W256.modulus - to_uint b < W256.modulus. smt (@W256).
     have HA'' : (W256.modulus - to_uint a) %% W256.modulus = W256.modulus - to_uint a. smt.
     have HB'' : (W256.modulus - to_uint b) %% W256.modulus = W256.modulus - to_uint b. smt.
     rewrite HA'' HB''.
     smt ().
+  qed.
+
+lemma uint256_ord3' (a b : uint256) : W256.zero < a => a < - b => b < - a.
+    progress.
+    rewrite (uint256_eq b).
+    apply uint256_ord3.
+    exact H.
+    exact H0.
   qed.
 
 lemma uint256_mod_eq_of_lt (a m : uint256) : a < m => a %% m = a.
@@ -388,6 +428,8 @@ lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
 lemma weaken_and_left (a b): a /\ b => a. proof. by smt(). qed.
 lemma weaken_and_right (a b): a /\ b => b. proof. by smt(). qed.
 
+lemma neg_none_eq_some ['a] (o : 'a option) : (!(is_none o)) = is_some o. smt (). qed.
+  
 require import Constants.
   
 lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.
