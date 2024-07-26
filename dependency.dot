@@ -4,7 +4,6 @@ digraph zk {
         addAssignLookupLinearisationContributionWithV
         updateAggregationChallenge1
         updateAggregationChallenge2
-        pointSubAssign
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
@@ -15,6 +14,7 @@ digraph zk {
         pointAddAssign
         evaluateLagrangePolyOutOfDomain
         pointMulAndAddIntoDest
+        pointSubAssign
     }
     { node [style=filled fillcolor="red"]   
         mainGateLinearisationContributionWithV
