@@ -74,10 +74,11 @@ lemma modexp_low_equiv_mid (memory: mem) (value256 power256: uint256):
       Primops.memory{1} = memory    
       ==>
       res{2} = W256.to_uint res{1} /\
+      0 <= res{2} < Constants.R /\
       !Primops.reverted{1} /\
       Primops.memory{1} = (modexp_memory_footprint memory value256 power256 res{1})
     ].
-    proof.
+proof.
     proc.
     (* work down to the staticcall *)
     pose mem_1 := PurePrimops.mstore memory W256.zero (W256.of_int 32).
@@ -124,6 +125,8 @@ lemma modexp_low_equiv_mid (memory: mem) (value256 power256: uint256):
     by smt.
     rewrite (pmod_small _ W256.modulus). by smt ().
     by reflexivity.
+    by smt().
+    by smt().
     rewrite /modexp_memory_footprint. simplify.
       rewrite /mem_6 /mem_5 /mem_4 /mem_3 /mem_2 /mem_1.
       do 5! (rewrite MemoryMap.store_store_swap_diff; [smt (@W256) | smt (@W256) | congr]).
@@ -131,12 +134,4 @@ lemma modexp_low_equiv_mid (memory: mem) (value256 power256: uint256):
       rewrite H_mem7_get0.
       reflexivity.
     qed.
-
-    
-    
-
-  
-
-
-
     
