@@ -248,37 +248,6 @@ have ->: inv{2} %% W256.modulus = inv{2}. by smt().
 rewrite mod_R_W256_mod_R. by smt().
 qed.
 
-(* lemma lagrange_pspec_mid (polyNum at: int) : *)
-(* phoare [ EvaluateLagrangePolyOutOfDomain.mid : *)
-(*       arg = (polyNum, at) *)
-(*       ==> *)
-(*       let opR = OMEGA ^ polyNum %% R in *)
-(*       let aDR = (at ^ DOMAIN_SIZE %% R - 1) %% R in *)
-(*       let inv = (DOMAIN_SIZE * (at - opR) %% R) ^ (R - 2) %% R in *)
-(*       (((at^DOMAIN_SIZE - 1) %% Constants.R <> 0 /\ res = Some ((opR * aDR) * inv %% R)) *)
-(*         \/ *)
-(*       ((at^DOMAIN_SIZE - 1) %% Constants.R = 0 /\ res = None)) *)
-(*     ] = 1%r. *)
-(* proof. proc. *)
-(* inline Modexp.mid; wp; skip. progress; by smt().  *)
-(* qed. *)
-
-op isSome ['a] (o : 'a option) : bool =
-   with o = None => false
-   with o = Some _ => true.
-
-(* lemma evaluateLagrangePolyOutOfDomain_mid'_equiv_mid (poly at: int): *)
-(* equiv [ *)
-(*     EvaluateLagrangePolyOutOfDomain.mid' ~ EvaluateLagrangePolyOutOfDomain.mid : *)
-(*       arg{1} = (poly, at) /\ arg{2} = (poly, at) *)
-(*       ==> *)
-(*       ={res} /\ *)
-(*       (((at^DOMAIN_SIZE - 1) %% R <> 0 /\ isSome res{2}) *)
-(*       \/ *)
-(*       ((at^DOMAIN_SIZE - 1) %% R = 0 /\ !(isSome res{2}))) *)
-(*     ]. *)
-(* proof. proc. inline Modexp.mid. wp. skip. progress; by smt(). qed. *)
-
 lemma evaluateLagrangePolyOutOfDomain_low_equiv_mid (memory : mem) (poly256 at256: uint256):
 equiv [
     EvaluateLagrangePolyOutOfDomain.low ~ EvaluateLagrangePolyOutOfDomain.mid :
@@ -311,9 +280,9 @@ arg{1} = (poly256, at256) /\
 arg{1} = (to_uint poly256, to_uint at256)%W256 /\ ={arg}
       ==>
       ={res} /\
-      ((((to_uint at256)^DOMAIN_SIZE - 1) %% R <> 0 /\ isSome res{2})
+      ((((to_uint at256)^DOMAIN_SIZE - 1) %% R <> 0 /\ is_some res{2})
       \/
-      (((to_uint at256)^DOMAIN_SIZE - 1) %% R = 0 /\ !(isSome res{2})))
+      (((to_uint at256)^DOMAIN_SIZE - 1) %% R = 0 /\ !(is_some res{2})))
 ).
 progress. exists (to_uint poly256, to_uint at256). by progress.
 progress. elim H0. progress. by smt(). by smt().
