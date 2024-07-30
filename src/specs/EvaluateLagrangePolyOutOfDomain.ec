@@ -39,7 +39,7 @@ module EvaluateLagrangePolyOutOfDomain = {
     return ret;
   }
   
-  proc mid(polyNum: int, at: int): int option = {
+  proc mid'(polyNum: int, at: int): int option = {
     var r, omegaPolyNum, atDomainSize, zd1, num, den, inv;
 
     omegaPolyNum <@ Modexp.mid(OMEGA,polyNum);
@@ -60,6 +60,28 @@ module EvaluateLagrangePolyOutOfDomain = {
     }  
     return r;
   }
+
+  proc mid(polyNum: int, at: int): int option = {
+    var r, omegaPolyNum, atDomainSize, zd1, num, den, inv;
+
+    omegaPolyNum <- (OMEGA^polyNum) %% R;
+    atDomainSize <- (at^DOMAIN_SIZE) %% R; 
+
+    zd1 <- (atDomainSize - 1) %% R;
+    if(zd1 = 0) { (* (at ^ DOMAIN_SIZE) - 1 = 0 *)
+      r <- None;
+    } else {
+      num <- (omegaPolyNum * zd1) %% R;
+      den <- (DOMAIN_SIZE * (at - omegaPolyNum)) %% R;
+      inv <- (den^(R - 2)) %% R;
+      r <- Some ((num * inv) %% R);
+      (* ((OMEGA ^ polyNum) * (atDomainSize - 1))
+        ----------------------------------------
+        (DOMAIN_SIZE * (at - (OMEGA ^ polyNum)))
+      *)
+    }  
+    return r;
+  }  
 }.
 
 lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
@@ -101,19 +123,19 @@ lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
 pred lagrange_memory_footprint (initial final : mem)  =
    exists (v1 v2 v3: uint256), final = modexp_memory_footprint initial v1 v2 v3.
 
-lemma evaluateLagrangePolyOutOfDomain_low_equiv_mid (memory : mem) (poly256 at256: uint256):
+lemma evaluateLagrangePolyOutOfDomain_low_equiv_mid' (memory : mem) (poly256 at256: uint256):
 equiv [
-    EvaluateLagrangePolyOutOfDomain.low ~ EvaluateLagrangePolyOutOfDomain.mid :
+    EvaluateLagrangePolyOutOfDomain.low ~ EvaluateLagrangePolyOutOfDomain.mid' :
       arg{1} = (poly256, at256) /\
       arg{2} = (to_uint poly256, to_uint at256)%W256 /\
       !Primops.reverted{1} /\
       Primops.memory{1} = memory
       ==>
-      (!Primops.reverted{1} /\
+      ((!Primops.reverted{1} /\
         lagrange_memory_footprint memory Primops.memory{1} /\
-        res{2} = Some (to_uint res{1})%W256)
+        res{2} = Some (to_uint res{1})%W256 /\ 0 <= to_uint res{1} < R)
       \/
-      (Primops.reverted{1} /\ res{2} = None)
+      (Primops.reverted{1} /\ res{2} = None))
     ].
 proof. proc.
     
@@ -216,19 +238,84 @@ rewrite /mulmod. progress. rewrite !W256.of_uintK !R_mod_W256_R.
 have ->: num{2} %% W256.modulus = num{2}. by smt().
 have ->: inv{2} %% W256.modulus = inv{2}. by smt().
 rewrite mod_R_W256_mod_R. by reflexivity.
+rewrite /mulmod. progress. rewrite !W256.of_uintK !R_mod_W256_R.
+have ->: num{2} %% W256.modulus = num{2}. by smt().
+have ->: inv{2} %% W256.modulus = inv{2}. by smt().
+rewrite mod_R_W256_mod_R. by smt().
+rewrite /mulmod. progress. rewrite !W256.of_uintK !R_mod_W256_R.
+have ->: num{2} %% W256.modulus = num{2}. by smt().
+have ->: inv{2} %% W256.modulus = inv{2}. by smt().
+rewrite mod_R_W256_mod_R. by smt().
 qed.
 
-lemma lagrange_pspec_mid (polyNum at: int) :
-phoare [ EvaluateLagrangePolyOutOfDomain.mid :
-      arg = (polyNum, at)
+(* lemma lagrange_pspec_mid (polyNum at: int) : *)
+(* phoare [ EvaluateLagrangePolyOutOfDomain.mid : *)
+(*       arg = (polyNum, at) *)
+(*       ==> *)
+(*       let opR = OMEGA ^ polyNum %% R in *)
+(*       let aDR = (at ^ DOMAIN_SIZE %% R - 1) %% R in *)
+(*       let inv = (DOMAIN_SIZE * (at - opR) %% R) ^ (R - 2) %% R in *)
+(*       (((at^DOMAIN_SIZE - 1) %% Constants.R <> 0 /\ res = Some ((opR * aDR) * inv %% R)) *)
+(*         \/ *)
+(*       ((at^DOMAIN_SIZE - 1) %% Constants.R = 0 /\ res = None)) *)
+(*     ] = 1%r. *)
+(* proof. proc. *)
+(* inline Modexp.mid; wp; skip. progress; by smt().  *)
+(* qed. *)
+
+op isSome ['a] (o : 'a option) : bool =
+   with o = None => false
+   with o = Some _ => true.
+
+lemma evaluateLagrangePolyOutOfDomain_mid'_equiv_mid (poly at: int):
+equiv [
+    EvaluateLagrangePolyOutOfDomain.mid' ~ EvaluateLagrangePolyOutOfDomain.mid :
+      arg{1} = (poly, at) /\ arg{2} = (poly, at)
       ==>
-      let opR = OMEGA ^ polyNum %% R in
-      let aDR = (at ^ DOMAIN_SIZE %% R - 1) %% R in
-      let inv = (DOMAIN_SIZE * (at - opR) %% R) ^ (R - 2) %% R in
-      ((at^DOMAIN_SIZE - 1) %% Constants.R <> 0 /\ res = Some ((opR * aDR) * inv %% R))
-        \/
-      ((at^DOMAIN_SIZE - 1) %% Constants.R = 0 /\ res = None)
-    ] = 1%r.
-proof. proc.
-inline Modexp.mid; wp; skip. progress; by smt(). 
-qed.
+      ={res} /\
+      (((at^DOMAIN_SIZE - 1) %% R <> 0 /\ isSome res{2})
+      \/
+      ((at^DOMAIN_SIZE - 1) %% R = 0 /\ !(isSome res{2})))
+    ].
+proof. proc. inline Modexp.mid. wp. skip. progress; by smt(). qed.
+
+lemma evaluateLagrangePolyOutOfDomain_low_equiv_mid (memory : mem) (poly256 at256: uint256):
+equiv [
+    EvaluateLagrangePolyOutOfDomain.low ~ EvaluateLagrangePolyOutOfDomain.mid :
+      arg{1} = (poly256, at256) /\
+      arg{2} = (to_uint poly256, to_uint at256)%W256 /\
+      !Primops.reverted{1} /\
+      Primops.memory{1} = memory
+      ==>
+      ((!Primops.reverted{1} /\ ((to_uint at256)^DOMAIN_SIZE - 1) %% R <> 0 /\
+        lagrange_memory_footprint memory Primops.memory{1} /\
+        res{2} = Some (to_uint res{1})%W256 /\ 0 <= to_uint res{1} < R)
+      \/
+      (Primops.reverted{1} /\ ((to_uint at256)^DOMAIN_SIZE - 1) %% R = 0 /\ res{2} = None))
+    ].
+proof.
+transitivity EvaluateLagrangePolyOutOfDomain.mid'
+(
+arg{1} = (poly256, at256) /\
+      arg{2} = (to_uint poly256, to_uint at256)%W256 /\
+      !Primops.reverted{1} /\
+      Primops.memory{1} = memory
+      ==>
+      ((!Primops.reverted{1} /\
+        lagrange_memory_footprint memory Primops.memory{1} /\
+        res{2} = Some (to_uint res{1})%W256 /\ 0 <= to_uint res{1} < R)
+      \/
+      (Primops.reverted{1} /\ res{2} = None))
+)
+(
+arg{1} = (to_uint poly256, to_uint at256)%W256 /\ ={arg}
+      ==>
+      ={res} /\
+      ((((to_uint at256)^DOMAIN_SIZE - 1) %% R <> 0 /\ isSome res{2})
+      \/
+      (((to_uint at256)^DOMAIN_SIZE - 1) %% R = 0 /\ !(isSome res{2})))
+).
+progress. exists (to_uint poly256, to_uint at256). by progress.
+progress. elim H0. progress. by smt(). by smt().
+apply evaluateLagrangePolyOutOfDomain_low_equiv_mid'.
+proc. inline Modexp.mid. wp. skip. progress. by smt(). by smt(). qed.
