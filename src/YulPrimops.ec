@@ -181,6 +181,10 @@ phoare [ Primops.mload :
       by progress.
   qed.
 
+lemma mload_pspec_revert :
+phoare [ Primops.mload : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; skip; by auto. qed.
+
 lemma mload_spec (memory: mem) (idx: uint256):
 hoare [ Primops.mload :
     arg = idx /\
@@ -211,6 +215,10 @@ phoare [ Primops.mstore :
       by progress.
     qed.
 
+lemma mstore_pspec_revert :
+phoare [ Primops.mstore : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; wp; skip; by auto. qed.
+    
 lemma mstore_spec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 hoare [ Primops.mstore :
@@ -238,6 +246,10 @@ lemma keccak256_pspec (off size: uint256):
       by progress.
   qed.
 
+lemma keccak256_pspec_revert :
+phoare [ Primops.keccak256 : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; wp; skip; by auto. qed.
+  
 lemma calldataload_pspec (idx: uint256):
     phoare [Primops.calldataload:
       arg = idx ==>
@@ -250,6 +262,10 @@ lemma calldataload_pspec (idx: uint256):
       by progress.
   qed.
 
+lemma calldataload_pspec_revert :
+phoare [ Primops.calldataload : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; wp; skip; by auto. qed.
+  
 lemma staticcall_modexp_spec (memory: mem) (a b c gas argOff retOff: uint256):
     hoare [ Primops.staticcall:
       arg = (gas, W256.of_int 5, argOff, W256.of_int 192, retOff, W256.of_int 32) /\
@@ -278,7 +294,7 @@ lemma staticcall_modexp_spec (memory: mem) (a b c gas argOff retOff: uint256):
       rewrite PurePrimops.modexpE.
       reflexivity.
   qed.
-
+  
 lemma staticcall_modexp_pspec (memory: mem) (a b c gas argOff retOff: uint256):
     phoare [ Primops.staticcall:
       arg = (gas, W256.of_int 5, argOff, W256.of_int 192, retOff, W256.of_int 32) /\
@@ -491,5 +507,8 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
       rewrite neg_none_eq_some in H5. smt ().
       rewrite neg_none_eq_some in H5. smt ().
   qed.
+lemma staticcall_pspec_revert :
+phoare [ Primops.staticcall : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; by progress. qed.
 
 end ConcretePrimops.
