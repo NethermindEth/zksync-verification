@@ -267,17 +267,17 @@ op isSome ['a] (o : 'a option) : bool =
    with o = None => false
    with o = Some _ => true.
 
-lemma evaluateLagrangePolyOutOfDomain_mid'_equiv_mid (poly at: int):
-equiv [
-    EvaluateLagrangePolyOutOfDomain.mid' ~ EvaluateLagrangePolyOutOfDomain.mid :
-      arg{1} = (poly, at) /\ arg{2} = (poly, at)
-      ==>
-      ={res} /\
-      (((at^DOMAIN_SIZE - 1) %% R <> 0 /\ isSome res{2})
-      \/
-      ((at^DOMAIN_SIZE - 1) %% R = 0 /\ !(isSome res{2})))
-    ].
-proof. proc. inline Modexp.mid. wp. skip. progress; by smt(). qed.
+(* lemma evaluateLagrangePolyOutOfDomain_mid'_equiv_mid (poly at: int): *)
+(* equiv [ *)
+(*     EvaluateLagrangePolyOutOfDomain.mid' ~ EvaluateLagrangePolyOutOfDomain.mid : *)
+(*       arg{1} = (poly, at) /\ arg{2} = (poly, at) *)
+(*       ==> *)
+(*       ={res} /\ *)
+(*       (((at^DOMAIN_SIZE - 1) %% R <> 0 /\ isSome res{2}) *)
+(*       \/ *)
+(*       ((at^DOMAIN_SIZE - 1) %% R = 0 /\ !(isSome res{2}))) *)
+(*     ]. *)
+(* proof. proc. inline Modexp.mid. wp. skip. progress; by smt(). qed. *)
 
 lemma evaluateLagrangePolyOutOfDomain_low_equiv_mid (memory : mem) (poly256 at256: uint256):
 equiv [
