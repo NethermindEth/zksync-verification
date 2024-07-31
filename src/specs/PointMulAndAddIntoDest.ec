@@ -74,7 +74,7 @@ qed.
 
 lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
     progress.
-    rewrite uint_256_cast_sub uint_256_cast_sub.
+    rewrite uint256_cast_sub uint256_cast_sub.
     apply uint256_le_of_le.
     rewrite to_uint_small. smt ().
     rewrite to_uint_small. smt ().
@@ -104,14 +104,14 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
     PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
     Primops.memory{1} = memory0 /\
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\ 0 <= x2v < p /\ 0 <= y2v < p /\
-      (of_int 128)%W256 < p1u /\
-      (of_int 128)%W256 < -p1u /\
-      (of_int 128)%W256 < p1u + (of_int 32)%W256 /\
-      (of_int 128)%W256 < - (p1u + (of_int 32)%W256) /\
-      (of_int 128)%W256 < destu /\
-      (of_int 128)%W256 < -destu /\
-      (of_int 128)%W256 < destu + (of_int 32)%W256 /\
-      (of_int 128)%W256 < - (destu + (of_int 32)%W256) /\
+      (of_int 128)%W256 <= p1u /\
+      (of_int 64)%W256 <= -p1u /\
+      (of_int 128)%W256 <= p1u + (of_int 32)%W256 /\
+      (of_int 32)%W256 <= - (p1u + (of_int 32)%W256) /\
+      (of_int 128)%W256 <= destu /\
+      (of_int 64)%W256 <= -destu /\
+      (of_int 128)%W256 <= destu + (of_int 32)%W256 /\
+      (of_int 32)%W256 <= - (destu + (of_int 32)%W256) /\
     PurePrimops.mload memory0 p1u = W256.of_int x1v /\
     PurePrimops.mload memory0 (p1u + W256.of_int 32) = W256.of_int y1v /\
     PurePrimops.mload memory0 destu = W256.of_int x2v /\
@@ -126,6 +126,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
           ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int (ZModField.asint x), W256.of_int (ZModField.asint y)) (W256.of_int x2v, W256.of_int y2v) /\
           exists (x' y' : F),
           ecAdd_precompile x y (ZModField.inzmod x2v) (ZModField.inzmod y2v) = Some (x', y') /\
+          res{2} = Some( F_to_int_point (x', y')) /\
           Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory0 W256.zero (W256.of_int (ZModField.asint x))) (W256.of_int 32) (W256.of_int (ZModField.asint y))) (W256.of_int 64) (W256.of_int x2v)) (W256.of_int 96) (W256.of_int y2v)) destu (W256.of_int (ZModField.asint x'))) (destu + W256.of_int 32) (W256.of_int (ZModField.asint y')) /\ 
           !Primops.reverted{1}
         )
@@ -146,10 +147,10 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
         seq 6 2 :
     (
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\ 0 <= x2v < p /\ 0 <= y2v < p /\
-      (of_int 128)%W256 < destu /\
-      (of_int 128)%W256 < -destu /\
-      (of_int 128)%W256 < destu + (of_int 32)%W256 /\
-      (of_int 128)%W256 < - (destu + (of_int 32)%W256) /\
+      (of_int 128)%W256 <= destu /\
+      (of_int 64)%W256 <= -destu /\
+      (of_int 128)%W256 <= destu + (of_int 32)%W256 /\
+      (of_int 32)%W256 <= - (destu + (of_int 32)%W256) /\
       PurePrimops.mload memory0 destu = W256.of_int x2v /\
       PurePrimops.mload memory0 (destu + W256.of_int 32) = W256.of_int y2v /\
       Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory0 W256.zero (W256.of_int x1v)) (W256.of_int 32) (W256.of_int y1v)) (W256.of_int 64) (W256.of_int sv) /\
@@ -170,10 +171,10 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
       (0 <= sv && sv < W256.modulus) /\
       (0 <= x2v && x2v < p) /\
       (0 <= y2v && y2v < p) /\
-        W256.of_int 128 < destu /\
-        W256.of_int 128 < -destu /\
-        W256.of_int 128 < destu + (W256.of_int 32) /\
-        W256.of_int 128 < - (destu + (W256.of_int 32)) /\
+        W256.of_int 128 <= destu /\
+        W256.of_int 64 <= -destu /\
+        W256.of_int 128 <= destu + (W256.of_int 32) /\
+        W256.of_int 32 <= - (destu + (W256.of_int 32)) /\
         PurePrimops.mload memory0 destu = W256.of_int x2v /\
         PurePrimops.mload memory0 (destu + (W256.of_int 32)) = W256.of_int y2v /\
       x1_F{2} = ZModField.inzmod x1v /\
@@ -205,10 +206,10 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
           (0 <= sv && sv < W256.modulus) /\
           (0 <= x2v && x2v < p) /\
           (0 <= y2v && y2v < p) /\
-          (of_int 128)%W256 < destu /\
-          (of_int 128)%W256 < -destu /\
-          (of_int 128)%W256 < destu + (W256.of_int 32) /\
-          (of_int 128)%W256 < - (destu + (W256.of_int 32)) /\
+          (of_int 128)%W256 <= destu /\
+          (of_int 64)%W256 <= -destu /\
+          (of_int 128)%W256 <= destu + (W256.of_int 32) /\
+          (of_int 32)%W256 <= - (destu + (W256.of_int 32)) /\
           PurePrimops.mload memory0 destu = W256.of_int x2v /\
           PurePrimops.mload memory0 (destu + (W256.of_int 32)) = (W256.of_int y2v) /\
             Primops.memory{1} =
@@ -317,40 +318,40 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
       
         rewrite MemoryMap.load_store_diff.
     
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
         rewrite to_uint_small. smt ().
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_eq_self. smt (). smt (). apply sub_mono_lt. smt (). exact J0. smt ().
 
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_plus.
         rewrite mod_eq_self. smt (). smt. smt. smt.
 
         rewrite MemoryMap.load_store_diff.
 
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_eq_self. smt (). smt (). smt. smt ().
 
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_plus.
         rewrite mod_eq_self. smt (). smt. smt. smt.
@@ -364,22 +365,22 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
 
         have J0 : dest{1} + (of_int 32)%W256 - (of_int 64)%W256 = dest{1} - (of_int 32)%W256. smt (@Utils @W256).
         rewrite J0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J1 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_eq_self. smt (). smt (). smt. smt ().
 
         have K0 : (of_int 64)%W256 - (dest{1} + (of_int 32)%W256) = (W256.of_int 32) - dest{1}.
         rewrite uint256_distrib_sub. smt (@W256 @Utils).
         rewrite K0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_plus.
         rewrite mod_eq_self. smt (). smt. smt. smt.
@@ -388,22 +389,22 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
     
         have J0 : dest{1} + (of_int 32)%W256 - (of_int 64)%W256 = dest{1} - (of_int 32)%W256. smt (@Utils @W256).
         rewrite J0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J1 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_eq_self. smt (). smt (). smt. smt ().
 
         have K0 : (of_int 64)%W256 - (dest{1} + (of_int 32)%W256) = (W256.of_int 32) - dest{1}.
         rewrite uint256_distrib_sub. smt (@W256 @Utils).
         rewrite K0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
-        have H9' : 128 < to_uint dest{1}. smt (@W256 @Utils).
+        have H9' : 128 <= to_uint dest{1}. smt (@W256 @Utils).
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_plus.
         rewrite mod_eq_self. smt (). smt. smt. smt.
