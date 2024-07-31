@@ -289,7 +289,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
       
         rewrite MemoryMap.load_store_diff.
     
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
@@ -298,7 +298,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_eq_self. smt (). smt (). apply sub_mono_lt. smt (). exact J0. smt ().
 
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
@@ -310,7 +310,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
 
         rewrite MemoryMap.load_store_diff.
 
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
@@ -318,7 +318,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
         have J0 : to_uint dest{1} < W256.modulus. apply uint256_size.
         rewrite mod_eq_self. smt (). smt (). smt. smt ().
 
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
@@ -336,7 +336,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
 
         have J0 : dest{1} + (of_int 32)%W256 - (of_int 64)%W256 = dest{1} - (of_int 32)%W256. smt (@Utils @W256).
         rewrite J0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
@@ -347,7 +347,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
         have K0 : (of_int 64)%W256 - (dest{1} + (of_int 32)%W256) = (W256.of_int 32) - dest{1}.
         rewrite uint256_distrib_sub. smt (@W256 @Utils).
         rewrite K0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().
@@ -360,7 +360,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
     
         have J0 : dest{1} + (of_int 32)%W256 - (of_int 64)%W256 = dest{1} - (of_int 32)%W256. smt (@Utils @W256).
         rewrite J0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt (@IntDiv @W256).
@@ -371,7 +371,7 @@ lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : 
         have K0 : (of_int 64)%W256 - (dest{1} + (of_int 32)%W256) = (W256.of_int 32) - dest{1}.
         rewrite uint256_distrib_sub. smt (@W256 @Utils).
         rewrite K0.
-        rewrite Utils.uint_256_cast_sub.
+        rewrite Utils.uint256_cast_sub.
         apply uint256_le_of_le.
         rewrite to_uint_small. smt ().
         rewrite to_uint_small. smt ().

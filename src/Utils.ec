@@ -387,7 +387,7 @@ lemma neq_of_diff (idx idx2: uint256):
 
 lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
     progress.
-    rewrite uint_256_cast_sub uint_256_cast_sub.
+    rewrite uint256_cast_sub uint256_cast_sub.
     apply uint256_le_of_le.
     rewrite to_uint_small. smt ().
     rewrite to_uint_small. smt ().
