@@ -70,7 +70,47 @@ proof.
   inline*. wp. skip. by progress.
   inline*. wp. skip. by progress.
 qed.
+<<<<<<< HEAD
   
+=======
+
+
+lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
+    progress.
+    rewrite uint_256_cast_sub uint_256_cast_sub.
+    apply uint256_le_of_le.
+    rewrite to_uint_small. smt ().
+    rewrite to_uint_small. smt ().
+    have H'  := uint256_le_of_le' _ _ H.
+    have H0' := uint256_le_of_le' _ _ H0.
+    pose av := W256.to_uint a.
+    pose bv := W256.to_uint b.
+    pose cv := W256.to_uint c.
+    have H1' : cv <= bv. smt ().
+    have HA : av < W256.modulus. exact (uint256_size _).
+    have HB : bv < W256.modulus. exact (uint256_size _).
+    have HC : cv < W256.modulus. exact (uint256_size _).
+    have HA' : 0 <= av. smt (@W256).
+    have HB' : 0 <= bv. smt (@W256).
+    have HC' : 0 <= cv. smt (@W256).
+    rewrite mod_eq_self. smt (). smt ().
+    apply (StdOrder.IntOrder.ler_lt_trans av).
+    smt (). exact HA.
+    rewrite mod_eq_self. smt (). smt ().
+    have INT : bv - cv <= bv. smt ().
+    apply (StdOrder.IntOrder.ler_lt_trans bv).
+    smt (). exact HB.
+    smt ().
+  qed.
+
+pred staticcall_pointMulAndAddIntoDest_should_succeed (p1 p2 : uint256 * uint256) =
+  ConcretePrimops.point_wellformed p1 /\
+  ConcretePrimops.point_wellformed p2 /\
+  ConcretePrimops.point_oncurve p1 /\
+  ConcretePrimops.point_oncurve p2 /\
+  is_some (ecAdd_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (ZModField.inzmod(to_uint p2.`1)) (ZModField.inzmod(to_uint p2.`2))).
+
+>>>>>>> c7edb8f (WIP)
 lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
     Primops.memory{1} = memory0 /\
