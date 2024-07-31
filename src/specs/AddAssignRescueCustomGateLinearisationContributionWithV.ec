@@ -80,6 +80,10 @@ equiv [
       W256.to_uint low_stateOpening1AtZ = mid_stateOpening1AtZ /\
       W256.to_uint low_stateOpening2AtZ = mid_stateOpening2AtZ /\
       W256.to_uint low_stateOpening3AtZ = mid_stateOpening3AtZ /\
+      0 <= mid_stateOpening0AtZ < Constants.R /\
+      0 <= mid_stateOpening1AtZ < Constants.R /\
+      0 <= mid_stateOpening2AtZ < Constants.R /\
+      0 <= mid_stateOpening3AtZ < Constants.R /\
       0 <= mid_point.`1 < Constants.Q /\
       0 <= mid_point.`2 < Constants.Q /\
       0 <= mid_vk_gate_selector_1.`1 < Constants.Q /\
@@ -156,11 +160,14 @@ equiv [
           do rewrite H_add.
           do rewrite Utils.uint256_cast_sub. do rewrite W256.of_uintK. rewrite - /Constants.R.
           (* PICKUP HERE *)
-      
+          have H_mul: forall(a b c: int), (a %% b * c) %% b = (a * c) %% b by smt (@IntDiv).
+          do rewrite H_mul.
+          do 6! (rewrite (pmod_small _ W256.modulus); first smt (@IntDiv @W256)).
+          rewrite - /o1. rewrite - /o2. rewrite - /o3. smt (@IntDiv).
           smt ().
           smt ().
-          case H40; first last. by progress.
-          progress. case H41; first last. by progress.
+          case H47; first last. by progress.
+          progress. case H48; first last. by progress.
           progress.
           rewrite /addAssignRescue_memory_footprint.
           exists (F_to_int_point (x', y')).
@@ -170,5 +177,3 @@ equiv [
           exists (W256.of_int point{2}.`2).
           by progress.
       qed.
-
-lemma n_equiv: 
