@@ -2,18 +2,23 @@ pragma Goals:printall.
 
 require import AllCore.
 require import Array.
+require import EllipticCurve.
 require import Logic.
 require import UInt256.
 import StdOrder.
 
   (* option *)
 
-lemma exists_of_is_some ['a] (ov : 'a option) : is_some ov => exists (v : 'a), ov = Some v. progress. smt. qed.
+lemma exists_of_is_some ['a] (ov : 'a option) : is_some ov => exists (v : 'a), ov = Some v. progress. smt (). qed.
 
+lemma odflt_some_eq ['a] (a b : 'a) : odflt a (Some b) = b. smt (). qed.
+  
 lemma is_none_iff_not_is_some (a: 'a option): is_none a <=> !is_some a.
     proof.
       case (a = None). smt (). smt ().
   qed.
+
+lemma neg_none_eq_some ['a] (o : 'a option) : (!(is_none o)) = is_some o. smt (). qed.
 
 lemma is_none_of_eq_none ['a] (o : 'a option) : o = None => is_none o. smt (). qed.
 
@@ -30,7 +35,9 @@ lemma mod_m_lt_m :
 
 lemma mod_eq_self : forall (a m : int), 0 < m => 0 <= a => a < m => a %% m = a.
     smt ().
-    qed.
+  qed.
+
+lemma mod_plus : forall (a m : int), a %% m = (a + m) %% m. progress. smt (@IntDiv). qed.
 
 lemma mod_mod_eq_mod :
     forall (m1 m2 v : int), 0 < m1 => m1 <= m2 => (v %% m1) %% m2 = v %% m1.
@@ -38,11 +45,18 @@ lemma mod_mod_eq_mod :
     smt ().
   qed.
 
+lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt(). qed.
+
+ (* tuples *)
+lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
+lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
   
 (* uint256 lemmas *)
 
 lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
 
+lemma uint256_distrib_sub (a b c : uint256) : a - (b + c) = (a - c) - b. smt (@W256). qed.
+    
 lemma neq_small (x y: int):
     0 <= x < W256.modulus =>
     0 <= y < W256.modulus =>
@@ -131,7 +145,7 @@ lemma overflow_lem (a b m : int) : a < m => b < m => m <= a + b => (a + b) %% m 
 
 
 lemma neg_eq (a : uint256) : - a = W256.of_int (W256.modulus - W256.to_uint a).
-    smt.
+    smt timeout=10.
   qed.
 
 lemma uint256_eq (a : uint256) : a = - (- a).
@@ -369,7 +383,35 @@ lemma neq_of_diff (idx idx2: uint256):
       have H_add_zero: idx2 <> idx + W256.zero by exact add_neq_of_diff.
       rewrite addr0_s in H_add_zero.
       assumption.
-    qed.
+  qed.
+
+lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
+    progress.
+    rewrite uint_256_cast_sub uint_256_cast_sub.
+    apply uint256_le_of_le.
+    rewrite to_uint_small. smt ().
+    rewrite to_uint_small. smt ().
+    have H'  := uint256_le_of_le' _ _ H.
+    have H0' := uint256_le_of_le' _ _ H0.
+    pose av := W256.to_uint a.
+    pose bv := W256.to_uint b.
+    pose cv := W256.to_uint c.
+    have H1' : cv <= bv. smt ().
+    have HA : av < W256.modulus. exact (uint256_size _).
+    have HB : bv < W256.modulus. exact (uint256_size _).
+    have HC : cv < W256.modulus. exact (uint256_size _).
+    have HA' : 0 <= av. smt (@W256).
+    have HB' : 0 <= bv. smt (@W256).
+    have HC' : 0 <= cv. smt (@W256).
+    rewrite mod_eq_self. smt (). smt ().
+    apply (StdOrder.IntOrder.ler_lt_trans av).
+    smt (). exact HA.
+    rewrite mod_eq_self. smt (). smt ().
+    have INT : bv - cv <= bv. smt ().
+    apply (StdOrder.IntOrder.ler_lt_trans bv).
+    smt (). exact HB.
+    smt ().
+  qed.
 
 lemma shl_zero (x: uint256):
     x `<<<` 0 = x.
@@ -425,12 +467,15 @@ lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
     smt ().
   qed.
 
+(* logic *)
+  
 lemma weaken_and_left (a b): a /\ b => a. proof. by smt(). qed.
 lemma weaken_and_right (a b): a /\ b => b. proof. by smt(). qed.
-
-lemma neg_none_eq_some ['a] (o : 'a option) : (!(is_none o)) = is_some o. smt (). qed.
   
 require import Constants.
   
 lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.
 lemma R_mod_W256_R : R %% W256.modulus = R. by smt(). qed.      
+
+ (* Finite field lemmas *)
+lemma F_eq_inzmod_asint (x : F) : ZModField.inzmod (ZModField.asint x) = x. smt (@ZModField). qed.
