@@ -63,8 +63,7 @@ axiom ecMul_def (x y : F) (s : int) (p : g):
 axiom ecMul_fail (x y : F) (s : int) :
   !(on_curve (x, y)) => ecMul_precompile x y s = None.
 
-lemma ec_add_result_on_curve :
-    forall (x1 y1 x2 y2 x3 y3 : F),
+lemma ec_add_result_on_curve (x1 y1 x2 y2 x3 y3 : F):
     ecAdd_precompile x1 y1 x2 y2 = Some (x3, y3) =>
     on_curve (x3, y3).
     progress.
@@ -79,8 +78,7 @@ lemma ec_add_result_on_curve :
     rewrite -H''. exact (aspoint_on_curve (p1 + p2)).
   qed.
     
-lemma ec_mul_result_on_curve :
-    forall (x1 y1 x2 y2 : F) (s : int),
+lemma ec_mul_result_on_curve (x1 y1 x2 y2 : F) (s : int) :
     ecMul_precompile x1 y1 s = Some (x2, y2) =>
     on_curve (x2, y2).
     progress.
