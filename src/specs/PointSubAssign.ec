@@ -12,6 +12,7 @@ require import UInt256.
 require import Utils.
 require import YulPrimops.
 require import Verifier.
+require import VerifierConsts.
 
 module PointSubAssign = {
   proc low(p1, p2) =
@@ -24,7 +25,7 @@ module PointSubAssign = {
     _6 <@ Primops.mload(p2);
     Primops.mstore(W256.of_int 64, _6);
     _9  <@ Primops.mload(p2 + W256.of_int 32);
-    Primops.mstore(W256.of_int 96, W256.of_int Constants.Q - _9);
+    Primops.mstore(W256.of_int 96, Q_MOD - _9);
     _15 <@ Primops.gas();
     _16 <@ Primops.staticcall(_15, W256.of_int 6, W256.zero, W256.of_int 128, p1, W256.of_int 64);
     if ((bool_of_uint256 (PurePrimops.iszero _16)))
