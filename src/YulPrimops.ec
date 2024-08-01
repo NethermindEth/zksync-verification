@@ -1,5 +1,5 @@
 pragma Goals:printall.
-prover timeout=100.
+prover timeout=10.
 
 require import AllCore.
 require import Array.
@@ -63,7 +63,7 @@ module Primops = {
       var base, exp, mod;
       var x1, y1, x2, y2;
       var s;
-      var s_F;
+      var sv;
       var x1_F, y1_F, x2_F, y2_F;
       var result;
       var result_unwrap;
@@ -119,14 +119,14 @@ module Primops = {
               s <@ mload(argOff + W256.of_int 64);
               x1_F <- ZModField.inzmod (W256.to_uint x1);
               y1_F <- ZModField.inzmod (W256.to_uint y1);
-              s_F <- ZModField.inzmod (W256.to_uint s);
+              sv <- W256.to_uint s;
               if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
                 succ <- W256.zero;
               } else {
                 if (!(on_curve (x1_F, y1_F))) {
                   succ <- W256.zero;
                 } else {
-                  result <- ecMul_precompile x1_F y1_F s_F;
+                  result <- ecMul_precompile x1_F y1_F sv;
                   if (is_none result) {
                     succ <- W256.zero;
                   } else {
@@ -320,11 +320,6 @@ lemma staticcall_modexp_pspec (memory: mem) (a b c gas argOff retOff: uint256):
       rewrite PurePrimops.modexpE.
       reflexivity.
   qed.
-  
-lemma is_none_iff_not_is_some (a: 'a option): is_none a <=> !is_some a.
-    proof.
-      case (a = None). smt (). smt ().
-    qed.
 
 pred point_wellformed (pnt: uint256*uint256) =
     pnt.`1 = pnt.`1 %% W256.of_int p /\
@@ -404,5 +399,117 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
 lemma staticcall_pspec_revert :
 phoare [ Primops.staticcall : Primops.reverted ==> Primops.reverted ] = 1%r.
 proof. proc; inline*; wp; by progress. qed.
+
+lemma ecAdd_precomp_is_some_of_should_succeed (p1 p2 : uint256 * uint256) :
+    staticcall_ec_add_should_succeed p1 p2 =>
+    is_some
+    (ecAdd_precompile
+      (ZModField.inzmod (W256.to_uint p1.`1))
+      (ZModField.inzmod (W256.to_uint p1.`2))
+      (ZModField.inzmod (W256.to_uint p2.`1))
+      (ZModField.inzmod (W256.to_uint p2.`2))
+    ). progress. smt (). qed.
+
+lemma ecAdd_precomp_is_none_of_should_not_succeed (p1 p2 : uint256 * uint256) :
+    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\
+      (W256.to_uint p2.`1) < p /\ W256.to_uint p2.`2 < p /\ 
+    ! (staticcall_ec_add_should_succeed p1 p2)) =>
+    is_none
+      (ecAdd_precompile
+        ((ZModField.inzmod (W256.to_uint p1.`1)))
+        ((ZModField.inzmod (W256.to_uint p1.`2)))
+        ((ZModField.inzmod (W256.to_uint p2.`1)))
+        ((ZModField.inzmod (W256.to_uint p2.`2)))
+      ). progress.
+          admit.
+     qed.
+    
+pred staticcall_ec_mul_should_succeed (p : uint256 * uint256) (s : uint256) =
+    point_wellformed p /\
+    point_oncurve p /\
+    is_some (ecMul_precompile (ZModField.inzmod(to_uint p.`1)) (ZModField.inzmod(to_uint p.`2)) (to_uint s)).
+
+op ecMul_precompile_unsafe_cast (p : uint256 * uint256) (s : uint256) : (uint256*uint256) =
+  let x = ZModField.inzmod(to_uint p.`1) in
+  let y = ZModField.inzmod(to_uint p.`2) in
+  let ret = ecMul_precompile x y (W256.to_uint s) in
+  let ret_unwrapped = odflt (ZModField.zero, ZModField.zero) ret in
+  let x_ret = W256.of_int (ZModField.asint ret_unwrapped.`1) in
+  let y_ret = W256.of_int (ZModField.asint ret_unwrapped.`2) in
+  (x_ret,y_ret).
+
+lemma ecMul_precomp_is_some_of_should_succeed (p : uint256 * uint256) (s : uint256) :
+    staticcall_ec_mul_should_succeed p s =>
+    is_some
+      (ecMul_precompile ((ZModField.inzmod (W256.to_uint p.`1)))
+         ((ZModField.inzmod (to_uint p.`2)))
+         (to_uint s)). progress. smt (). qed.
+
+lemma ecMul_precomp_is_none_of_should_not_succeed (p1 : uint256 * uint256) (s : uint256) :
+    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\ 
+    ! (staticcall_ec_mul_should_succeed p1 s)) =>
+    is_none
+      (ecMul_precompile ((ZModField.inzmod (W256.to_uint p1.`1)))
+         ((ZModField.inzmod (to_uint p1.`2)))
+         (to_uint s)). progress.
+           have H2 :
+       (
+         ! point_wellformed p1 \/
+         ! point_oncurve p1 \/
+         ! is_some (ecMul_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (to_uint s))
+       ). smt ().
+           case H2.
+           progress. rewrite /point_wellformed in H2.
+           have H3 : (p1.`1 <> p1.`1 %% (of_int p)%W256 \/ p1.`2 <> p1.`2 %% (of_int p)%W256). smt ().
+           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H.
+           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H0. smt ().
+       move=> [J | J'].
+           rewrite /point_oncurve in J.
+           apply is_none_of_eq_none.
+           apply ecMul_fail. exact J.
+           rewrite is_none_iff_not_is_some.
+           exact J'.
+     qed.
+       
+     
+lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256) (argOff retOff: uint256):
+    phoare [ Primops.staticcall :
+      arg = (gas, W256.of_int 7, argOff, W256.of_int 96, retOff, W256.of_int 64) /\
+      Primops.memory = memory /\
+      p.`1 = PurePrimops.mload memory argOff /\
+      p.`2 = PurePrimops.mload memory (argOff + W256.of_int 32) /\
+      s = PurePrimops.mload memory (argOff + W256.of_int 64)
+      ==>
+      ((staticcall_ec_mul_should_succeed p s) => (
+        res = W256.one /\
+        Primops.memory = PurePrimops.mstore
+          (PurePrimops.mstore
+            memory
+            retOff
+            (ecMul_precompile_unsafe_cast p s).`1
+          )
+          (retOff + W256.of_int 32)
+          (ecMul_precompile_unsafe_cast p s).`2
+      )) /\
+      ((!staticcall_ec_mul_should_succeed p s) => res = W256.zero /\ Primops.memory = memory)
+    ] = 1%r.
+    proof.
+      proc.
+
+      inline *. wp. skip. progress.
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). 
+
+
+      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
+      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
+      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
+
+      rewrite neg_none_eq_some in H5. smt ().
+      rewrite neg_none_eq_some in H5. smt ().
+  qed.
 
 end ConcretePrimops.
