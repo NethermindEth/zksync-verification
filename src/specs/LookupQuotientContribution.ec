@@ -264,7 +264,7 @@ seq 1 1:(
   to_uint ret{1} = f{2} /\
   f{2} = (proofLookupSPolyOpeningAtZOmegaSlot{2} * stateBetaLookupSlot{2} + betaGamma{2}) %% Constants.R
 ).
-wp. skip. progress. rewrite /addmod H5 H3 H2. progress. smt.
+wp. skip. progress. rewrite /addmod H5 H3 H2. progress. smt timeout=10.
 
 seq 1 0: (#pre /\ to_uint _10{1} = proofLookupGrandProductOpeningAtZOmegaSlot{2}).
 call{1} (ConcretePrimops.mload_pspec m2 PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT).
@@ -753,3 +753,5 @@ have ->: (lala - to_uint subtrahend{1}) %% Constants.R = (lala + (Constants.R - 
 rewrite to_uintB. smt timeout=10. rewrite /lala H14. smt.
 smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt().
 qed.
+
+end section.
