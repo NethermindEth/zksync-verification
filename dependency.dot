@@ -1,9 +1,10 @@
 digraph zk {
     { node [style=filled fillcolor="blue"]  
-        lookupQuotientContribution
         addAssignLookupLinearisationContributionWithV
         updateAggregationChallenge1
         updateAggregationChallenge2
+        verifyQuotientEvaluation
+        addAssignPermutationLinearisationContributionWithV
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
@@ -15,12 +16,11 @@ digraph zk {
         evaluateLagrangePolyOutOfDomain
         pointMulAndAddIntoDest
         pointSubAssign
+        lookupQuotientContribution
+        addAssignRescueCustomGateLinearisationContributionWithV
     }
     { node [style=filled fillcolor="red"]   
         mainGateLinearisationContributionWithV
-        verifyQuotientEvaluation
-        addAssignPermutationLinearisationContributionWithV
-        addAssignRescueCustomGateLinearisationContributionWithV
         finalPairing
         getTranscriptChallenge
         initializeTranscript
