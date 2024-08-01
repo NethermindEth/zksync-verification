@@ -19,9 +19,6 @@ require import VerifierConsts.
 
 import MemoryMap.
 
-op to_point (p: int*int): (F*F) = (ZModField.inzmod p.`1, ZModField.inzmod p.`2).
-op from_point (p: F*F): int*int = (ZModField.asint p.`1, ZModField.asint p.`2).
-
 module PointSubAssign = {
   proc low(p1, p2) =
   {
