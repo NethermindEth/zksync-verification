@@ -286,7 +286,7 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
           rewrite store_store_same. rewrite (store_store_swap_diff mem_2 _ _ _ _). smt (@W256 @Utils). smt (@W256 @Utils).
           rewrite /mem_2 /mem_1. rewrite - /point1_x. rewrite - /point1_y.
           rewrite store_store_same.
-          exists (topoint (odflt (ZModField.zero, ZModField.zero) result{2})).
+          exists (F_to_int_point (odflt (ZModField.zero, ZModField.zero) result{2})).
           exists x2{1}.
           exists y2{1}.
           progress.
