@@ -4,6 +4,7 @@ require import Array.
 require import EllipticCurve.
 require import Logic.
 require import Memory.
+require import PointAddIntoDest.
 require import PurePrimops.
 require import Real.
 require import RevertWithMessage.
@@ -45,4 +46,23 @@ proof.
   seq 1 1: (#pre /\ tmp77{1} = _14{2}).
   inline*. wp. skip. by progress.
   inline*. wp. skip. by progress.
-qed. 
+qed.
+
+lemma pointAddAssign_low_equiv_into_dest :
+equiv [
+    PointAddAssign.low ~ PointAddIntoDest.low:
+      arg{2} = (arg{1}.`1, arg{1}.`2, arg{1}.`1) /\
+      ={glob PointAddAssign} ==>
+      (Primops.reverted{1} /\ Primops.reverted{2}) \/
+      ={glob PointAddAssign}
+    ].
+    proof.
+      proc.
+      seq 9 9: (={glob PointAddAssign} /\ ={_13} /\ p1{1} = dest{2}).
+      inline Primops.mload Primops.mstore Primops.gas. sp. skip. by progress.
+      seq 1 1: (#pre /\ ={_14}).
+      inline*. wp. skip. by progress.
+      if. by progress.
+      inline*. wp. skip. by progress.
+      skip. by progress.
+    qed.
