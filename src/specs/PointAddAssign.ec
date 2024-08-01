@@ -13,11 +13,6 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
-import MemoryMap.
-
-op to_point (p: int*int): (F*F) = (ZModField.inzmod p.`1, ZModField.inzmod p.`2).
-op from_point (p: F*F): int*int = (ZModField.asint p.`1, ZModField.asint p.`2).
-
 module PointAddAssign = {
   proc low(p1, p2) = {
     var _1, _5, _6, _9, _13, _14;

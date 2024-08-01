@@ -396,6 +396,10 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
       wp. skip. by progress.
     qed.
 
+lemma staticcall_pspec_revert :
+phoare [ Primops.staticcall : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; by progress. qed.
+
 lemma ecAdd_precomp_is_some_of_should_succeed (p1 p2 : uint256 * uint256) :
     staticcall_ec_add_should_succeed p1 p2 =>
     is_some
@@ -507,8 +511,5 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
       rewrite neg_none_eq_some in H5. smt ().
       rewrite neg_none_eq_some in H5. smt ().
   qed.
-lemma staticcall_pspec_revert :
-phoare [ Primops.staticcall : Primops.reverted ==> Primops.reverted ] = 1%r.
-proof. proc; inline*; wp; by progress. qed.
 
 end ConcretePrimops.
