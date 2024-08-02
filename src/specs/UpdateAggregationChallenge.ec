@@ -64,26 +64,109 @@ op UpdateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZXSlo
 lemma diff_96 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 96.
     proof.
       progress.
-      smt (@W256 @Utils).
+      rewrite Utils.uint256_cast_sub of_uintK.
+      have ->: 96 %% W256.modulus = 96. smt ().
+      have H'  : W256.to_uint a < W256.modulus. exact uint256_size.
+      have H'' : 128 <= W256.to_uint a.
+      have T' : 128 %% W256.modulus = 128. smt ().
+      have T := Utils.uint256_le_of_le' _ _ H.
+      rewrite of_uintK in T.
+      rewrite T' in T.
+      exact T.
+      have J : to_uint a - 96 < to_uint a. smt (). 
+      have ->: (to_uint a - 96) %% W256.modulus = to_uint a - 96.
+      rewrite Utils.mod_eq_self. smt (). smt ().
+      exact (lt_trans  _ _ _ J H').
+      reflexivity.
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      rewrite Utils.mod_eq_self. smt (). smt ().
+      exact (lt_trans _ _ _ J H').
+      smt ().
   qed.
+  
 lemma diff_64 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 64.
     proof.
       progress.
-      smt (@W256 @Utils).
+      rewrite Utils.uint256_cast_sub of_uintK.
+      have ->: 64 %% W256.modulus = 64. smt ().
+      have H'  : W256.to_uint a < W256.modulus. exact uint256_size.
+      have H'' : 128 <= W256.to_uint a.
+      have T' : 128 %% W256.modulus = 128. smt ().
+      have T := Utils.uint256_le_of_le' _ _ H.
+      rewrite of_uintK in T.
+      rewrite T' in T.
+      exact T.
+      have J : to_uint a - 64 < to_uint a. smt (). 
+      have ->: (to_uint a - 64) %% W256.modulus = to_uint a - 64.
+      rewrite Utils.mod_eq_self. smt (). smt ().
+      exact (lt_trans  _ _ _ J H').
+      reflexivity.
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      rewrite Utils.mod_eq_self. smt (). smt ().
+      exact (lt_trans _ _ _ J H').
+      smt ().
   qed.
+  
 lemma diff_32 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 32.
     proof.
       progress.
-      smt (@W256 @Utils).
+      rewrite Utils.uint256_cast_sub of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      have H'  : W256.to_uint a < W256.modulus. exact uint256_size.
+      have H'' : 128 <= W256.to_uint a.
+      have T' : 128 %% W256.modulus = 128. smt ().
+      have T := Utils.uint256_le_of_le' _ _ H.
+      rewrite of_uintK in T.
+      rewrite T' in T.
+      exact T.
+      have J : to_uint a - 32 < to_uint a. smt (). 
+      have ->: (to_uint a - 32) %% W256.modulus = to_uint a - 32.
+      rewrite Utils.mod_eq_self. smt (). smt ().
+      exact (lt_trans  _ _ _ J H').
+      reflexivity.
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      rewrite Utils.mod_eq_self. smt (). smt ().
+      exact (lt_trans _ _ _ J H').
+      smt ().
   qed.
+
 lemma diff_0 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.zero.
     proof.
       progress.
-      smt (@W256 @Utils).
+      have J : 128 %% W256.modulus = 128. smt ().
+      have H' := uint256_le_of_le' _ _ H.
+      rewrite of_uintK J in H'.
+      apply uint256_le_of_le.
+      rewrite uint256_sub_zero_eq of_uintK.
+      smt ().
   qed.
+
+prover timeout=10.
+  
 lemma diff_neg_96 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W256.of_int 32 <= W256.of_int 96 - a.
     proof.
       progress.
+    (*   have H' := uint256_le_of_le' _ _ H. *)
+    (*   have H0' := uint256_le_of_le' _ _ H0. *)
+    (*   rewrite of_uintK in H'. *)
+    (*   rewrite of_uintK in H0'. *)
+    (*   rewrite uint256_cast_sub. *)
+    (*   rewrite of_uintK. *)
+    (*   have ->: 96 %% W256.modulus = 96. smt (). *)
+    (*   apply uint256_le_of_le. *)
+    (*   rewrite of_uintK of_uintK mod_mod_eq_mod'. *)
+    (*   have ->: 32 %% W256.modulus = 32. smt (). *)
+    (*   have J := uint256_size a. *)
+    (*   have ->: (96 - to_uint a) %% W256.modulus = W256.modulus - (W256.to_uint a - 96). admit. *)
+    (*   have J' : W256.to_uint a - 96 < W256.modulus - 96. smt (). *)
+    
+    (* smt (). *)    
     smt (@W256 @Utils).
   qed.
 lemma diff_neg_64 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W256.of_int 32 <= W256.of_int 64 - a.
