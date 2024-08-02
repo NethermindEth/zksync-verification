@@ -1,10 +1,9 @@
 digraph zk {
     { node [style=filled fillcolor="blue"]  
         addAssignLookupLinearisationContributionWithV
-        updateAggregationChallenge1
-        updateAggregationChallenge2
-        verifyQuotientEvaluation
         addAssignPermutationLinearisationContributionWithV
+        verifyQuotientEvaluation
+        prepareAggregatedCommitment
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
@@ -18,6 +17,8 @@ digraph zk {
         pointSubAssign
         lookupQuotientContribution
         addAssignRescueCustomGateLinearisationContributionWithV
+        updateAggregationChallenge2
+        updateAggregationChallenge1
     }
     { node [style=filled fillcolor="red"]   
         mainGateLinearisationContributionWithV
@@ -26,7 +27,6 @@ digraph zk {
         initializeTranscript
         loadProof
         loadVerificationKey
-        prepareAggregatedCommitment
         prepareQueries
         updateTranscript
         verify
