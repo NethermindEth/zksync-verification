@@ -152,42 +152,36 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
     ].
     proof.
       proc.
-      (* seq 4 0: (
-        #pre /\ 
-        W256.to_uint factor{1} = state_alpha4{2} /\
-        W256.to_uint _1{1} = state_beta{2} /\
-        W256.to_uint _3{1} = state_z{2} /\
-        W256.to_uint gamma{1} = state_gamma{2}
-      ). inline *. wp. skip. by progress.
-      seq 1 0: (
-        #pre /\
-        W256.to_uint _4{1} = (state_z{2} * state_beta{2} + state_gamma{2}) %% Constants.R
-      ).
-          wp. skip. rewrite /addmod /mulmod. progress.
-          rewrite - Constants.R_int. rewrite - H5. rewrite - H6. rewrite -H7.
-          smt (@W256 @Utils @IntDiv @Constants).
-      seq 1 0: (
-        #pre /\
-        W256.to_uint intermediateValue{1} = (state_z{2} * state_beta{2} + state_gamma{2} + stateOpening0AtZ{2}) %% Constants.R
-      ).
-          wp. skip. rewrite /addmod. progress. rewrite H8.
-          rewrite - Constants.R_int. rewrite -H6. rewrite -H5. rewrite -H7.
-      smt (@W256 @Utils @IntDiv @Constants). *)
+      exists* state_alpha4{2}, state_z{2}, state_beta{2}, state_gamma{2}, stateOpening0AtZ{2}, stateOpening1AtZ{2}, stateOpening2AtZ{2}, stateOpening3AtZ{2}, state_l0AtZ{2}, state_alpha5{2}, state_v{2}.
+      elim*=> alpha4_r z_r beta_r gamma_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r l0AtZ_r alpha5_r v_r.
+      pose mem_1 := store mem_0 COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF (W256.of_int (
+          ((
+            alpha4_r *
+            (z_r * beta_r + gamma_r + opening0AtZ_r) *
+            (z_r * beta_r * Constants.NON_RESIDUE_0 + gamma_r + opening1AtZ_r) *
+            (z_r * beta_r * Constants.NON_RESIDUE_1 + gamma_r + opening2AtZ_r) *
+            (z_r * beta_r * Constants.NON_RESIDUE_2 + gamma_r + opening3AtZ_r) +
+            l0AtZ_r * alpha5_r
+          ) * v_r) %% Constants.R
+        )).
       seq 26 0: (
         !Primops.reverted{1} /\
-        Primops.memory{1} = store mem_0 COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF (W256.of_int (
-          ((
-            state_alpha4{2} *
-            (state_z{2} * state_beta{2} + state_gamma{2} + stateOpening0AtZ{2}) *
-            (state_z{2} * state_beta{2} * Constants.NON_RESIDUE_0 + state_gamma{2} + stateOpening1AtZ{2}) *
-            (state_z{2} * state_beta{2} * Constants.NON_RESIDUE_1 + state_gamma{2} + stateOpening2AtZ{2}) *
-            (state_z{2} * state_beta{2} * Constants.NON_RESIDUE_2 + state_gamma{2} + stateOpening3AtZ{2}) +
-            state_l0AtZ{2} * state_alpha5{2}
-          ) * state_v{2}) %% Constants.R
-        ))
-    ).
+        Primops.memory{1} = mem_1 /\
+        W256.to_uint (load mem_1 STATE_POWER_OF_ALPHA_4_SLOT) = state_alpha4{2} /\
+        W256.to_uint (load mem_1 STATE_BETA_SLOT) = state_beta{2} /\
+        W256.to_uint (load mem_1 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = state_gp_omega{2} /\
+        W256.to_uint (load mem_1 PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = poly0_opening{2} /\
+        W256.to_uint (load mem_1 PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = poly1_opening{2} /\
+        W256.to_uint (load mem_1 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = poly2_opening{2} /\
+        W256.to_uint (load mem_1 STATE_GAMMA_SLOT) = state_gamma{2} /\
+        W256.to_uint (load mem_1 STATE_V_SLOT) = state_v{2} /\
+        W256.to_uint stateOpening0AtZ{1} = stateOpening0AtZ{2} /\
+        W256.to_uint stateOpening1AtZ{1} = stateOpening1AtZ{2} /\
+        W256.to_uint stateOpening2AtZ{1} = stateOpening2AtZ{2} /\
+        W256.to_uint stateOpening3AtZ{1} = stateOpening3AtZ{2}
+      ).
         inline*. wp. skip. progress.
-                pose z := load Primops.memory{1} STATE_Z_SLOT.
+        pose z := load Primops.memory{1} STATE_Z_SLOT.
         pose b := load Primops.memory{1} STATE_BETA_SLOT.
         pose gamma := load Primops.memory{1} STATE_GAMMA_SLOT.
         pose a4 := load Primops.memory{1} STATE_POWER_OF_ALPHA_4_SLOT.
@@ -207,62 +201,110 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         pose x1 := to_uint z * to_uint b. rewrite (H_add x1 _ _).
         pose x2 := x1 + to_uint gamma. rewrite (H_add x2 _ _).
         rewrite (H_mul' (to_uint a4) _ _).
-        do rewrite H_add. do rewrite H_mul.
-        rewrite -(H_add _ _ (to_uint stateOpening0AtZ{1})). rewrite (H_add _ _ (to_uint gamma)).
-        rewrite H_add.
-        rewrite -(H_add _ _ (to_uint stateOpening1AtZ{1})). rewrite (H_add _ _ (to_uint gamma)).
-        rewrite H_add.
-        rewrite -(H_add _ _ (to_uint stateOpening2AtZ{1})). rewrite (H_add _ _ (to_uint gamma)).
-        rewrite H_add.
-        rewrite -(H_add _ _ (to_uint stateOpening3AtZ{1})). rewrite (H_add _ _ (to_uint gamma)).
-        rewrite H_add.
-        rewrite - Constants.non_residue_0_int.
-        rewrite - Constants.non_residue_1_int.
-        rewrite - Constants.non_residue_2_int.
-        pose x0 := to_uint z * to_uint b + to_uint gamma + to_uint stateOpening0AtZ{1}.
-        pose x1 := to_uint z * to_uint b * 5 + to_uint gamma + to_uint stateOpening1AtZ{1}.
-        pose x2 := to_uint z * to_uint b * 7 + to_uint gamma + to_uint stateOpening2AtZ{1}.
-        pose x3 := to_uint z * to_uint b * 10 + to_uint gamma + to_uint stateOpening3AtZ{1}.
-        do rewrite H_mul'.
-        pose x5 := (to_uint a4 * x0 %% Constants.R).
-        pose x6 := (x5 * (x1 %% Constants.R)).
-        rewrite - (H_mul x6 _ _). rewrite /x6. rewrite H_mul'. rewrite H_mul.
-        pose x7 := to_uint l0 * to_uint a5.
-        pose x8 := x5 * x1 * x2 %% Constants.R * (x3 %% Constants.R).
-        pose x9 := x7 %% Constants.R.
-        rewrite - (H_mul _ _ (to_uint v)).
-        rewrite /x9. rewrite H_add'.
-        rewrite - (H_add x8 _ _). rewrite /x8. rewrite /x5.
-        rewrite - (H_mul _ _ x2). rewrite (H_mul.
-        rewrite /x5.
+        pose x3 := (W256.to_uint a4 * (x2 + W256.to_uint stateOpening0AtZ{1})).
+        do have ->: forall (a: int), (x1 %% Constants.R * a %% Constants.R + W256.to_uint gamma) %% Constants.R = (x1 * a + W256.to_uint gamma) %% Constants.R by smt (@IntDiv).
+        rewrite (H_add _ _ (W256.to_uint stateOpening1AtZ{1})).
+        rewrite (H_add _ _ (W256.to_uint stateOpening2AtZ{1})).
+        rewrite (H_add _ _ (W256.to_uint stateOpening3AtZ{1})).
+        rewrite (H_mul x3 _ _). rewrite (H_mul' x3 _ _).
+        rewrite /Constants.NON_RESIDUE_0 /Constants.NON_RESIDUE_1 /Constants.NON_RESIDUE_2.
+        pose x4 := W256.to_uint l0 * W256.to_uint a5.
+        rewrite (H_add' _ _ x4).
+        pose x5 := x1 * 10 + W256.to_uint gamma + W256.to_uint stateOpening3AtZ{1}.
+        pose x6 := x1 * 7 + W256.to_uint gamma + W256.to_uint stateOpening2AtZ{1}.
+        pose x7 := x3 * (x1 * 5 + W256.to_uint gamma + W256.to_uint stateOpening1AtZ{1}).
+        rewrite (H_mul x7 _ _). rewrite (H_mul' x7 _ _). pose x8 := x7 * x6.
+        rewrite (H_mul x8 _ _). rewrite (H_mul' x8 _ _). pose x9 := x8 * x5.
+        rewrite (H_add x9 _ _). pose x10 := x9 + x4.
+        rewrite (H_mul x10 _ _). reflexivity.
 
-        rewrite 
-    
-    
-        have h_muladd: forall (a b c d: uint256), W256.zero < c => PurePrimops.mulmod (PurePrimops.addmod a b c) d c = W256.of_int (((W256.to_uint a + W256.to_uint b) * W256.to_uint d) %% W256.to_uint c).
-        rewrite /addmod /mulmod. progress. congr. rewrite W256.of_uintK.
-        rewrite (pmod_small _ W256.modulus). split. smt (@W256 @IntDiv).
-        move=>H_nonneg.
-        apply (lt_trans _ (W256.to_uint c) _). rewrite ltz_pmod. smt (@W256).
-        have H_range: 0 <= to_uint c < W256.modulus by exact (W256.to_uint_cmp c).
-        rewrite andaE in H_range.
-        apply (weaken_and_right (0 <= to_uint c) _).
-        exact H_range.
-        smt (@W256 @IntDiv).
-        rewrite h_muladd. trivial.
-        rewrite -Constants.R_int.
-        have h_mul_comm: forall (a b c: uint256), PurePrimops.mulmod a b c = PurePrimops.mulmod b a c.
-        rewrite /mulmod. progress. smt (@W256).
-        rewrite h_mul_comm. rewrite h_muladd. trivial.
-        rewrite /mulmod /addmod. progress. rewrite - Constants.R_int.
-        
-    
-        rewrite H_add. rewrite H_add. rewrite H_add. rewrite H_add. rewrite H_mul. rewrite H_mul.
-        rewrite H_mul.
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
 
-        have H_add_mul_l: forall (a b c d: int), ((a %% b + c) * d) %% b = ((a + c) * d) %% b.
-        progress. rewrite - H_mul. rewrite H_add. rewrite H_mul. reflexivity.
-        rewrite - H_mul. rewrite H_add. rewrite H_mul.
+
+        seq 24 1: (
+          #pre /\
+          W256.to_uint factor{1} = mul_factor{2}
+        ).
+            inline Primops.mload. wp. skip. progress.
+            have H_add: forall (a b c: int),  (a %% b + c) %% b = (a + c) %% b by smt(@IntDiv).
+            have H_mul: forall(a b c: int), (a %% b * c) %% b = (a * c) %% b by smt (@IntDiv).
+            have H_add': forall (a b c: int),  (a + (c %% b)) %% b = (a + c) %% b by smt(@IntDiv). 
+            have H_mul': forall(a b c: int), (a * (c %% b)) %% b = (a * c) %% b by smt (@IntDiv).
+            pose a4 := load mem_1 STATE_POWER_OF_ALPHA_4_SLOT.
+            pose b := load mem_1 STATE_BETA_SLOT.
+            pose gp := load mem_1 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT.
+            have ->: PurePrimops.mulmod (PurePrimops.mulmod a4 b R_MOD) gp R_MOD = W256.of_int ((W256.to_uint a4 * W256.to_uint b * W256.to_uint gp) %% Constants.R).
+            rewrite /mulmod. simplify.
+            rewrite W256.of_uintK. rewrite - Constants.R_int.
+            rewrite (pmod_small _ W256.modulus). split. smt (@IntDiv). progress. smt (@W256 @IntDiv).
+            rewrite H_mul. reflexivity.
+            pose x0 := W256.to_uint a4 * W256.to_uint b * W256.to_uint gp.
+            pose p0 := load mem_1 PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT.
+            pose g := load mem_1 STATE_GAMMA_SLOT.
+            have ->: PurePrimops.addmod(PurePrimops.mulmod p0 b R_MOD) g R_MOD = W256.of_int ((W256.to_uint p0 * W256.to_uint b + W256.to_uint g) %% Constants.R).
+            rewrite /addmod /mulmod. simplify.
+            rewrite W256.of_uintK. rewrite - Constants.R_int.
+            rewrite (pmod_small _ W256.modulus). split. smt (@IntDiv). progress. smt (@W256 @IntDiv).
+            rewrite H_add. reflexivity.
+            pose x1 := W256.to_uint p0 * W256.to_uint b + W256.to_uint g.
+            have ->: PurePrimops.addmod (W256.of_int (x1 %% Constants.R)) stateOpening0AtZ{1} R_MOD = W256.of_int ((x1 + W256.to_uint stateOpening0AtZ{1}) %% Constants.R).
+            rewrite /addmod. simplify. rewrite W256.of_uintK.
+            rewrite - Constants.R_int. rewrite (pmod_small _ W256.modulus).
+            split. smt (@IntDiv). progress. smt (@W256 @IntDiv).
+            rewrite H_add. reflexivity.
+            pose x2 := x1 + W256.to_uint stateOpening0AtZ{1}.
+            have H_mulmod: forall (a b: int), PurePrimops.mulmod (W256.of_int (a %% Constants.R)) (W256.of_int (b %% Constants.R)) R_MOD = W256.of_int ((a * b) %% Constants.R).
+            progress.
+            rewrite /mulmod. simplify. rewrite W256.of_uintK. rewrite W256.of_uintK.
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite - Constants.R_int. rewrite  H_mul. rewrite H_mul'. reflexivity.
+            rewrite H_mulmod.
+            have H_addmod: forall (a b: int), PurePrimops.addmod (W256.of_int (a %% Constants.R)) (W256.of_int (b %% Constants.R)) R_MOD = W256.of_int ((a + b) %% Constants.R).
+            progress.
+            rewrite /addmod. simplify. rewrite W256.of_uintK. rewrite W256.of_uintK.
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite - Constants.R_int. rewrite  H_add. rewrite H_add'. reflexivity.
+            pose p1 := load mem_1 PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT.
+            pose p2 := load mem_1 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT.                pose v := load mem_1 STATE_V_SLOT.
+            have ->: PurePrimops.mulmod p1 b R_MOD = W256.of_int ((W256.to_uint p1) * (W256.to_uint b) %% Constants.R). smt (@PurePrimops @Constants).
+            pose x3 := W256.to_uint p1 * W256.to_uint b.
+            have ->: PurePrimops.addmod (W256.of_int (x3 %% Constants.R)) g R_MOD = W256.of_int ((x3 + (W256.to_uint g)) %% Constants.R).
+            rewrite /addmod. simplify. rewrite W256.of_uintK.
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite - Constants.R_int. rewrite H_add. reflexivity.
+            pose x4 := x3 + W256.to_uint g.
+            have ->: PurePrimops.addmod (W256.of_int (x4 %% Constants.R)) stateOpening1AtZ{1} R_MOD = W256.of_int ((x4 + (W256.to_uint stateOpening1AtZ{1})) %% Constants.R).
+            rewrite /addmod. simplify. rewrite W256.of_uintK.
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite - Constants.R_int. rewrite H_add. reflexivity.
+            rewrite H_mulmod.
+            have ->: PurePrimops.addmod(PurePrimops.addmod(PurePrimops.mulmod p2 b R_MOD) g R_MOD) stateOpening2AtZ{1} R_MOD = W256.of_int (((W256.to_uint p2) * (W256.to_uint b) + (W256.to_uint g) + (W256.to_uint stateOpening2AtZ{1})) %% Constants.R).
+            rewrite /addmod /mulmod. simplify. rewrite - Constants.R_int.
+            rewrite W256.of_uintK. rewrite W256.of_uintK.
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            smt ().
+            rewrite H_mulmod.
+            pose x5 := ((x0 * x2 * (x4 + W256.to_uint stateOpening1AtZ{1})) * (W256.to_uint p2 * W256.to_uint b + W256.to_uint g + W256.to_uint stateOpening2AtZ{1})).
+            rewrite /mulmod. simplify. rewrite - Constants.R_int.
+            rewrite W256.of_uintK. rewrite W256.of_uintK.
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
+            rewrite H_mul. reflexivity.
+
+
+
+
+
 
 
 
