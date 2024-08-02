@@ -52,7 +52,7 @@ proof.
 qed.
 
 
-lemma PointAddIntoDest_mid_of_low (x1v y1v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma pointMulIntoDest_low_equiv_mid (x1v y1v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulIntoDest.low ~ PointMulIntoDest.mid :
     Primops.memory{1} = memory0 /\
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\

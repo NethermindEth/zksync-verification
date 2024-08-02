@@ -116,7 +116,7 @@ equiv [
         ((mid_stateOpening2AtZ * mid_stateOpening0AtZ - mid_stateOpening3AtZ) * mid_state_alpha3)
       ) * mid_state_v) %% Constants.R.
       call (
-      PointMulAndAddIntoDest_mid_of_low
+      PointMulAndAddIntoDest_low_equiv_mid
       (W256.to_uint (load mem_0 VK_GATE_SELECTORS_1_X_SLOT))
       (W256.to_uint (load mem_0 (VK_GATE_SELECTORS_1_X_SLOT + W256.of_int 32)))
       mid_point.`1

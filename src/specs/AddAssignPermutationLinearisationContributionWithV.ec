@@ -126,7 +126,9 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
       point{2}.`1 = W256.to_uint (load mem_0 dest{1}) /\
       point{2}.`2 = W256.to_uint (load mem_0 (dest{1} + W256.of_int 32)) /\
       vk_permutation_3{2}.`1 = W256.to_uint (load mem_0 VK_PERMUTATION_3_X_SLOT) /\
+      vk_permutation_3{2}.`1 < Constants.Q /\
       vk_permutation_3{2}.`2 = W256.to_uint (load mem_0 VK_PERMUTATION_3_Y_SLOT) /\
+      vk_permutation_3{2}.`2 < Constants.Q /\      
       stateOpening0AtZ{2} = W256.to_uint stateOpening0AtZ{1} /\
       stateOpening1AtZ{2} = W256.to_uint stateOpening1AtZ{1} /\
       stateOpening2AtZ{2} = W256.to_uint stateOpening2AtZ{1} /\
@@ -175,10 +177,14 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         W256.to_uint (load mem_1 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = poly2_opening{2} /\
         W256.to_uint (load mem_1 STATE_GAMMA_SLOT) = state_gamma{2} /\
         W256.to_uint (load mem_1 STATE_V_SLOT) = state_v{2} /\
+        W256.to_uint (load mem_1 VK_PERMUTATION_3_X_SLOT) = vk_permutation_3{2}.`1 /\
+        W256.to_uint (load mem_1 VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3{2}.`2 /\
         W256.to_uint stateOpening0AtZ{1} = stateOpening0AtZ{2} /\
         W256.to_uint stateOpening1AtZ{1} = stateOpening1AtZ{2} /\
         W256.to_uint stateOpening2AtZ{1} = stateOpening2AtZ{2} /\
-        W256.to_uint stateOpening3AtZ{1} = stateOpening3AtZ{2}
+        W256.to_uint stateOpening3AtZ{1} = stateOpening3AtZ{2} /\
+        0 <= vk_permutation_3{2}.`1 < Constants.Q /\
+        0 <= vk_permutation_3{2}.`2 < Constants.Q
       ).
         inline*. wp. skip. progress.
         pose z := load Primops.memory{1} STATE_Z_SLOT.
@@ -226,6 +232,10 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         rewrite load_store_diff; smt (@W256 @Utils).
         rewrite load_store_diff; smt (@W256 @Utils).
         rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+        rewrite load_store_diff; smt (@W256 @Utils).
+          smt (@W256).
+          smt (@W256).
 
 
         seq 24 1: (
@@ -233,10 +243,10 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
           W256.to_uint factor{1} = mul_factor{2}
         ).
             inline Primops.mload. wp. skip. progress.
-            have H_add: forall (a b c: int),  (a %% b + c) %% b = (a + c) %% b by smt(@IntDiv).
-            have H_mul: forall(a b c: int), (a %% b * c) %% b = (a * c) %% b by smt (@IntDiv).
-            have H_add': forall (a b c: int),  (a + (c %% b)) %% b = (a + c) %% b by smt(@IntDiv). 
-            have H_mul': forall(a b c: int), (a * (c %% b)) %% b = (a * c) %% b by smt (@IntDiv).
+            have H_add: forall (a b c: int),  (a %% b + c) %% b = (a + c) %% b. progress. exact modzDml.
+            have H_mul: forall(a b c: int), (a %% b * c) %% b = (a * c) %% b. progress. exact modzMml.
+            have H_add': forall (a b c: int),  (a + (c %% b)) %% b = (a + c) %% b. progress. exact modzDmr. 
+            have H_mul': forall(a b c: int), (a * (c %% b)) %% b = (a * c) %% b. progress. exact modzMmr.
             pose a4 := load mem_1 STATE_POWER_OF_ALPHA_4_SLOT.
             pose b := load mem_1 STATE_BETA_SLOT.
             pose gp := load mem_1 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT.
@@ -300,6 +310,37 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
             rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
             rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
             rewrite H_mul. reflexivity.
+            pose mem_2 := store mem_1 W256.zero (load mem_1 VK_PERMUTATION_3_X_SLOT).
+            pose mem_3 := store mem_2 (W256.of_int 32) (load mem_1 VK_PERMUTATION_3_Y_SLOT).
+            exists* factor{1}.
+            elim*=> factor.
+            pose mem_4 := store mem_3 (W256.of_int 64) factor.
+          seq 1 1: (
+            #pre
+          ).
+            exists* vk_permutation_3{2}.
+            elim*=> vk_permutation_3.
+            call (
+              pointMulIntoDest_low_equiv_mid
+              vk_permutation_3.`1
+              vk_permutation_3.`2
+              (W256.to_uint factor)
+              VK_PERMUTATION_3_X_SLOT
+              QUERIES_BUFFER_POINT_SLOT
+              mem_1
+            ).
+                skip. progress.
+                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                smt (@W256).
+                have H_range: 0 <= to_uint factor{1} < W256.modulus by exact W256.to_uint_cmp.
+                rewrite andabP in H_range. apply (weaken_and_right (0 <= to_uint factor{1}) _).
+                exact H_range.
+                smt (@W256 @Utils).
+                smt (@W256 @Utils).
+                rewrite - H0. rewrite W256.to_uintK. reflexivity.
+                rewrite - H1. rewrite W256.to_uintK. reflexivity.
+                case H19. by progress. progress. smt ().
 
 
 

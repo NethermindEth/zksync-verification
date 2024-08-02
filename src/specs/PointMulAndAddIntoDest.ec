@@ -100,7 +100,7 @@ lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
     smt ().
   qed.
   
-lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma PointMulAndAddIntoDest_low_equiv_mid (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
     Primops.memory{1} = memory0 /\
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\ 0 <= x2v < p /\ 0 <= y2v < p /\
