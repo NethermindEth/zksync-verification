@@ -47,29 +47,29 @@ module PermutationQuotientContribution = {
   }
 
   proc mid(
-    statePowerOfAlpha4Slot
-    statePowerOfAlpha5Slot
-    proofCopyPermutationGrandProductOpeningAtZOmegaSlot
-    stateBetaSlot
-    stateGammaSlot
-    proofCopyPermutationPolys0OpeningAtZSlot
-    proofCopyPermutationPolys1OpeningAtZSlot
-    proofCopyPermutationPolys2OpeningAtZSlot
-    proofStatePolys0OpeningAtZSlot
-    proofStatePolys1OpeningAtZSlot
-    proofStatePolys2OpeningAtZSlot
-    proofStatePolys3OpeningAtZSlot
-    stateL0AtZSlot : int
+    statePowerOfAlpha4
+    statePowerOfAlpha5
+    proofCopyPermutationGrandProductOpeningAtZOmega
+    stateBeta
+    stateGamma
+    proofCopyPermutationPolys0OpeningAtZ
+    proofCopyPermutationPolys1OpeningAtZ
+    proofCopyPermutationPolys2OpeningAtZ
+    proofStatePolys0OpeningAtZ
+    proofStatePolys1OpeningAtZ
+    proofStatePolys2OpeningAtZ
+    proofStatePolys3OpeningAtZ
+    stateL0AtZ : int
   ) : int = {
     var s0BGa, s1BGb, s2BGc, s3G, inv1, inv2;
     
-    s0BGa <- (proofCopyPermutationPolys0OpeningAtZSlot * stateBetaSlot + stateGammaSlot + proofStatePolys0OpeningAtZSlot) %% Constants.R;
-    s1BGb <- (proofCopyPermutationPolys1OpeningAtZSlot * stateBetaSlot + stateGammaSlot + proofStatePolys1OpeningAtZSlot) %% Constants.R;
-    s2BGc <- (proofCopyPermutationPolys2OpeningAtZSlot * stateBetaSlot + stateGammaSlot + proofStatePolys2OpeningAtZSlot) %% Constants.R;
-    s3G   <- (proofStatePolys3OpeningAtZSlot + stateGammaSlot) %% Constants.R;
+    s0BGa <- (proofCopyPermutationPolys0OpeningAtZ * stateBeta + stateGamma + proofStatePolys0OpeningAtZ) %% Constants.R;
+    s1BGb <- (proofCopyPermutationPolys1OpeningAtZ * stateBeta + stateGamma + proofStatePolys1OpeningAtZ) %% Constants.R;
+    s2BGc <- (proofCopyPermutationPolys2OpeningAtZ * stateBeta + stateGamma + proofStatePolys2OpeningAtZ) %% Constants.R;
+    s3G   <- (proofStatePolys3OpeningAtZ + stateGamma) %% Constants.R;
     
-    inv1 <- Constants.R - (statePowerOfAlpha4Slot * proofCopyPermutationGrandProductOpeningAtZOmegaSlot * s0BGa * s1BGb * s2BGc * s3G) %% Constants.R;
-    inv2 <- Constants.R - (statePowerOfAlpha5Slot * stateL0AtZSlot) %% Constants.R;
+    inv1 <- Constants.R - (statePowerOfAlpha4 * proofCopyPermutationGrandProductOpeningAtZOmega * s0BGa * s1BGb * s2BGc * s3G) %% Constants.R;
+    inv2 <- Constants.R - (statePowerOfAlpha5 * stateL0AtZ) %% Constants.R;
     
     return (inv1 + inv2) %% Constants.R;
   }
@@ -371,50 +371,50 @@ import MemoryMap PurePrimops.
 declare op m : mem.
 
 lemma low_equiv_mid(
-    statePowerOfAlpha4SlotG
-    statePowerOfAlpha5SlotG
-    proofCopyPermutationGrandProductOpeningAtZOmegaSlotG
-    stateBetaSlotG
-    stateGammaSlotG
-    proofCopyPermutationPolys0OpeningAtZSlotG
-    proofCopyPermutationPolys1OpeningAtZSlotG
-    proofCopyPermutationPolys2OpeningAtZSlotG
-    proofStatePolys0OpeningAtZSlotG
-    proofStatePolys1OpeningAtZSlotG
-    proofStatePolys2OpeningAtZSlotG
-    proofStatePolys3OpeningAtZSlotG
-    stateL0AtZSlotG : int
+    statePowerOfAlpha4G
+    statePowerOfAlpha5G
+    proofCopyPermutationGrandProductOpeningAtZOmegaG
+    stateBetaG
+    stateGammaG
+    proofCopyPermutationPolys0OpeningAtZG
+    proofCopyPermutationPolys1OpeningAtZG
+    proofCopyPermutationPolys2OpeningAtZG
+    proofStatePolys0OpeningAtZG
+    proofStatePolys1OpeningAtZG
+    proofStatePolys2OpeningAtZG
+    proofStatePolys3OpeningAtZG
+    stateL0AtZG : int
 ) :
 equiv [PermutationQuotientContribution.low ~ PermutationQuotientContribution.mid :
   arg{2} = (
-    statePowerOfAlpha4SlotG,
-    statePowerOfAlpha5SlotG,
-    proofCopyPermutationGrandProductOpeningAtZOmegaSlotG,
-    stateBetaSlotG,
-    stateGammaSlotG,
-    proofCopyPermutationPolys0OpeningAtZSlotG,
-    proofCopyPermutationPolys1OpeningAtZSlotG,
-    proofCopyPermutationPolys2OpeningAtZSlotG,
-    proofStatePolys0OpeningAtZSlotG,
-    proofStatePolys1OpeningAtZSlotG,
-    proofStatePolys2OpeningAtZSlotG,
-    proofStatePolys3OpeningAtZSlotG,
-    stateL0AtZSlotG) /\
+    statePowerOfAlpha4G,
+    statePowerOfAlpha5G,
+    proofCopyPermutationGrandProductOpeningAtZOmegaG,
+    stateBetaG,
+    stateGammaG,
+    proofCopyPermutationPolys0OpeningAtZG,
+    proofCopyPermutationPolys1OpeningAtZG,
+    proofCopyPermutationPolys2OpeningAtZG,
+    proofStatePolys0OpeningAtZG,
+    proofStatePolys1OpeningAtZG,
+    proofStatePolys2OpeningAtZG,
+    proofStatePolys3OpeningAtZG,
+    stateL0AtZG) /\
   Primops.memory{1} = m /\
   !Primops.reverted{1} /\
-  W256.to_uint (mload m STATE_POWER_OF_ALPHA_4_SLOT) = statePowerOfAlpha4SlotG /\
-  W256.to_uint (mload m STATE_POWER_OF_ALPHA_5_SLOT) = statePowerOfAlpha5SlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofCopyPermutationGrandProductOpeningAtZOmegaSlotG /\
-  W256.to_uint (mload m STATE_GAMMA_SLOT) = stateGammaSlotG /\
-  W256.to_uint (mload m STATE_BETA_SLOT) = stateBetaSlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys0OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys1OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys2OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = proofStatePolys0OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = proofStatePolys1OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = proofStatePolys2OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = proofStatePolys3OpeningAtZSlotG /\
-  W256.to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZSlotG
+  W256.to_uint (mload m STATE_POWER_OF_ALPHA_4_SLOT) = statePowerOfAlpha4G /\
+  W256.to_uint (mload m STATE_POWER_OF_ALPHA_5_SLOT) = statePowerOfAlpha5G /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofCopyPermutationGrandProductOpeningAtZOmegaG /\
+  W256.to_uint (mload m STATE_GAMMA_SLOT) = stateGammaG /\
+  W256.to_uint (mload m STATE_BETA_SLOT) = stateBetaG /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys0OpeningAtZG /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys1OpeningAtZG /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys2OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = proofStatePolys0OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = proofStatePolys1OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = proofStatePolys2OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = proofStatePolys3OpeningAtZG /\
+  W256.to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG
   ==>
   !Primops.reverted{1} /\
   Primops.memory{1} = m /\
@@ -430,34 +430,34 @@ transitivity
       ={res, Primops.memory} /\
       !Primops.reverted{1} /\ !Primops.reverted{2})
   (  arg{2} = (
-    statePowerOfAlpha4SlotG,
-    statePowerOfAlpha5SlotG,
-    proofCopyPermutationGrandProductOpeningAtZOmegaSlotG,
-    stateBetaSlotG,
-    stateGammaSlotG,
-    proofCopyPermutationPolys0OpeningAtZSlotG,
-    proofCopyPermutationPolys1OpeningAtZSlotG,
-    proofCopyPermutationPolys2OpeningAtZSlotG,
-    proofStatePolys0OpeningAtZSlotG,
-    proofStatePolys1OpeningAtZSlotG,
-    proofStatePolys2OpeningAtZSlotG,
-    proofStatePolys3OpeningAtZSlotG,
-    stateL0AtZSlotG) /\
+    statePowerOfAlpha4G,
+    statePowerOfAlpha5G,
+    proofCopyPermutationGrandProductOpeningAtZOmegaG,
+    stateBetaG,
+    stateGammaG,
+    proofCopyPermutationPolys0OpeningAtZG,
+    proofCopyPermutationPolys1OpeningAtZG,
+    proofCopyPermutationPolys2OpeningAtZG,
+    proofStatePolys0OpeningAtZG,
+    proofStatePolys1OpeningAtZG,
+    proofStatePolys2OpeningAtZG,
+    proofStatePolys3OpeningAtZG,
+    stateL0AtZG) /\
   Primops.memory{1} = m /\
   !Primops.reverted{1} /\
-  W256.to_uint (mload m STATE_POWER_OF_ALPHA_4_SLOT) = statePowerOfAlpha4SlotG /\
-  W256.to_uint (mload m STATE_POWER_OF_ALPHA_5_SLOT) = statePowerOfAlpha5SlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofCopyPermutationGrandProductOpeningAtZOmegaSlotG /\
-  W256.to_uint (mload m STATE_GAMMA_SLOT) = stateGammaSlotG /\
-  W256.to_uint (mload m STATE_BETA_SLOT) = stateBetaSlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys0OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys1OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys2OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = proofStatePolys0OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = proofStatePolys1OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = proofStatePolys2OpeningAtZSlotG /\
-  W256.to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = proofStatePolys3OpeningAtZSlotG /\
-  W256.to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZSlotG
+  W256.to_uint (mload m STATE_POWER_OF_ALPHA_4_SLOT) = statePowerOfAlpha4G /\
+  W256.to_uint (mload m STATE_POWER_OF_ALPHA_5_SLOT) = statePowerOfAlpha5G /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofCopyPermutationGrandProductOpeningAtZOmegaG /\
+  W256.to_uint (mload m STATE_GAMMA_SLOT) = stateGammaG /\
+  W256.to_uint (mload m STATE_BETA_SLOT) = stateBetaG /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys0OpeningAtZG /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys1OpeningAtZG /\
+  W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys2OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = proofStatePolys0OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = proofStatePolys1OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = proofStatePolys2OpeningAtZG /\
+  W256.to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = proofStatePolys3OpeningAtZG /\
+  W256.to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG
   ==>
   !Primops.reverted{1} /\
   Primops.memory{1} = m /\
@@ -469,19 +469,19 @@ by progress. by apply low_equiv_low4.
 proc.
 
 seq 13 0 : (#pre /\
-  W256.to_uint _alpha4{1} = statePowerOfAlpha4Slot{2} /\
-  W256.to_uint _alpha5{1} = statePowerOfAlpha5Slot{2} /\
-  W256.to_uint _zperm_zOmega{1} = proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2} /\
-  W256.to_uint _gamma{1} = stateGammaSlot{2} /\ 
-  W256.to_uint _beta{1} = stateBetaSlot{2} /\
-  W256.to_uint _sigma0_z{1} = proofCopyPermutationPolys0OpeningAtZSlot{2} /\
-  W256.to_uint _sigma1_z{1} = proofCopyPermutationPolys1OpeningAtZSlot{2} /\
-  W256.to_uint _sigma2_z{1} = proofCopyPermutationPolys2OpeningAtZSlot{2} /\
-  W256.to_uint _sigma3_z{1} = proofStatePolys3OpeningAtZSlot{2} /\
-  W256.to_uint _a_z{1} = proofStatePolys0OpeningAtZSlot{2} /\
-  W256.to_uint _b_z{1} = proofStatePolys1OpeningAtZSlot{2} /\
-  W256.to_uint _c_z{1} = proofStatePolys2OpeningAtZSlot{2} /\
-  W256.to_uint _l0AtZ{1} = stateL0AtZSlotG).
+  W256.to_uint _alpha4{1} = statePowerOfAlpha4{2} /\
+  W256.to_uint _alpha5{1} = statePowerOfAlpha5{2} /\
+  W256.to_uint _zperm_zOmega{1} = proofCopyPermutationGrandProductOpeningAtZOmega{2} /\
+  W256.to_uint _gamma{1} = stateGamma{2} /\ 
+  W256.to_uint _beta{1} = stateBeta{2} /\
+  W256.to_uint _sigma0_z{1} = proofCopyPermutationPolys0OpeningAtZ{2} /\
+  W256.to_uint _sigma1_z{1} = proofCopyPermutationPolys1OpeningAtZ{2} /\
+  W256.to_uint _sigma2_z{1} = proofCopyPermutationPolys2OpeningAtZ{2} /\
+  W256.to_uint _sigma3_z{1} = proofStatePolys3OpeningAtZ{2} /\
+  W256.to_uint _a_z{1} = proofStatePolys0OpeningAtZ{2} /\
+  W256.to_uint _b_z{1} = proofStatePolys1OpeningAtZ{2} /\
+  W256.to_uint _c_z{1} = proofStatePolys2OpeningAtZ{2} /\
+  W256.to_uint _l0AtZ{1} = stateL0AtZG).
 call{1} (ConcretePrimops.mload_pspec m STATE_POWER_OF_ALPHA_5_SLOT).
 call{1} (ConcretePrimops.mload_pspec m STATE_L_0_AT_Z_SLOT).
 call{1} (ConcretePrimops.mload_pspec m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT).
@@ -518,7 +518,7 @@ rewrite H7 H4 H3 H11. smt.
 rewrite W256.to_uint_small. progress. smt(@W256 @Utils). smt(@W256 @Utils).
 rewrite W256.to_uint_small. progress. smt(@W256 @Utils).
 
-seq 5 0 : (#pre /\ W256.to_uint _res1{1} = (statePowerOfAlpha4Slot{2} * proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2} * s0BGa{2} * s1BGb{2} * s2BGc{2} * s3G{2}) %% Constants.R).
+seq 5 0 : (#pre /\ W256.to_uint _res1{1} = (statePowerOfAlpha4{2} * proofCopyPermutationGrandProductOpeningAtZOmega{2} * s0BGa{2} * s1BGb{2} * s2BGc{2} * s3G{2}) %% Constants.R).
 wp; skip; rewrite /addmod /mulmod; progress.
 rewrite W256.to_uint_small. progress. smt(@W256 @Utils). smt(@W256 @Utils).
 rewrite W256.to_uint_small. progress. smt(@W256 @Utils). smt(@W256 @Utils).
@@ -535,7 +535,7 @@ have ->:
 rewrite -W256.of_uintK; by smt(@W256).
 rewrite -H13. reflexivity.
  
-seq 1 0 : (#pre /\ W256.to_uint _res2{1} = (statePowerOfAlpha5Slot{2} * stateL0AtZSlot{2}) %% Constants.R).
+seq 1 0 : (#pre /\ W256.to_uint _res2{1} = (statePowerOfAlpha5{2} * stateL0AtZ{2}) %% Constants.R).
 wp; skip; rewrite /addmod /mulmod; progress.
 rewrite W256.to_uint_small. progress. smt(@W256 @Utils). smt(@W256 @Utils).
 rewrite H12 H1. smt.
