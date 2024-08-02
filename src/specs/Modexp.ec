@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require        Constants.
 require import IntDiv.
 require import Memory.
@@ -75,10 +76,11 @@ lemma modexp_low_equiv_mid (memory: mem) (value256 power256: uint256):
       Primops.memory{1} = memory    
       ==>
       res{2} = W256.to_uint res{1} /\
+      0 <= res{2} < Constants.R /\
       !Primops.reverted{1} /\
       Primops.memory{1} = (modexp_memory_footprint memory value256 power256 res{1})
     ].
-    proof.
+proof.
     proc.
     (* work down to the staticcall *)
     pose mem_1 := PurePrimops.mstore memory W256.zero (W256.of_int 32).
@@ -125,6 +127,8 @@ lemma modexp_low_equiv_mid (memory: mem) (value256 power256: uint256):
     by smt.
     rewrite (pmod_small _ W256.modulus). by smt ().
     by reflexivity.
+    by smt().
+    by smt().
     rewrite /modexp_memory_footprint. simplify.
       rewrite /mem_6 /mem_5 /mem_4 /mem_3 /mem_2 /mem_1.
       do 5! (rewrite MemoryMap.store_store_swap_diff; [smt (@W256) | smt (@W256) | congr]).
@@ -132,12 +136,27 @@ lemma modexp_low_equiv_mid (memory: mem) (value256 power256: uint256):
       rewrite H_mem7_get0.
       reflexivity.
     qed.
-
     
-    
+lemma modexp_memory_footprint_same (m: mem) (v1 v2 p1 p2 r1 r2 : uint256) : 
+    modexp_memory_footprint (modexp_memory_footprint m v1 p1 r1) v2 p2 r2 =
+    modexp_memory_footprint m v2 p2 r2.
+proof.
+rewrite /modexp_memory_footprint. simplify.
+do 5! (rewrite (store_store_swap_diff _ _ (W256.of_int 160) _ _); [smt (@W256) | smt (@W256) |]);
+rewrite store_store_same.
+do 5! (rewrite (store_store_swap_diff _ _ (W256.of_int 128) _ _); [smt (@W256) | smt (@W256) |]);
+rewrite store_store_same.
+do 5! (rewrite (store_store_swap_diff _ _ (W256.of_int 96) _ _); [smt (@W256) | smt (@W256) |]);
+rewrite store_store_same.
+do 5! (rewrite (store_store_swap_diff _ _ (W256.of_int 64) _ _); [smt (@W256) | smt (@W256) |]);
+rewrite store_store_same.
+do 5! (rewrite (store_store_swap_diff _ _ (W256.of_int 32) _ _); [smt (@W256) | smt (@W256) |]);
+rewrite store_store_same.
+do 5! (rewrite (store_store_swap_diff _ _ W256.zero _ _); [smt (@W256) | smt (@W256) |]);
+rewrite store_store_same.
+by reflexivity.
+qed.
 
-  
-
-
-
-    
+lemma modexp_low_pspec_revert :
+phoare [ Modexp.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; by progress. qed.
