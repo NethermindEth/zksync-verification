@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require        Constants.
 require import PurePrimops.
 require import UInt256.
@@ -84,6 +85,10 @@ lemma permutationQuotientContribution_extracted_equiv_low:
 proof. proc.
   inline *; wp; skip; progress; by smt ().
 qed.
+
+lemma permutationQuotientContribution_pspec_revert :
+phoare [ PermutationQuotientContribution.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; skip; by auto. qed.
 
 section.
 
@@ -370,7 +375,7 @@ qed.
 import MemoryMap PurePrimops.
 declare op m : mem.
 
-lemma low_equiv_mid(
+lemma permutationQuotientContribution_low_equiv_mid(
     statePowerOfAlpha4G
     statePowerOfAlpha5G
     proofCopyPermutationGrandProductOpeningAtZOmegaG

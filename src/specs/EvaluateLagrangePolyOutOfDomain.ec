@@ -117,8 +117,12 @@ lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
         sp. skip. by progress.
     qed.
 
-pred lagrange_memory_footprint (initial final : mem)  =
-   exists (v1 v2 v3: uint256), final = modexp_memory_footprint initial v1 v2 v3.
+lemma evaluateLagrangePolyOutOfDomain_pspec_revert :
+phoare [ EvaluateLagrangePolyOutOfDomain.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; skip; by auto. qed.
+
+op lagrange_memory_footprint (m : mem) (v1 v2 v3 : uint256)  =
+   modexp_memory_footprint m v1 v2 v3.
 
 lemma evaluateLagrangePolyOutOfDomain_low_equiv_mid' (memory : mem) (poly256 at256: uint256):
 equiv [
@@ -129,7 +133,7 @@ equiv [
       Primops.memory{1} = memory
       ==>
       ((!Primops.reverted{1} /\
-        lagrange_memory_footprint memory Primops.memory{1} /\
+        exists (v1 v2 v3: uint256), Primops.memory{1} = lagrange_memory_footprint memory v1 v2 v3 /\
         res{2} = Some (to_uint res{1})%W256 /\ 0 <= to_uint res{1} < Constants.R)
       \/
       (Primops.reverted{1} /\ res{2} = None))
@@ -247,7 +251,8 @@ exists* tmp267{1}. elim* => tmp. exists* denominator{1}. elim* => d.
 pose mem' := modexp_memory_footprint memory at256 ((of_int Constants.DOMAIN_SIZE))%W256 tmp.
 call{1} (modexp_low_equiv_mid mem' d ((W256.of_int Constants.R) - (W256.of_int 2))).
 skip. progress. rewrite /mem'. by smt. by smt. smt (@Constants @W256 @Utils). apply modexp_memory_footprint_same.
-wp. skip. progress. rewrite /lagrange_memory_footprint. by smt().
+wp. skip. progress.
+exists (of_int den{2})%W256 (of_int (Constants.R - 2))%W256 (of_int inv{2})%W256. progress.
 rewrite /mulmod. progress. rewrite !W256.of_uintK.
 do 4! (rewrite (pmod_small _ W256.modulus); first smt (@IntDiv)).
 rewrite /Constants.R. reflexivity. smt (@W256).
@@ -265,7 +270,7 @@ equiv [
       Primops.memory{1} = memory
       ==>
       ((!Primops.reverted{1} /\ ((to_uint at256)^Constants.DOMAIN_SIZE - 1) %% Constants.R <> 0 /\
-        lagrange_memory_footprint memory Primops.memory{1} /\
+        exists (v1 v2 v3: uint256), Primops.memory{1} = lagrange_memory_footprint memory v1 v2 v3 /\
         res{2} = Some (to_uint res{1})%W256 /\ 0 <= to_uint res{1} < Constants.R)
       \/
       (Primops.reverted{1} /\ ((to_uint at256)^Constants.DOMAIN_SIZE - 1) %% Constants.R = 0 /\ res{2} = None))
@@ -279,7 +284,7 @@ arg{1} = (poly256, at256) /\
       Primops.memory{1} = memory
       ==>
       ((!Primops.reverted{1} /\
-        lagrange_memory_footprint memory Primops.memory{1} /\
+        exists (v1 v2 v3: uint256), Primops.memory{1} = lagrange_memory_footprint memory v1 v2 v3 /\
         res{2} = Some (to_uint res{1})%W256 /\ 0 <= to_uint res{1} < Constants.R)
       \/
       (Primops.reverted{1} /\ res{2} = None))
