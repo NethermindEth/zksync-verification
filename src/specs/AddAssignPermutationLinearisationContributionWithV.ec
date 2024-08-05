@@ -149,7 +149,8 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
       ==>
       (Primops.reverted{1} /\ res{2} = None) \/
       (!Primops.reverted{1} /\ exists (f: int) (p: (int*int)),
-        res{2} = Some (f, p)
+        res{2} = Some (f, p) /\
+        Primops.memory{1} = mem_0 (* temp *)
       )  
     ].
     proof.
@@ -315,9 +316,27 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
             exists* factor{1}.
             elim*=> factor.
             pose mem_4 := store mem_3 (W256.of_int 64) factor.
+            exists* buffer_point{2}. elim*=> buffer_point_2.
+            pose buffer_point_dfl := odflt (0,0) buffer_point_2.
+            pose mem_5 := store mem_4 QUERIES_BUFFER_POINT_SLOT (W256.of_int buffer_point_dfl.`1).
+            pose mem_6 := store mem_5 (QUERIES_BUFFER_POINT_SLOT + (W256.of_int 32)) (W256.of_int buffer_point_dfl.`2).
           seq 1 1: (
-            #pre
+            (Primops.reverted{1} /\ is_none buffer_point{2}) \/
+            (
+              odflt (0,0) buffer_point{2} = buffer_point_dfl /\
+              !Primops.reverted{1} /\ is_some buffer_point{2} /\
+              128 <= W256.to_uint dest{1} /\
+              64 <= W256.to_uint (-dest{1}) /\
+              0 <= point{2}.`1 < Constants.Q /\
+              0 <= point{2}.`2 < Constants.Q /\
+              0 <= buffer_point_dfl.`1 < Constants.Q /\
+              0 <= buffer_point_dfl.`2 < Constants.Q /\
+              Primops.memory{1} = mem_6 /\
+              W256.to_uint (load mem_6 dest{1}) = point{2}.`1 /\
+              W256.to_uint (load mem_6 (dest{1} + W256.of_int 32)) = point{2}.`2
+            )
           ).
+           (* RESUME HERE, WORKING ON MOVING ADMITS UP *)
             exists* vk_permutation_3{2}.
             elim*=> vk_permutation_3.
             call (
@@ -340,7 +359,75 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                 smt (@W256 @Utils).
                 rewrite - H0. rewrite W256.to_uintK. reflexivity.
                 rewrite - H1. rewrite W256.to_uintK. reflexivity.
-                case H19. by progress. progress. smt ().
+                case H19. progress.
+                admit. (* 128 <= to_uint dest{1} *)
+                admit. (* 64 <= to_uint (-dest{1}) *)
+                admit. admit. (* 0 <= point{2}.`1 < Constants.Q *)
+                admit. admit. (* 0 <= point{2}.`2 < Constants.Q *)
+                admit. admit. (* 0 <= (odflt (0,0) buffer_point{2}.`1 < Constants.Q *)
+                admit. admit. (* 0 <= (odflt (0,0) buffer_point{2}.`2 < Constants.Q *)
+                exists (x). exists (y).
+                rewrite /mem_4. rewrite /mem_3.
+                have ->: VK_PERMUTATION_3_Y_SLOT = VK_PERMUTATION_3_X_SLOT + (W256.of_int 32) by smt (@W256).
+                rewrite H17.
+                rewrite /mem_2. rewrite H16.
+                reflexivity.
+                by progress.
+              if{2}. sp. conseq (_ : Primops.reverted{1} /\ ret{2} = None ==> Primops.reverted{1} /\ ret{2} = None).
+              progress. smt (). smt ().
+              by progress.
+              inline*. wp. skip. by progress.
+              conseq (_ :
+                !Primops.reverted{1} /\ is_some buffer_point{2} /\
+                128 <= W256.to_uint dest{1} /\
+                64 <= W256.to_uint (-dest{1}) /\
+                0 <= point{2}.`1 < Constants.Q /\
+                0 <= point{2}.`2 < Constants.Q /\
+                0 <= buffer_point_dfl.`1 < Constants.Q /\
+                0 <= buffer_point_dfl.`2 < Constants.Q /\
+                W256.to_uint (load mem_6 dest{1}) = point{2}.`1 /\
+                W256.to_uint (load mem_6 (dest{1} + W256.of_int 32)) = point{2}.`2 /\
+                Primops.memory{1} = mem_6
+                ==>
+                (Primops.reverted{1} /\ ret{2} = None) \/
+                (!Primops.reverted{1} /\ exists (f: int) (p: int*int), ret{2} = Some (f, p) /\ Primops.memory{1} = mem_0)
+              ). progress. smt (). smt ().
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  admit. (* load dest{1} = point{2}.`1 *)
+                  admit. (* load dest{1} = point{2}.`2 *)
+                  admit. (* Primops.memory{1} = mem_6 *)
+                  smt ().
+            seq 1 1: (
+              (Primops.reverted{1} /\ is_none ret_point{2}) \/
+              (!Primops.reverted{1} /\ is_some ret_point{2} /\ Primops.memory{1} = mem_0)  
+            ).
+            exists* Primops.memory{1}. elim*=> mem_preSub. progress.
+            exists* dest{1}. elim*=> dest_1. progress.
+            exists* point{2}. elim*=> point_2. progress.
+                call (pointSubAssign_low_equiv_mid_fixed mem_preSub dest_1 QUERIES_BUFFER_POINT_SLOT point_2 (odflt (0, 0) buffer_point_2)).
+                skip.
+                progress.
+                rewrite W256.to_uintN. rewrite W256.of_uintK. smt (@IntDiv).
+                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                case H32. by progress.
+                admit. (* do memory *)
+            (*---seq done---*)
+                if{2}. wp. skip. progress. smt ().
+                wp. skip. progress. smt ().
+                smt ().
+            qed.
 
 
 
@@ -351,3 +438,13 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
 
 
 
+
+
+
+
+
+
+
+
+
+              
