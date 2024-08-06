@@ -97,6 +97,10 @@ lemma lookupQuotientContribution_extracted_equiv_low:
       wp. skip. rewrite /Constants.R. by progress.
     qed.
 
+lemma lookupQuotientContribution_pspec_revert :
+phoare [ LookupQuotientContribution.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; skip; by auto. qed.
+    
 section.
 import MemoryMap PurePrimops.
 declare op m : mem.
@@ -105,13 +109,13 @@ op lookupQuotientContribution_memory_footprint
   (lastOmega
    betaPlusOne
    betaGamma
-   zMinusLastOmega v : int)
+   zMinusLastOmega v : uint256)
   =
-  let m1 = store m STATE_BETA_PLUS_ONE_SLOT (W256.of_int betaPlusOne) in
-  let m2 = store m1 STATE_BETA_GAMMA_PLUS_GAMMA_SLOT (W256.of_int betaGamma) in
-  let m3 = modexp_memory_footprint m2 OMEGA (DOMAIN_SIZE - W256.one) (W256.of_int lastOmega) in
-  let m4 = store m3 STATE_Z_MINUS_LAST_OMEGA_SLOT (W256.of_int zMinusLastOmega) in
-  let m5 = modexp_memory_footprint m4 (W256.of_int betaGamma) (DOMAIN_SIZE - W256.one) (W256.of_int v) in
+  let m1 = store m STATE_BETA_PLUS_ONE_SLOT betaPlusOne in
+  let m2 = store m1 STATE_BETA_GAMMA_PLUS_GAMMA_SLOT betaGamma in
+  let m3 = modexp_memory_footprint m2 OMEGA (DOMAIN_SIZE - W256.one) lastOmega in
+  let m4 = store m3 STATE_Z_MINUS_LAST_OMEGA_SLOT zMinusLastOmega in
+  let m5 = modexp_memory_footprint m4 betaGamma (DOMAIN_SIZE - W256.one) v in
   m5.
 
 lemma LookupQuotientContribution_low_equiv_mid (
@@ -124,8 +128,7 @@ proofLookupSPolyOpeningAtZOmegaG
 proofLookupGrandProductOpeningAtZOmegaG
 stateZG
 stateL0AtZG
-stateLnMinusOneAtZG
-zMinusLastOmegaG : int
+stateLnMinusOneAtZG : int
 ) :
 equiv [LookupQuotientContribution.low ~ LookupQuotientContribution.mid :
 arg{2} =
@@ -143,12 +146,13 @@ W256.to_uint (mload m PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookup
 W256.to_uint (mload m PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLookupGrandProductOpeningAtZOmegaG /\
 W256.to_uint (mload m STATE_Z_SLOT) = stateZG /\
 W256.to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
-W256.to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-W256.to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG
+W256.to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG
 ==>
 !Primops.reverted{1} /\
-exists lastOmega s, 
-Primops.memory{1} = lookupQuotientContribution_memory_footprint lastOmega res{2}.`2 res{2}.`3 res{2}.`4 s /\
+exists v1 v2, 
+Primops.memory{1} =
+  lookupQuotientContribution_memory_footprint
+     (W256.of_int v1) (W256.of_int res{2}.`2) (W256.of_int res{2}.`3) (W256.of_int res{2}.`4) (W256.of_int v2) /\
 res{2}.`1 = W256.to_uint res{1} /\
 0 <= res{2}.`1 < Constants.R /\
 0 <= res{2}.`2 < Constants.R /\
@@ -199,7 +203,7 @@ to_uint (mload m PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLook
 to_uint (mload m STATE_Z_SLOT) = stateZG /\
 to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
 to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+
 to_uint betaLookup{1} = stateBetaLookupG /\
 to_uint gammaLookup{1} = stateGammaLookupG /\
 to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -252,7 +256,7 @@ seq 1 1:(
     to_uint (mload m STATE_Z_SLOT) = stateZG /\
     to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
     to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-    to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+    
     to_uint betaLookup{1} = stateBetaLookupG /\
     to_uint gammaLookup{1} = stateGammaLookupG /\
     to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -302,7 +306,7 @@ seq 2 0:(
    to_uint (mload m STATE_Z_SLOT) = stateZG /\
    to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
    to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-   to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+   
    to_uint betaLookup{1} = stateBetaLookupG /\
    to_uint gammaLookup{1} = stateGammaLookupG /\
    to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -353,7 +357,7 @@ seq 1 1: (
   to_uint (mload m STATE_Z_SLOT) = stateZG /\
   to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
   to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-  to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+  
   to_uint betaLookup{1} = stateBetaLookupG /\
   to_uint gammaLookup{1} = stateGammaLookupG /\
   to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -400,7 +404,7 @@ seq 1 1:(
   to_uint (mload m STATE_Z_SLOT) = stateZG /\
   to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
   to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-  to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+  
   to_uint betaLookup{1} = stateBetaLookupG /\
   to_uint gammaLookup{1} = stateGammaLookupG /\
   to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -475,7 +479,6 @@ seq 1 0:(
     to_uint (mload m STATE_Z_SLOT) = stateZG /\
     to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
     to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-    to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
     to_uint betaLookup{1} = stateBetaLookupG /\
     to_uint gammaLookup{1} = stateGammaLookupG /\
     to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -533,7 +536,7 @@ seq 3 1:(
   to_uint (mload m STATE_Z_SLOT) = stateZG /\
   to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
   to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-  to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+  
   to_uint betaLookup{1} = stateBetaLookupG /\
   to_uint gammaLookup{1} = stateGammaLookupG /\
   to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -611,7 +614,7 @@ seq 1 0:(
    to_uint (mload m STATE_Z_SLOT) = stateZG /\
    to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
    to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-   to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
+   
    to_uint betaLookup{1} = stateBetaLookupG /\
    to_uint gammaLookup{1} = stateGammaLookupG /\
    to_uint betaPlusOne{1} = betaPlusOne{2} /\
@@ -685,7 +688,6 @@ seq 1 1: (
    to_uint (mload m STATE_Z_SLOT) = stateZG /\
    to_uint (mload m STATE_L_0_AT_Z_SLOT) = stateL0AtZG /\
    to_uint (mload m STATE_L_N_MINUS_ONE_AT_Z_SLOT) = stateLnMinusOneAtZG /\
-   to_uint (mload m STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmegaG /\
    to_uint betaLookup{1} = stateBetaLookupG /\
    to_uint gammaLookup{1} = stateGammaLookupG /\
    to_uint betaPlusOne{1} = betaPlusOne{2} /\
