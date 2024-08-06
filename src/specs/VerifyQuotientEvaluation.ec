@@ -185,10 +185,6 @@ lemma verifyQuotientEvaluation_extracted_equiv_low:
     by progress.
   qed.
 
-lemma lookupQuotientContribution_pspec_revert :
-phoare [ LookupQuotientContribution.low : Primops.reverted ==> Primops.reverted ] = 1%r.
-proof. proc; inline*; wp; skip; by auto. qed.
-
 import MemoryMap PurePrimops.
 
 op verifyQuotientEvaluation_memory_footprint (m: mem)
