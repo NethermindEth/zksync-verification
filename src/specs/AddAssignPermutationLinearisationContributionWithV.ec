@@ -118,13 +118,21 @@ proof.
   inline*. wp. skip. rewrite /Constants.R. by progress.
     qed. *)
 
-op copy_permutation_first_aggregated_commitment_coeff_mid: int.
+op addAssignPermutation_memory_footprint (memory: mem): mem.
 
 lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: mem) :
     equiv [
-      AddAssignPermutationLinearisationContributionWithV.low ~ AddAssignPermutationLinearisationContributionWithV.mid :
+    AddAssignPermutationLinearisationContributionWithV.low ~ AddAssignPermutationLinearisationContributionWithV.mid :
+      128 <= W256.to_uint dest{1} /\
+      64 <= W256.to_uint (-dest{1}) /\
+      W256.of_int 32 <= dest{1} - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
+      W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - dest{1} /\
+      W256.of_int 32 <= (dest{1} + W256.of_int 32) - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
+      W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - (dest{1} + W256.of_int 32) /\
       point{2}.`1 = W256.to_uint (load mem_0 dest{1}) /\
       point{2}.`2 = W256.to_uint (load mem_0 (dest{1} + W256.of_int 32)) /\
+      0 <= point{2}.`1 < Constants.Q /\
+      0 <= point{2}.`2 < Constants.Q /\
       vk_permutation_3{2}.`1 = W256.to_uint (load mem_0 VK_PERMUTATION_3_X_SLOT) /\
       vk_permutation_3{2}.`1 < Constants.Q /\
       vk_permutation_3{2}.`2 = W256.to_uint (load mem_0 VK_PERMUTATION_3_Y_SLOT) /\
@@ -150,7 +158,7 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
       (Primops.reverted{1} /\ res{2} = None) \/
       (!Primops.reverted{1} /\ exists (f: int) (p: (int*int)),
         res{2} = Some (f, p) /\
-        Primops.memory{1} = mem_0 (* temp *)
+        Primops.memory{1} = addAssignPermutation_memory_footprint mem_0 (* temp *)
       )  
     ].
     proof.
@@ -166,7 +174,8 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
             (z_r * beta_r * Constants.NON_RESIDUE_2 + gamma_r + opening3AtZ_r) +
             l0AtZ_r * alpha5_r
           ) * v_r) %% Constants.R
-        )).
+      )).
+(* ==== low until store into COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF ===== *)
       seq 26 0: (
         !Primops.reverted{1} /\
         Primops.memory{1} = mem_1 /\
@@ -185,7 +194,17 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         W256.to_uint stateOpening2AtZ{1} = stateOpening2AtZ{2} /\
         W256.to_uint stateOpening3AtZ{1} = stateOpening3AtZ{2} /\
         0 <= vk_permutation_3{2}.`1 < Constants.Q /\
-        0 <= vk_permutation_3{2}.`2 < Constants.Q
+        0 <= vk_permutation_3{2}.`2 < Constants.Q /\
+        128 <= W256.to_uint dest{1} /\
+        64 <= W256.to_uint (-dest{1}) /\
+        0 <= point{2}.`1 < Constants.Q /\
+        0 <= point{2}.`2 < Constants.Q /\
+        W256.to_uint (load mem_1 dest{1}) = point{2}.`1 /\
+        W256.to_uint (load mem_1 (dest{1} + W256.of_int 32)) = point{2}.`2 /\
+        W256.of_int 32 <= dest{1} - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
+        W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - dest{1} /\
+        W256.of_int 32 <= (dest{1} + W256.of_int 32) - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
+        W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - (dest{1} + W256.of_int 32)
       ).
         inline*. wp. skip. progress.
         pose z := load Primops.memory{1} STATE_Z_SLOT.
@@ -225,20 +244,81 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         rewrite (H_add x9 _ _). pose x10 := x9 + x4.
         rewrite (H_mul x10 _ _). reflexivity.
 
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-        rewrite load_store_diff; smt (@W256 @Utils).
-          smt (@W256).
-          smt (@W256).
-
-
+        by (rewrite load_store_diff; [
+          rewrite /STATE_POWER_OF_ALPHA_4_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /STATE_POWER_OF_ALPHA_4_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /STATE_BETA_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /STATE_BETA_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /STATE_GAMMA_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /STATE_GAMMA_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /STATE_V_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /STATE_V_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          reflexivity
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /VK_PERMUTATION_3_X_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /VK_PERMUTATION_3_X_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          smt ()
+        ]).
+        by (rewrite load_store_diff; [
+          rewrite /VK_PERMUTATION_3_Y_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          rewrite /VK_PERMUTATION_3_Y_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF;
+            by progress |
+          smt ()
+        ]).
+        smt (@W256).
+        smt (@W256).
+        rewrite load_store_diff. assumption. assumption. smt ().
+        rewrite load_store_diff. assumption. assumption. smt ().
+(* ===== mid and low: calculate mul factor. state is unaffected ===== *)
         seq 24 1: (
           #pre /\
           W256.to_uint factor{1} = mul_factor{2}
@@ -316,27 +396,24 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
             exists* factor{1}.
             elim*=> factor.
             pose mem_4 := store mem_3 (W256.of_int 64) factor.
-            exists* buffer_point{2}. elim*=> buffer_point_2.
-            pose buffer_point_dfl := odflt (0,0) buffer_point_2.
-            pose mem_5 := store mem_4 QUERIES_BUFFER_POINT_SLOT (W256.of_int buffer_point_dfl.`1).
-            pose mem_6 := store mem_5 (QUERIES_BUFFER_POINT_SLOT + (W256.of_int 32)) (W256.of_int buffer_point_dfl.`2).
+(* ===== mid and low: point mul into dest ===== *)
           seq 1 1: (
             (Primops.reverted{1} /\ is_none buffer_point{2}) \/
             (
-              odflt (0,0) buffer_point{2} = buffer_point_dfl /\
               !Primops.reverted{1} /\ is_some buffer_point{2} /\
               128 <= W256.to_uint dest{1} /\
               64 <= W256.to_uint (-dest{1}) /\
               0 <= point{2}.`1 < Constants.Q /\
               0 <= point{2}.`2 < Constants.Q /\
-              0 <= buffer_point_dfl.`1 < Constants.Q /\
-              0 <= buffer_point_dfl.`2 < Constants.Q /\
-              Primops.memory{1} = mem_6 /\
-              W256.to_uint (load mem_6 dest{1}) = point{2}.`1 /\
-              W256.to_uint (load mem_6 (dest{1} + W256.of_int 32)) = point{2}.`2
+              0 <= (odflt (0,0) buffer_point{2}).`1 < Constants.Q /\
+              0 <= (odflt (0,0) buffer_point{2}).`2 < Constants.Q /\
+              Primops.memory{1} = store (
+                store mem_4 QUERIES_BUFFER_POINT_SLOT (W256.of_int (odflt (0,0) buffer_point{2}).`1)
+              ) (QUERIES_BUFFER_POINT_SLOT + (W256.of_int 32)) (W256.of_int (odflt (0,0) buffer_point{2}).`2) /\
+              W256.to_uint (load Primops.memory{1} dest{1}) = point{2}.`1 /\
+              W256.to_uint (load Primops.memory{1} (dest{1} + W256.of_int 32)) = point{2}.`2
             )
           ).
-           (* RESUME HERE, WORKING ON MOVING ADMITS UP *)
             exists* vk_permutation_3{2}.
             elim*=> vk_permutation_3.
             call (
@@ -355,11 +432,22 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                 have H_range: 0 <= to_uint factor{1} < W256.modulus by exact W256.to_uint_cmp.
                 rewrite andabP in H_range. apply (weaken_and_right (0 <= to_uint factor{1}) _).
                 exact H_range.
-                smt (@W256 @Utils).
-                smt (@W256 @Utils).
+                rewrite /VK_PERMUTATION_3_X_SLOT. simplify.
+                rewrite - W256.of_intN. rewrite - (W256.of_int_mod (-1344)). by progress.
+                rewrite /VK_PERMUTATION_3_X_SLOT. simplify.
+                rewrite - W256.of_intN. rewrite - (W256.of_int_mod (-1376)). by progress.
                 rewrite - H0. rewrite W256.to_uintK. reflexivity.
                 rewrite - H1. rewrite W256.to_uintK. reflexivity.
-                case H19. progress.
+                case H31. progress.
+                smt (@EllipticCurve).
+                smt (@EllipticCurve @Constants).
+                smt (@EllipticCurve).
+                smt (@EllipticCurve @Constants).
+                rewrite /mem_4 /mem_3 /mem_2.
+                rewrite H28. rewrite H29. reflexivity.
+                rewrite load_store_diff. admit. admit.
+                rewrite load_store_diff. admit. admit.
+                rewrite load_store_diff.
                 admit. (* 128 <= to_uint dest{1} *)
                 admit. (* 64 <= to_uint (-dest{1}) *)
                 admit. admit. (* 0 <= point{2}.`1 < Constants.Q *)
