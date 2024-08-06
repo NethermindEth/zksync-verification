@@ -5,9 +5,11 @@ require import IntDiv.
 require import ZModP. 
 require import UInt256.
 
+require import Constants.
+
 type g.
 
-op p: int.
+op p : int = Constants.Q.
 axiom prime_p : prime p.
 axiom zero_lt_p : 0 < p.
 axiom p_lt_W256_mod : p < W256.modulus.
