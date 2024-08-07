@@ -118,17 +118,41 @@ proof.
   inline*. wp. skip. rewrite /Constants.R. by progress.
     qed. *)
 
-op addAssignPermutation_memory_footprint (memory: mem): mem.
+op addAssignPermutation_memory_footprint
+(mem_0: mem)
+(x64 x64' x96: uint256)
+(alpha4_r alpha5_r beta_r gamma_r l0AtZ_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r v_r z_r: int)
+(buffer_point ret_point: int*int)
+(p1_addr p2_addr: uint256) =
+  let mem_1 = store mem_0 COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF
+               (W256.of_int
+                   ((alpha4_r * (z_r * beta_r + gamma_r + opening0AtZ_r) *
+                     (z_r * beta_r * Constants.NON_RESIDUE_0 + gamma_r +
+                      opening1AtZ_r) *
+                     (z_r * beta_r * Constants.NON_RESIDUE_1 + gamma_r +
+                      opening2AtZ_r) *
+                     (z_r * beta_r * Constants.NON_RESIDUE_2 + gamma_r +
+                      opening3AtZ_r) +
+                     l0AtZ_r * alpha5_r) *
+                       v_r %% Constants.R)) in
+               let mem_2 = store mem_1 W256.zero (load mem_1 VK_PERMUTATION_3_X_SLOT) in
+               let mem_3 = store mem_2 (W256.of_int 32) (load mem_1 VK_PERMUTATION_3_Y_SLOT) in
+               let mem_4 = store mem_3 (W256.of_int 64) x64' in
+               let mem_5 = store mem_4 QUERIES_BUFFER_POINT_SLOT (W256.of_int buffer_point.`1) in
+               let mem_6 = store mem_5 (QUERIES_BUFFER_POINT_SLOT + (W256.of_int 32)) (W256.of_int buffer_point.`2) in
+               pointSubAssign_memory_footprint mem_6 p1_addr p2_addr x64 x96 ret_point.
 
-lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: mem) :
+(* have to pass all these variables as parameters so they can be referenced in the post *)
+lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: mem) (dest_l: uint256) (alpha4_r alpha5_r beta_r gamma_r l0AtZ_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r v_r z_r: int) :
     equiv [
     AddAssignPermutationLinearisationContributionWithV.low ~ AddAssignPermutationLinearisationContributionWithV.mid :
+      dest_l = dest{1} /\
       128 <= W256.to_uint dest{1} /\
       64 <= W256.to_uint (-dest{1}) /\
       W256.of_int 32 <= dest{1} - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
-      W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - dest{1} /\
-      W256.of_int 32 <= (dest{1} + W256.of_int 32) - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
-      W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - (dest{1} + W256.of_int 32) /\
+      W256.of_int 64 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - dest{1} /\
+      W256.of_int 64 <= dest{1} - QUERIES_BUFFER_POINT_SLOT /\
+      W256.of_int 64 <= QUERIES_BUFFER_POINT_SLOT - dest{1} /\
       point{2}.`1 = W256.to_uint (load mem_0 dest{1}) /\
       point{2}.`2 = W256.to_uint (load mem_0 (dest{1} + W256.of_int 32)) /\
       0 <= point{2}.`1 < Constants.Q /\
@@ -137,18 +161,18 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
       vk_permutation_3{2}.`1 < Constants.Q /\
       vk_permutation_3{2}.`2 = W256.to_uint (load mem_0 VK_PERMUTATION_3_Y_SLOT) /\
       vk_permutation_3{2}.`2 < Constants.Q /\      
-      stateOpening0AtZ{2} = W256.to_uint stateOpening0AtZ{1} /\
-      stateOpening1AtZ{2} = W256.to_uint stateOpening1AtZ{1} /\
-      stateOpening2AtZ{2} = W256.to_uint stateOpening2AtZ{1} /\
-      stateOpening3AtZ{2} = W256.to_uint stateOpening3AtZ{1} /\
-      state_beta{2} = W256.to_uint (load mem_0 STATE_BETA_SLOT) /\
-      state_v{2} = W256.to_uint (load mem_0 STATE_V_SLOT) /\
-      state_z{2} = W256.to_uint (load mem_0 STATE_Z_SLOT) /\
-      state_gamma{2} = W256.to_uint (load mem_0 STATE_GAMMA_SLOT) /\
-      state_alpha4{2} = W256.to_uint (load mem_0 STATE_POWER_OF_ALPHA_4_SLOT) /\
-      state_alpha5{2} = W256.to_uint (load mem_0 STATE_POWER_OF_ALPHA_5_SLOT) /\
+      opening0AtZ_r = stateOpening0AtZ{2} /\ opening0AtZ_r = W256.to_uint stateOpening0AtZ{1} /\
+      opening1AtZ_r = stateOpening1AtZ{2} /\ opening1AtZ_r = W256.to_uint stateOpening1AtZ{1} /\
+      opening2AtZ_r = stateOpening2AtZ{2} /\ opening2AtZ_r = W256.to_uint stateOpening2AtZ{1} /\
+      opening3AtZ_r = stateOpening3AtZ{2} /\ opening3AtZ_r = W256.to_uint stateOpening3AtZ{1} /\
+      beta_r = state_beta{2} /\ beta_r = W256.to_uint (load mem_0 STATE_BETA_SLOT) /\
+      v_r = state_v{2} /\ v_r = W256.to_uint (load mem_0 STATE_V_SLOT) /\
+      z_r = state_z{2} /\ z_r = W256.to_uint (load mem_0 STATE_Z_SLOT) /\
+      gamma_r = state_gamma{2} /\ gamma_r = W256.to_uint (load mem_0 STATE_GAMMA_SLOT) /\
+      alpha4_r = state_alpha4{2} /\ alpha4_r = W256.to_uint (load mem_0 STATE_POWER_OF_ALPHA_4_SLOT) /\
+      alpha5_r = state_alpha5{2} /\ alpha5_r = W256.to_uint (load mem_0 STATE_POWER_OF_ALPHA_5_SLOT) /\
       state_gp_omega{2} = W256.to_uint (load mem_0 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) /\
-      state_l0AtZ{2} = W256.to_uint (load mem_0 STATE_L_0_AT_Z_SLOT) /\
+      l0AtZ_r = state_l0AtZ{2} /\ l0AtZ_r = W256.to_uint (load mem_0 STATE_L_0_AT_Z_SLOT) /\
       poly0_opening{2} = W256.to_uint (load mem_0 PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) /\
       poly1_opening{2} = W256.to_uint (load mem_0 PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) /\
       poly2_opening{2} = W256.to_uint (load mem_0 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) /\
@@ -158,13 +182,17 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
       (Primops.reverted{1} /\ res{2} = None) \/
       (!Primops.reverted{1} /\ exists (f: int) (p: (int*int)),
         res{2} = Some (f, p) /\
-        Primops.memory{1} = addAssignPermutation_memory_footprint mem_0 (* temp *)
+        exists (x64 x64' x96: uint256) (buffer_p: int*int),
+        Primops.memory{1} = addAssignPermutation_memory_footprint
+          mem_0
+          x64 x64' x96
+          alpha4_r alpha5_r beta_r gamma_r l0AtZ_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r v_r z_r
+          buffer_p p
+          dest_l QUERIES_BUFFER_POINT_SLOT
       )  
     ].
     proof.
       proc.
-      exists* state_alpha4{2}, state_z{2}, state_beta{2}, state_gamma{2}, stateOpening0AtZ{2}, stateOpening1AtZ{2}, stateOpening2AtZ{2}, stateOpening3AtZ{2}, state_l0AtZ{2}, state_alpha5{2}, state_v{2}.
-      elim*=> alpha4_r z_r beta_r gamma_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r l0AtZ_r alpha5_r v_r.
       pose mem_1 := store mem_0 COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF (W256.of_int (
           ((
             alpha4_r *
@@ -202,9 +230,10 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         W256.to_uint (load mem_1 dest{1}) = point{2}.`1 /\
         W256.to_uint (load mem_1 (dest{1} + W256.of_int 32)) = point{2}.`2 /\
         W256.of_int 32 <= dest{1} - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
-        W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - dest{1} /\
-        W256.of_int 32 <= (dest{1} + W256.of_int 32) - COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /\
-        W256.of_int 32 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - (dest{1} + W256.of_int 32)
+        W256.of_int 64 <= COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF - dest{1} /\
+        W256.of_int 64 <= dest{1} - QUERIES_BUFFER_POINT_SLOT /\
+        W256.of_int 64 <= QUERIES_BUFFER_POINT_SLOT - dest{1} /\
+        dest{1} = dest_l
       ).
         inline*. wp. skip. progress.
         pose z := load Primops.memory{1} STATE_Z_SLOT.
@@ -316,8 +345,11 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
         ]).
         smt (@W256).
         smt (@W256).
-        rewrite load_store_diff. assumption. assumption. smt ().
-        rewrite load_store_diff. assumption. assumption. smt ().
+        rewrite load_store_diff.
+          assumption. apply (uint256_le_le_trans _ (W256.of_int 64) _). by progress. assumption. rewrite H5. reflexivity.
+            rewrite load_store_diff. apply uint256_le_add_32_sub. apply (uint256_lt_le_trans _ (W256.of_int 64) _). by progress. assumption.
+            apply uint256_le_sub_add_32; assumption.
+       rewrite H6. reflexivity.
 (* ===== mid and low: calculate mul factor. state is unaffected ===== *)
         seq 24 1: (
           #pre /\
@@ -365,7 +397,8 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
             rewrite (pmod_small _ W256.modulus). smt (@Constants @IntDiv @W256).
             rewrite - Constants.R_int. rewrite  H_add. rewrite H_add'. reflexivity.
             pose p1 := load mem_1 PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT.
-            pose p2 := load mem_1 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT.                pose v := load mem_1 STATE_V_SLOT.
+            pose p2 := load mem_1 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT.
+            pose v := load mem_1 STATE_V_SLOT.
             have ->: PurePrimops.mulmod p1 b R_MOD = W256.of_int ((W256.to_uint p1) * (W256.to_uint b) %% Constants.R). smt (@PurePrimops @Constants).
             pose x3 := W256.to_uint p1 * W256.to_uint b.
             have ->: PurePrimops.addmod (W256.of_int (x3 %% Constants.R)) g R_MOD = W256.of_int ((x3 + (W256.to_uint g)) %% Constants.R).
@@ -401,6 +434,7 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
             (Primops.reverted{1} /\ is_none buffer_point{2}) \/
             (
               !Primops.reverted{1} /\ is_some buffer_point{2} /\
+              dest{1} = dest_l /\
               128 <= W256.to_uint dest{1} /\
               64 <= W256.to_uint (-dest{1}) /\
               0 <= point{2}.`1 < Constants.Q /\
@@ -445,28 +479,54 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                 smt (@EllipticCurve @Constants).
                 rewrite /mem_4 /mem_3 /mem_2.
                 rewrite H28. rewrite H29. reflexivity.
-                rewrite load_store_diff. admit. admit.
-                rewrite load_store_diff. admit. admit.
+                rewrite load_store_diff. rewrite uint256_le_sub_add_32. assumption. rewrite uint256_le_add_32_sub. apply (uint256_lt_le_trans _ (W256.of_int 64) _). by progress. assumption.
                 rewrite load_store_diff.
-                admit. (* 128 <= to_uint dest{1} *)
-                admit. (* 64 <= to_uint (-dest{1}) *)
-                admit. admit. (* 0 <= point{2}.`1 < Constants.Q *)
-                admit. admit. (* 0 <= point{2}.`2 < Constants.Q *)
-                admit. admit. (* 0 <= (odflt (0,0) buffer_point{2}.`1 < Constants.Q *)
-                admit. admit. (* 0 <= (odflt (0,0) buffer_point{2}.`2 < Constants.Q *)
-                exists (x). exists (y).
-                rewrite /mem_4. rewrite /mem_3.
-                have ->: VK_PERMUTATION_3_Y_SLOT = VK_PERMUTATION_3_X_SLOT + (W256.of_int 32) by smt (@W256).
-                rewrite H17.
-                rewrite /mem_2. rewrite H16.
-                reflexivity.
+                  apply (uint256_le_le_trans _ (W256.of_int 64) _); [by progress | assumption].
+                  apply (uint256_le_le_trans _ (W256.of_int 64) _); [by progress | assumption].
+                rewrite load_store_diff.
+                rewrite diff_64. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                rewrite diff_neg_64. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                smt (@W256 @Utils).
+                rewrite load_store_diff.
+                rewrite diff_32. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                rewrite diff_neg_32. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                smt (@W256 @Utils).
+                rewrite load_store_diff.
+                rewrite diff_0. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                rewrite diff_neg_0. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                smt (@W256 @Utils).
+                assumption.
+                rewrite load_store_diff.
+                  rewrite uint256_sub_add_cancel. apply (uint256_le_le_trans _ (W256.of_int 64) _). assumption. assumption.
+                  rewrite uint256_sub_add_cancel. apply (uint256_le_le_trans _ (W256.of_int 64) _). assumption. assumption.
+                rewrite load_store_diff.
+                  rewrite uint256_le_add_32_sub. apply (uint256_lt_le_trans _ (W256.of_int 64) _). by progress. assumption.
+                  rewrite uint256_le_sub_add_32. assumption.
+                rewrite load_store_diff.
+                have ->: forall (a: uint256), a + W256.of_int 32 - W256.of_int 64 = a - W256.of_int 32. progress. smt (@W256 @Utils).
+                rewrite diff_32. rewrite - (W256.to_uintK dest{1}). rewrite ule_of_int. rewrite W256.to_uint_mod. simplify. assumption.
+                have ->: forall (a: uint256), W256.of_int 64 - (a + W256.of_int 32) = W256.of_int 32 - a. progress. simplify.
+                have ->: forall (a b c: uint256), a - (b + c) = (a - c) - b. smt.
+                by progress.
+                smt (@W256 @Utils).
+                rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils).
+                rewrite load_store_diff.
+                  rewrite uint256_le_add_32_sub. smt (@W256 @Utils).
+                  rewrite uint256_le_sub_add_32. smt (@W256 @Utils).
+                  smt ().
                 by progress.
               if{2}. sp. conseq (_ : Primops.reverted{1} /\ ret{2} = None ==> Primops.reverted{1} /\ ret{2} = None).
               progress. smt (). smt ().
               by progress.
               inline*. wp. skip. by progress.
+              exists* buffer_point{2}. elim*=>buffer_point_2.
+              pose buffer_point_dfl := odflt (0,0) buffer_point_2.
+              pose mem_5 := store mem_4 QUERIES_BUFFER_POINT_SLOT (W256.of_int buffer_point_dfl.`1).
+              pose mem_6 := store mem_5 (QUERIES_BUFFER_POINT_SLOT + (W256.of_int 32)) (W256.of_int buffer_point_dfl.`2).
               conseq (_ :
-                !Primops.reverted{1} /\ is_some buffer_point{2} /\
+                !Primops.reverted{1} /\ is_some buffer_point_2 /\
+                buffer_point_2 = buffer_point{2} /\
+                dest_l = dest{1} /\
                 128 <= W256.to_uint dest{1} /\
                 64 <= W256.to_uint (-dest{1}) /\
                 0 <= point{2}.`1 < Constants.Q /\
@@ -478,8 +538,17 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                 Primops.memory{1} = mem_6
                 ==>
                 (Primops.reverted{1} /\ ret{2} = None) \/
-                (!Primops.reverted{1} /\ exists (f: int) (p: int*int), ret{2} = Some (f, p) /\ Primops.memory{1} = mem_0)
-              ). progress. smt (). smt ().
+                  (!Primops.reverted{1} /\ exists (f: int) (p: (int*int)),
+                    ret{2} = Some (f, p) /\
+                    exists (x64 x64' x96: uint256) (buffer_p: int*int),
+                      Primops.memory{1} = addAssignPermutation_memory_footprint
+                        mem_0
+                        x64 x64' x96
+                        alpha4_r alpha5_r beta_r gamma_r l0AtZ_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r v_r z_r
+                        buffer_p p
+                        dest_l QUERIES_BUFFER_POINT_SLOT
+                  )
+              ). progress. smt (). smt (). smt ().
                   case H; by progress.
                   case H; by progress.
                   case H; by progress.
@@ -490,13 +559,21 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                   case H; by progress.
                   case H; by progress.
                   case H; by progress.
-                  admit. (* load dest{1} = point{2}.`1 *)
-                  admit. (* load dest{1} = point{2}.`2 *)
-                  admit. (* Primops.memory{1} = mem_6 *)
-                  smt ().
+                  case H; by progress.
+                  case H; by progress.
+                  case H; by progress.
+                  by progress.
             seq 1 1: (
-              (Primops.reverted{1} /\ is_none ret_point{2}) \/
-              (!Primops.reverted{1} /\ is_some ret_point{2} /\ Primops.memory{1} = mem_0)  
+              (Primops.reverted{1} /\ ret_point{2} = None) \/
+                  (!Primops.reverted{1} /\ is_some ret_point{2} /\
+                    exists (x64 x64' x96: uint256) (buffer_p: int*int),
+                      Primops.memory{1} = addAssignPermutation_memory_footprint
+                        mem_0
+                        x64 x64' x96
+                        alpha4_r alpha5_r beta_r gamma_r l0AtZ_r opening0AtZ_r opening1AtZ_r opening2AtZ_r opening3AtZ_r v_r z_r
+                        buffer_p (odflt (0,0) ret_point{2})
+                        dest_l QUERIES_BUFFER_POINT_SLOT
+                  )
             ).
             exists* Primops.memory{1}. elim*=> mem_preSub. progress.
             exists* dest{1}. elim*=> dest_1. progress.
@@ -505,18 +582,29 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                 skip.
                 progress.
                 rewrite W256.to_uintN. rewrite W256.of_uintK. smt (@IntDiv).
+                rewrite load_store_diff. smt. smt.
+                rewrite load_store_same. rewrite W256.of_uintK. smt (@W256 @Utils @IntDiv).
+                rewrite load_store_same. rewrite W256.of_uintK. smt (@W256 @Utils @IntDiv).
                 rewrite - Constants.q_eq_elliptic_curve_p. assumption.
                 rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - /buffer_point_dfl. assumption.
                 rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - /buffer_point_dfl. assumption.
                 rewrite - Constants.q_eq_elliptic_curve_p. assumption.
-                case H32. by progress.
-                admit. (* do memory *)
+                case H30. by progress. 
+                progress. exists x64. exists factor. exists x96. exists buffer_point_dfl. rewrite /addAssignPermutation_memory_footprint. simplify. congr.
+                rewrite /mem_6. congr.
+                rewrite /mem_5. congr.
+                rewrite /mem_4. congr.
+                rewrite /mem_3. congr.
+                rewrite /mem_2. congr.
+                reflexivity. reflexivity. reflexivity.
+                
             (*---seq done---*)
-                if{2}. wp. skip. progress. smt ().
+                if{2}. wp. skip. progress. case H. by progress. smt ().
                 wp. skip. progress. smt ().
                 smt ().
-            qed.
-
+            qed. 
 
 
 
