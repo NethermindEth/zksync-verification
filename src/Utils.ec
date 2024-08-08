@@ -84,6 +84,10 @@ lemma neq_small (x y: int):
       by progress.
     qed.
 
+lemma uint256_neq_ltz (x y : uint256): (x <> y) <=> (x < y \/ y < x) by smt(@W256).
+
+lemma uint256_neq_sym (x y : uint256): (x <> y) <=> (y <> x) by smt(@W256).
+    
 lemma uint256_eq_of_eq (a b : uint256) : W256.to_uint a = W256.to_uint b => a = b.
     smt.
   qed.

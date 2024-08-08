@@ -47,9 +47,39 @@ op store (memory: mem) (idx val: uint256) =
   .[idx + (W256.of_int 31) <- bytes.[0]]
 axiomatized by storeE.
 
+op store8 (memory: mem) (idx val: uint256) = memory.[idx<-W8.of_int (W256.to_uint val)]
+axiomatized by store8E.
+
 op load (memory: mem) (idx: uint256): uint256 =
   W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
+
+lemma load_store8_same (memory: mem) (idx val: uint256):
+    (load (store8 memory idx val) idx) \bits8 31 = W8.of_int (W256.to_uint val).
+proof. rewrite /load /store8. simplify. smt (@SmtMap). qed.
+    
+lemma load_store8_diff (memory: mem) (idx idx2 val: uint256):
+    (exists w, idx2 = idx + W256.of_int w /\ 1 <= w < W256.modulus - 32) => 
+    load (store8 memory idx val) idx2 = load memory idx2.
+proof.
+  move=>[w []]. progress.
+  progress.
+  rewrite loadE loadE.
+  apply W256.ext_eq. progress.
+  rewrite W32u8.pack32wE. trivial.
+  rewrite W32u8.pack32wE. trivial.
+  congr.
+  pose y := x %/ 8.
+  have H_y_lower: 0 <= y by smt (@IntDiv).
+  have H_y_upper: y < 32 by smt (@IntDiv).
+  rewrite W32u8.Pack.initE.
+  rewrite W32u8.Pack.initE. simplify. congr.
+  pose z := 31 - y.
+  have H_z_lower: 0 <= z by smt ().
+  have H_z_upper: z < 32 by smt ().
+  rewrite store8E. rewrite Map.get_set_neqE.
+  apply uint256_neq_sym. apply add_neq. split. smt(@W256). smt(@W256). reflexivity.
+qed.
 
 lemma load_store_same (memory: mem) (idx val: uint256):
     load (store memory idx val) idx = val.

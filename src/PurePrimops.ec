@@ -32,6 +32,7 @@ axiomatized by slt_uint256E.
 
 abbrev mload = load.
 abbrev mstore = store.
+abbrev mstore8 = store8.
 
 op mulmod(a b n : uint256) : uint256 =
   let a_int = W256.to_uint a in
