@@ -3,6 +3,7 @@ digraph zk {
         prepareAggregatedCommitment
         addAssignLookupLinearisationContributionWithV
         getTranscriptChallenge
+        mainGateLinearisationContributionWithV
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
@@ -23,7 +24,6 @@ digraph zk {
         updateTranscript
     }
     { node [style=filled fillcolor="red"]   
-        mainGateLinearisationContributionWithV
         finalPairing
         initializeTranscript
         loadProof
