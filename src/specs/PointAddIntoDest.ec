@@ -12,6 +12,8 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
+import MemoryMap.
+
 module PointAddIntoDest = {
   proc low(p1, p2, dest) =
   {
@@ -78,14 +80,12 @@ proof.
   inline*. wp. skip. by progress.
 qed.
   
-lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equiv [
+lemma pointAddIntoDest_low_equiv_low' (p1 p2 dest_address : uint256) : equiv [
     PointAddIntoDest.low ~ PointAddIntoDest.low':
       ={arg, glob PointAddIntoDest} /\
       arg{1} = (p1, p2, dest_address) /\
-        W256.of_int 128 <= p1 /\ W256.of_int 128 <= - p1 /\
-        W256.of_int 128 <= (p1 + W256.of_int 32) /\ W256.of_int 128 <= -(p1 + W256.of_int 32) /\
-        W256.of_int 128 <= p2 /\ W256.of_int 128 <= - p2 /\
-        W256.of_int 128 <= (p2 + W256.of_int 32) /\ W256.of_int 128 <= -(p2 + W256.of_int 32)
+        W256.of_int 128 <= p1 /\ W256.of_int 64 <= - p1 /\
+        W256.of_int 128 <= p2 /\ W256.of_int 64 <= - p2
       ==>
       ={res, glob PointAddIntoDest}
     ].
@@ -112,13 +112,9 @@ lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equ
       Primops.memory{1} =
       PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory W256.zero x1) (W256.of_int 32) y1) (W256.of_int 64) x2) (W256.of_int 96) y2 /\
       (of_int 128)%W256 <= p1 /\
-      (of_int 128)%W256 <= -p1 /\
-      (of_int 128)%W256 <= p1 + (of_int 32)%W256 /\
-      (of_int 128)%W256 <= - (p1 + (of_int 32)%W256) /\
+      (of_int 64)%W256 <= -p1 /\
       (of_int 128)%W256 <= p2 /\
-      (of_int 128)%W256 <= -p2 /\
-      (of_int 128)%W256 <= p2 + (of_int 32)%W256 /\
-      (of_int 128)%W256 <= - (p2 + (of_int 32)%W256)
+      (of_int 64)%W256 <= -p2
     ).
         inline Primops.mload Primops.mstore Primops.gas.
         wp. skip. progress.
@@ -234,7 +230,15 @@ lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equ
         smt ().
   qed.
 
-lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint256) (memory0 : MemoryMap.mem) : equiv [
+op pointAddIntoDest_memory_footprint (mem_0: mem) (dest: uint256) (p1 p2: int*int) (ret: F*F) =
+  let mem_1 = store mem_0 W256.zero (W256.of_int p1.`1) in
+  let mem_2 = store mem_1 (W256.of_int 32) (W256.of_int p1.`2) in
+  let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int p2.`1) in
+  let mem_4 = store mem_3 (W256.of_int 96) (W256.of_int p2.`2) in
+  let mem_5 = store mem_4 dest (W256.of_int(ZModField.asint(ret.`1))) in
+  store mem_5 (dest + W256.of_int 32) (W256.of_int(ZModField.asint(ret.`2))).
+  
+lemma pointAddIntoDest_low'_equiv_mid (x1v x2v y1v y2v : int) (p1v p2v destv : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointAddIntoDest.low' ~ PointAddIntoDest.mid :
     0 <= x1v < p /\ 0 <= x2v < p /\ 0 <= y1v < p /\ 0 <= y2v < p /\
     Primops.memory{1} = memory0 /\
@@ -244,14 +248,12 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
     PurePrimops.mload memory0 (p2v + W256.of_int 32) = W256.of_int y2v /\
       arg{1} = (p1v, p2v, destv) /\ arg{2} = (x1v, y1v, x2v, y2v) /\ !Primops.reverted{1}
       ==>
-        exists (memory_F : MemoryMap.mem),
-      memory_F = PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory0 W256.zero (W256.of_int x1v)) (W256.of_int 32) (W256.of_int y1v)) (W256.of_int 64) (W256.of_int x2v)) (W256.of_int 96) (W256.of_int y2v) /\
       (
         ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int x1v, W256.of_int y1v) (W256.of_int x2v, W256.of_int y2v) /\
         exists (x y : F),
         ecAdd_precompile (ZModField.inzmod x1v) (ZModField.inzmod y1v) (ZModField.inzmod x2v) (ZModField.inzmod y2v) = Some (x, y) /\
         res{2} = Some (ZModField.asint x, ZModField.asint y) /\
-        Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore memory_F destv (W256.of_int (ZModField.asint x))) (destv + W256.of_int 32) (W256.of_int (ZModField.asint y)) /\
+        Primops.memory{1} = pointAddIntoDest_memory_footprint memory0 destv (x1v, y1v) (x2v, y2v) (x, y) /\
         !Primops.reverted{1}
       ) \/
       (
@@ -283,7 +285,7 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
     dest{1} = destv /\  
     Primops.memory{1} = PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore (PurePrimops.mstore memory0 W256.zero _1{1}) (W256.of_int 32) _5{1}) (W256.of_int 64) _6{1}) (W256.of_int 96) _9{1} /\ !Primops.reverted{1}
     ).
-        inline *. wp. skip. progress.
+        inline *. wp. skip. by progress.
         exists* Primops.memory{1}.
         elim*=> memory_F.
 
@@ -399,14 +401,7 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
         progress. skip. progress. rewrite /iszero /bool_of_uint256. smt (@W256).
         sp. skip. progress. 
     
-        exists ((PurePrimops.mstore
-      ((PurePrimops.mstore
-          ((PurePrimops.mstore
-              ((PurePrimops.mstore memory0 W256.zero ((of_int x1{2}))%W256))
-              ((of_int 32))%W256 ((of_int y1{2}))%W256))
-          ((of_int 64))%W256 ((of_int x2{2}))%W256))
-      ((of_int 96))%W256 ((of_int y2{2}))%W256)).
-        progress. left. progress.
+        left. progress.
   
         simplify. apply cast_uint256_mod_eq_of_lt. progress. exact p_lt_W256_mod.
         simplify. apply cast_uint256_mod_eq_of_lt. progress. exact p_lt_W256_mod.
@@ -443,6 +438,7 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
            rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
            rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
            rewrite H10. simplify. smt ().
+           rewrite /pointAddIntoDest_memory_footprint. simplify.
            have J4 : Primops.memory{1} =
          (PurePrimops.mstore
            ((PurePrimops.mstore
@@ -469,3 +465,118 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
            smt (). smt ().
        qed.
 
+     lemma pointAddIntoDest_low_equiv_mid (mem_0: mem) (p1_addr p2_addr dest_addr: uint256) (p1 p2: int*int):
+     equiv [
+         PointAddIntoDest.low ~ PointAddIntoDest.mid:
+           arg{1} = (p1_addr, p2_addr, dest_addr) /\
+         W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= -p1_addr /\
+         W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= -p2_addr /\
+         0 <= p1.`1 < p /\ 0 <= p1.`2 < p /\ 0 <= p2.`1 < p /\ 0 <= p2.`2 < p /\
+         Primops.memory{1} = mem_0 /\
+         W256.to_uint (load mem_0 p1_addr) = p1.`1 /\
+         W256.to_uint (load mem_0 (p1_addr + W256.of_int 32)) = p1.`2 /\
+         W256.to_uint (load mem_0 p2_addr) = p2.`1 /\
+         W256.to_uint (load mem_0 (p2_addr + W256.of_int 32)) = p2.`2 /\
+           arg{2} = (p1.`1, p1.`2, p2.`1, p2.`2) /\
+         !Primops.reverted{1} ==>
+           (
+             ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+             exists (x y: F),
+             ecAdd_precompile (ZModField.inzmod p1.`1) (ZModField.inzmod p1.`2) (ZModField.inzmod p2.`1) (ZModField.inzmod p2.`2) = Some (x,y) /\
+             res{2} = Some (ZModField.asint x, ZModField.asint y) /\
+             Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 dest_addr p1 p2 (x,y) /\
+             !Primops.reverted{1}
+           ) \/
+           (
+             !ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+             res{2} = None /\
+             Primops.reverted{1}
+           )
+         ].
+         proof.
+           transitivity PointAddIntoDest.low'
+         (
+           ={arg, glob PointAddIntoDest} /\
+             Primops.memory{1} = mem_0 /\
+             !Primops.reverted{1} /\
+           arg{1} = (p1_addr, p2_addr, dest_addr) /\
+           W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= - p1_addr /\
+           W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= - p2_addr
+            ==>
+            ={res, glob PointAddIntoDest}
+         )
+         (
+            0 <= p1.`1 < p /\ 0 <= p1.`2 < p /\ 0 <= p2.`1 < p /\ 0 <= p2.`2 < p /\
+            Primops.memory{1} = mem_0 /\
+            load mem_0 p1_addr = W256.of_int p1.`1 /\
+            load mem_0 (p1_addr + W256.of_int 32) = W256.of_int p1.`2 /\
+            load mem_0 p2_addr = W256.of_int p2.`1 /\
+            load mem_0 (p2_addr + W256.of_int 32) = W256.of_int p2.`2 /\
+           arg{1} = (p1_addr, p2_addr, dest_addr) /\
+           arg{2} = (p1.`1, p1.`2, p2.`1, p2.`2) /\
+           !Primops.reverted{1}
+            ==>
+            (
+              ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+              exists (x y : F),
+              ecAdd_precompile (ZModField.inzmod p1.`1) (ZModField.inzmod p1.`2) (ZModField.inzmod p2.`1) (ZModField.inzmod p2.`2) = Some (x, y) /\
+              res{2} = Some (ZModField.asint x, ZModField.asint y) /\
+              Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 dest_addr p1 p2 (x, y) /\
+              !Primops.reverted{1}
+            ) \/
+            (
+              !ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+              res{2} = None /\
+              Primops.reverted{1}
+            )
+          ).
+              progress.
+              exists (Primops.memory{1}) (Primops.reverted{1}) (p1_addr, p2_addr, dest_addr).
+              progress.
+              rewrite - H11. by progress.
+              rewrite - H12. by progress.
+              rewrite - H13. by progress.
+              rewrite - H14. by progress.
+              progress.
+              conseq (_ :
+            ={arg, glob PointAddIntoDest} /\
+            arg{1} = (p1_addr, p2_addr, dest_addr) /\
+              W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= - p1_addr /\
+              W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= - p2_addr
+            ==>  
+            ={res, glob PointAddIntoDest}
+          ).
+              by progress.
+              exact pointAddIntoDest_low_equiv_low'.
+              conseq (_ :
+              0 <= p1.`1 < p /\ 0 <= p2.`1 < p /\ 0 <= p1.`2 < p /\ 0 <= p2.`2 < p /\
+              Primops.memory{1} = mem_0 /\
+              PurePrimops.mload mem_0 p1_addr = W256.of_int p1.`1 /\
+              PurePrimops.mload mem_0 (p1_addr + W256.of_int 32) = W256.of_int p1.`2 /\
+              PurePrimops.mload mem_0 p2_addr = W256.of_int p2.`1 /\
+              PurePrimops.mload mem_0 (p2_addr + W256.of_int 32) = W256.of_int p2.`2 /\
+            arg{1} = (p1_addr, p2_addr, dest_addr) /\
+            arg{2} = (p1.`1, p1.`2, p2.`1, p2.`2) /\
+              !Primops.reverted{1}
+      ==>
+      (
+        ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+        exists (x y : F),
+        ecAdd_precompile (ZModField.inzmod p1.`1) (ZModField.inzmod p1.`2) (ZModField.inzmod p2.`1) (ZModField.inzmod p2.`2) = Some (x, y) /\
+        res{2} = Some (ZModField.asint x, ZModField.asint y) /\
+        Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 dest_addr p1 p2 (x, y) /\
+        !Primops.reverted{1}
+      ) \/
+      (
+        !ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+        res{2} = None /\
+        Primops.reverted{1}
+      )
+    ).
+        by progress.
+        by progress.
+        exact (pointAddIntoDest_low'_equiv_mid p1.`1 p2.`1 p1.`2 p2.`2 p1_addr p2_addr dest_addr mem_0).
+    qed.
+          
+          
+              

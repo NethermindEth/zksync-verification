@@ -70,7 +70,19 @@ proof.
   inline*. wp. skip. by progress.
   inline*. wp. skip. by progress.
 qed.
-  
+
+lemma pointMulAndAddIntoDest_low_pspec_revert:
+    phoare [ PointMulAndAddIntoDest.low :
+    Primops.reverted ==>
+    Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline Primops.mload Primops.mstore Primops.gas.
+      sp.
+      inline*. wp. skip. by progress.
+    qed.
+
 lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
     Primops.memory{1} = memory0 /\

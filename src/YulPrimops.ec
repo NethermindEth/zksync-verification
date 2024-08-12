@@ -200,6 +200,10 @@ hoare [ Primops.mload :
       by progress.
   qed.
 
+lemma mload_spec_revert:
+hoare [ Primops.mload: Primops.reverted ==> Primops.reverted ].
+    proof. proc. skip. by auto. qed.
+
 lemma mstore_pspec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 phoare [ Primops.mstore :
@@ -233,6 +237,10 @@ hoare [ Primops.mstore :
       skip.
       by progress.
   qed.
+
+lemma mstore_spec_revert:
+hoare [ Primops.mstore: Primops.reverted ==> Primops.reverted ].
+    proof. proc. wp. skip. by auto. qed.
 
 lemma keccak256_pspec (off size: uint256):
     phoare [ Primops.keccak256 :
@@ -398,7 +406,11 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
 
 lemma staticcall_pspec_revert :
 phoare [ Primops.staticcall : Primops.reverted ==> Primops.reverted ] = 1%r.
-proof. proc; inline*; wp; by progress. qed.
+    proof. proc; inline*; wp; by progress. qed.
+
+lemma staticcall_spec_revert:
+hoare [ Primops.staticcall : Primops.reverted ==> Primops.reverted ].
+    proof. proc. inline*. wp. by progress. qed.
 
 lemma ecAdd_precomp_is_some_of_should_succeed (p1 p2 : uint256 * uint256) :
     staticcall_ec_add_should_succeed p1 p2 =>

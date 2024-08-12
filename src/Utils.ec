@@ -56,6 +56,9 @@ lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
 lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
 
 lemma uint256_distrib_sub (a b c : uint256) : a - (b + c) = (a - c) - b. smt (@W256). qed.
+
+lemma uint256_sub_sub_cancel (a b: uint256) : a - b - a = -b. by smt (@W256). qed.
+lemma uint256_add_sub_cancel (a b: uint256) : a + b - a = b. by smt (@W256). qed.
     
 lemma neq_small (x y: int):
     0 <= x < W256.modulus =>
@@ -166,6 +169,7 @@ lemma uint256_sub_distr2 (a b c : uint256) : a - (b + c) = (a - c) - b.
 
 lemma uint256_le_le_trans (a b c : uint256) : a <= b => b <= c => a <= c. smt (@W256). qed.
 lemma uint256_le_lt_trans (a b c : uint256) : a <= b => b < c => a <= c. smt (@W256). qed.
+lemma uint256_lt_le_trans (a b c : uint256) : a < b => b <= c => a < c. smt (@W256). qed.
 lemma uint256_lt_lt_trans (a b c : uint256) : a < b => b < c => a < c. smt (@W256). qed.
   
 lemma uint256_ord1 (a b c : uint256) : W256.to_uint a + W256.to_uint c <= W256.to_uint b => c <= b => a <= b - c.
@@ -384,6 +388,19 @@ lemma neq_of_diff (idx idx2: uint256):
       rewrite addr0_s in H_add_zero.
       assumption.
   qed.
+
+lemma uint256_le_add_32_sub (a b: uint256) : W256.of_int 32 < b - a => W256.of_int 32 <= a + (W256.of_int 32) - b.
+    proof.
+      progress.
+      have ->: a + (W256.of_int 32) - b = (W256.of_int 32) - (b-a). rewrite uint256_distrib_sub. smt (@W256).
+      smt.
+  qed.
+
+lemma uint256_le_sub_add_32 (a b: uint256): W256.of_int 64 <= b - a => W256.of_int 32 <= b - (a + W256.of_int 32).
+    proof.
+      progress.
+      smt.
+    qed.
 
 lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
     progress.
