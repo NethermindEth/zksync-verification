@@ -28,7 +28,7 @@ module UpdateTranscript = {
     Primops.mstore(TRANSCRIPT_STATE_1_SLOT, newState1);
     Primops.mstore(TRANSCRIPT_STATE_0_SLOT, newState0);
   }
-
+  
   proc mid(tS0 tS1 tC : int) : int * int = {
     var state0, state1 : int;
     state0 <- keccakI [0; tS0; tS1; tC];

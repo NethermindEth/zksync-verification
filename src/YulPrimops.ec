@@ -2,6 +2,7 @@ pragma Goals:printall.
 prover timeout=10.
 
 require import AllCore.
+require import List.
 require import Array.
 require import Int.
 require import IntDiv.
