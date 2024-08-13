@@ -62,6 +62,10 @@ module PointAddIntoDest = {
   }
 }.
 
+lemma pointAddIntoDest_pspec_revert :
+phoare [ PointAddIntoDest.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; inline*; wp; by progress. qed.
+
 lemma pointAddIntoDest_extracted_equiv_low : equiv [
     Verifier_1261.usr_pointAddIntoDest ~ PointAddIntoDest.low :
       ={arg, glob PointAddIntoDest} ==>
@@ -438,7 +442,7 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
            rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
            rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
            rewrite pmod_small in H10. progress. apply (lt_trans _ p _). smt (). exact p_lt_W256_mod.
-           rewrite H10 /topoint. simplify. smt ().
+           rewrite H10. simplify. smt ().
            have J4 : Primops.memory{1} =
          (PurePrimops.mstore
            ((PurePrimops.mstore
@@ -464,3 +468,4 @@ lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint
            rewrite blu. smt ().
            smt (). smt ().
        qed.
+
