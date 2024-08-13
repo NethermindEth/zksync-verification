@@ -1,11 +1,11 @@
 pragma Goals:printall.
 
 require import AllCore.
+require        EllipticCurve.
 require import Int.
 require import IntDiv.
 require import UInt256.
 require        VerifierConsts.
-require        VerifierVars.
 
 op Q : int = 21888242871839275222246405745257275088696311157297823662689037894645226208583 axiomatized by qE.
 op R : int = 21888242871839275222246405745257275088548364400416034343698204186575808495617 axiomatized by rE.
@@ -15,7 +15,7 @@ lemma Q_int: Q = W256.to_uint VerifierConsts.Q_MOD
 lemma R_int: R = W256.to_uint VerifierConsts.R_MOD
     by rewrite /VerifierConsts.R_MOD W256.of_uintK rE pmod_small; [trivial | reflexivity].
 
-axiom prime_q : prime Q.
+axiom q_eq_elliptic_curve_p: Q = EllipticCurve.p.
 axiom prime_r : prime R.
 
 (* 0x1dba8b5bdd64ef6ce29a9039aca3c0e524395c43b9227b96c75090cc6cc7ec97 *)
