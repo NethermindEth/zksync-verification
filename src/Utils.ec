@@ -57,6 +57,9 @@ lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
 lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
 
 lemma uint256_distrib_sub (a b c : uint256) : a - (b + c) = (a - c) - b. smt (@W256). qed.
+
+lemma uint256_sub_sub_cancel (a b: uint256) : a - b - a = -b. by smt (@W256). qed.
+lemma uint256_add_sub_cancel (a b: uint256) : a + b - a = b. by smt (@W256). qed.
     
 lemma neq_small (x y: int):
     0 <= x < W256.modulus =>

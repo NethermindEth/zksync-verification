@@ -12,6 +12,8 @@ require import Utils.
 require import YulPrimops.
 require import Verifier.
 
+import MemoryMap.
+
 module PointMulIntoDest = {
   proc low(point, s, dest) =
   {
@@ -51,15 +53,35 @@ proof.
   inline*. wp. skip. by progress.
 qed.
 
+lemma pointMulIntoDest_low_pspec_revert:
+    phoare [ PointMulIntoDest.low :
+    Primops.reverted ==>
+    Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline Primops.mload Primops.mstore Primops.gas.
+      sp.
+      inline*. wp. skip. by progress.
+    qed.
+    
+op pointMulIntoDest_memory_footprint (mem_0: mem) (dest: uint256) (point result: int*int) (factor: int) =
+    let mem_1 = store mem_0 W256.zero (W256.of_int point.`1) in
+    let mem_2 = store mem_1 (W256.of_int 32) (W256.of_int point.`2) in
+    let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int factor) in
+    let mem_4 = store mem_3 dest (W256.of_int result.`1) in
+    store mem_4 (dest + W256.of_int 32) (W256.of_int result.`2).
+    
+(* TODO update this proof to use the memory footprint *)
 
 lemma pointMulIntoDest_low_equiv_mid (x1v y1v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulIntoDest.low ~ PointMulIntoDest.mid :
     Primops.memory{1} = memory0 /\
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\
       (of_int 128)%W256 <= p1u /\
-      (of_int 128)%W256 <= -p1u /\
+      (of_int 64)%W256 <= -p1u /\
       (of_int 128)%W256 <= p1u + (of_int 32)%W256 /\
-      (of_int 128)%W256 <= - (p1u + (of_int 32)%W256) /\
+      (of_int 32)%W256 <= - (p1u + (of_int 32)%W256) /\
     PurePrimops.mload memory0 p1u = W256.of_int x1v /\
     PurePrimops.mload memory0 (p1u + W256.of_int 32) = W256.of_int y1v /\
       arg{1} = (p1u, W256.of_int sv, destu) /\ arg{2} = (x1v, y1v, sv) /\ !Primops.reverted{1}
@@ -93,7 +115,7 @@ lemma pointMulIntoDest_low_equiv_mid (x1v y1v sv : int) (p1u destu : uint256) (m
 
         rewrite MemoryMap.load_store_diff. rewrite uint256_sub_zero_eq.
         apply (uint256_le_le_trans _ (W256.of_int 128) _). smt (@UInt256). exact H7.
-        rewrite uint256_zero_sub_eq_sub. apply (uint256_le_le_trans _ (W256.of_int 128) _). smt (@UInt256). exact H8. rewrite H9 H10. reflexivity.
+        rewrite uint256_zero_sub_eq_sub. exact H8. rewrite H9 H10. reflexivity.
 
         case (ConcretePrimops.staticcall_ec_mul_should_succeed (W256.of_int x1v, W256.of_int y1v) (W256.of_int sv)).
         exists* Primops.memory{1}.
