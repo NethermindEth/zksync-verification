@@ -17,7 +17,7 @@ lemma is_none_iff_not_is_some (a: 'a option): is_none a <=> !is_some a.
     proof.
       case (a = None). smt (). smt ().
   qed.
-
+  
 lemma neg_none_eq_some ['a] (o : 'a option) : (!(is_none o)) = is_some o. smt (). qed.
 
 lemma is_none_of_eq_none ['a] (o : 'a option) : o = None => is_none o. smt (). qed.
@@ -27,6 +27,7 @@ lemma eq_none_of_is_none ['a] (o : 'a option) : is_none o => o = None. smt (). q
 (* Some potentially useful lemmas to prove mid-level specs *)
 
 lemma lt_trans : forall (a b c : int), a < b => b < c => a < c. progress. smt (). qed.
+lemma le_trans : forall (a b c : int), a <= b => b <= c => a <= c. progress. smt (). qed.
 
 lemma mod_m_lt_m :
     forall (a m : int), 0 < m => a %% m < m.
@@ -46,7 +47,7 @@ lemma mod_mod_eq_mod :
   qed.
 
 lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt(). qed.
-
+  
  (* tuples *)
 lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
 lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
@@ -90,6 +91,8 @@ lemma neq_small (x y: int):
 lemma uint256_eq_of_eq (a b : uint256) : W256.to_uint a = W256.to_uint b => a = b.
     smt.
   qed.
+
+lemma uint256_eq_of_eq' (a b : int) : a = b => W256.of_int a = W256.of_int b. progress. qed.
     
 lemma uint256_neq_of_neq (a b : uint256) : W256.to_uint a <> W256.to_uint b => a <> b.
     smt.
@@ -253,8 +256,7 @@ lemma cast_uint256_mod_eq_of_lt (a p : int) : 0 <= a < p < W256.modulus => W256.
       reflexivity.
   qed.
   
-lemma add_neq:
-    forall (x: uint256) (y: int),
+lemma add_neq (x: uint256) (y: int):
     1 <= y /\ y < W256.modulus => x <> x + W256.of_int y.
     proof.
       progress.
@@ -482,6 +484,224 @@ qed.
 
 lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
     smt ().
+  qed.
+
+(* smt cannot prove these in the proof because there's too many assumptions in play *)
+lemma diff_96 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 96.
+    proof.
+      progress.
+      rewrite uint256_cast_sub of_uintK.
+      have ->: 96 %% W256.modulus = 96. smt ().
+      have H'  : W256.to_uint a < W256.modulus. exact uint256_size.
+      have H'' : 128 <= W256.to_uint a.
+      have T' : 128 %% W256.modulus = 128. smt ().
+      have T := uint256_le_of_le' _ _ H.
+      rewrite of_uintK in T.
+      rewrite T' in T.
+      exact T.
+      have J : to_uint a - 96 < to_uint a. smt (). 
+      have ->: (to_uint a - 96) %% W256.modulus = to_uint a - 96.
+      rewrite mod_eq_self. smt (). smt ().
+      exact (lt_trans  _ _ _ J H').
+      reflexivity.
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      rewrite mod_eq_self. smt (). smt ().
+      exact (lt_trans _ _ _ J H').
+      smt ().
+  qed.
+  
+lemma diff_64 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 64.
+    proof.
+      progress.
+      rewrite uint256_cast_sub of_uintK.
+      have ->: 64 %% W256.modulus = 64. smt ().
+      have H'  : W256.to_uint a < W256.modulus. exact uint256_size.
+      have H'' : 128 <= W256.to_uint a.
+      have T' : 128 %% W256.modulus = 128. smt ().
+      have T := uint256_le_of_le' _ _ H.
+      rewrite of_uintK in T.
+      rewrite T' in T.
+      exact T.
+      have J : to_uint a - 64 < to_uint a. smt (). 
+      have ->: (to_uint a - 64) %% W256.modulus = to_uint a - 64.
+      rewrite mod_eq_self. smt (). smt ().
+      exact (lt_trans  _ _ _ J H').
+      reflexivity.
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      rewrite mod_eq_self. smt (). smt ().
+      exact (lt_trans _ _ _ J H').
+      smt ().
+  qed.
+  
+lemma diff_32 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 32.
+    proof.
+      progress.
+      rewrite uint256_cast_sub of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      have H'  : W256.to_uint a < W256.modulus. exact uint256_size.
+      have H'' : 128 <= W256.to_uint a.
+      have T' : 128 %% W256.modulus = 128. smt ().
+      have T := uint256_le_of_le' _ _ H.
+      rewrite of_uintK in T.
+      rewrite T' in T.
+      exact T.
+      have J : to_uint a - 32 < to_uint a. smt (). 
+      have ->: (to_uint a - 32) %% W256.modulus = to_uint a - 32.
+      rewrite mod_eq_self. smt (). smt ().
+      exact (lt_trans  _ _ _ J H').
+      reflexivity.
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      rewrite mod_eq_self. smt (). smt ().
+      exact (lt_trans _ _ _ J H').
+      smt ().
+  qed.
+
+lemma diff_0 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.zero.
+    proof.
+      progress.
+      have J : 128 %% W256.modulus = 128. smt ().
+      have H' := uint256_le_of_le' _ _ H.
+      rewrite of_uintK J in H'.
+      apply uint256_le_of_le.
+      rewrite uint256_sub_zero_eq of_uintK.
+      smt ().
+  qed.
+
+lemma lt_sub_sub (a b c : int) : c < b => a - b < a - c. smt (). qed.
+lemma le_sub_sub (a b c : int) : c <= b => a - b <= a - c. smt (). qed.
+lemma lt_sub_sub' (a b c : int) : b < c => b - a < c - a. smt (). qed.
+lemma le_sub_sub' (a b c : int) : b <= c => b - a <= c - a. smt (). qed.
+lemma le_of_lt (a b : int) : a < b => a <= b. smt (). qed.
+lemma lt_sub (a b : int) : b < a => -a < - b. smt (). qed.
+
+lemma mod_eq_sub_self : forall (a m : int), 0 < m => a < 0 => - m < a => a %% m = m + a.
+    progress.
+    smt (@IntDiv).
+  qed.
+  
+lemma diff_neg_96 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W256.of_int 32 <= W256.of_int 96 - a.
+    proof.
+      progress.
+      have E : 128 %% W256.modulus = 128. smt ().
+      have E' : 32 %% W256.modulus = 32. smt ().
+      have H' := uint256_le_of_le' _ _ H.
+      have H0' := uint256_le_of_le' _ _ H0.
+      rewrite of_uintK E in H'.
+      rewrite of_uintK E' in H0'.
+      rewrite uint256_cast_sub.
+      rewrite of_uintK.
+      have ->: 96 %% W256.modulus = 96. smt ().
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK mod_mod_eq_mod'.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      have J := uint256_size a.
+      have ->: (96 - to_uint a) %% W256.modulus = W256.modulus - (W256.to_uint a - 96).
+      have J1 : - W256.modulus < 96 - to_uint a.
+      apply (lt_trans _ (- W256.to_uint a) _).
+      apply lt_sub.
+      exact J.
+      smt ().
+      rewrite mod_eq_sub_self. smt (). smt ().
+      exact J1.
+      smt ().
+      have J' : W256.to_uint a - 96 < W256.modulus - 96.
+      apply lt_sub_sub'.
+      exact J.
+      have J'' : W256.modulus - (W256.modulus - 96) < W256.modulus - (to_uint a - 96). apply lt_sub_sub. exact J'.
+      apply (le_trans _ (W256.modulus - (W256.modulus - 96)) _).
+      have ->: W256.modulus - (W256.modulus - 96) = 96. smt ().
+      smt ().
+      apply le_sub_sub.
+      apply le_sub_sub'.
+      apply le_of_lt.
+      exact J.
+  qed.  
+  
+lemma diff_neg_64 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W256.of_int 32 <= W256.of_int 64 - a.
+    proof.
+      progress.
+      have E : 128 %% W256.modulus = 128. smt ().
+      have E' : 32 %% W256.modulus = 32. smt ().
+      have H' := uint256_le_of_le' _ _ H.
+      have H0' := uint256_le_of_le' _ _ H0.
+      rewrite of_uintK E in H'.
+      rewrite of_uintK E' in H0'.
+      rewrite uint256_cast_sub.
+      rewrite of_uintK.
+      have ->: 64 %% W256.modulus = 64. smt ().
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK mod_mod_eq_mod'.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      have J := uint256_size a.
+      have ->: (64 - to_uint a) %% W256.modulus = W256.modulus - (W256.to_uint a - 64).
+      have J1 : - W256.modulus < 64 - to_uint a.
+      apply (lt_trans _ (- W256.to_uint a) _).
+      apply lt_sub.
+      exact J.
+      smt ().
+      rewrite mod_eq_sub_self. smt (). smt ().
+      exact J1.
+      smt ().
+      have J' : W256.to_uint a - 64 < W256.modulus - 64.
+      apply lt_sub_sub'.
+      exact J.
+      have J'' : W256.modulus - (W256.modulus - 64) < W256.modulus - (to_uint a - 64). apply lt_sub_sub. exact J'.
+      apply (le_trans _ (W256.modulus - (W256.modulus - 64)) _).
+      have ->: W256.modulus - (W256.modulus - 64) = 64. smt ().
+      smt ().
+      apply le_sub_sub.
+      apply le_sub_sub'.
+      apply le_of_lt.
+      exact J.
+  qed.
+  
+lemma diff_neg_32 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W256.of_int 32 <= W256.of_int 32 - a.
+    proof.
+          progress.
+      have E : 128 %% W256.modulus = 128. smt ().
+      have E' : 32 %% W256.modulus = 32. smt ().
+      have H' := uint256_le_of_le' _ _ H.
+      have H0' := uint256_le_of_le' _ _ H0.
+      rewrite of_uintK E in H'.
+      rewrite of_uintK E' in H0'.
+      rewrite uint256_cast_sub.
+      rewrite of_uintK.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      apply uint256_le_of_le.
+      rewrite of_uintK of_uintK mod_mod_eq_mod'.
+      have ->: 32 %% W256.modulus = 32. smt ().
+      have J := uint256_size a.
+      have ->: (32 - to_uint a) %% W256.modulus = W256.modulus - (W256.to_uint a - 32).
+      have J1 : - W256.modulus < 32 - to_uint a.
+      apply (lt_trans _ (- W256.to_uint a) _).
+      apply lt_sub.
+      exact J.
+      smt ().
+      rewrite mod_eq_sub_self. smt (). smt ().
+      exact J1.
+      smt ().
+      have J' : W256.to_uint a - 32 < W256.modulus - 32.
+      apply lt_sub_sub'.
+      exact J.
+      have J'' : W256.modulus - (W256.modulus - 32) < W256.modulus - (to_uint a - 32). apply lt_sub_sub. exact J'.
+      apply (le_trans _ (W256.modulus - (W256.modulus - 32)) _).
+      have ->: W256.modulus - (W256.modulus - 32) = 32. smt ().
+      smt ().
+      apply le_sub_sub.
+      apply le_sub_sub'.
+      apply le_of_lt.
+      exact J.
+  qed.
+  
+lemma diff_neg_0 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W256.of_int 32 <= W256.zero - a.
+    proof.
+      progress.
   qed.
 
 (* logic *)

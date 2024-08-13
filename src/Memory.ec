@@ -51,6 +51,28 @@ op load (memory: mem) (idx: uint256): uint256 =
   W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
 
+lemma add_neq_32 (x: uint256) (y: int):
+    1 <= y /\ y < 32 => x <> x + W256.of_int y.
+    proof.
+      progress.
+      have H_y: y < W256.modulus by smt ().
+      exact add_neq.
+    qed.
+
+lemma add_2_neq_32 (x y: int) (a: uint256):
+    0 <= x =>
+    0 <= y =>
+    x < 32 =>
+    y < 32 =>
+    x <> y =>
+    a + W256.of_int x <> a + W256.of_int y.
+    proof.
+      progress.
+      have H_x: x < W256.modulus by smt ().
+      have H_y: y < W256.modulus by smt ().
+      exact add_2_neq.
+    qed.
+
 lemma load_store_same (memory: mem) (idx val: uint256):
     load (store memory idx val) idx = val.
     proof.
@@ -67,37 +89,37 @@ lemma load_store_same (memory: mem) (idx val: uint256):
       rewrite H_byte_idx. simplify.
       congr.
       case (byte_idx = 0). move => HB0. rewrite HB0. smt (@SmtMap).
-      move => HB0. case (byte_idx = 1). move => HB1. rewrite HB1. simplify. smt (@SmtMap add_2_neq).
-      move => HB1. case (byte_idx = 2). move => HB2. rewrite HB2. simplify. smt (@SmtMap add_2_neq).
-      move => HB2. case (byte_idx = 3). move => HB3. rewrite HB3. simplify. smt (@SmtMap add_2_neq).
-      move => HB3. case (byte_idx = 4). move => HB4. rewrite HB4. simplify. smt (@SmtMap add_2_neq).
-      move => HB4. case (byte_idx = 5). move => HB5. rewrite HB5. simplify. smt (@SmtMap add_2_neq).
-      move => HB5. case (byte_idx = 6). move => HB6. rewrite HB6. simplify. smt (@SmtMap add_2_neq).
-      move => HB6. case (byte_idx = 7). move => HB7. rewrite HB7. simplify. smt (@SmtMap add_2_neq).
-      move => HB7. case (byte_idx = 8). move => HB8. rewrite HB8. simplify. smt (@SmtMap add_2_neq).
-      move => HB8. case (byte_idx = 9). move => HB9. rewrite HB9. simplify. smt (@SmtMap add_2_neq).
-      move => HB9. case (byte_idx = 10). move => HB10. rewrite HB10. simplify. smt (@SmtMap add_2_neq).
-      move => HB10. case (byte_idx = 11). move => HB11. rewrite HB11. simplify. smt (@SmtMap add_2_neq).
-      move => HB11. case (byte_idx = 12). move => HB12. rewrite HB12. simplify. smt (@SmtMap add_2_neq).
-      move => HB12. case (byte_idx = 13). move => HB13. rewrite HB13. simplify. smt (@SmtMap add_2_neq).
-      move => HB13. case (byte_idx = 14). move => HB14. rewrite HB14. simplify. smt (@SmtMap add_2_neq).
-      move => HB14. case (byte_idx = 15). move => HB15. rewrite HB15. simplify. smt (@SmtMap add_2_neq).
-      move => HB15. case (byte_idx = 16). move => HB16. rewrite HB16. simplify. smt (@SmtMap add_2_neq).
-      move => HB16. case (byte_idx = 17). move => HB17. rewrite HB17. simplify. smt (@SmtMap add_2_neq).
-      move => HB17. case (byte_idx = 18). move => HB18. rewrite HB18. simplify. smt (@SmtMap add_2_neq).
-      move => HB18. case (byte_idx = 19). move => HB19. rewrite HB19. simplify. smt (@SmtMap add_2_neq).
-      move => HB19. case (byte_idx = 20). move => HB20. rewrite HB20. simplify. smt (@SmtMap add_2_neq).
-      move => HB20. case (byte_idx = 21). move => HB21. rewrite HB21. simplify. smt (@SmtMap add_2_neq).
-      move => HB21. case (byte_idx = 22). move => HB22. rewrite HB22. simplify. smt (@SmtMap add_2_neq).
-      move => HB22. case (byte_idx = 23). move => HB23. rewrite HB23. simplify. smt (@SmtMap add_2_neq).
-      move => HB23. case (byte_idx = 24). move => HB24. rewrite HB24. simplify. smt (@SmtMap add_2_neq).
-      move => HB24. case (byte_idx = 25). move => HB25. rewrite HB25. simplify. smt (@SmtMap add_2_neq).
-      move => HB25. case (byte_idx = 26). move => HB26. rewrite HB26. simplify. smt (@SmtMap add_2_neq).
-      move => HB26. case (byte_idx = 27). move => HB27. rewrite HB27. simplify. smt (@SmtMap add_2_neq).
-      move => HB27. case (byte_idx = 28). move => HB28. rewrite HB28. simplify. smt (@SmtMap add_2_neq).
-      move => HB28. case (byte_idx = 29). move => HB29. rewrite HB29. simplify. smt (@SmtMap add_2_neq).
-      move => HB29. case (byte_idx = 30). move => HB30. rewrite HB30. simplify. smt (@SmtMap add_2_neq).
-      move => HB30. case (byte_idx = 31). move => HB31. rewrite HB31. simplify. smt (@SmtMap add_neq).
+      move => HB0. case (byte_idx = 1). move => HB1. rewrite HB1. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB1. case (byte_idx = 2). move => HB2. rewrite HB2. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB2. case (byte_idx = 3). move => HB3. rewrite HB3. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB3. case (byte_idx = 4). move => HB4. rewrite HB4. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB4. case (byte_idx = 5). move => HB5. rewrite HB5. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB5. case (byte_idx = 6). move => HB6. rewrite HB6. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB6. case (byte_idx = 7). move => HB7. rewrite HB7. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB7. case (byte_idx = 8). move => HB8. rewrite HB8. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB8. case (byte_idx = 9). move => HB9. rewrite HB9. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB9. case (byte_idx = 10). move => HB10. rewrite HB10. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB10. case (byte_idx = 11). move => HB11. rewrite HB11. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB11. case (byte_idx = 12). move => HB12. rewrite HB12. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB12. case (byte_idx = 13). move => HB13. rewrite HB13. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB13. case (byte_idx = 14). move => HB14. rewrite HB14. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB14. case (byte_idx = 15). move => HB15. rewrite HB15. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB15. case (byte_idx = 16). move => HB16. rewrite HB16. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB16. case (byte_idx = 17). move => HB17. rewrite HB17. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB17. case (byte_idx = 18). move => HB18. rewrite HB18. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB18. case (byte_idx = 19). move => HB19. rewrite HB19. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB19. case (byte_idx = 20). move => HB20. rewrite HB20. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB20. case (byte_idx = 21). move => HB21. rewrite HB21. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB21. case (byte_idx = 22). move => HB22. rewrite HB22. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB22. case (byte_idx = 23). move => HB23. rewrite HB23. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB23. case (byte_idx = 24). move => HB24. rewrite HB24. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB24. case (byte_idx = 25). move => HB25. rewrite HB25. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB25. case (byte_idx = 26). move => HB26. rewrite HB26. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB26. case (byte_idx = 27). move => HB27. rewrite HB27. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB27. case (byte_idx = 28). move => HB28. rewrite HB28. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB28. case (byte_idx = 29). move => HB29. rewrite HB29. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB29. case (byte_idx = 30). move => HB30. rewrite HB30. simplify. smt (@SmtMap add_2_neq_32).
+      move => HB30. case (byte_idx = 31). move => HB31. rewrite HB31. simplify. smt (@SmtMap add_neq_32).
       move => HB31. smt ().
   qed.
 
@@ -335,7 +357,10 @@ lemma store_store_swap_diff (memory: mem) (idx idx2 val val2: uint256):
       rewrite Map.get_set_sameE.
       rewrite Map.get_set_sameE.
       reflexivity.
-      progress. case (x = idx2). progress. do 31! (rewrite Map.get_set_neqE; first smt(@Utils)). rewrite Map.get_set_sameE. do 63! (rewrite Map.get_set_neqE; first smt(@Utils)). rewrite Map.get_set_sameE. reflexivity.
+      progress. case (x = idx2). progress.
+      do 31! (rewrite Map.get_set_neqE; first (rewrite add_neq; by progress)). rewrite Map.get_set_sameE.
+      do 32! (rewrite Map.get_set_neqE; first assumption).
+      do 31! (rewrite Map.get_set_neqE; first (rewrite add_neq; by progress)). rewrite Map.get_set_sameE. reflexivity.
       progress. case (x = idx2 + W256.of_int 1). progress.
       do 30! (rewrite Map.get_set_neqE; first exact add_2_neq). rewrite Map.get_set_sameE.
       do 31! (rewrite Map.get_set_neqE; first exact add_2_neq_of_diff). rewrite Map.get_set_neqE. smt(add_neq_of_diff).
@@ -520,6 +545,8 @@ proof.
     progress.
     apply Map.get_set_neqE.
     have H3': offset2 <> offset1 by smt ().
+    have H_offset1: offset1 < W256.modulus by smt ().
+    have H_offset2: offset2 < W256.modulus by smt ().
     exact add_2_neq.
 qed.
   
