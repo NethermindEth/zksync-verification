@@ -358,35 +358,6 @@ proof.
   inline*. sp. skip. progress.
 qed.
 
-lemma mod_eq_sub_self : forall (a m : int), 0 < m => a < 0 => - m < a => a %% m = m + a.
-    progress.
-    smt (@IntDiv).
-  qed.
-
-lemma mod_eq_sub_self' : forall (a m : int), 0 < m => 0 < a => a < m => (-a) %% m = m - a.
-    progress. smt(@IntDiv).
-    qed.
-
-lemma blu (x y m : int) : x < m => 0 <= y => x - y < m.
-    progress. smt ().
-  qed.
-
-lemma bli (P Q : bool) : P && Q => Q. smt (). qed.
-
-lemma bla (x y : uint256) : x <= y => W256.to_uint (y - x) = W256.to_uint y - W256.to_uint x.
-    proof.
-      progress.
-      rewrite Utils.uint256_cast_sub.
-      have H' := Utils.uint256_le_of_le' _ _ H.
-      have J : 0 <= to_uint y - to_uint x. smt ().
-      have Jx := W256.to_uint_cmp x.
-      have Jy := W256.to_uint_cmp y.
-      have J' : to_uint y - to_uint x < W256.modulus.
-      apply blu. exact (bli _ _ Jy). smt ().
-      have J'' : (to_uint y - to_uint x) %% W256.modulus = (to_uint y - to_uint x).
-      apply Utils.mod_eq_self. smt (). exact J. exact J'. 
-      rewrite J'' of_uintK J''. reflexivity. 
-    qed.
     
 lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_low':
     equiv [
@@ -415,7 +386,7 @@ proof.
   have -> : (W256.to_uint (R_MOD - factor9{2})) %% W256.to_uint R_MOD = (to_uint (of_int ((- to_uint factor9{2}) %% Constants.R)))%W256.
   do rewrite W256.of_uintK. rewrite -/Constants.R -/R_MOD.
   rewrite Utils.mod_R_W256_mod_R.
-  rewrite bla. smt().
+  rewrite Utils.uint256_to_uint_sub_eq_sub_to_uint. smt().
   rewrite -H_add.
   have -> : W256.to_uint R_MOD %% Constants.R = 0 by smt(@W256 @Utils @Constants).
   by reflexivity.

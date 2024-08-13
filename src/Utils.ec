@@ -731,9 +731,23 @@ lemma uint256_mod_m_lt_m (x m : uint256) : W256.zero < m => x %% m < m.
     apply mod_m_lt_m.
     exact m_gt_0.
   qed.
-    
-    
-    
+
+lemma uint256_to_uint_sub_eq_sub_to_uint (x y : uint256) : x <= y => W256.to_uint (y - x) = W256.to_uint y - W256.to_uint x.
+    proof.
+      have blu : forall (x y m : int), x < m => 0 <= y => x - y < m. progress. smt().
+      have bli : forall (P Q : bool), P && Q => Q. smt (). 
+      progress.
+      rewrite uint256_cast_sub.
+      have H' := uint256_le_of_le' _ _ H.
+      have J : 0 <= to_uint y - to_uint x. smt ().
+      have Jx := W256.to_uint_cmp x.
+      have Jy := W256.to_uint_cmp y.
+      have J' : to_uint y - to_uint x < W256.modulus.
+      apply blu. exact (bli _ _ Jy). smt ().
+      have J'' : (to_uint y - to_uint x) %% W256.modulus = (to_uint y - to_uint x).
+      apply mod_eq_self. smt (). exact J. exact J'. 
+      rewrite J'' of_uintK J''. reflexivity. 
+    qed.    
 
     
 (* logic *)
