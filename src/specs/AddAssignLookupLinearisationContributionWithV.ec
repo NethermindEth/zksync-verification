@@ -639,7 +639,7 @@ proof.
   smt (@W256 @Utils @IntDiv @Int).
 qed.
 
-(*lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
+lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
     (mem_0: mem)
     (low_dest low_stateOpening0AtZ low_stateOpening1AtZ low_stateOpening2AtZ: uint256)
     (mid_dest mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
@@ -662,7 +662,8 @@ qed.
            lNMinusOneAtZ: int
     ):
     equiv [
-      AddAssignLookupLinearisationContributionWithV.low ~ AddAssignLookupLinearisationContributionWithV.mid: 
+      AddAssignLookupLinearisationContributionWithV.low ~ AddAssignLookupLinearisationContributionWithV.mid:
+      = {Primops.memory} /\ Primops.memory{1} = mem_0 /\
       arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
       arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
@@ -724,5 +725,212 @@ qed.
       ==>
       Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 (W256.of_int res{2}.`1) (W256.of_int res{2}.`2)
     ].
-proof. *)
-  
+proof. 
+  transitivity AddAssignLookupLinearisationContributionWithV.low_no_reassignment
+    (
+      ={arg, glob AddAssignLookupLinearisationContributionWithV} /\ Primops.memory{1} = mem_0 ==>
+      ={res, glob AddAssignLookupLinearisationContributionWithV}) 
+    (= {Primops.memory} /\ Primops.memory{1} = mem_0 /\ arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
+      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+           proofLookupGrandProductOpeningAtZOmega,
+           powerOfAlpha6,
+           zMinusLastOmega,
+           v,
+           proofLookupTPolyOpeningAtZOmega,
+           betaLookup,
+           proofLookupTPolyOpeningAtZ,
+           betaGammaPlusGamma,
+           eta_L,
+           proofLookupTableTypePolyOpeningAtZ,
+           proofLookupSelectorPolyOpeningAtZ,
+           gammaLookup,
+           betaPlusOne,
+           powerOfAlpha7,
+           l0AtZ,
+           powerOfAlpha8,
+           lNMinusOneAtZ) /\
+      W256.to_uint low_stateOpening0AtZ = mid_stateOpening0AtZ /\
+      W256.to_uint low_stateOpening1AtZ = mid_stateOpening1AtZ /\
+      W256.to_uint low_stateOpening2AtZ = mid_stateOpening2AtZ /\
+      0 <= mid_stateOpening0AtZ < Constants.R /\
+      0 <= mid_stateOpening1AtZ < Constants.R /\
+      0 <= mid_stateOpening2AtZ < Constants.R /\
+      0 <= proofLookupGrandProductOpeningAtZOmega < Constants.R /\
+      0 <= powerOfAlpha6 < Constants.R /\
+      0 <= zMinusLastOmega < Constants.R /\
+      0 <= v < Constants.R /\
+      0 <= proofLookupTPolyOpeningAtZOmega < Constants.R /\
+      0 <= betaLookup < Constants.R /\
+      0 <= betaGammaPlusGamma < Constants.R /\
+      0 <= eta_L < Constants.R /\
+      0 <= proofLookupTableTypePolyOpeningAtZ < Constants.R /\
+      0 <= proofLookupSelectorPolyOpeningAtZ < Constants.R /\
+      0 <= gammaLookup < Constants.R /\
+      0 <= betaPlusOne < Constants.R /\
+      0 <= powerOfAlpha7 < Constants.R /\
+      0 <= l0AtZ < Constants.R /\
+      0 <= powerOfAlpha8 < Constants.R /\
+      0 <= lNMinusOneAtZ < Constants.R /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLookupGrandProductOpeningAtZOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_6_SLOT) = powerOfAlpha6 /\
+      W256.to_uint (load Primops.memory{1} STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_V_SLOT) = v /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookupTPolyOpeningAtZOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_LOOKUP_SLOT) = betaLookup /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = proofLookupTPolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_GAMMA_PLUS_GAMMA_SLOT) = betaGammaPlusGamma /\
+      W256.to_uint (load Primops.memory{1} STATE_ETA_SLOT) = eta_L /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = proofLookupTableTypePolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = proofLookupSelectorPolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_GAMMA_LOOKUP_SLOT) = gammaLookup /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_PLUS_ONE_SLOT) = betaPlusOne /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_7_SLOT) = powerOfAlpha7 /\
+      W256.to_uint (load Primops.memory{1} STATE_L_0_AT_Z_SLOT) = l0AtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_8_SLOT) = powerOfAlpha8 /\
+      W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
+      ==>
+        Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 (W256.of_int res{2}.`1) (W256.of_int res{2}.`2)).
+        progress. by smt().
+        by progress.
+        progress.
+        conseq (_ : ={arg, Primops.memory} ==> ={Primops.memory}).
+        by progress.
+    exact addAssignLookupLinearisationContributionWithV_low_equiv_low_no_reassignment.
+  transitivity AddAssignLookupLinearisationContributionWithV.low_no_reassignment_and_mstore
+    (
+      ={arg, glob AddAssignLookupLinearisationContributionWithV} /\ Primops.memory{1} = mem_0
+      ==> 
+      Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 res{2}.`1 res{2}.`2 /\ 
+        Primops.memory{2} = mem_0)
+    (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
+      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+           proofLookupGrandProductOpeningAtZOmega,
+           powerOfAlpha6,
+           zMinusLastOmega,
+           v,
+           proofLookupTPolyOpeningAtZOmega,
+           betaLookup,
+           proofLookupTPolyOpeningAtZ,
+           betaGammaPlusGamma,
+           eta_L,
+           proofLookupTableTypePolyOpeningAtZ,
+           proofLookupSelectorPolyOpeningAtZ,
+           gammaLookup,
+           betaPlusOne,
+           powerOfAlpha7,
+           l0AtZ,
+           powerOfAlpha8,
+           lNMinusOneAtZ) /\
+      W256.to_uint low_stateOpening0AtZ = mid_stateOpening0AtZ /\
+      W256.to_uint low_stateOpening1AtZ = mid_stateOpening1AtZ /\
+      W256.to_uint low_stateOpening2AtZ = mid_stateOpening2AtZ /\
+      0 <= mid_stateOpening0AtZ < Constants.R /\
+      0 <= mid_stateOpening1AtZ < Constants.R /\
+      0 <= mid_stateOpening2AtZ < Constants.R /\
+      0 <= proofLookupGrandProductOpeningAtZOmega < Constants.R /\
+      0 <= powerOfAlpha6 < Constants.R /\
+      0 <= zMinusLastOmega < Constants.R /\
+      0 <= v < Constants.R /\
+      0 <= proofLookupTPolyOpeningAtZOmega < Constants.R /\
+      0 <= betaLookup < Constants.R /\
+      0 <= betaGammaPlusGamma < Constants.R /\
+      0 <= eta_L < Constants.R /\
+      0 <= proofLookupTableTypePolyOpeningAtZ < Constants.R /\
+      0 <= proofLookupSelectorPolyOpeningAtZ < Constants.R /\
+      0 <= gammaLookup < Constants.R /\
+      0 <= betaPlusOne < Constants.R /\
+      0 <= powerOfAlpha7 < Constants.R /\
+      0 <= l0AtZ < Constants.R /\
+      0 <= powerOfAlpha8 < Constants.R /\
+      0 <= lNMinusOneAtZ < Constants.R /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLookupGrandProductOpeningAtZOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_6_SLOT) = powerOfAlpha6 /\
+      W256.to_uint (load Primops.memory{1} STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_V_SLOT) = v /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookupTPolyOpeningAtZOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_LOOKUP_SLOT) = betaLookup /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = proofLookupTPolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_GAMMA_PLUS_GAMMA_SLOT) = betaGammaPlusGamma /\
+      W256.to_uint (load Primops.memory{1} STATE_ETA_SLOT) = eta_L /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = proofLookupTableTypePolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = proofLookupSelectorPolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_GAMMA_LOOKUP_SLOT) = gammaLookup /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_PLUS_ONE_SLOT) = betaPlusOne /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_7_SLOT) = powerOfAlpha7 /\
+      W256.to_uint (load Primops.memory{1} STATE_L_0_AT_Z_SLOT) = l0AtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_8_SLOT) = powerOfAlpha8 /\
+      W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
+      ==>
+      W256.to_uint res{1}.`1 = res{2}.`1 /\
+      W256.to_uint res{1}.`2 = res{2}.`2 ).
+        progress.
+        by smt().
+    progress. rewrite -H -H0. do rewrite W256.to_uintK.
+        by reflexivity.
+    exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_equiv_low_no_reassignment_and_mstore.
+    transitivity AddAssignLookupLinearisationContributionWithV.low'
+      (={arg, glob AddAssignLookupLinearisationContributionWithV} ==> ={res, glob AddAssignLookupLinearisationContributionWithV})
+      (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
+      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+           proofLookupGrandProductOpeningAtZOmega,
+           powerOfAlpha6,
+           zMinusLastOmega,
+           v,
+           proofLookupTPolyOpeningAtZOmega,
+           betaLookup,
+           proofLookupTPolyOpeningAtZ,
+           betaGammaPlusGamma,
+           eta_L,
+           proofLookupTableTypePolyOpeningAtZ,
+           proofLookupSelectorPolyOpeningAtZ,
+           gammaLookup,
+           betaPlusOne,
+           powerOfAlpha7,
+           l0AtZ,
+           powerOfAlpha8,
+           lNMinusOneAtZ) /\
+      W256.to_uint low_stateOpening0AtZ = mid_stateOpening0AtZ /\
+      W256.to_uint low_stateOpening1AtZ = mid_stateOpening1AtZ /\
+      W256.to_uint low_stateOpening2AtZ = mid_stateOpening2AtZ /\
+      0 <= mid_stateOpening0AtZ < Constants.R /\
+      0 <= mid_stateOpening1AtZ < Constants.R /\
+      0 <= mid_stateOpening2AtZ < Constants.R /\
+      0 <= proofLookupGrandProductOpeningAtZOmega < Constants.R /\
+      0 <= powerOfAlpha6 < Constants.R /\
+      0 <= zMinusLastOmega < Constants.R /\
+      0 <= v < Constants.R /\
+      0 <= proofLookupTPolyOpeningAtZOmega < Constants.R /\
+      0 <= betaLookup < Constants.R /\
+      0 <= betaGammaPlusGamma < Constants.R /\
+      0 <= eta_L < Constants.R /\
+      0 <= proofLookupTableTypePolyOpeningAtZ < Constants.R /\
+      0 <= proofLookupSelectorPolyOpeningAtZ < Constants.R /\
+      0 <= gammaLookup < Constants.R /\
+      0 <= betaPlusOne < Constants.R /\
+      0 <= powerOfAlpha7 < Constants.R /\
+      0 <= l0AtZ < Constants.R /\
+      0 <= powerOfAlpha8 < Constants.R /\
+      0 <= lNMinusOneAtZ < Constants.R /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLookupGrandProductOpeningAtZOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_6_SLOT) = powerOfAlpha6 /\
+      W256.to_uint (load Primops.memory{1} STATE_Z_MINUS_LAST_OMEGA_SLOT) = zMinusLastOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_V_SLOT) = v /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookupTPolyOpeningAtZOmega /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_LOOKUP_SLOT) = betaLookup /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = proofLookupTPolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_GAMMA_PLUS_GAMMA_SLOT) = betaGammaPlusGamma /\
+      W256.to_uint (load Primops.memory{1} STATE_ETA_SLOT) = eta_L /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = proofLookupTableTypePolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = proofLookupSelectorPolyOpeningAtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_GAMMA_LOOKUP_SLOT) = gammaLookup /\
+      W256.to_uint (load Primops.memory{1} STATE_BETA_PLUS_ONE_SLOT) = betaPlusOne /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_7_SLOT) = powerOfAlpha7 /\
+      W256.to_uint (load Primops.memory{1} STATE_L_0_AT_Z_SLOT) = l0AtZ /\
+      W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_8_SLOT) = powerOfAlpha8 /\
+      W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
+      ==>
+      W256.to_uint res{1}.`1 = res{2}.`1 /\
+        W256.to_uint res{1}.`2 = res{2}.`2 ).
+        by smt(). by progress. exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_low'.
+        exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_mid.
+qed.
