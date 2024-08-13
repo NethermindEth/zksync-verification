@@ -47,6 +47,10 @@ lemma mod_mod_eq_mod :
 
 lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt(). qed.
 
+lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
+    smt ().
+  qed.
+  
  (* tuples *)
 lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
 lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
@@ -127,6 +131,10 @@ lemma uint256_cast_sub (a b : uint256) : (a - b) = W256.of_int ((W256.to_uint a 
 
 lemma uint256_cast_mul (a b : uint256) : (a * b) = W256.of_int ((W256.to_uint a * W256.to_uint b) %% W256.modulus).
     rewrite mulE /ulift2. smt.
+  qed.
+
+lemma uint256_cast_mod (a m : uint256) : a %% m = W256.of_int ((W256.to_uint a) %% (W256.to_uint m)).
+    smt ().
   qed.
 
 lemma mod_mod_eq_mod' (a m : int) : (a %% m) %% m = a %% m.
@@ -463,10 +471,29 @@ proof.
     apply splitMask_add.
 qed.
 
-lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
-    smt ().
-  qed.
+lemma le_of_lt (a b : int) : a < b => a <= b. smt (). qed.
 
+lemma uint256_mod_m_lt_m (x m : uint256) : W256.zero < m => x %% m < m.
+    progress.
+    have m_gt_0 : 0 < W256.to_uint m.
+    have H'' : W256.to_uint W256.zero = 0. smt ().
+    have H'  := uint256_lt_of_lt' _ _ H.
+    rewrite H'' in H'.
+    exact H'.
+    apply uint256_lt_of_lt.
+    rewrite uint256_cast_mod of_uintK mod_mod_eq_mod.
+    exact m_gt_0.
+    have H' := uint256_size m.
+    apply le_of_lt.
+    exact H'.
+    apply mod_m_lt_m.
+    exact m_gt_0.
+  qed.
+    
+    
+    
+
+    
 (* logic *)
   
 lemma weaken_and_left (a b): a /\ b => a. proof. by smt(). qed.
