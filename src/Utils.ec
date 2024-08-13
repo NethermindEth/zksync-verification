@@ -260,8 +260,7 @@ lemma cast_uint256_mod_eq_of_lt (a p : int) : 0 <= a < p < W256.modulus => W256.
       reflexivity.
   qed.
   
-lemma add_neq:
-    forall (x: uint256) (y: int),
+lemma add_neq (x: uint256) (y: int):
     1 <= y /\ y < W256.modulus => x <> x + W256.of_int y.
     proof.
       progress.
