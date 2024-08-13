@@ -1,9 +1,9 @@
 digraph zk {
     { node [style=filled fillcolor="blue"]  
         prepareAggregatedCommitment
-        addAssignLookupLinearisationContributionWithV
         getTranscriptChallenge
-        mainGateLinearisationContributionWithV
+        prepareQueries
+        finalPairing
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
@@ -22,13 +22,13 @@ digraph zk {
         addAssignPermutationLinearisationContributionWithV
         verifyQuotientEvaluation
         updateTranscript
+        addAssignLookupLinearisationContributionWithV
+        mainGateLinearisationContributionWithV
     }
     { node [style=filled fillcolor="red"]   
-        finalPairing
         initializeTranscript
         loadProof
         loadVerificationKey
-        prepareQueries
         verify
     }
 
