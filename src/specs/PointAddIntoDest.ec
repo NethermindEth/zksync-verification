@@ -234,7 +234,7 @@ lemma usr_pointAddIntoDest_low_matches_low' (p1 p2 dest_address : uint256) : equ
         smt ().
   qed.
 
-lemma PointAddIntoDest_mid_of_low' (x1v x2v y1v y2v : int) (p1v p2v destv : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma PointAddIntoDest_low_equiv_mid' (x1v x2v y1v y2v : int) (p1v p2v destv : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointAddIntoDest.low' ~ PointAddIntoDest.mid :
     0 <= x1v < p /\ 0 <= x2v < p /\ 0 <= y1v < p /\ 0 <= y2v < p /\
     Primops.memory{1} = memory0 /\

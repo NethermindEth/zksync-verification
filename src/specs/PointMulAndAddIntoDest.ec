@@ -77,8 +77,8 @@ pred staticcall_pointMulAndAddIntoDest_should_succeed (p1 p2 : uint256 * uint256
   ConcretePrimops.point_oncurve p1 /\
   ConcretePrimops.point_oncurve p2 /\
   is_some (ecAdd_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (ZModField.inzmod(to_uint p2.`1)) (ZModField.inzmod(to_uint p2.`2))).
-
-lemma PointMulAndAddIntoDest_mid_of_low (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
+  
+lemma pointMulAndAddIntoDest_low_equiv_mid (x1v y1v x2v y2v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
     Primops.memory{1} = memory0 /\
       0 <= x1v < p /\ 0 <= y1v < p /\ 0 <= sv < W256.modulus /\ 0 <= x2v < p /\ 0 <= y2v < p /\

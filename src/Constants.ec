@@ -28,3 +28,14 @@ lemma OMEGA_int: OMEGA = W256.to_uint VerifierConsts.OMEGA
     by rewrite /VerifierConsts.OMEGA W256.of_uintK omegaE pmod_small; [trivial | reflexivity].
 lemma DOMAIN_SIZE_int: DOMAIN_SIZE = W256.to_uint VerifierConsts.DOMAIN_SIZE
     by rewrite /VerifierConsts.DOMAIN_SIZE W256.of_uintK domain_sizeE pmod_small; [trivial | reflexivity].
+
+op NON_RESIDUE_0: int = 5.
+op NON_RESIDUE_1: int = 7.
+op NON_RESIDUE_2: int = 10.
+
+lemma non_residue_0_int: W256.to_uint VerifierConsts.NON_RESIDUES_0 = NON_RESIDUE_0
+  by rewrite /VerifierConsts.NON_RESIDUES_0 W256.of_uintK /NON_RESIDUE_0 pmod_small; [trivial | reflexivity].
+lemma non_residue_1_int: W256.to_uint VerifierConsts.NON_RESIDUES_1 = NON_RESIDUE_1
+  by rewrite /VerifierConsts.NON_RESIDUES_1 W256.of_uintK /NON_RESIDUE_1 pmod_small; [trivial | reflexivity].
+lemma non_residue_2_int: W256.to_uint VerifierConsts.NON_RESIDUES_2 = NON_RESIDUE_2
+  by rewrite /VerifierConsts.NON_RESIDUES_2 W256.of_uintK /NON_RESIDUE_2 pmod_small; [trivial | reflexivity].
