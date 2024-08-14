@@ -1821,7 +1821,6 @@ equiv [
       (dest{1} + W256.of_int 32) (W256.of_int point{2}.`2) by smt ().
         rewrite H_mem.
         have ->: forall (m1 m2: mem), (m1=m2)=(m2=m1) by smt().
-        print mulIntoDest_after_mulAndAddIntoDest.
         have ->: dest_L = dest{1}. smt ().
         apply (mulIntoDest_after_mulAndAddIntoDest mem_0 dest{1} point{2} (ZModField.asint x, ZModField.asint y) (v{2} * gate_selector_0_opening{2} %% Constants.R) x0 x32 x64 x96 (W256.of_int point{2}.`1) (W256.of_int point{2}.`2)). assumption. assumption.
         rewrite /pointMulIntoDest_memory_footprint. simplify. have ->: dest{1} = dest_L. smt (). by progress.
