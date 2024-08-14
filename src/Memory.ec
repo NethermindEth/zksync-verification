@@ -54,9 +54,9 @@ op load (memory: mem) (idx: uint256): uint256 =
   W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
 
-lemma load_store8_same (memory: mem) (idx val: uint256):
-    (load (store8 memory idx val) idx) \bits8 31 = W8.of_int (W256.to_uint val).
-proof. rewrite /load /store8. simplify. smt (@SmtMap). qed.
+lemma load8_store8_same (memory: mem) (idx val: uint256):
+    (store8 memory idx val).[idx] = W8.of_int (W256.to_uint val).
+proof. rewrite /store8. simplify. smt (@SmtMap). qed.
     
 lemma load_store8_diff (memory: mem) (idx idx2 val: uint256):
     (exists w, idx2 = idx + W256.of_int w /\ 1 <= w < W256.modulus - 32) => 
@@ -79,6 +79,15 @@ proof.
   have H_z_upper: z < 32 by smt ().
   rewrite store8E. rewrite Map.get_set_neqE.
   apply uint256_neq_sym. apply add_neq. split. smt(@W256). smt(@W256). reflexivity.
+qed.
+
+lemma load8_store_diff (memory: mem) (idx idx2 val: uint256):
+    W256.of_int 32 <= idx2 - idx =>
+    (store memory idx val).[idx2] = memory.[idx2].
+proof. 
+progress. rewrite storeE. simplify.
+do 31! (rewrite Map.get_set_neqE; first exact add_neq_of_diff).
+rewrite Map.get_set_neqE. smt(@Utils). reflexivity.
 qed.
 
 lemma load_store_same (memory: mem) (idx val: uint256):
