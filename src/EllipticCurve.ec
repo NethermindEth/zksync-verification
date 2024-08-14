@@ -41,13 +41,27 @@ op on_curve : F * F -> bool.
 axiom aspoint_on_curve (p : g) : on_curve (aspoint_G1 p).
 axiom on_curve_as_point (x y : F) : on_curve (x, y) => exists p, aspoint_G1 p = (x, y).
 
-(* TODO: Axioms for G2. *)
+axiom zero_G2 : (aspoint_G2 G.e) = ((ZModField.zero, ZModField.zero), (ZModField.zero, ZModField.zero)).
+axiom neg_G2_fst (x : g) : fst (aspoint_G2 (G.inv x)) = fst (aspoint_G2 x).
+axiom neg_G2_snd (x : g) : snd (aspoint_G2 (G.inv x)) = (-(fst (snd (aspoint_G2 x))), -(snd (snd (aspoint_G2 x)))).
+
+op on_curve_G2 : (F * F) * (F * F) -> bool.
+
+axiom aspoint_on_curve_G2 (p : g) : on_curve_G2 (aspoint_G2 p).
+axiom on_curve_as_point_G2 (x1 y1 x2 y2 : F) : on_curve_G2 ((x1, y1), (x2, y2)) => exists p, aspoint_G2 p = ((x1, y1), (x2, y2)).
 
 op ( + ) = G.( * ).
 op ( * ) x y = G.( ^ ) y x.
 
+op e: g -> g -> g.
+
+axiom e_bilin (m n : int) (x1 x2 : g) : e (m * x1) (n * x2) = (m * n) * (e x1 x2).
+axiom e_non_deg_1 (x : g) : x <> G.e => exists y, e x y <> G.e.
+axiom e_non_deg_2 (y : g) : y <> G.e => exists x, e x y <> G.e.
+
 op ecAdd_precompile (x1 y1 x2 y2 : F) : (F * F) option.  
 op ecMul_precompile (x y : F) (s : int) : (F * F) option.
+op ecPairing_precompile (input1 input2 : ((F * F) * ((F * F) * (F * F)))) : bool option.
 
 axiom ecAdd_def (x1 y1 x2 y2 : F) (p1 p2 : g) :
   aspoint_G1 p1 = (x1, y1)
@@ -63,6 +77,8 @@ axiom ecMul_def (x y : F) (s : int) (p : g):
 
 axiom ecMul_fail (x y : F) (s : int) :
   !(on_curve (x, y)) => ecMul_precompile x y s = None.
+
+axiom ecPairing_def ()
 
 lemma ec_add_result_on_curve (x1 y1 x2 y2 x3 y3 : F):
     ecAdd_precompile x1 y1 x2 y2 = Some (x3, y3) =>
@@ -92,6 +108,4 @@ lemma ec_mul_result_on_curve (x1 y1 x2 y2 : F) (s : int) :
     rewrite -H''. exact (aspoint_on_curve (s * p)).
   qed.
     
-    
-
 op F_to_int_point (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
