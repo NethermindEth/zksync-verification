@@ -52,7 +52,7 @@ lemma modexp_extracted_equiv_low:
     seq 2 1: #pre. inline*. wp. skip. by progress.
     seq 2 1: #pre. inline*. wp. skip. by progress.
     seq 2 1: #pre. inline*. wp. skip. by progress.
-    seq 3 1: #pre. inline*. wp. skip. progress. rewrite /Constants.R. by reflexivity.
+    seq 3 1: #pre. inline*. wp. skip. by progress.
     seq 4 1: (#pre /\ _8{1} = W256.of_int 192 /\ _9{1} = W256.of_int 5 /\ _10{1} = gas{2}). inline*. wp. skip. by progress.
     seq 1 1: (#pre /\ tmp50{1} = staticcall_success{2}). inline*. wp. skip. by progress.
     inline*. wp. skip. by progress.
@@ -126,7 +126,7 @@ proof.
     rewrite (pmod_small _ W256.modulus).
     by smt.
     rewrite (pmod_small _ W256.modulus). by smt ().
-    by reflexivity.
+    rewrite /Constants.R; reflexivity.
     by smt().
     by smt().
     rewrite /modexp_memory_footprint. simplify.
