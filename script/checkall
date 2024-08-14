@@ -1,0 +1,24 @@
+#!/bin/bash
+
+timeout=20
+
+check() {
+  echo checking $1;
+  if easycrypt -I .  -I lib/  -I specs/ -timeout $timeout $1;
+  then echo passed: $1;
+       echo "";
+  else echo failed: $1;
+       echo "";
+       echo "skipping remaining scripts";
+  exit 1;
+  fi;
+}
+
+# list of files to check
+files=`eval "find . -name \"*.ec\""`
+
+for fn in $files; do
+    check $fn
+done
+
+echo "DONE";
