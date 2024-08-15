@@ -47,6 +47,10 @@ lemma mod_mod_eq_mod :
   qed.
 
 lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt(). qed.
+
+lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
+    smt ().
+  qed.
   
  (* tuples *)
 lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
@@ -133,6 +137,10 @@ lemma uint256_cast_sub (a b : uint256) : (a - b) = W256.of_int ((W256.to_uint a 
 
 lemma uint256_cast_mul (a b : uint256) : (a * b) = W256.of_int ((W256.to_uint a * W256.to_uint b) %% W256.modulus).
     rewrite mulE /ulift2. smt.
+  qed.
+
+lemma uint256_cast_mod (a m : uint256) : a %% m = W256.of_int ((W256.to_uint a) %% (W256.to_uint m)).
+    smt ().
   qed.
 
 lemma mod_mod_eq_mod' (a m : int) : (a %% m) %% m = a %% m.
@@ -489,10 +497,6 @@ proof.
     apply splitMask_add.
 qed.
 
-lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
-    smt ().
-  qed.
-
 (* smt cannot prove these in the proof because there's too many assumptions in play *)
 lemma diff_96 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= a - W256.of_int 96.
     proof.
@@ -711,6 +715,41 @@ lemma diff_neg_0 (a: uint256): W256.of_int 128 <= a => W256.of_int 32 <= -a => W
       progress.
   qed.
 
+lemma uint256_mod_m_lt_m (x m : uint256) : W256.zero < m => x %% m < m.
+    progress.
+    have m_gt_0 : 0 < W256.to_uint m.
+    have H'' : W256.to_uint W256.zero = 0. smt ().
+    have H'  := uint256_lt_of_lt' _ _ H.
+    rewrite H'' in H'.
+    exact H'.
+    apply uint256_lt_of_lt.
+    rewrite uint256_cast_mod of_uintK mod_mod_eq_mod.
+    exact m_gt_0.
+    have H' := uint256_size m.
+    apply le_of_lt.
+    exact H'.
+    apply mod_m_lt_m.
+    exact m_gt_0.
+  qed.
+
+lemma uint256_to_uint_sub_eq_sub_to_uint (x y : uint256) : x <= y => W256.to_uint (y - x) = W256.to_uint y - W256.to_uint x.
+    proof.
+      have blu : forall (x y m : int), x < m => 0 <= y => x - y < m. progress. smt().
+      have bli : forall (P Q : bool), P && Q => Q. smt (). 
+      progress.
+      rewrite uint256_cast_sub.
+      have H' := uint256_le_of_le' _ _ H.
+      have J : 0 <= to_uint y - to_uint x. smt ().
+      have Jx := W256.to_uint_cmp x.
+      have Jy := W256.to_uint_cmp y.
+      have J' : to_uint y - to_uint x < W256.modulus.
+      apply blu. exact (bli _ _ Jy). smt ().
+      have J'' : (to_uint y - to_uint x) %% W256.modulus = (to_uint y - to_uint x).
+      apply mod_eq_self. smt (). exact J. exact J'. 
+      rewrite J'' of_uintK J''. reflexivity. 
+    qed.    
+
+    
 (* logic *)
   
 lemma weaken_and_left (a b): a /\ b => a. proof. by smt(). qed.
