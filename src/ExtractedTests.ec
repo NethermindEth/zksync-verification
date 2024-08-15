@@ -61,10 +61,10 @@ module YulTest = {
       
       }
     
-    v1 <- (PurePrimops.shl x s);
-    v2 <- (PurePrimops.shr x ((W256.of_int 256) - s));
-    v1_ <- (PurePrimops.shr v1 s);
-    v2_ <- (PurePrimops.shl v2 ((W256.of_int 256) - s));
+    v1 <- (PurePrimops.shl s x);
+    v2 <- (PurePrimops.shr ((W256.of_int 256) - s) x);
+    v1_ <- (PurePrimops.shr s v1);
+    v2_ <- (PurePrimops.shl ((W256.of_int 256) - s) v2);
     r <- (v1_ + v2_);
     return r;
     }

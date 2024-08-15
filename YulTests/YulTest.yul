@@ -25,10 +25,10 @@ object "YulTest" {
             if gt(s, 256) {
               revert(0x0, 0x0)
             }
-            let v1 := shl(x, s)
-            let v2 := shr(x, sub(256, s))
-            let v1_ := shr(v1, s)
-            let v2_ := shl(v2, sub(256, s))
+            let v1 := shl(s, x)
+            let v2 := shr(sub(256, s), x)
+            let v1_ := shr(s, v1)
+            let v2_ := shl(sub(256, s), v2)
             r := add(v1_, v2_)
           }
           function mod_test(m) -> r {
