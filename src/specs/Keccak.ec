@@ -21,14 +21,14 @@ axiom keccak256_transcript_mid (m: mem) (dst s0 s1 ch : int) :
   W256.to_uint (PurePrimops.keccak256_f(Array.offun (fun (i: int) => m.[TRANSCRIPT_BEGIN_SLOT + (W256.of_int i)]) 100)) =
   keccakTM dst s0 s1 ch.
 
-axiom keccak256_challange_mid (m: mem) (dst: int) (s0 s1 ch : uint256):
+axiom keccak256_challange_mid (m: mem) (dst s0 s1 ch : int):
   m.[TRANSCRIPT_DST_BYTE_SLOT] = W8.of_int dst /\
-  mload m TRANSCRIPT_STATE_0_SLOT = s0 /\
-  mload m TRANSCRIPT_STATE_1_SLOT = s1 /\
-  mload m TRANSCRIPT_CHALLENGE_SLOT = ch `<<<` 224
+  mload m TRANSCRIPT_STATE_0_SLOT = W256.of_int s0 /\
+  mload m TRANSCRIPT_STATE_1_SLOT = W256.of_int s1 /\
+  mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int (ch * 2^224)
   =>
   W256.to_uint (PurePrimops.keccak256_f(Array.offun (fun (i: int) => m.[TRANSCRIPT_BEGIN_SLOT + (W256.of_int i)]) 72)) =
-  keccakCM dst (W256.to_uint s0) (W256.to_uint s1) (W256.to_uint ch).
+  keccakCM dst s0 s1 ch.
 
 (* op keccak_mid = W256.to_uint (keccak_low (cast_args x1 x2 x3 x4)) axiomatiezed by .... *)
   

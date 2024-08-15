@@ -52,10 +52,10 @@ axiomatized by addmodE.
 op bit_and(a : uint256, b : uint256) : uint256 = a `&` b
 axiomatized by bit_andE.
 
-op shl(a : uint256, b : uint256) : uint256 = a `<<<` (W256.to_uint b)
+op shl(a : uint256, b : uint256) : uint256 = b `<<<` (W256.to_uint a)
 axiomatized by shlE.
 
-op shr(a : uint256, b : uint256) : uint256 = a `>>>` (W256.to_uint b)
+op shr(a : uint256, b : uint256) : uint256 = b `>>>` (W256.to_uint a)
 axiomatized by shrE.
 
 op modexp(base: uint256, exponent: uint256, mod: uint256) = W256.of_int (((W256.to_uint base) ^ (W256.to_uint exponent)) %% (W256.to_uint mod))
