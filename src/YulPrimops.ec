@@ -61,12 +61,14 @@ module Primops = {
       var succ;
       var bsize, esize, msize : uint256;
       var base, exp, mod;
-      var x1, y1, x2, y2;
+      var x1, y1, x2, y2, x3, y3, x2_1, x2_2, y2_1, y2_2, x4_1, x4_2, y4_1, y4_2;
       var s;
       var sv;
-      var x1_F, y1_F, x2_F, y2_F;
+      var x1_F, y1_F, x2_F, y2_F, x3_F, y3_F, x2_1_F, x2_2_F, y2_1_F, y2_2_F, x4_1_F, x4_2_F, y4_1_F, y4_2_F;
       var result;
       var result_unwrap;
+      var result_b;
+      var result_b_unwrap;
       if (addr = W256.of_int 5) {
         bsize <@ mload(argOff);
         esize <@ mload(argOff + W256.of_int 32);
@@ -140,8 +142,55 @@ module Primops = {
             }
           } else {
             if (addr = W256.of_int 8) {
-              (* TODO: ecPairing *)
-              succ <- W256.zero;
+              if (retSize = (W256.of_int 32) /\ argSize = (W256.of_int 384)) {
+                  x1 <@ mload(argOff);
+                  y1 <@ mload(argOff + W256.of_int 32);
+                  x2_1 <@ mload(argOff + W256.of_int 64);
+                  x2_2 <@ mload(argOff + W256.of_int 96);
+                  y2_1 <@ mload(argOff + W256.of_int 128);
+                  y2_2 <@ mload(argOff + W256.of_int 160);
+                  x3 <@ mload(argOff + W256.of_int 192);
+                  y3 <@ mload(argOff + W256.of_int 224);
+                  x4_1 <@ mload(argOff + W256.of_int 256);
+                  x4_2 <@ mload(argOff + W256.of_int 288);
+                  y4_1 <@ mload(argOff + W256.of_int 320);
+                  y4_2 <@ mload(argOff + W256.of_int 352);
+                  x1_F <- ZModField.inzmod (W256.to_uint x1);
+                  y1_F <- ZModField.inzmod (W256.to_uint y1);
+                  x2_1_F <- ZModField.inzmod (W256.to_uint x2_1);
+                  x2_2_F <- ZModField.inzmod (W256.to_uint x2_2);
+                  y2_1_F <- ZModField.inzmod (W256.to_uint y2_1);
+                  y2_2_F <- ZModField.inzmod (W256.to_uint y2_2);
+                  x3_F <- ZModField.inzmod (W256.to_uint x3);
+                  y3_F <- ZModField.inzmod (W256.to_uint y3);
+                  x4_1_F <- ZModField.inzmod (W256.to_uint x4_1);
+                  x4_2_F <- ZModField.inzmod (W256.to_uint x4_2);
+                  y4_1_F <- ZModField.inzmod (W256.to_uint y4_1);
+                  y4_2_F <- ZModField.inzmod (W256.to_uint y4_2);
+                  if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p
+                      \/ x2_1 <> x2_1 %% W256.of_int p \/ x2_2 <> x2_2 %% W256.of_int p
+                      \/ y2_1 <> y2_1 %% W256.of_int p \/ y2_2 <> y2_2 %% W256.of_int p
+                      \/ x3 <> x3 %% W256.of_int p \/ y3 <> y3 %% W256.of_int p
+                      \/ x4_1 <> x4_1 %% W256.of_int p \/ x4_2 <> x4_2 %% W256.of_int p
+                      \/ y4_1 <> y4_1 %% W256.of_int p \/ y4_2 <> y4_2 %% W256.of_int p) {
+                      if (!(on_curve (x1_F, y1_F)) \/ !(on_curve (x3_F, y3_F))
+                          \/ !(on_curve_G2 ((x2_1_F, x2_2_F), (y4_1_F, y4_2_F)))
+                          \/ !(on_curve_G2 ((x4_1_F, x4_2_F), (y4_1_F, y4_2_F)))) {
+                        succ <- W256.zero;
+                      } else {
+                        result_b <- ecPairing_precompile ((x1_F, y1_F), ((x2_1_F, x2_2_F), (y2_1_F, y2_2_F))) ((x3_F, y3_F), ((x4_1_F, x4_2_F), (y4_1_F, y4_2_F)));
+                        if (is_none result_b) {
+                          succ <- W256.zero;
+                        } else {
+                          result_b_unwrap <- odflt false result_b;
+                          mstore(retOff, UInt256.uint256_of_bool result_b_unwrap);
+                          succ <- W256.one;
+                        }
+                      }
+                  }
+              } else {
+                  succ <- W256.zero;
+              }
             } else {
                 succ <- W256.zero;
             }
