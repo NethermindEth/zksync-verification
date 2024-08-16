@@ -487,8 +487,8 @@ proof.
   proc.
   sp.
   inline *.
-  seq 4 0 : (#pre /\ W256.to_uint factor{1} = proofLookupGrandProductOpeningAtZOmega{2}
-             /\ W256.to_uint _2{1} = powerOfAlpha6{2}).
+  seq 4 0 : (#pre /\ W256.to_uint factor{1} = proofLookupGrandProductOpeningAtZOmega
+             /\ W256.to_uint _2{1} = powerOfAlpha6).
   sp. skip. progress.
   seq 1 0 : (#pre /\ W256.to_uint factor1{1} = (proofLookupGrandProductOpeningAtZOmega * powerOfAlpha6) %% Constants.R).
   sp. skip.  progress.
