@@ -223,7 +223,7 @@ module AddAssignLookupLinearisationContributionWithV = {
     return (factor3, factor15);
   }
 
-  proc mid(dest : int, stateOpening0AtZ : int, stateOpening1AtZ : int, stateOpening2AtZ : int,
+  proc mid(stateOpening0AtZ : int, stateOpening1AtZ : int, stateOpening2AtZ : int,
            proofLookupGrandProductOpeningAtZOmega: int,
            powerOfAlpha6: int,
            zMinusLastOmega: int,
@@ -397,7 +397,7 @@ qed.
     
 lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_mid
   (low_dest low_stateOpening0AtZ low_stateOpening1AtZ low_stateOpening2AtZ: uint256)
-    (mid_dest mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
+    (mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
            proofLookupGrandProductOpeningAtZOmega
            powerOfAlpha6
            zMinusLastOmega
@@ -419,7 +419,7 @@ lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_msto
     equiv [
       AddAssignLookupLinearisationContributionWithV.low' ~ AddAssignLookupLinearisationContributionWithV.mid: 
       arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -613,7 +613,7 @@ qed.
 lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
     (mem_0: mem)
     (low_dest low_stateOpening0AtZ low_stateOpening1AtZ low_stateOpening2AtZ: uint256)
-    (mid_dest mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
+    (mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
            proofLookupGrandProductOpeningAtZOmega
            powerOfAlpha6
            zMinusLastOmega
@@ -634,9 +634,9 @@ lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
     ):
     equiv [
       AddAssignLookupLinearisationContributionWithV.low ~ AddAssignLookupLinearisationContributionWithV.mid:
-      = {Primops.memory} /\ Primops.memory{1} = mem_0 /\
+      Primops.memory{1} = mem_0 /\
       arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -701,8 +701,8 @@ proof.
     (
       ={arg, glob AddAssignLookupLinearisationContributionWithV} /\ Primops.memory{1} = mem_0 ==>
       ={res, glob AddAssignLookupLinearisationContributionWithV}) 
-    (= {Primops.memory} /\ Primops.memory{1} = mem_0 /\ arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+    (Primops.memory{1} = mem_0 /\ arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -774,7 +774,7 @@ proof.
       Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 res{2}.`1 res{2}.`2 /\ 
         Primops.memory{2} = mem_0)
     (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -842,7 +842,7 @@ proof.
     transitivity AddAssignLookupLinearisationContributionWithV.low'
       (={arg, glob AddAssignLookupLinearisationContributionWithV} ==> ={res, glob AddAssignLookupLinearisationContributionWithV})
       (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
