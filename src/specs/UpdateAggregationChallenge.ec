@@ -110,7 +110,7 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         exists* Primops.memory{1}.
         elim*=>memory1.
     
-        call (PointMulAndAddIntoDest_mid_of_low queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZXSlot.`1 currAggregatedAtZXSlot.`2 val_newAggregationChallenge queriesCommitmentPoint_addr AGGREGATED_AT_Z_X_SLOT memory1). skip. progress. smt (). smt (). smt (). smt (). smt (). smt (). rewrite /AGGREGATED_AT_Z_X_SLOT Utils.uint256_cast_neg. smt (@Utils). rewrite /AGGREGATED_AT_Z_X_SLOT.
+        call (PointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZXSlot.`1 currAggregatedAtZXSlot.`2 val_newAggregationChallenge queriesCommitmentPoint_addr AGGREGATED_AT_Z_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants). rewrite /AGGREGATED_AT_Z_X_SLOT Utils.uint256_cast_neg. smt (@Utils). rewrite /AGGREGATED_AT_Z_X_SLOT.
         have ->: 512 + 1312 + 1568 + 128 + 704 + 256 + 0 = 4480. smt ().
         have ->: 4480 %% W256.modulus = 4480. smt ().
         have ->: (of_int 4480)%W256 + (of_int 32)%W256 = W256.of_int 4512. smt ().

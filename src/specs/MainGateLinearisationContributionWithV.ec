@@ -593,7 +593,7 @@ equiv [
           elim*=> reverted.
           case reverted.
           conseq (_ : (Primops.reverted{1} /\ failed{2}) ==> (Primops.reverted{1} /\ failed{2})). progress. smt (). progress. smt ().
-          call{1} (pointMulAndAddIntoDest_low_pspec_revert).
+          call{1} (PointMulAndAddIntoDest_low_pspec_revert).
           wp.
           inline*. wp. skip. progress. left. assumption.
       
@@ -601,7 +601,7 @@ equiv [
           exists* vk_gate_setup_1{2}, stateOpening1AtZ{2}, dest{1}, point{2}, Primops.memory{1}.
           elim*=> vk_gate_setup_1_r stateOpening1AtZ_r dest_l point_r mem_1.
           wp.
-          call (pointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_1_r.`1 vk_gate_setup_1_r.`2 point_r.`1 point_r.`2 stateOpening1AtZ_r VK_GATE_SETUP_1_X_SLOT dest_l mem_1).
+          call (PointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_1_r.`1 vk_gate_setup_1_r.`2 point_r.`1 point_r.`2 stateOpening1AtZ_r VK_GATE_SETUP_1_X_SLOT dest_l mem_1).
           skip. progress.
           smt (W256.to_uint_cmp).
           smt ().
@@ -814,7 +814,7 @@ equiv [
           progress.
           case reverted.
           conseq (_ : (Primops.reverted{1} /\ failed{2}) ==> (Primops.reverted{1} /\ failed{2})). progress. smt (). progress. smt ().
-          call{1} (pointMulAndAddIntoDest_low_pspec_revert).
+          call{1} (PointMulAndAddIntoDest_low_pspec_revert).
           wp.
           inline*. wp. skip. progress. left. assumption.
       
@@ -822,7 +822,7 @@ equiv [
           exists* vk_gate_setup_2{2}, stateOpening2AtZ{2}, dest{1}, point{2}, Primops.memory{1}.
           elim*=> vk_gate_setup_2_r stateOpening2AtZ_r dest_l point_r memory_l.
           wp.
-          call (pointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_2_r.`1 vk_gate_setup_2_r.`2 point_r.`1 point_r.`2 stateOpening2AtZ_r VK_GATE_SETUP_2_X_SLOT dest_l memory_l).
+          call (PointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_2_r.`1 vk_gate_setup_2_r.`2 point_r.`1 point_r.`2 stateOpening2AtZ_r VK_GATE_SETUP_2_X_SLOT dest_l memory_l).
           skip. progress.
           smt (W256.to_uint_cmp).
           smt ().
@@ -1038,7 +1038,7 @@ equiv [
           progress.
           case reverted.
           conseq (_ : (Primops.reverted{1} /\ failed{2}) ==> (Primops.reverted{1} /\ failed{2})). progress. smt (). progress. smt ().
-          call{1} (pointMulAndAddIntoDest_low_pspec_revert).
+          call{1} (PointMulAndAddIntoDest_low_pspec_revert).
           wp.
           inline*. wp. skip. progress. left. assumption.
       
@@ -1046,7 +1046,7 @@ equiv [
           exists* vk_gate_setup_3{2}, stateOpening3AtZ{2}, dest{1}, point{2}, Primops.memory{1}.
           elim*=> vk_gate_setup_3_r stateOpening3AtZ_r dest_l point_r memory_l.
           wp.
-          call (pointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_3_r.`1 vk_gate_setup_3_r.`2 point_r.`1 point_r.`2 stateOpening3AtZ_r VK_GATE_SETUP_3_X_SLOT dest_l memory_l).
+          call (PointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_3_r.`1 vk_gate_setup_3_r.`2 point_r.`1 point_r.`2 stateOpening3AtZ_r VK_GATE_SETUP_3_X_SLOT dest_l memory_l).
           skip. progress.
           smt (W256.to_uint_cmp).
           smt ().
@@ -1247,7 +1247,7 @@ equiv [
 
           case reverted.
           conseq (_ : (Primops.reverted{1} /\ failed{2}) ==> (Primops.reverted{1} /\ failed{2})). progress. smt (). progress. smt ().
-          sp. call{1} (pointMulAndAddIntoDest_low_pspec_revert).
+          sp. call{1} (PointMulAndAddIntoDest_low_pspec_revert).
           wp.
           inline*. wp. skip. progress. left. assumption.
       
@@ -1255,7 +1255,7 @@ equiv [
           exists* vk_gate_setup_4{2}, stateOpening0AtZ{2}, stateOpening1AtZ{2}, dest{1}, point{2}, Primops.memory{1}.
           elim*=> vk_gate_setup_4_r stateOpening0AtZ_r stateOpening1AtZ_r dest_l point_r memory_l.
           wp. sp.
-          call (pointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_4_r.`1 vk_gate_setup_4_r.`2 point_r.`1 point_r.`2 (stateOpening0AtZ_r * stateOpening1AtZ_r %% Constants.R) VK_GATE_SETUP_4_X_SLOT dest_l memory_l).
+          call (PointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_4_r.`1 vk_gate_setup_4_r.`2 point_r.`1 point_r.`2 (stateOpening0AtZ_r * stateOpening1AtZ_r %% Constants.R) VK_GATE_SETUP_4_X_SLOT dest_l memory_l).
           skip. progress.
           smt (W256.to_uint_cmp).
           smt ().
@@ -1438,7 +1438,7 @@ equiv [
           case reverted.
           progress.
           conseq (_ : (Primops.reverted{1} /\ failed{2}) ==> (Primops.reverted{1} /\ failed{2})). by progress. progress. smt ().
-          sp. call{1} (pointMulAndAddIntoDest_low_pspec_revert).
+          sp. call{1} (PointMulAndAddIntoDest_low_pspec_revert).
           wp.
           inline*. wp. skip. progress. left. assumption.
       
@@ -1447,7 +1447,7 @@ equiv [
           exists* vk_gate_setup_5{2}, stateOpening0AtZ{2}, stateOpening2AtZ{2}, dest{1}, point{2}, Primops.memory{1}.
           elim*=> vk_gate_setup_5_r stateOpening0AtZ_r stateOpening2AtZ_r dest_l point_r memory_l.
           wp. sp.
-          call (pointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_5_r.`1 vk_gate_setup_5_r.`2 point_r.`1 point_r.`2 (stateOpening0AtZ_r * stateOpening2AtZ_r %% Constants.R) VK_GATE_SETUP_5_X_SLOT dest_l memory_l).
+          call (PointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_5_r.`1 vk_gate_setup_5_r.`2 point_r.`1 point_r.`2 (stateOpening0AtZ_r * stateOpening2AtZ_r %% Constants.R) VK_GATE_SETUP_5_X_SLOT dest_l memory_l).
           skip. progress.
           smt (W256.to_uint_cmp).
           smt (W256.to_uint_cmp).
@@ -1683,7 +1683,7 @@ equiv [
           case reverted.
           progress.
           conseq (_ : (Primops.reverted{1} /\ failed{2}) ==> (Primops.reverted{1} /\ failed{2})). by progress. progress. smt ().
-          sp. call{1} (pointMulAndAddIntoDest_low_pspec_revert).
+          sp. call{1} (PointMulAndAddIntoDest_low_pspec_revert).
           wp.
           inline*. wp. skip. progress. left. assumption.
       
@@ -1692,7 +1692,7 @@ equiv [
           exists* vk_gate_setup_7{2}, poly3_omega{2}, dest{1}, point{2}, Primops.memory{1}.
           elim*=> vk_gate_setup_7_r poly3_omega_r dest_l point_r memory_l.
           wp. sp.
-          call (pointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_7_r.`1 vk_gate_setup_7_r.`2 point_r.`1 point_r.`2 poly3_omega_r VK_GATE_SETUP_7_X_SLOT dest_l memory_l).
+          call (PointMulAndAddIntoDest_low_equiv_mid vk_gate_setup_7_r.`1 vk_gate_setup_7_r.`2 point_r.`1 point_r.`2 poly3_omega_r VK_GATE_SETUP_7_X_SLOT dest_l memory_l).
           call{1} (ConcretePrimops.mload_pspec memory_l PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT).
           skip. progress.
           smt (W256.to_uint_cmp).

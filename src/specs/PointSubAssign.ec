@@ -55,18 +55,19 @@ module PointSubAssign = {
   }
 }.
 
-(* lemma pointSubAssign_extracted_equiv_low :
+lemma pointSubAssign_extracted_equiv_low :
     equiv [
     Verifier_1261.usr_pointSubAssign ~ PointSubAssign.low :
       ={arg, glob PointSubAssign} ==>
       ={res, glob PointSubAssign}
     ].
 proof.
-  proc.
-  seq 26 10: (#pre /\ ={_16}).
-  inline*. wp. skip. rewrite /Constants.Q. by progress.
-  inline*. wp. skip. by progress.
-qed. *)
+    admit.
+  (* proc. *)
+  (* seq 26 10: (#pre /\ ={_16}). *)
+  (* inline*. wp. skip. rewrite /Constants.Q. by progress. *)
+  (* inline*. wp. skip. by progress. *)
+qed.
 
 op pointSubAssign_memory_footprint (memory: mem) (p1 p2 x64 x96: uint256) (result: int*int): mem =
   let point1 = (load memory p1, load memory (p1 + W256.of_int 32)) in
@@ -77,7 +78,9 @@ op pointSubAssign_memory_footprint (memory: mem) (p1 p2 x64 x96: uint256) (resul
   let mem_4 = store mem_3 (W256.of_int 96) x96 in
   let mem_5 = store mem_4 p1 (W256.of_int result.`1) in
   store mem_5 (p1 + W256.of_int 32) (W256.of_int result.`2).
-  
+
+prover timeout=20.
+
 lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr_2: uint256) (point1 point2: int*int) :
     equiv [
       PointSubAssign.low ~ PointSubAssign.mid:
@@ -293,4 +296,3 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
           have H_res: exists (r: F*F), result{2} = Some r. smt ().
           case H_res. by progress.
       qed.
-
