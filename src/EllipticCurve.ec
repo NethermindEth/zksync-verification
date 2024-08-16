@@ -78,8 +78,16 @@ axiom ecMul_def (x y : F) (s : int) (p : g):
 axiom ecMul_fail (x y : F) (s : int) :
   !(on_curve (x, y)) => ecMul_precompile x y s = None.
 
-axiom ecPairing_def ()
+axiom ecPairing_def (input1 input2 : ((F * F) * ((F * F) * (F * F)))) (p1 p2 q1 q2: g) :
+  aspoint_G1 p1 = fst input1
+    => aspoint_G1 p2 = fst input2
+    => aspoint_G2 q1 = snd input1
+    => aspoint_G2 q2 = snd input2
+    => Some (e (p1 + p2) (q1 + q2) = G.e) = ecPairing_precompile input1 input2.
 
+axiom ecPairing_fail (input1 input2 : ((F * F) * ((F * F) * (F * F)))):
+  !(on_curve (fst input1)) \/ !(on_curve (fst input2)) \/ !(on_curve_G2 (snd input1)) \/ !(on_curve_G2 (snd input2)) => ecPairing_precompile input1 input2 = None.    
+    
 lemma ec_add_result_on_curve (x1 y1 x2 y2 x3 y3 : F):
     ecAdd_precompile x1 y1 x2 y2 = Some (x3, y3) =>
     on_curve (x3, y3).
