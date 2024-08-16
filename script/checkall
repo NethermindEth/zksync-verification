@@ -15,7 +15,7 @@ check() {
 }
 
 # list of files to check
-files=`eval "find . -name \"*.ec\""`
+files=`eval "find . -not -path \"./lib/*\" -name \"*.ec\""`
 
 for fn in $files; do
     check $fn

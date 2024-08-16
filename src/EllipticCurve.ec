@@ -22,7 +22,6 @@ type F = ZModField.zmod.
 clone CyclicGroup as G with type group <- g.
 
 abbrev q = G.order.
-axiom prime_q : prime q.
 
 op aspoint_G1: g -> F * F.
 op aspoint_G2: g -> (F * F) * (F * F).
