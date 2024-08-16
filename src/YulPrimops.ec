@@ -581,6 +581,23 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
   pred point_oncurve_G2 (pnt: (uint256*uint256) * (uint256 * uint256)) =
     on_curve_G2 ((ZModField.inzmod(to_uint pnt.`1.`1), ZModField.inzmod (to_uint pnt.`1.`2)), (ZModField.inzmod(to_uint pnt.`2.`1), (ZModField.inzmod (to_uint pnt.`2.`2)))).
 
+  op ecPairing_precompile_unsafe_cast (p1 p2 : uint256 * uint256) (q1 q2 : (uint256*uint256) * (uint256*uint256)) : uint256 =
+  let x1_F = ZModField.inzmod (W256.to_uint p1.`1) in
+  let y1_F = ZModField.inzmod (W256.to_uint p1.`2) in
+  let x2_1_F = ZModField.inzmod (W256.to_uint q1.`1.`1) in
+  let x2_2_F = ZModField.inzmod (W256.to_uint q1.`1.`2) in
+  let y2_1_F = ZModField.inzmod (W256.to_uint q1.`2.`1) in
+  let y2_2_F = ZModField.inzmod (W256.to_uint q1.`2.`2) in
+  let x3_F = ZModField.inzmod (W256.to_uint p2.`1) in
+  let y3_F = ZModField.inzmod (W256.to_uint p2.`2) in
+  let x4_1_F = ZModField.inzmod (W256.to_uint q2.`1.`1) in
+  let x4_2_F = ZModField.inzmod (W256.to_uint q2.`1.`2) in
+  let y4_1_F = ZModField.inzmod (W256.to_uint q2.`2.`1) in
+  let y4_2_F = ZModField.inzmod (W256.to_uint q2.`2.`2) in
+  let ret = ecPairing_precompile ((x1_F, y1_F), ((x2_1_F, x2_2_F), (y2_1_F, y2_2_F))) ((x3_F, y3_F), ((x4_1_F, x4_2_F), (y4_1_F, y4_2_F))) in
+  let ret_unwrapped = odflt false ret in
+  UInt256.uint256_of_bool ret_unwrapped.
+  
   pred staticcall_ec_pairing_should_succeed (p1 p2 : uint256 * uint256) (q1 q2 : (uint256*uint256) * (uint256*uint256)) =
     point_wellformed p1 /\
     point_wellformed p2 /\
@@ -675,5 +692,50 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
            progress. smt().
            progress. smt().
      qed.
+
+     lemma staticcall_ec_pairing_pspec (memory: mem) (p1 p2 : uint256 * uint256) (q1 q2 : (uint256*uint256) * (uint256*uint256)) (argOff retOff: uint256):
+    phoare [ Primops.staticcall :
+      arg = (gas, W256.of_int 8, argOff, W256.of_int 384, retOff, W256.of_int 32) /\
+      Primops.memory = memory /\
+      p1.`1 = PurePrimops.mload memory argOff /\
+      p1.`1 = PurePrimops.mload memory (argOff + W256.of_int 32) /\
+      q1.`1.`1 = PurePrimops.mload memory (argOff + W256.of_int 64) /\
+      q1.`1.`2 = PurePrimops.mload memory (argOff + W256.of_int 96) /\
+      q1.`2.`1 = PurePrimops.mload memory (argOff + W256.of_int 128) /\
+      q1.`2.`2 = PurePrimops.mload memory (argOff + W256.of_int 160) /\
+      p2.`1 = PurePrimops.mload memory (argOff + W256.of_int 192) /\
+      p2.`2 = PurePrimops.mload memory (argOff + W256.of_int 224) /\
+      q2.`1.`1 = PurePrimops.mload memory (argOff + W256.of_int 256) /\
+      q2.`1.`2 = PurePrimops.mload memory (argOff + W256.of_int 288) /\
+      q2.`2.`1 = PurePrimops.mload memory (argOff + W256.of_int 320) /\
+      q2.`2.`2 = PurePrimops.mload memory (argOff + W256.of_int 352)
+      ==>
+      ((staticcall_ec_pairing_should_succeed p1 p2 q1 q2) => (
+        res = W256.one /\
+        Primops.memory = PurePrimops.mstore
+            memory
+            retOff
+            (ecPairing_precompile_unsafe_cast p1 p2 q1 q2)
+      )) /\
+      ((!staticcall_ec_pairing_should_succeed p1 p2 q1 q2) => res = W256.zero /\ Primops.memory = memory)
+    ] = 1%r.
+    proof.
+      proc.
+
+      inline *. wp. skip. progress.
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
+      smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). 
+
+
+      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H13. smt ().
+      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
+      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
+
+      rewrite neg_none_eq_some in H5. smt ().
+      rewrite neg_none_eq_some in H5. smt ().
+  qed.
      
 end ConcretePrimops.
