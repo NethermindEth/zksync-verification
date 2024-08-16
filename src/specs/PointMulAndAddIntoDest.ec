@@ -52,6 +52,22 @@ module PointMulAndAddIntoDest = {
       }
       return fresult;
   }
+
+  proc high_field(p1 : F*F, s : int, p2 : F*F) : (F*F) option = {
+      var mresult, mresult', fresult; 
+      mresult <- ecMul_precompile p1.`1 p1.`2 s;
+      if (is_some mresult) {
+        mresult' <- odflt (ZModField.zero, ZModField.zero) mresult;
+        fresult  <- ecAdd_precompile mresult'.`1 mresult'.`2 p2.`1 p2.`2; 
+      } else {
+        fresult <- None;
+      }
+      return fresult;
+  }
+
+  proc high(p1: g, s: int, p2: g): g = {
+      return (s * p1) + p2; 
+  }
 }.
 
 lemma pointMulAndAddIntoDest_extracted_equiv_low :
@@ -648,6 +664,103 @@ lemma pointMulAndAddIntoDest_low_equiv_mid (x1v y1v x2v y2v sv : int) (p1u destu
 
         inline *. wp. skip. progress. right. exact H0.
     qed.
-    
+
+  lemma pointMulAndAddIntoDest_mid_equiv_high_field:
+  equiv [
+      PointMulAndAddIntoDest.mid ~ PointMulAndAddIntoDest.high_field:
+        x1{1} = (F_to_int_point p1{2}).`1 /\
+        y1{1} = (F_to_int_point p1{2}).`2 /\
+        x2{1} = (F_to_int_point p2{2}).`1 /\
+        y2{1} = (F_to_int_point p2{2}).`2 /\
+        s{1} = s{2} ==>
+        (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: F*F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+      ].
+      proof.
+        proc.
+        wp. skip.
+        progress.
+        do rewrite F_to_int_point_inzmod_1.
+        do rewrite F_to_int_point_inzmod_2.
+        have H_mul: exists (p_mul: F*F), ecMul_precompile p1{2}.`1 p1{2}.`2 s{2} = Some p_mul by exact exists_of_is_some.
+        case H_mul. move=> p_mul H_p_mul. rewrite H_p_mul. simplify.
+        case (ecAdd_precompile p_mul.`1 p_mul.`2 p2{2}.`1 p2{2}.`2).
+        by progress.
+      move=>p_add. right.
+        exists (F_to_int_point p_add). exists p_add. by progress.
+        rewrite F_to_int_point_inzmod_1 in H0.
+        rewrite F_to_int_point_inzmod_2 in H0.
+        by progress.
+        rewrite F_to_int_point_inzmod_1 in H0.
+        rewrite F_to_int_point_inzmod_2 in H0.
+        by progress.
+      qed.
+        
+lemma pointMulAndAddIntoDest_high_field_equiv_high:
+equiv [
+    PointMulAndAddIntoDest.high_field ~ PointMulAndAddIntoDest.high:
+      aspoint_G1 p1{2} = p1{1} /\
+      aspoint_G1 p2{2} = p2{1} /\
+      s{1} = s{2} ==>
+      res{1} = Some (aspoint_G1 res{2})
+    ].
+    proof.
+      proc.
+      wp.
+      skip.
+      progress.
+      by rewrite - (ecMul_def (aspoint_G1 p1{2}).`1 (aspoint_G1 p1{2}).`2 s{2} p1{2}); [ smt () | progress ].
+      case (exists_of_is_some _ H). move => p_mul H_mul. rewrite H_mul. simplify.
+      rewrite (ecAdd_def p_mul.`1 p_mul.`2 (aspoint_G1 p2{2}).`1 (aspoint_G1 p2{2}).`2 (s{2} * p1{2}) p2{2}).
+      smt (@EllipticCurve).
+      smt ().
+      reflexivity.
+  qed.
+
+lemma pointMulAndAddIntoDest_mid_equiv_high:
+equiv [
+    PointMulAndAddIntoDest.mid ~ PointMulAndAddIntoDest.high:
+      x1{1} = (F_to_int_point (aspoint_G1 p1{2})).`1 /\
+      y1{1} = (F_to_int_point (aspoint_G1 p1{2})).`2 /\    
+      x2{1} = (F_to_int_point (aspoint_G1 p2{2})).`1 /\
+      y2{1} = (F_to_int_point (aspoint_G1 p2{2})).`2 /\
+      s{1} = s{2} ==>
+      res{1} = Some (F_to_int_point (aspoint_G1 res{2}))
+    ].
+    proof.
+      transitivity PointMulAndAddIntoDest.high_field
+    (
+      x1{1} = (F_to_int_point p1{2}).`1 /\
+      y1{1} = (F_to_int_point p1{2}).`2 /\
+      x2{1} = (F_to_int_point p2{2}).`1 /\
+      y2{1} = (F_to_int_point p2{2}).`2 /\
+      s{1} = s{2} ==>
+      (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: F*F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+    )
+    (
+      aspoint_G1 p1{2} = p1{1} /\
+      aspoint_G1 p2{2} = p2{1} /\
+      s{1} = s{2} ==>
+      res{1} = Some (aspoint_G1 res{2})
+    ).
+        by progress; exists (aspoint_G1 p1{2}, s{2}, aspoint_G1 p2{2}); progress.
+        by progress; case H; progress.
+        exact pointMulAndAddIntoDest_mid_equiv_high_field.
+        exact pointMulAndAddIntoDest_high_field_equiv_high.
+    qed.    
+      
+
+        
 
     

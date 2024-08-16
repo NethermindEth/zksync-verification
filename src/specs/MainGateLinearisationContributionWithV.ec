@@ -82,6 +82,36 @@ module MainGateLinearisationContributionWithV = {
       }
       return point_opt;
   }
+
+  proc high(vk_gate_setup_0: g, vk_gate_setup_1: g, vk_gate_setup_2: g, vk_gate_setup_3: g, vk_gate_setup_4: g, vk_gate_setup_5: g, vk_gate_setup_6: g, vk_gate_setup_7: g, stateOpening0AtZ: int, stateOpening1AtZ: int, stateOpening2AtZ: int, stateOpening3AtZ: int, poly3_omega: int, v: int, gate_selector_0_opening: int): g = {
+      var point: g;
+      var factor_4, factor_5, factor_7, final_factor: int;
+    
+      point <@ PointMulIntoDest.high(vk_gate_setup_0, stateOpening0AtZ);
+    
+      point <@ PointMulAndAddIntoDest.high(vk_gate_setup_1, stateOpening1AtZ, point);
+    
+      point <@ PointMulAndAddIntoDest.high(vk_gate_setup_2, stateOpening2AtZ, point);
+    
+      point <@ PointMulAndAddIntoDest.high(vk_gate_setup_3, stateOpening3AtZ, point);
+    
+      factor_4 <- (stateOpening0AtZ * stateOpening1AtZ) %% Constants.R;
+      point <@ PointMulAndAddIntoDest.high(vk_gate_setup_4.`1, vk_gate_setup_4.`2, factor_4, point.`1, point.`2);
+    
+      factor_5 <- (stateOpening0AtZ * stateOpening2AtZ) %% Constants.R;
+      point <@ PointMulAndAddIntoDest.high(vk_gate_setup_5.`1, vk_gate_setup_5.`2, factor_5, point.`1, point.`2);
+    
+      point <@ PointAddIntoDest.high(point.`1, point.`2, vk_gate_setup_6.`1, vk_gate_setup_6.`2);
+    
+      point <@ PointMulAndAddIntoDest.high(vk_gate_setup_7.`1, vk_gate_setup_7.`2, poly3_omega, point.`1, point.`2);
+    
+      final_factor <- v * gate_selector_0_opening %% Constants.R;
+      point_opt <@ PointMulIntoDest.mid(point.`1, point.`2, final_factor);
+      if (failed) {
+        point_opt <- None;
+      }
+      return point_opt;
+  }  
 }.
 
 lemma mainGateLinearisationContributionWithV_extracted_equiv_low :

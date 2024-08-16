@@ -62,6 +62,14 @@ module PointAddIntoDest = {
       result <- ecAdd_precompile x1_F y1_F x2_F y2_F;
       return (omap F_to_int_point result);
   }
+
+  proc high_field(p1: F*F, p2: F*F): (F*F) option = {
+    return ecAdd_precompile p1.`1 p1.`2 p2.`1 p2.`2;
+  }
+
+  proc high(p1: g, p2: g): g = {
+    return p1 + p2;
+  }
 }.
 
 lemma pointAddIntoDest_pspec_revert :
@@ -576,7 +584,84 @@ lemma pointAddIntoDest_low'_equiv_mid (x1v x2v y1v y2v : int) (p1v p2v destv : u
         by progress.
         by progress.
         exact (pointAddIntoDest_low'_equiv_mid p1.`1 p2.`1 p1.`2 p2.`2 p1_addr p2_addr dest_addr mem_0).
+  qed.
+
+lemma pointAddIntoDest_mid_equiv_high_field:
+equiv [
+    PointAddIntoDest.mid ~ PointAddIntoDest.high_field:
+      x1{1} = (F_to_int_point p1{2}).`1 /\
+      y1{1} = (F_to_int_point p1{2}).`2 /\
+      x2{1} = (F_to_int_point p2{2}).`1 /\
+      y2{1} = (F_to_int_point p2{2}).`2 ==>
+      (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: F*F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+    ].
+    proof.
+      proc.
+      wp. skip.
+      progress.
+      do rewrite F_to_int_point_inzmod_1.
+      do rewrite F_to_int_point_inzmod_2.
+      case (ecAdd_precompile p1{2}.`1 p1{2}.`2 p2{2}.`1 p2{2}.`2).
+      by progress.
+    move=> p_add.
+      progress.
+      exists (F_to_int_point p_add); exists (p_add).
+      by progress.
     qed.
           
-          
-              
+lemma pointAddIntoDest_high_field_equiv_high:
+equiv [
+    PointAddIntoDest.high_field ~ PointAddIntoDest.high:
+      aspoint_G1 p1{2} = p1{1} /\
+      aspoint_G1 p2{2} = p2{1} ==>
+      res{1} = Some (aspoint_G1 res{2})
+    ].
+    proof.
+      proc.
+      skip.
+      progress.
+      rewrite (ecAdd_def (aspoint_G1 p1{2}).`1 (aspoint_G1 p1{2}).`2 (aspoint_G1 p2{2}).`1 (aspoint_G1 p2{2}).`2 p1{2} p2{2}).
+      smt (). smt (). reflexivity.
+  qed.
+
+lemma pointAddIntoDest_mid_equiv_high:
+equiv [
+    PointAddIntoDest.mid ~ PointAddIntoDest.high:
+      x1{1} = (F_to_int_point (aspoint_G1 p1{2})).`1 /\
+      y1{1} = (F_to_int_point (aspoint_G1 p1{2})).`2 /\    
+      x2{1} = (F_to_int_point (aspoint_G1 p2{2})).`1 /\
+      y2{1} = (F_to_int_point (aspoint_G1 p2{2})).`2 ==>
+      res{1} = Some (F_to_int_point (aspoint_G1 res{2}))
+    ].
+    proof.
+      transitivity PointAddIntoDest.high_field
+    (
+      x1{1} = (F_to_int_point p1{2}).`1 /\
+      y1{1} = (F_to_int_point p1{2}).`2 /\
+      x2{1} = (F_to_int_point p2{2}).`1 /\
+      y2{1} = (F_to_int_point p2{2}).`2 ==>
+      (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: F*F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+    )
+    (
+      aspoint_G1 p1{2} = p1{1} /\
+      aspoint_G1 p2{2} = p2{1} ==>
+      res{1} = Some (aspoint_G1 res{2})
+    ).
+        by progress; exists (aspoint_G1 p1{2}, aspoint_G1 p2{2}); progress.
+        by progress; case H; progress.
+        exact pointAddIntoDest_mid_equiv_high_field.
+        exact pointAddIntoDest_high_field_equiv_high.
+    qed.
+      

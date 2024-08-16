@@ -39,6 +39,15 @@ module PointMulIntoDest = {
     result <- ecMul_precompile x_F y_F s;
     return (omap F_to_int_point result);
   }
+
+  proc high_field(p: F*F, s : int) : (F * F) option =
+  {
+    return ecMul_precompile p.`1 p.`2 s;
+  }
+
+  proc high(p: g, s: int): g = {
+    return s * p;
+  }
 }.
 
 lemma pointMulIntoDest_extracted_equiv_low : equiv [
@@ -223,4 +232,77 @@ lemma pointMulIntoDest_low_equiv_mid (x1v y1v sv : int) (p1u destu : uint256) (m
      inline *. wp. skip. progress.
 qed.
 
-      
+lemma pointMulIntoDest_mid_equiv_high_field:
+equiv [
+    PointMulIntoDest.mid ~ PointMulIntoDest.high_field:
+      x{1} = (F_to_int_point p{2}).`1 /\
+      y{1} = (F_to_int_point p{2}).`2 /\
+      s{1} = s{2} ==>
+      (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: F*F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+    ].
+    proof.
+      proc.
+      wp. skip.
+      progress.
+      do rewrite F_to_int_point_inzmod_1.
+      do rewrite F_to_int_point_inzmod_2.
+      case (ecMul_precompile p{2}.`1 p{2}.`2 s{2}).
+      by progress.
+    move=> p_mul.
+      progress.
+      exists (F_to_int_point p_mul); exists (p_mul).
+      by progress.
+    qed.
+
+lemma pointMulIntoDest_high_field_equiv_high:
+equiv [
+    PointMulIntoDest.high_field ~ PointMulIntoDest.high:
+      aspoint_G1 p{2} = p{1} /\
+      s{1} = s{2} ==>
+      res{1} = Some (aspoint_G1 res{2})
+    ].
+    proof.
+      proc.
+      skip.
+      progress.
+      by rewrite - (ecMul_def (aspoint_G1 p{2}).`1 (aspoint_G1 p{2}).`2 s{2} p{2}); [ smt () | progress ].
+    qed.
+
+lemma pointMulIntoDest_mid_equiv_high:
+equiv [
+    PointMulIntoDest.mid ~ PointMulIntoDest.high:
+      x{1} = (F_to_int_point (aspoint_G1 p{2})).`1 /\
+      y{1} = (F_to_int_point (aspoint_G1 p{2})).`2 /\    
+      s{1} = s{2} ==>
+      res{1} = Some (F_to_int_point (aspoint_G1 res{2}))
+    ].
+    proof.
+      transitivity PointMulIntoDest.high_field
+    (
+      x{1} = (F_to_int_point p{2}).`1 /\
+      y{1} = (F_to_int_point p{2}).`2 /\
+      s{1} = s{2} ==>
+      (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: F*F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+    )
+    (
+      aspoint_G1 p{2} = p{1} /\
+      s{1} = s{2} ==>
+      res{1} = Some (aspoint_G1 res{2})
+    ).
+        by progress; exists (aspoint_G1 p{2}, s{2}); progress.
+        by progress; case H; progress.
+        exact pointMulIntoDest_mid_equiv_high_field.
+        exact pointMulIntoDest_high_field_equiv_high.
+    qed. 

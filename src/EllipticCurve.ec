@@ -30,7 +30,9 @@ op aspoint_G2: g -> (F * F) * (F * F).
 axiom aspoint_G1_inj (x1 x2 : g) : aspoint_G1 x1 = aspoint_G1 x2 => x1 = x2. 
 axiom aspoint_G2_inj (x1 x2 : g) : aspoint_G2 x1 = aspoint_G2 x2 => x1 = x2.
 
-op [-] = ZModField.inv.
+print ZModField.
+
+op [-] = ZModField.([-]).
 
 axiom zero_G1 : (aspoint_G1 G.e) = (ZModField.zero, ZModField.zero).
 axiom neg_G1_fst (x : g) : fst (aspoint_G1 (G.inv x)) = fst (aspoint_G1 x).
@@ -95,3 +97,22 @@ lemma ec_mul_result_on_curve (x1 y1 x2 y2 : F) (s : int) :
     
 
 op F_to_int_point (p : F * F) : (int * int) = (ZModField.asint (fst p), ZModField.asint (snd p)).
+
+lemma F_to_int_point_inzmod_1 (p: F*F): ZModField.inzmod (F_to_int_point p).`1 = p.`1.
+    proof. rewrite /F_to_int_point. simplify. exact ZModField.asintK. qed.
+lemma F_to_int_point_inzmod_2 (p: F*F): ZModField.inzmod (F_to_int_point p).`2 = p.`2.
+    proof. rewrite /F_to_int_point. simplify. exact ZModField.asintK. qed.
+lemma F_to_int_point_mod_Q_1 (point: F*F): (F_to_int_point point).`1 %% p = (F_to_int_point point).`1.
+    proof.
+      rewrite /F_to_int_point. simplify. rewrite pmod_small. progress.
+      exact ZModField.ge0_asint.
+      exact ZModField.gtp_asint.
+      reflexivity.
+    qed.
+lemma F_to_int_point_mod_Q_2 (point: F*F): (F_to_int_point point).`2 %% p = (F_to_int_point point).`2.
+    proof.
+      rewrite /F_to_int_point. simplify. rewrite pmod_small. progress.
+      exact ZModField.ge0_asint.
+      exact ZModField.gtp_asint.
+      reflexivity.
+    qed.
