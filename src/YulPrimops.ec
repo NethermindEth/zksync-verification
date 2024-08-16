@@ -573,4 +573,107 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
       rewrite neg_none_eq_some in H5. smt ().
   qed.
 
+  pred point_G2_wellformed (pnt: ((uint256*uint256) * (uint256*uint256))) =
+    pnt.`1.`1 = pnt.`1.`1 %% W256.of_int p /\
+    pnt.`1.`2 = pnt.`1.`2 %% W256.of_int p /\
+    pnt.`2.`1 = pnt.`2.`1 %% W256.of_int p /\
+    pnt.`2.`2 = pnt.`2.`2 %% W256.of_int p.
+  pred point_oncurve_G2 (pnt: (uint256*uint256) * (uint256 * uint256)) =
+    on_curve_G2 ((ZModField.inzmod(to_uint pnt.`1.`1), ZModField.inzmod (to_uint pnt.`1.`2)), (ZModField.inzmod(to_uint pnt.`2.`1), (ZModField.inzmod (to_uint pnt.`2.`2)))).
+
+  pred staticcall_ec_pairing_should_succeed (p1 p2 : uint256 * uint256) (q1 q2 : (uint256*uint256) * (uint256*uint256)) =
+    point_wellformed p1 /\
+    point_wellformed p2 /\
+    point_G2_wellformed q1 /\
+    point_G2_wellformed q2 /\
+    point_oncurve p1 /\
+    point_oncurve p2 /\
+    point_oncurve_G2 q1 /\
+    point_oncurve_G2 q2 /\
+    is_some (ecPairing_precompile (((ZModField.inzmod (to_uint p1.`1)), (ZModField.inzmod (to_uint p1.`2))), ((ZModField.inzmod (to_uint q1.`1.`1), ZModField.inzmod (to_uint q1.`1.`2)), (ZModField.inzmod (to_uint q1.`2.`1), ZModField.inzmod (to_uint q1.`2.`2)))) (((ZModField.inzmod (to_uint p2.`1)), (ZModField.inzmod (to_uint p2.`2))), ((ZModField.inzmod (to_uint q2.`1.`1), ZModField.inzmod (to_uint q2.`1.`2)), (ZModField.inzmod (to_uint q2.`2.`1), ZModField.inzmod (to_uint q2.`2.`2))))).
+
+  lemma ecPairing_precomp_is_some_of_should_succeed (p1 p2 : uint256 * uint256) (q1 q2 : (uint256*uint256) * (uint256*uint256)) :
+    staticcall_ec_pairing_should_succeed p1 p2 q1 q2 =>
+    is_some
+    (ecPairing_precompile (((ZModField.inzmod (to_uint p1.`1)), (ZModField.inzmod (to_uint p1.`2))), ((ZModField.inzmod (to_uint q1.`1.`1), ZModField.inzmod (to_uint q1.`1.`2)), (ZModField.inzmod (to_uint q1.`2.`1), ZModField.inzmod (to_uint q1.`2.`2)))) (((ZModField.inzmod (to_uint p2.`1)), (ZModField.inzmod (to_uint p2.`2))), ((ZModField.inzmod (to_uint q2.`1.`1), ZModField.inzmod (to_uint q2.`1.`2)), (ZModField.inzmod (to_uint q2.`2.`1), ZModField.inzmod (to_uint q2.`2.`2))))). progress. smt (). qed.
+
+  lemma ecPairing_precomp_is_none_of_should_not_succeed (p1 p2 : uint256 * uint256) (q1 q2 : (uint256*uint256) * (uint256*uint256)) :
+    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\
+     (W256.to_uint p2.`1) < p /\ W256.to_uint p2.`2 < p /\
+     (W256.to_uint q1.`1.`1) < p /\ W256.to_uint q1.`1.`2 < p /\
+     (W256.to_uint q1.`2.`1) < p /\ W256.to_uint q1.`2.`2 < p /\
+     (W256.to_uint q2.`1.`1) < p /\ W256.to_uint q2.`1.`2 < p /\
+     (W256.to_uint q2.`2.`1) < p /\ W256.to_uint q2.`2.`2 < p /\
+    ! (staticcall_ec_pairing_should_succeed p1 p2 q1 q2)) =>
+    is_none
+   (ecPairing_precompile (((ZModField.inzmod (to_uint p1.`1)), (ZModField.inzmod (to_uint p1.`2))), ((ZModField.inzmod (to_uint q1.`1.`1), ZModField.inzmod (to_uint q1.`1.`2)), (ZModField.inzmod (to_uint q1.`2.`1), ZModField.inzmod (to_uint q1.`2.`2)))) (((ZModField.inzmod (to_uint p2.`1)), (ZModField.inzmod (to_uint p2.`2))), ((ZModField.inzmod (to_uint q2.`1.`1), ZModField.inzmod (to_uint q2.`1.`2)), (ZModField.inzmod (to_uint q2.`2.`1), ZModField.inzmod (to_uint q2.`2.`2))))).
+   progress.
+           have H12 :
+       (
+         ! point_wellformed p1 \/
+         ! point_wellformed p2 \/
+         ! point_oncurve p1 \/
+         ! point_oncurve p2 \/
+         ! point_G2_wellformed q1 \/
+         ! point_G2_wellformed q2 \/
+         ! point_oncurve_G2 q1 \/
+         ! point_oncurve_G2 q2 \/
+         ! is_some ((ecPairing_precompile (((ZModField.inzmod (to_uint p1.`1)), (ZModField.inzmod (to_uint p1.`2))), ((ZModField.inzmod (to_uint q1.`1.`1), ZModField.inzmod (to_uint q1.`1.`2)), (ZModField.inzmod (to_uint q1.`2.`1), ZModField.inzmod (to_uint q1.`2.`2)))) (((ZModField.inzmod (to_uint p2.`1)), (ZModField.inzmod (to_uint p2.`2))), ((ZModField.inzmod (to_uint q2.`1.`1), ZModField.inzmod (to_uint q2.`1.`2)), (ZModField.inzmod (to_uint q2.`2.`1), ZModField.inzmod (to_uint q2.`2.`2))))))
+       ). smt ().
+   case H12.
+   progress. rewrite /point_wellformed in H12.      
+   have H13 : (p1.`1 <> p1.`1 %% (of_int p)%W256 \/ p1.`2 <> p1.`2 %% (of_int p)%W256). smt ().
+   rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H.
+   rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H0. smt ().    
+   progress. rewrite /point_wellformed in H12.
+   case H12.
+   progress. rewrite /point_wellformed in H12.
+   have H13 : (p2.`1 <> p2.`1 %% (of_int p)%W256 \/ p2.`2 <> p2.`2 %% (of_int p)%W256). smt ().    
+   rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H1.
+   rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H2. smt ().    
+   progress. rewrite /point_wellformed in H12.
+   case H12.
+   progress. rewrite /point_oncurve in H12.
+   apply is_none_of_eq_none.
+   apply ecPairing_fail.
+   smt().
+   move => H12.    
+   case H12.
+   progress.
+   rewrite /point_oncurve in H12.
+   apply is_none_of_eq_none.
+   apply ecPairing_fail.
+   smt().
+   progress.     
+   case H12. progress. rewrite /point_G2_wellformed in H12.
+   have H13 : (q1.`1.`1 <> q1.`1.`1 %% (of_int p)%W256 \/
+        q1.`1.`2 <> q1.`1.`2 %% (of_int p)%W256 \/
+        q1.`2.`1 <> q1.`2.`1 %% (of_int p)%W256 \/
+           q1.`2.`2 <> q1.`2.`2 %% (of_int p)%W256). smt ().
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H3.
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H4.
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H5.
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H6. smt().
+           progress. case H12.
+           progress. rewrite /point_G2_wellformed in H12.
+   have H13 : (q2.`1.`1 <> q2.`1.`1 %% (of_int p)%W256 \/
+        q2.`1.`2 <> q2.`1.`2 %% (of_int p)%W256 \/
+        q2.`2.`1 <> q2.`2.`1 %% (of_int p)%W256 \/
+           q2.`2.`2 <> q2.`2.`2 %% (of_int p)%W256). smt ().
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H7.
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H8.
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H9.
+           rewrite uint256_mod_eq_of_lt in H13. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H10. smt().
+   progress. case H12.
+   progress. progress. rewrite /point_oncurve_G2 in H12.
+   apply is_none_of_eq_none.
+   apply ecPairing_fail.
+           progress. smt().
+   progress. case H12. progress. progress. progress. rewrite /point_oncurve_G2 in H12.
+   apply is_none_of_eq_none.
+   apply ecPairing_fail.
+           progress. smt().
+           progress. smt().
+     qed.
+     
 end ConcretePrimops.
