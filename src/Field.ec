@@ -2,7 +2,6 @@ pragma Goals:printall.
 
 require import AllCore Int IntDiv ZModP StdOrder.
 require import Constants.
-(* require import EllipticCurve. *)
 
 theory FieldR.
 clone include ZModField with 
