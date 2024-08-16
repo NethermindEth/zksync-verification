@@ -728,9 +728,9 @@ lemma staticcall_ec_mul_pspec (memory: mem) (p : uint256 * uint256) (s : uint256
       smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
       smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256).
       smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). smt (@Utils @W256). 
+      smt().
 
-
-      have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H13. smt ().
+      have CONT := ecPairing_precomp_is_some_of_should_succeed _ _ H13. smt ().
       have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
       have CONT := ecMul_precomp_is_some_of_should_succeed _ _ H6. smt ().
 
