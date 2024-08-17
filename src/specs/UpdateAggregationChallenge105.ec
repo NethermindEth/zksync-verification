@@ -2,6 +2,7 @@ require        Constants.
 require import PointMulAndAddIntoDest.
 require import PurePrimops.
 require import UInt256.
+require import Utils.
 require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
@@ -114,10 +115,10 @@ lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * 
         exists* Primops.memory{1}.
         elim*=>memory1.
 
-        call (PointMulAndAddIntoDest_mid_of_low queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZOmegaXSlot.`1 currAggregatedAtZOmegaXSlot.`2 val_finalCoeff queriesCommitmentPoint_addr AGGREGATED_AT_Z_OMEGA_X_SLOT memory1). skip. progress. smt (). smt (). smt (). smt (). smt (). smt ().
+        call (PointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZOmegaXSlot.`1 currAggregatedAtZOmegaXSlot.`2 val_finalCoeff queriesCommitmentPoint_addr AGGREGATED_AT_Z_OMEGA_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants).
         rewrite /AGGREGATED_AT_Z_OMEGA_X_SLOT Utils.uint256_cast_neg. smt (@Utils).
         rewrite /AGGREGATED_AT_Z_OMEGA_X_SLOT Utils.uint256_cast_add Utils.uint256_cast_neg.
-        apply Utils.uint256_le_of_le.
+        apply uint256_le_of_le.
         rewrite of_uintK of_uintK of_uintK of_uintK.
         smt (@Utils).
     
