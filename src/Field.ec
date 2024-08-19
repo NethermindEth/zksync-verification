@@ -1,22 +1,21 @@
 pragma Goals:printall.
 
-require import AllCore Int IntDiv ZModP StdOrder.
-require import Constants.
+require import AllCore.
+require import Int.
+require import IntDiv.
+require import StdOrder.
+require import ZModP.
 
 theory FieldR.
-clone include ZModField with 
-  op p <- R 
+clone include ZModField
   rename "zmod" as "F"
-  rename "ZModp" as "Zr"
-  proof prime_p by apply prime_r.
+  rename "ZModp" as "Zr".
 end FieldR.
 
 theory FieldQ.
-clone include ZModField with 
-  op p <- Q 
+clone include ZModField
   rename "zmod" as "F"
-  rename "ZModp" as "Zq"
-  proof prime_p by apply prime_q.
+  rename "ZModp" as "Zq".
 end FieldQ.
   
 op (^) (x : FieldR.F) (k : int) = FieldR.exp x k axiomatized by RexpE.

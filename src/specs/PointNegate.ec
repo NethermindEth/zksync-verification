@@ -42,9 +42,9 @@ module PointNegate = {
     return ret;
   }
 
-  proc high_field(p: F*F) : (F*F) option = {
-    var ret: (F*F) option;
-    if (p.`1 <> ZModField.zero /\ p.`2 = ZModField.zero) {
+  proc high_field(p: FieldQ.F*FieldQ.F) : (FieldQ.F*FieldQ.F) option = {
+    var ret: (FieldQ.F*FieldQ.F) option;
+    if (p.`1 <> FieldQ.zero /\ p.`2 = FieldQ.zero) {
       ret <- None;
     } else {
       ret <- Some (p.`1, -p.`2);
@@ -152,7 +152,7 @@ equiv [
       point{1} = F_to_int_point p{2} ==>
       (
         (res{1} = None /\ res{2} = None) \/
-        (exists (ret_int: int*int, ret_f: F*F),
+        (exists (ret_int: int*int, ret_f: FieldQ.F*FieldQ.F),
           res{1} = Some ret_int /\ res{2} = Some ret_f /\
           ret_int = F_to_int_point ret_f
         )
@@ -165,12 +165,12 @@ equiv [
       smt (@EllipticCurve).
       smt (@EllipticCurve).
       smt (@EllipticCurve).
-      exists (F_to_int_point (p{2}.`1, (-p{2}.`2)%ZModField)).
-      exists (p{2}.`1, (-p{2}.`2)%ZModField).
+      exists (F_to_int_point (p{2}.`1, (-p{2}.`2)%FieldQ)).
+      exists (p{2}.`1, (-p{2}.`2)%FieldQ).
       progress.
-      rewrite Constants.q_eq_elliptic_curve_p.
+      rewrite Constants.q_eq_fieldq_p.
       rewrite /F_to_int_point. simplify.
-      rewrite ZModField.oppE.
+      rewrite FieldQ.oppE.
       reflexivity.
     qed.
 
