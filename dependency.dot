@@ -1,20 +1,26 @@
 digraph zk {
+    { node [style=filled fillcolor="green"]  
+        pointAddAssign
+        pointAddIntoDest
+        pointMulIntoDest
+        pointMulAndAddIntoDest
+        mainGateLinearisationContributionWithV
+        addAssignLookupLinearisationContributionWithV
+    }
+    { node [style=filled fillcolor="aquamarine"]  
+        pointNegate
+        pointSubAssign
+    }
     { node [style=filled fillcolor="blue"]  
         prepareAggregatedCommitment
-        getTranscriptChallenge
         prepareQueries
         finalPairing
+        initializeTranscript
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
         permutationQuotientContribution 
-        pointNegate
-        pointAddIntoDest
-        pointMulIntoDest
-        pointAddAssign
         evaluateLagrangePolyOutOfDomain
-        pointMulAndAddIntoDest
-        pointSubAssign
         lookupQuotientContribution
         addAssignRescueCustomGateLinearisationContributionWithV
         updateAggregationChallenge2
@@ -22,11 +28,9 @@ digraph zk {
         addAssignPermutationLinearisationContributionWithV
         verifyQuotientEvaluation
         updateTranscript
-        addAssignLookupLinearisationContributionWithV
-        mainGateLinearisationContributionWithV
+        getTranscriptChallenge
     }
     { node [style=filled fillcolor="red"]   
-        initializeTranscript
         loadProof
         loadVerificationKey
         verify
