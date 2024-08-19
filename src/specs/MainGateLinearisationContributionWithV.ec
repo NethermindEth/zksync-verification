@@ -1867,6 +1867,127 @@ equiv [
       by progress.
     qed.
     
-    
-    
-    
+  lemma mainGateLinearisation_mid_equiv_high_encapsulated:
+  equiv [
+      MainGateLinearisationContributionWithV.mid ~ MainGateLinearisationContributionWithV.high_encapsulated:
+        vk_gate_setup_0{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_0{2})) /\
+        vk_gate_setup_1{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_1{2})) /\
+        vk_gate_setup_2{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_2{2})) /\
+        vk_gate_setup_3{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_3{2})) /\
+        vk_gate_setup_4{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_4{2})) /\
+        vk_gate_setup_5{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_5{2})) /\
+        vk_gate_setup_6{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_6{2})) /\
+        vk_gate_setup_7{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_7{2})) /\
+        stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+        stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+        stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+        stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+        poly3_omega{1} = FieldR.asint poly3_omega{2} /\
+        v{1} = FieldR.asint v{2} /\
+        gate_selector_0_opening{1} = FieldR.asint gate_selector_0_opening{2} ==>
+        res{1} = Some (F_to_int_point (aspoint_G1(res{2})))
+      ].
+      proof.
+        proc.
+        seq 4 1: (#pre /\ !failed{1} /\ point{1} = F_to_int_point (aspoint_G1(point{2}))).
+        wp.
+        call pointMulIntoDest_mid_equiv_high.
+        wp. skip. by progress.
+        seq 3 1: #pre.
+        wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+        seq 3 1: #pre.
+        wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+        seq 3 1: #pre.
+        wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+        seq 4 1: #pre.
+        wp. call pointMulAndAddIntoDest_mid_equiv_high. wp. skip. progress.
+        rewrite Constants.r_eq_fieldr_p. rewrite FieldR.mulE. reflexivity.
+        seq 4 1: #pre.
+        wp. call pointMulAndAddIntoDest_mid_equiv_high. wp. skip. progress.
+        rewrite Constants.r_eq_fieldr_p. rewrite FieldR.mulE. reflexivity.
+        seq 3 1: #pre.
+        wp. call pointAddIntoDest_mid_equiv_high. skip. by progress.
+        seq 3 1: #pre.
+        wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+        rcondf{1} 3. progress. inline*. wp. skip. by progress.
+        call pointMulIntoDest_mid_equiv_high. wp. skip. progress.
+        rewrite Constants.r_eq_fieldr_p. rewrite FieldR.mulE. reflexivity.
+    qed.
+
+  lemma mainGateLinearisation_high_encapsulated_equiv_high:
+  equiv [
+      MainGateLinearisationContributionWithV.high_encapsulated ~ MainGateLinearisationContributionWithV.high:
+        ={arg} ==> ={res}
+      ].
+      proof.
+        proc.
+        inline*.
+        wp.
+        skip.
+        progress.
+        congr.
+        have H_comm: forall (a b: g), (a + b) = (b + a). exact G.mulcC.
+        rewrite H_comm.
+        have H_right: forall (a b c: g), a = b => (a+c) = (b+c). by progress.
+        apply H_right. apply H_right.
+        rewrite H_comm. apply H_right.
+        rewrite H_comm. apply H_right.
+        rewrite H_comm. apply H_right.
+        rewrite H_comm. apply H_right.
+        rewrite H_comm. apply H_right.
+        reflexivity.
+    qed.
+
+  lemma mainGateLinearisation_mid_equiv_high:
+  equiv [
+      MainGateLinearisationContributionWithV.mid ~ MainGateLinearisationContributionWithV.high:
+        vk_gate_setup_0{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_0{2})) /\
+        vk_gate_setup_1{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_1{2})) /\
+        vk_gate_setup_2{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_2{2})) /\
+        vk_gate_setup_3{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_3{2})) /\
+        vk_gate_setup_4{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_4{2})) /\
+        vk_gate_setup_5{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_5{2})) /\
+        vk_gate_setup_6{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_6{2})) /\
+        vk_gate_setup_7{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_7{2})) /\
+        stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+        stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+        stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+        stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+        poly3_omega{1} = FieldR.asint poly3_omega{2} /\
+        v{1} = FieldR.asint v{2} /\
+        gate_selector_0_opening{1} = FieldR.asint gate_selector_0_opening{2} ==>
+        res{1} = Some (F_to_int_point (aspoint_G1(res{2})))
+      ].
+      proof.
+        transitivity MainGateLinearisationContributionWithV.high_encapsulated
+      (
+        vk_gate_setup_0{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_0{2})) /\
+        vk_gate_setup_1{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_1{2})) /\
+        vk_gate_setup_2{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_2{2})) /\
+        vk_gate_setup_3{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_3{2})) /\
+        vk_gate_setup_4{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_4{2})) /\
+        vk_gate_setup_5{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_5{2})) /\
+        vk_gate_setup_6{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_6{2})) /\
+        vk_gate_setup_7{1} = (F_to_int_point(aspoint_G1 vk_gate_setup_7{2})) /\
+        stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+        stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+        stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+        stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+        poly3_omega{1} = FieldR.asint poly3_omega{2} /\
+        v{1} = FieldR.asint v{2} /\
+        gate_selector_0_opening{1} = FieldR.asint gate_selector_0_opening{2} ==>
+        res{1} = Some (F_to_int_point (aspoint_G1(res{2})))
+      )
+      (
+        ={arg} ==> ={res}
+      ).
+          progress.
+          exists (vk_gate_setup_0{2}, vk_gate_setup_1{2}, vk_gate_setup_2{2}, vk_gate_setup_3{2}, vk_gate_setup_4{2}, vk_gate_setup_5{2}, vk_gate_setup_6{2}, vk_gate_setup_7{2}, stateOpening0AtZ{2}, stateOpening1AtZ{2}, stateOpening2AtZ{2}, stateOpening3AtZ{2}, poly3_omega{2}, v{2}, gate_selector_0_opening{2}).
+          progress.
+          prover timeout = 2.
+            smt ().
+            by progress.
+            exact mainGateLinearisation_mid_equiv_high_encapsulated.
+            exact mainGateLinearisation_high_encapsulated_equiv_high.
+        qed.
+        
