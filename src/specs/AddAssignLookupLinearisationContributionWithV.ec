@@ -11,6 +11,7 @@ require import YulPrimops.
 import MemoryMap.
 
 abbrev (+) = FieldR.(+).
+abbrev ( * ) = FieldR.( * ).
 abbrev [-] = FieldR.([-]).
 
 module AddAssignLookupLinearisationContributionWithV = {
