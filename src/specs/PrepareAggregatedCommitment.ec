@@ -3,6 +3,7 @@ require import PointAddIntoDest.
 require import PointMulIntoDest.
 require import PurePrimops.
 require import UInt256.
+require import Utils.
 require import UpdateAggregationChallenge.
 require import UpdateAggregationChallenge105.
 require import Verifier.
@@ -461,64 +462,48 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
             inline *. wp. skip. progress.
             case H.
         move=>H. left. smt ().
-    move=>H. right. progress. smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt ().  smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt ().  smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt ().  smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt ().  smt (). smt ().  smt (). smt ().  smt (). smt (). smt (). smt ().
-        have ->: PurePrimops.mload Primops.memory{1} STATE_V_SLOT = W256.of_int v_challenge{2}.
-        have H' : exists (p : F * F),
-     aggregatedAtZSlot{2} = F_to_int_point p /\
-     Primops.memory{1} =
-     pointAddIntoDest_memory_footprint
-       ((PurePrimops.mstore
-           ((PurePrimops.mstore mem0 AGGREGATED_AT_Z_X_SLOT
-               ((of_int queriesAtZ0Slot{2}.`1))%W256))
-           AGGREGATED_AT_Z_Y_SLOT ((of_int queriesAtZ0Slot{2}.`2))%W256))
-                 AGGREGATED_AT_Z_X_SLOT aggregatedAtZSlot1 queriesAtZ1Slot1 p. smt ().
-                 case H'. move => p H'. have ->: Primops.memory{1} =
-                 pointAddIntoDest_memory_footprint
-       ((PurePrimops.mstore
-           ((PurePrimops.mstore mem0 AGGREGATED_AT_Z_X_SLOT
-               ((of_int queriesAtZ0Slot{2}.`1))%W256))
-                 AGGREGATED_AT_Z_Y_SLOT ((of_int queriesAtZ0Slot{2}.`2))%W256))
-                 AGGREGATED_AT_Z_X_SLOT aggregatedAtZSlot1 queriesAtZ1Slot1 p. smt ().
-                 rewrite /pointAddIntoDest_memory_footprint. simplify.
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+        progress. right. progress.
+        rewrite /pointAddIntoDest_memory_footprint. simplify.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. by progress.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. by progress.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
 
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
 
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT. progress.
-                 rewrite /STATE_V_SLOT. progress.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT. progress.
+        rewrite /STATE_V_SLOT. progress.
        
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT. progress.
-                 rewrite /STATE_V_SLOT. progress.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT. progress.
+        rewrite /STATE_V_SLOT. progress.
 
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT. progress.
-                 rewrite /STATE_V_SLOT. progress.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT. progress.
+        rewrite /STATE_V_SLOT. progress.
 
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress.
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress.
 
-                 rewrite load_store_diff.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-                 rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-
-                 smt (@W256).
-
-                 rewrite /PurePrimops.mulmod. progress. rewrite -Constants.R_int .
-                 have ->: aggregationChallenge{1} = W256.one. smt ().
-                 have ->: to_uint W256.one = 1. smt (). simplify. rewrite of_uintK (Utils.mod_eq_self _ W256.modulus). smt (). smt ().
-                 have ->: v_challenge{2} = W256.to_uint (load mem0 STATE_V_SLOT). smt (). smt (@W256).
-                 have ->: v_challenge{2} = W256.to_uint (load mem0 STATE_V_SLOT). smt (). smt (). smt (). smt (). smt (). smt (). smt (). smt (). 
-
+        rewrite load_store_diff.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+        rewrite /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+        rewrite /prepareAggregatedCommitment_mem_inv in H1.
+        rewrite /mulmod. progress.
+        have ->: W256.to_uint (load mem0 STATE_V_SLOT) = v_challenge{2} by smt ().
+        rewrite -Constants.R_int.
+        rewrite W256.of_uintK.
+        rewrite mod_R_W256_mod_R.
+        reflexivity.
+        smt (@IntDiv).
+        smt (@IntDiv).
+        exists p. by progress.
                  seq 3 1 :
        (
          Primops.reverted{1} /\ failed{2} \/
