@@ -649,5 +649,20 @@ lemma PointMulAndAddIntoDest_low_equiv_mid (x1v y1v x2v y2v sv : int) (p1u destu
         inline *. wp. skip. progress. right. exact H0.
     qed.
     
-
-    
+lemma PointMulAndAddIntoDest_low_equiv_mid_err : equiv [
+    PointMulAndAddIntoDest.low ~ PointMulAndAddIntoDest.mid :
+    Primops.reverted{1} ==> Primops.reverted{1}
+    ]. proof.
+        proc.
+        inline mload mstore Primops.gas. wp. sp.
+        seq 1 0 : Primops.reverted{1}.
+        call{1} ConcretePrimops.staticcall_pspec_revert. skip. progress.
+        sp.
+        seq 1 0 : Primops.reverted{1}.
+        call{1} ConcretePrimops.staticcall_pspec_revert. skip. progress.
+        sp.
+        case (bool_of_uint256 (PurePrimops.iszero success{1})).
+        rcondt{1} 1. progress.
+        inline*. wp. skip. progress.
+        rcondf{1} 1. progress. skip. progress.
+  qed.

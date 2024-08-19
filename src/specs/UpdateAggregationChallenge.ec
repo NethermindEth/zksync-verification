@@ -22,10 +22,10 @@ module UpdateAggregationChallenge = {
     newAggregatedOpeningAtZ <- (PurePrimops.addmod curAggregatedOpeningAtZ _6 R_MOD);
     return (newAggregationChallenge, newAggregatedOpeningAtZ);
   }
-  proc mid(queriesCommitmentPoint : int * int, valueAtZ : int, currAggregationChallenge : int, curAggregatedOpeningAtZ : int, v_challenge : int, currAggregatedAtZXSlot : int * int) : (int * int * (int * int)) option = {
+  proc mid(queriesCommitmentPoint : int * int, valueAtZ : int, currAggregationChallenge : int, curAggregatedOpeningAtZ : int, v_challenge : int, currAggregatedAtZSlot : int * int) : (int * int * (int * int)) option = {
       var newAggregationChallenge, newAggregatedOpeningAtZ, mNewAggregateAtZXSlot, newAggregateAtZXSlot, ret; 
       newAggregationChallenge <- v_challenge * currAggregationChallenge %% Constants.R;
-      mNewAggregateAtZXSlot <@ PointMulAndAddIntoDest.mid(queriesCommitmentPoint.`1, queriesCommitmentPoint.`2, newAggregationChallenge, currAggregatedAtZXSlot.`1, currAggregatedAtZXSlot.`2);
+      mNewAggregateAtZXSlot <@ PointMulAndAddIntoDest.mid(queriesCommitmentPoint.`1, queriesCommitmentPoint.`2, newAggregationChallenge, currAggregatedAtZSlot.`1, currAggregatedAtZSlot.`2);
       if (is_some mNewAggregateAtZXSlot) {
         newAggregateAtZXSlot <- odflt (0, 0) mNewAggregateAtZXSlot;
         newAggregatedOpeningAtZ <- (newAggregationChallenge * valueAtZ + curAggregatedOpeningAtZ) %% Constants.R;
@@ -51,23 +51,21 @@ proof.
 qed.
 
 
-op UpdateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZXSlot : int * int) (mem_0 : mem) =
+op UpdateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZSlot : int * int) (mem_0 : mem) =
   let mem_1 = store mem_0 W256.zero (W256.of_int x) in
   let mem_2 = store mem_1 (W256.of_int 32) (W256.of_int y) in
-  let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int currAggregatedAtZXSlot.`1) in
-  let mem_4 = store mem_3 (W256.of_int 96) (W256.of_int currAggregatedAtZXSlot.`2) in
+  let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int currAggregatedAtZSlot.`1) in
+  let mem_4 = store mem_3 (W256.of_int 96) (W256.of_int currAggregatedAtZSlot.`2) in
   let mem_5 = store mem_4 AGGREGATED_AT_Z_X_SLOT (W256.of_int x') in
   store mem_5 AGGREGATED_AT_Z_Y_SLOT (W256.of_int y').
 
-   
-
-lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int) (currAggregatedAtZXSlot : int * int) (valueAtZ : int) (currAggregationChallenge : int) (curAggregatedOpeningAtZ : int) (v_challenge : int) (queriesCommitmentPoint_addr valueAtZ_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int) (currAggregatedAtZSlot : int * int) (valueAtZ : int) (currAggregationChallenge : int) (curAggregatedOpeningAtZ : int) (v_challenge : int) (queriesCommitmentPoint_addr valueAtZ_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
     UpdateAggregationChallenge.low ~ UpdateAggregationChallenge.mid :
     Primops.memory{1} = memory0 /\
     0 <= queriesCommitmentPoint.`1 < Constants.Q /\
     0 <= queriesCommitmentPoint.`2 < Constants.Q /\
-    0 <= currAggregatedAtZXSlot.`1 < Constants.Q /\
-    0 <= currAggregatedAtZXSlot.`2 < Constants.Q /\
+    0 <= currAggregatedAtZSlot.`1 < Constants.Q /\
+    0 <= currAggregatedAtZSlot.`2 < Constants.Q /\
     0 <= valueAtZ < Constants.R /\
     0 <= currAggregationChallenge < Constants.R /\
     0 <= curAggregatedOpeningAtZ < Constants.R /\
@@ -83,13 +81,13 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
     W256.of_int 32 <= valueAtZ_addr - AGGREGATED_AT_Z_X_SLOT /\
     W256.of_int 32 <= (AGGREGATED_AT_Z_X_SLOT + W256.of_int 32) - valueAtZ_addr /\
     arg{1} = (queriesCommitmentPoint_addr, valueAtZ_addr, W256.of_int currAggregationChallenge, W256.of_int curAggregatedOpeningAtZ) /\
-    arg{2} = (queriesCommitmentPoint, valueAtZ, currAggregationChallenge, curAggregatedOpeningAtZ, v_challenge, currAggregatedAtZXSlot) /\
+    arg{2} = (queriesCommitmentPoint, valueAtZ, currAggregationChallenge, curAggregatedOpeningAtZ, v_challenge, currAggregatedAtZSlot) /\
     PurePrimops.mload memory0 STATE_V_SLOT = W256.of_int v_challenge /\
     PurePrimops.mload memory0 valueAtZ_addr = W256.of_int valueAtZ /\
     PurePrimops.mload memory0 queriesCommitmentPoint_addr = W256.of_int queriesCommitmentPoint.`1 /\
     PurePrimops.mload memory0 (queriesCommitmentPoint_addr + W256.of_int 32) = W256.of_int queriesCommitmentPoint.`2 /\
-    PurePrimops.mload memory0  AGGREGATED_AT_Z_X_SLOT = W256.of_int currAggregatedAtZXSlot.`1 /\
-    PurePrimops.mload memory0 (AGGREGATED_AT_Z_X_SLOT + W256.of_int 32) = W256.of_int currAggregatedAtZXSlot.`2 /\
+    PurePrimops.mload memory0  AGGREGATED_AT_Z_X_SLOT = W256.of_int currAggregatedAtZSlot.`1 /\
+    PurePrimops.mload memory0 (AGGREGATED_AT_Z_X_SLOT + W256.of_int 32) = W256.of_int currAggregatedAtZSlot.`2 /\
       !Primops.reverted{1}
       ==>
       (res{2} = None /\ Primops.reverted{1}) \/
@@ -98,7 +96,7 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         res{2} = Some (newAggregationChallenge, newAggregatedOpeningAtZ, newAggregateAtZXSlot) /\
         res{1} = (W256.of_int newAggregationChallenge, W256.of_int newAggregatedOpeningAtZ) /\
         (exists (x y: int),
-        Primops.memory{1} = UpdateAggregationChallenge_footprint x y newAggregateAtZXSlot.`1 newAggregateAtZXSlot.`2 currAggregatedAtZXSlot memory0) /\
+        Primops.memory{1} = UpdateAggregationChallenge_footprint x y newAggregateAtZXSlot.`1 newAggregateAtZXSlot.`2 currAggregatedAtZSlot memory0) /\
         ! Primops.reverted{1}
       )   
     ]. proof.
@@ -110,7 +108,7 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         exists* Primops.memory{1}.
         elim*=>memory1.
     
-        call (PointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZXSlot.`1 currAggregatedAtZXSlot.`2 val_newAggregationChallenge queriesCommitmentPoint_addr AGGREGATED_AT_Z_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants). rewrite /AGGREGATED_AT_Z_X_SLOT Utils.uint256_cast_neg. smt (@Utils). rewrite /AGGREGATED_AT_Z_X_SLOT.
+        call (PointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZSlot.`1 currAggregatedAtZSlot.`2 val_newAggregationChallenge queriesCommitmentPoint_addr AGGREGATED_AT_Z_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (@Constants). smt (). smt (@Constants). smt (@Constants). rewrite /AGGREGATED_AT_Z_X_SLOT Utils.uint256_cast_neg. smt (@Utils). rewrite /AGGREGATED_AT_Z_X_SLOT.
         have ->: 512 + 1312 + 1568 + 128 + 704 + 256 + 0 = 4480. smt ().
         have ->: 4480 %% W256.modulus = 4480. smt ().
         have ->: (of_int 4480)%W256 + (of_int 32)%W256 = W256.of_int 4512. smt ().
@@ -160,6 +158,15 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         smt ().
         smt ().
     qed.
+
+lemma UpdateAggregationChallenge_mid_of_low_er : equiv [
+    UpdateAggregationChallenge.low ~ UpdateAggregationChallenge.mid :
+    Primops.reverted{1} ==> Primops.reverted{1}].
+
     
+    
+    proc. inline mload. sp. wp.
+    call PointMulAndAddIntoDest_low_equiv_mid_err. skip. progress.
+  qed.
 
         

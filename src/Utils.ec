@@ -51,6 +51,10 @@ lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt().
 lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
     smt ().
   qed.
+
+lemma add_mod_mod_eq_add_mod (a b m : int) : (a + (b %% m)) %% m = (a + b) %% m.
+    smt (@IntDiv).
+  qed.
   
  (* tuples *)
 lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
