@@ -1,6 +1,7 @@
 pragma Goals:printall.
 
 require        Constants.
+require import Field.
 require import PointMulAndAddIntoDest.
 require import PurePrimops.
 require import UInt256.
@@ -37,7 +38,7 @@ module UpdateAggregationChallenge = {
   }
 }.
 
-lemma UpdateAggregationChallenge_extracted_equiv_low :
+lemma updateAggregationChallenge_extracted_equiv_low :
     equiv [
       Verifier_1261.usr_updateAggregationChallenge ~ UpdateAggregationChallenge.low :
       ={arg, glob UpdateAggregationChallenge} ==>
@@ -61,7 +62,7 @@ op UpdateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZXSlo
 
    
 
-lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int) (currAggregatedAtZXSlot : int * int) (valueAtZ : int) (currAggregationChallenge : int) (curAggregatedOpeningAtZ : int) (v_challenge : int) (queriesCommitmentPoint_addr valueAtZ_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma updateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int) (currAggregatedAtZXSlot : int * int) (valueAtZ : int) (currAggregationChallenge : int) (curAggregatedOpeningAtZ : int) (v_challenge : int) (queriesCommitmentPoint_addr valueAtZ_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
     UpdateAggregationChallenge.low ~ UpdateAggregationChallenge.mid :
     Primops.memory{1} = memory0 /\
     0 <= queriesCommitmentPoint.`1 < Constants.Q /\
@@ -110,7 +111,7 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         exists* Primops.memory{1}.
         elim*=>memory1.
     
-        call (PointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZXSlot.`1 currAggregatedAtZXSlot.`2 val_newAggregationChallenge queriesCommitmentPoint_addr AGGREGATED_AT_Z_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants). rewrite /AGGREGATED_AT_Z_X_SLOT Utils.uint256_cast_neg. smt (@Utils). rewrite /AGGREGATED_AT_Z_X_SLOT.
+        call (pointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZXSlot.`1 currAggregatedAtZXSlot.`2 val_newAggregationChallenge queriesCommitmentPoint_addr AGGREGATED_AT_Z_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants). rewrite /AGGREGATED_AT_Z_X_SLOT Utils.uint256_cast_neg. smt (@Utils). rewrite /AGGREGATED_AT_Z_X_SLOT.
         have ->: 512 + 1312 + 1568 + 128 + 704 + 256 + 0 = 4480. smt ().
         have ->: 4480 %% W256.modulus = 4480. smt ().
         have ->: (of_int 4480)%W256 + (of_int 32)%W256 = W256.of_int 4512. smt ().
@@ -156,7 +157,7 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         case H56; first last. progress. smt ().
         progress. case H58; first last. progress. smt ().
         progress. rewrite /UpdateAggregationChallenge_footprint. simplify.
-        exists (ZModField.asint x). exists (ZModField.asint y). reflexivity.
+        exists (FieldQ.asint x). exists (FieldQ.asint y). reflexivity.
         smt ().
         smt ().
     qed.

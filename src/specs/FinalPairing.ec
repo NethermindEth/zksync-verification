@@ -1,4 +1,5 @@
 require        Constants.
+require import Field.
 require import PointMulAndAddIntoDest.
 require import PointNegate.
 require import PointSubAssign.
@@ -94,10 +95,10 @@ lemma finalPairing_extracted_equiv_low:
       wp.
       seq 4 2: (#pre /\ usr_success{1} = success{2}).
       inline*.
-      do 3! (rcondf{2} 8; first progress; first wp; first skip; first progress; first exact neq_small).
-      do 3! (rcondf{1} 9; first progress; first wp; first skip; first progress; first exact neq_small).
-      rcondt{1} 9. progress. wp. skip. by progress.
-      rcondt{2} 8. progress. wp. skip. by progress.
+      do 3! (rcondf{2} 9; first progress; first wp; first skip; first progress; first exact neq_small).
+      do 3! (rcondf{1} 10; first progress; first wp; first skip; first progress; first exact neq_small).
+      rcondt{1} 10. progress. wp. skip. by progress.
+      rcondt{2} 9. progress. wp. skip. by progress.
       wp. skip. by progress.
       sp.
       if. by progress.

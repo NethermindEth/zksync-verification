@@ -9,6 +9,7 @@ require import Logic.
 require import PurePrimops.
 require import Utils.
 require export EllipticCurve.
+require import Field.
 require export Memory.
 require export UInt256.
 
@@ -67,6 +68,7 @@ module Primops = {
       var x1_F, y1_F, x2_F, y2_F;
       var result;
       var result_unwrap;
+      succ <- W256.zero;
       if (addr = W256.of_int 5) {
         bsize <@ mload(argOff);
         esize <@ mload(argOff + W256.of_int 32);
@@ -87,11 +89,11 @@ module Primops = {
             y1 <@ mload(argOff + W256.of_int 32);
             x2 <@ mload(argOff + W256.of_int 64);
             y2 <@ mload(argOff + W256.of_int 96);
-            x1_F <- ZModField.inzmod (W256.to_uint x1);
-            y1_F <- ZModField.inzmod (W256.to_uint y1);
-            x2_F <- ZModField.inzmod (W256.to_uint x2);
-            y2_F <- ZModField.inzmod (W256.to_uint y2);
-            if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p \/ x2 <> x2 %% W256.of_int p \/ y2 <> y2 %% W256.of_int p) {
+            x1_F <- FieldQ.inF (W256.to_uint x1);
+            y1_F <- FieldQ.inF (W256.to_uint y1);
+            x2_F <- FieldQ.inF (W256.to_uint x2);
+            y2_F <- FieldQ.inF (W256.to_uint y2);
+            if (x1 <> x1 %% W256.of_int FieldQ.p \/ y1 <> y1 %% W256.of_int FieldQ.p \/ x2 <> x2 %% W256.of_int FieldQ.p \/ y2 <> y2 %% W256.of_int FieldQ.p) {
               succ <- W256.zero;
             } else {
               if (!(on_curve (x1_F, y1_F)) \/ !(on_curve ((x2_F, y2_F)))) {
@@ -101,9 +103,9 @@ module Primops = {
                 if (is_none result) {
                   succ <- W256.zero;
                 } else {
-                    result_unwrap <- odflt (ZModField.zero, ZModField.zero) result;
-                    mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
-                    mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
+                    result_unwrap <- odflt (FieldQ.zero, FieldQ.zero) result;
+                    mstore(retOff, W256.of_int (FieldQ.asint (fst result_unwrap)));
+                    mstore(retOff + W256.of_int 32, W256.of_int (FieldQ.asint (snd (result_unwrap))));
                     succ <- W256.one;
                 }                
               }
@@ -117,10 +119,10 @@ module Primops = {
               x1 <@ mload(argOff);
               y1 <@ mload(argOff + W256.of_int 32);
               s <@ mload(argOff + W256.of_int 64);
-              x1_F <- ZModField.inzmod (W256.to_uint x1);
-              y1_F <- ZModField.inzmod (W256.to_uint y1);
+              x1_F <- FieldQ.inF (W256.to_uint x1);
+              y1_F <- FieldQ.inF (W256.to_uint y1);
               sv <- W256.to_uint s;
-              if (x1 <> x1 %% W256.of_int p \/ y1 <> y1 %% W256.of_int p) {
+              if (x1 <> x1 %% W256.of_int FieldQ.p \/ y1 <> y1 %% W256.of_int FieldQ.p) {
                 succ <- W256.zero;
               } else {
                 if (!(on_curve (x1_F, y1_F))) {
@@ -130,9 +132,9 @@ module Primops = {
                   if (is_none result) {
                     succ <- W256.zero;
                   } else {
-                      result_unwrap <- odflt (ZModField.zero, ZModField.zero) result;
-                      mstore(retOff, W256.of_int (ZModField.asint (fst result_unwrap)));
-                      mstore(retOff + W256.of_int 32, W256.of_int (ZModField.asint (snd (result_unwrap))));
+                      result_unwrap <- odflt (FieldQ.zero, FieldQ.zero) result;
+                      mstore(retOff, W256.of_int (FieldQ.asint (fst result_unwrap)));
+                      mstore(retOff + W256.of_int 32, W256.of_int (FieldQ.asint (snd (result_unwrap))));
                       succ <- W256.one;
                   }                
                 }
@@ -289,6 +291,7 @@ lemma staticcall_modexp_spec (memory: mem) (a b c gas argOff retOff: uint256):
     ].
     proof.
       proc.
+      sp.
       rcondt 1. skip. by progress.
       seq 3 : (#pre /\ bsize = W256.of_int 32 /\ esize = W256.of_int 32 /\ msize = W256.of_int 32).
       inline Primops.mload. wp. skip. by progress.
@@ -318,6 +321,7 @@ lemma staticcall_modexp_pspec (memory: mem) (a b c gas argOff retOff: uint256):
     ] = 1%r.
     proof.
       proc.
+      sp.
       rcondt 1. skip. by progress.
       rcondt 4.
       inline Primops.mload. wp. skip. by progress.
@@ -330,26 +334,26 @@ lemma staticcall_modexp_pspec (memory: mem) (a b c gas argOff retOff: uint256):
   qed.
 
 pred point_wellformed (pnt: uint256*uint256) =
-    pnt.`1 = pnt.`1 %% W256.of_int p /\
-    pnt.`2 = pnt.`2 %% W256.of_int p.
+    pnt.`1 = pnt.`1 %% W256.of_int FieldQ.p /\
+    pnt.`2 = pnt.`2 %% W256.of_int FieldQ.p.
 pred point_oncurve (pnt: uint256*uint256) =
-    on_curve ((ZModField.inzmod(to_uint pnt.`1)), (ZModField.inzmod(to_uint pnt.`2))).
+    on_curve ((FieldQ.inF(to_uint pnt.`1)), (FieldQ.inF(to_uint pnt.`2))).
 pred staticcall_ec_add_should_succeed (p1 p2: uint256 * uint256) =
     point_wellformed p1 /\
     point_wellformed p2 /\
     point_oncurve p1 /\
     point_oncurve p2 /\
-    is_some (ecAdd_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (ZModField.inzmod(to_uint p2.`1)) (ZModField.inzmod(to_uint p2.`2))).
+    is_some (ecAdd_precompile (FieldQ.inF(to_uint p1.`1)) (FieldQ.inF(to_uint p1.`2)) (FieldQ.inF(to_uint p2.`1)) (FieldQ.inF(to_uint p2.`2))).
 
 op ecAdd_precompile_unsafe_cast (p1 p2: uint256 * uint256): (uint256*uint256) =
-  let x1 = ZModField.inzmod(to_uint p1.`1) in
-  let y1 = ZModField.inzmod(to_uint p1.`2) in
-  let x2 = ZModField.inzmod(to_uint p2.`1) in
-  let y2 = ZModField.inzmod(to_uint p2.`2) in
+  let x1 = FieldQ.inF(to_uint p1.`1) in
+  let y1 = FieldQ.inF(to_uint p1.`2) in
+  let x2 = FieldQ.inF(to_uint p2.`1) in
+  let y2 = FieldQ.inF(to_uint p2.`2) in
   let ret = ecAdd_precompile x1 y1 x2 y2 in
-  let ret_unwrapped = odflt (ZModField.zero, ZModField.zero) ret in
-  let x_ret = W256.of_int (ZModField.asint ret_unwrapped.`1) in
-  let y_ret = W256.of_int (ZModField.asint ret_unwrapped.`2) in
+  let ret_unwrapped = odflt (FieldQ.zero, FieldQ.zero) ret in
+  let x_ret = W256.of_int (FieldQ.asint ret_unwrapped.`1) in
+  let y_ret = W256.of_int (FieldQ.asint ret_unwrapped.`2) in
   (x_ret,y_ret).
 
 lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff retOff: uint256):
@@ -376,6 +380,7 @@ lemma staticcall_ec_add_pspec (memory: mem) (p1 p2: uint256 * uint256) (argOff r
     ] = 1%r.
     proof.
       proc.
+      sp.
       inline *.
       rcondf 1. skip. progress. by smt(@W256).
       rcondt 1. skip. by progress.
@@ -416,65 +421,123 @@ lemma ecAdd_precomp_is_some_of_should_succeed (p1 p2 : uint256 * uint256) :
     staticcall_ec_add_should_succeed p1 p2 =>
     is_some
     (ecAdd_precompile
-      (ZModField.inzmod (W256.to_uint p1.`1))
-      (ZModField.inzmod (W256.to_uint p1.`2))
-      (ZModField.inzmod (W256.to_uint p2.`1))
-      (ZModField.inzmod (W256.to_uint p2.`2))
+      (FieldQ.inF (W256.to_uint p1.`1))
+      (FieldQ.inF (W256.to_uint p1.`2))
+      (FieldQ.inF (W256.to_uint p2.`1))
+      (FieldQ.inF (W256.to_uint p2.`2))
     ). progress. smt (). qed.
 
 lemma ecAdd_precomp_is_none_of_should_not_succeed (p1 p2 : uint256 * uint256) :
-    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\
-      (W256.to_uint p2.`1) < p /\ W256.to_uint p2.`2 < p /\ 
+    ((W256.to_uint p1.`1) < FieldQ.p /\ W256.to_uint p1.`2 < FieldQ.p /\
+      (W256.to_uint p2.`1) < FieldQ.p /\ W256.to_uint p2.`2 < FieldQ.p /\ 
     ! (staticcall_ec_add_should_succeed p1 p2)) =>
     is_none
       (ecAdd_precompile
-        ((ZModField.inzmod (W256.to_uint p1.`1)))
-        ((ZModField.inzmod (W256.to_uint p1.`2)))
-        ((ZModField.inzmod (W256.to_uint p2.`1)))
-        ((ZModField.inzmod (W256.to_uint p2.`2)))
-      ). progress.
-          admit.
-     qed.
+        ((FieldQ.inF (W256.to_uint p1.`1)))
+        ((FieldQ.inF (W256.to_uint p1.`2)))
+        ((FieldQ.inF (W256.to_uint p2.`1)))
+        ((FieldQ.inF (W256.to_uint p2.`2)))
+      ).
+          progress.
+          rewrite /staticcall_ec_add_should_succeed in H3.
+          have H_options: (
+        (!point_wellformed p1) \/
+        (!point_wellformed p2) \/
+        (!point_oncurve p1) \/
+        (!point_oncurve p2) \/
+        (!is_some (ecAdd_precompile (FieldQ.inF(W256.to_uint p1.`1)) (FieldQ.inF(W256.to_uint p1.`2)) (FieldQ.inF(W256.to_uint p2.`1)) (FieldQ.inF(W256.to_uint p2.`2))))
+      ) by smt ().
+          case H_options.
+          rewrite /point_wellformed. progress.
+          have H_p1: (
+        (p1.`1 = p1.`1 %% W256.of_int FieldQ.p) /\
+        (p1.`2 = p1.`2 %% W256.of_int FieldQ.p)
+      ).
+          split.
+          rewrite uint256_mod_eq_of_lt. rewrite uint256_lt_of_lt. rewrite W256.of_uintK. rewrite pmod_small. rewrite -Constants.q_eq_fieldq_p. rewrite /Constants.Q. by progress.
+          assumption.
+          reflexivity.
+          rewrite uint256_mod_eq_of_lt. rewrite uint256_lt_of_lt. rewrite W256.of_uintK. rewrite pmod_small. rewrite -Constants.q_eq_fieldq_p. rewrite /Constants.Q. by progress.
+          assumption.
+          reflexivity.
+          by progress.
+      move=> H_options.
+      case H_options.
+          rewrite /point_wellformed. progress.
+          have H_p2: (
+        (p2.`1 = p2.`1 %% W256.of_int FieldQ.p) /\
+        (p2.`2 = p2.`2 %% W256.of_int FieldQ.p)
+      ).
+          split.
+          rewrite uint256_mod_eq_of_lt. rewrite uint256_lt_of_lt. rewrite W256.of_uintK. rewrite pmod_small. rewrite -Constants.q_eq_fieldq_p. rewrite /Constants.Q. by progress.
+          assumption.
+          reflexivity.
+          rewrite uint256_mod_eq_of_lt. rewrite uint256_lt_of_lt. rewrite W256.of_uintK. rewrite pmod_small. rewrite -Constants.q_eq_fieldq_p. rewrite /Constants.Q. by progress.
+          assumption.
+          reflexivity.
+          by progress.
+      move=> H_options.
+          case H_options.
+          rewrite /point_oncurve. progress.
+          apply is_none_of_eq_none.
+          apply ecAdd_fail.
+          left. assumption.
+      move=> H_options.
+          case H_options.
+          rewrite /point_oncurve. progress.
+          apply is_none_of_eq_none.
+          apply ecAdd_fail.
+          right. assumption.
+      move=> H_not_is_some.
+      exact is_none_iff_not_is_some.
+    qed.
     
 pred staticcall_ec_mul_should_succeed (p : uint256 * uint256) (s : uint256) =
     point_wellformed p /\
     point_oncurve p /\
-    is_some (ecMul_precompile (ZModField.inzmod(to_uint p.`1)) (ZModField.inzmod(to_uint p.`2)) (to_uint s)).
+    is_some (ecMul_precompile (FieldQ.inF(to_uint p.`1)) (FieldQ.inF(to_uint p.`2)) (to_uint s)).
 
 op ecMul_precompile_unsafe_cast (p : uint256 * uint256) (s : uint256) : (uint256*uint256) =
-  let x = ZModField.inzmod(to_uint p.`1) in
-  let y = ZModField.inzmod(to_uint p.`2) in
+  let x = FieldQ.inF(to_uint p.`1) in
+  let y = FieldQ.inF(to_uint p.`2) in
   let ret = ecMul_precompile x y (W256.to_uint s) in
-  let ret_unwrapped = odflt (ZModField.zero, ZModField.zero) ret in
-  let x_ret = W256.of_int (ZModField.asint ret_unwrapped.`1) in
-  let y_ret = W256.of_int (ZModField.asint ret_unwrapped.`2) in
+  let ret_unwrapped = odflt (FieldQ.zero, FieldQ.zero) ret in
+  let x_ret = W256.of_int (FieldQ.asint ret_unwrapped.`1) in
+  let y_ret = W256.of_int (FieldQ.asint ret_unwrapped.`2) in
   (x_ret,y_ret).
 
 lemma ecMul_precomp_is_some_of_should_succeed (p : uint256 * uint256) (s : uint256) :
     staticcall_ec_mul_should_succeed p s =>
     is_some
-      (ecMul_precompile ((ZModField.inzmod (W256.to_uint p.`1)))
-         ((ZModField.inzmod (to_uint p.`2)))
+      (ecMul_precompile ((FieldQ.inF (W256.to_uint p.`1)))
+         ((FieldQ.inF (to_uint p.`2)))
          (to_uint s)). progress. smt (). qed.
 
 lemma ecMul_precomp_is_none_of_should_not_succeed (p1 : uint256 * uint256) (s : uint256) :
-    ((W256.to_uint p1.`1) < p /\ W256.to_uint p1.`2 < p /\ 
+    ((W256.to_uint p1.`1) < FieldQ.p /\ W256.to_uint p1.`2 < FieldQ.p /\ 
     ! (staticcall_ec_mul_should_succeed p1 s)) =>
     is_none
-      (ecMul_precompile ((ZModField.inzmod (W256.to_uint p1.`1)))
-         ((ZModField.inzmod (to_uint p1.`2)))
+      (ecMul_precompile ((FieldQ.inF (W256.to_uint p1.`1)))
+         ((FieldQ.inF (to_uint p1.`2)))
          (to_uint s)). progress.
            have H2 :
        (
          ! point_wellformed p1 \/
          ! point_oncurve p1 \/
-         ! is_some (ecMul_precompile (ZModField.inzmod(to_uint p1.`1)) (ZModField.inzmod(to_uint p1.`2)) (to_uint s))
+         ! is_some (ecMul_precompile (FieldQ.inF(to_uint p1.`1)) (FieldQ.inF(to_uint p1.`2)) (to_uint s))
        ). smt ().
            case H2.
            progress. rewrite /point_wellformed in H2.
-           have H3 : (p1.`1 <> p1.`1 %% (of_int p)%W256 \/ p1.`2 <> p1.`2 %% (of_int p)%W256). smt ().
-           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H.
-           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress. smt (@EllipticCurve). exact p_lt_W256_mod. exact H0. smt ().
+           have H3 : (p1.`1 <> p1.`1 %% (of_int FieldQ.p)%W256 \/ p1.`2 <> p1.`2 %% (of_int FieldQ.p)%W256). smt ().
+           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. by progress.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. by progress.
+           assumption.
+           rewrite uint256_mod_eq_of_lt in H3. apply uint256_lt_of_lt. rewrite to_uint_small. progress.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. by progress.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. by progress.
+           assumption.
+           smt ().
        move=> [J | J'].
            rewrite /point_oncurve in J.
            apply is_none_of_eq_none.

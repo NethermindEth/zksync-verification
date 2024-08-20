@@ -1,4 +1,5 @@
 require        Constants.
+require import Field.
 require import PointMulAndAddIntoDest.
 require import PurePrimops.
 require import UInt256.
@@ -62,7 +63,7 @@ op UpdateAggregationChallenge105_footprint (x y x' y' : int) (currAggregatedAtZX
   let mem_5 = store mem_4 AGGREGATED_AT_Z_OMEGA_X_SLOT (W256.of_int x') in
   store mem_5 (AGGREGATED_AT_Z_OMEGA_X_SLOT + W256.of_int 32) (W256.of_int y').
 
-lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * int) (valueAtZ_Omega : int) (previousCoeff : int) (currAggregationChallenge : int) (curAggregatedOpeningAtZ_Omega : int) (v_challenge : int) (u_challenge : int) (currAggregatedAtZOmegaXSlot : int * int) (queriesCommitmentPoint_addr valueAtZOmega_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int * int) (valueAtZ_Omega : int) (previousCoeff : int) (currAggregationChallenge : int) (curAggregatedOpeningAtZ_Omega : int) (v_challenge : int) (u_challenge : int) (currAggregatedAtZOmegaXSlot : int * int) (queriesCommitmentPoint_addr valueAtZOmega_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
     UpdateAggregationChallenge_105.low ~ UpdateAggregationChallenge_105.mid :
     Primops.memory{1} = memory0 /\
     0 <= queriesCommitmentPoint.`1 < Constants.Q /\
@@ -115,7 +116,7 @@ lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * 
         exists* Primops.memory{1}.
         elim*=>memory1.
 
-        call (PointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZOmegaXSlot.`1 currAggregatedAtZOmegaXSlot.`2 val_finalCoeff queriesCommitmentPoint_addr AGGREGATED_AT_Z_OMEGA_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants).
+        call (pointMulAndAddIntoDest_low_equiv_mid queriesCommitmentPoint.`1 queriesCommitmentPoint.`2 currAggregatedAtZOmegaXSlot.`1 currAggregatedAtZOmegaXSlot.`2 val_finalCoeff queriesCommitmentPoint_addr AGGREGATED_AT_Z_OMEGA_X_SLOT memory1). skip. progress. smt (@Constants). smt (@Constants). smt (). smt (). smt (@Constants). smt (@Constants).
         rewrite /AGGREGATED_AT_Z_OMEGA_X_SLOT Utils.uint256_cast_neg. smt (@Utils).
         rewrite /AGGREGATED_AT_Z_OMEGA_X_SLOT Utils.uint256_cast_add Utils.uint256_cast_neg.
         apply uint256_le_of_le.
@@ -150,7 +151,7 @@ lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * 
 
         rewrite H29.
         have ->: (PurePrimops.mload memory_L valueAtZ_Omega{1}) = W256.of_int valueAtZ_Omega{2}.
-        have J : exists (x y x' y' : F),
+        have J : exists (x y x' y' : FieldQ.F),
     memory_L =
            (PurePrimops.mstore
               ((PurePrimops.mstore
@@ -158,17 +159,17 @@ lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * 
                       ((PurePrimops.mstore
                           ((PurePrimops.mstore
                               ((PurePrimops.mstore Primops.memory{1} W256.zero
-                                  ((W256.of_int ((ZModField.asint x))%ZModField))%W256))%PurePrimops
+                                  ((W256.of_int ((FieldQ.asint x))%FieldQ))%W256))%PurePrimops
                               ((W256.of_int 32))%W256
-                              ((W256.of_int ((ZModField.asint y))%ZModField))%W256))%PurePrimops
+                              ((W256.of_int ((FieldQ.asint y))%FieldQ))%W256))%PurePrimops
                           ((W256.of_int 64))%W256
                           ((W256.of_int currAggregatedAtZOmegaXSlot{2}.`1))%W256))%PurePrimops
                       ((W256.of_int 96))%W256
                       ((W256.of_int currAggregatedAtZOmegaXSlot{2}.`2))%W256))%PurePrimops
                   AGGREGATED_AT_Z_OMEGA_X_SLOT
-                  ((W256.of_int ((ZModField.asint x'))%ZModField))%W256))%PurePrimops
+                  ((W256.of_int ((FieldQ.asint x'))%FieldQ))%W256))%PurePrimops
               (AGGREGATED_AT_Z_OMEGA_X_SLOT + (W256.of_int 32)%W256)
-              ((W256.of_int ((ZModField.asint y'))%ZModField))%W256)%PurePrimops. smt ().
+              ((W256.of_int ((FieldQ.asint y'))%FieldQ))%W256)%PurePrimops. smt ().
                 case J. move => x y x' y' J. rewrite J.
                 rewrite load_store_diff. assumption. assumption.
                 rewrite load_store_diff. assumption. assumption.
@@ -193,7 +194,7 @@ lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * 
         rewrite /UpdateAggregationChallenge105_footprint. simplify.
 
         have J :
-        exists (x y x' y' : F),
+        exists (x y x' y' : FieldQ.F),
     result_R = Some (F_to_int_point (x', y')) /\
     memory_L =
            (PurePrimops.mstore
@@ -202,21 +203,21 @@ lemma UpdateAggregationChallenge_105_mid_of_low (queriesCommitmentPoint : int * 
                       ((PurePrimops.mstore
                           ((PurePrimops.mstore
                               ((PurePrimops.mstore Primops.memory{1} W256.zero
-                                  ((W256.of_int ((ZModField.asint x))))))
+                                  ((W256.of_int ((FieldQ.asint x))))))
                               ((W256.of_int 32))
-                              ((W256.of_int (ZModField.asint y)))))
+                              ((W256.of_int (FieldQ.asint y)))))
                           ((W256.of_int 64))
                           ((W256.of_int currAggregatedAtZOmegaXSlot{2}.`1))))
                       ((W256.of_int 96))
                       ((W256.of_int currAggregatedAtZOmegaXSlot{2}.`2))))
                   AGGREGATED_AT_Z_OMEGA_X_SLOT
-                  ((W256.of_int (ZModField.asint x')))))
+                  ((W256.of_int (FieldQ.asint x')))))
               (AGGREGATED_AT_Z_OMEGA_X_SLOT + (W256.of_int 32))
-              ((W256.of_int (ZModField.asint y')))). smt ().
+              ((W256.of_int (FieldQ.asint y')))). smt ().
                 case J.
         move=> x y x' y' [J J'].
-                exists (ZModField.asint x).
-                exists (ZModField.asint y).
+                exists (FieldQ.asint x).
+                exists (FieldQ.asint y).
                 rewrite J' J.
                 congr.
                 have ->: (odflt (0, 0) (Some (F_to_int_point (x', y')))) = F_to_int_point (x', y'). smt ().
