@@ -56,7 +56,18 @@ lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
 lemma proj1 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`1 = x1. smt (). qed.
 lemma proj2 ['a 'b] (x1 : 'a) (x2 : 'b) : (x1, x2).`2 = x2. smt (). qed.
   
-(* uint256 lemmas *)
+  (* uint256 lemmas *)
+
+lemma to_uint_ge_zero (x: uint256): 0 <= W256.to_uint x by smt(W256.to_uint_cmp).
+lemma to_uint_lt_mod (x: uint256): W256.to_uint x < W256.modulus.
+    proof.
+      have H_and : forall (a b: bool), a /\ b => b by smt ().
+      have H := W256.to_uint_cmp x.
+      rewrite andabP in H.
+      exact (H_and (0 <= W256.to_uint x) (W256.to_uint x < W256.modulus)).
+    qed.
+
+    
 
 lemma add_zero (x: uint256): x + W256.zero = x by smt(@W256).
 
@@ -416,7 +427,7 @@ lemma uint256_le_add_32_sub (a b: uint256) : W256.of_int 32 < b - a => W256.of_i
 lemma uint256_le_sub_add_32 (a b: uint256): W256.of_int 64 <= b - a => W256.of_int 32 <= b - (a + W256.of_int 32).
     proof.
       progress.
-      smt.
+      smt timeout=10.
     qed.
 
 lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
@@ -760,5 +771,3 @@ require import Constants.
 lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.
 lemma R_mod_W256_R : R %% W256.modulus = R. by smt(). qed.      
 
- (* Finite field lemmas *)
-lemma F_eq_inzmod_asint (x : F) : ZModField.inzmod (ZModField.asint x) = x. smt (@ZModField). qed.

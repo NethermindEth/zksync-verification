@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import AllCore.
 require        Constants.
+require import Field.
 require import PointAddAssign.
 require import PointMulAndAddIntoDest.
 require import PointMulIntoDest.
@@ -129,7 +130,7 @@ equiv [
           inline Primops.mload.
           wp.
           skip.
-          rewrite Constants.q_eq_elliptic_curve_p.
+          rewrite Constants.q_eq_fieldq_p.
           progress.
           smt ().
           smt ().
@@ -171,8 +172,8 @@ equiv [
           progress.
           rewrite /addAssignRescue_memory_footprint.
           exists (F_to_int_point (x', y')).
-          exists (W256.of_int (ZModField.asint x)).
-          exists (W256.of_int (ZModField.asint y)).
+          exists (W256.of_int (FieldQ.asint x)).
+          exists (W256.of_int (FieldQ.asint y)).
           exists (W256.of_int point{2}.`1).
           exists (W256.of_int point{2}.`2).
           by progress.

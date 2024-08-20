@@ -1,4 +1,6 @@
 require        Constants.
+require import Field.
+require import IntDiv.
 require import Memory.
 require import PurePrimops.
 require import UInt256.
@@ -7,6 +9,10 @@ require import VerifierConsts.
 require import YulPrimops.
 
 import MemoryMap.
+
+abbrev (+) = FieldR.(+).
+abbrev ( * ) = FieldR.( * ).
+abbrev [-] = FieldR.([-]).
 
 module AddAssignLookupLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256): unit = {
@@ -223,7 +229,7 @@ module AddAssignLookupLinearisationContributionWithV = {
     return (factor3, factor15);
   }
 
-  proc mid(dest : int, stateOpening0AtZ : int, stateOpening1AtZ : int, stateOpening2AtZ : int,
+  proc mid(stateOpening0AtZ : int, stateOpening1AtZ : int, stateOpening2AtZ : int,
            proofLookupGrandProductOpeningAtZOmega: int,
            powerOfAlpha6: int,
            zMinusLastOmega: int,
@@ -256,6 +262,40 @@ module AddAssignLookupLinearisationContributionWithV = {
           v %% Constants.R;
     return (lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient);
   }
+
+  proc high(stateOpening0AtZ : FieldR.F, stateOpening1AtZ : FieldR.F, stateOpening2AtZ : FieldR.F,
+           proofLookupGrandProductOpeningAtZOmega: FieldR.F,
+           powerOfAlpha6: FieldR.F,
+           zMinusLastOmega: FieldR.F,
+           v: FieldR.F,
+           proofLookupTPolyOpeningAtZOmega: FieldR.F,
+           betaLookup: FieldR.F,
+           proofLookupTPolyOpeningAtZ: FieldR.F,
+           betaGammaPlusGamma: FieldR.F,
+           eta': FieldR.F,
+           proofLookupTableTypePolyOpeningAtZ: FieldR.F,
+           proofLookupSelectorPolyOpeningAtZ: FieldR.F,
+           gammaLookup: FieldR.F,
+           betaPlusOne: FieldR.F,
+           powerOfAlpha7: FieldR.F,
+           l0AtZ: FieldR.F,
+           powerOfAlpha8: FieldR.F,
+           lNMinusOneAtZ: FieldR.F
+    ): FieldR.F * FieldR.F = {
+    var lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient;
+    lookupSFirstAggregatedCommitment <- v * zMinusLastOmega * powerOfAlpha6 * proofLookupGrandProductOpeningAtZOmega;
+    lookupGrandProductFirstAggregatedCoefficient 
+            <- ((- (proofLookupTPolyOpeningAtZOmega * betaLookup +
+            proofLookupTPolyOpeningAtZ + betaGammaPlusGamma) *
+            ((stateOpening0AtZ + eta' * stateOpening1AtZ +
+              eta' * eta' * stateOpening2AtZ +
+              eta' * eta' * eta' * proofLookupTableTypePolyOpeningAtZ) *
+            proofLookupSelectorPolyOpeningAtZ + gammaLookup)) *
+        betaPlusOne * powerOfAlpha6 * zMinusLastOmega + powerOfAlpha7 * l0AtZ +
+        powerOfAlpha8 * lNMinusOneAtZ) *
+          v;
+    return (lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient);
+  }    
 }.
 
 lemma addAssignLookupLinearisationContributionWithV_extracted_equiv_low:
@@ -358,7 +398,6 @@ proof.
   inline*. sp. skip. progress.
 qed.
 
-    
 lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_low':
     equiv [
       AddAssignLookupLinearisationContributionWithV.low_no_reassignment_and_mstore ~ AddAssignLookupLinearisationContributionWithV.low' :
@@ -397,7 +436,7 @@ qed.
     
 lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_mid
   (low_dest low_stateOpening0AtZ low_stateOpening1AtZ low_stateOpening2AtZ: uint256)
-    (mid_dest mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
+    (mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
            proofLookupGrandProductOpeningAtZOmega
            powerOfAlpha6
            zMinusLastOmega
@@ -419,7 +458,7 @@ lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_msto
     equiv [
       AddAssignLookupLinearisationContributionWithV.low' ~ AddAssignLookupLinearisationContributionWithV.mid: 
       arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -487,8 +526,8 @@ proof.
   proc.
   sp.
   inline *.
-  seq 4 0 : (#pre /\ W256.to_uint factor{1} = proofLookupGrandProductOpeningAtZOmega{2}
-             /\ W256.to_uint _2{1} = powerOfAlpha6{2}).
+  seq 4 0 : (#pre /\ W256.to_uint factor{1} = proofLookupGrandProductOpeningAtZOmega
+             /\ W256.to_uint _2{1} = powerOfAlpha6).
   sp. skip. progress.
   seq 1 0 : (#pre /\ W256.to_uint factor1{1} = (proofLookupGrandProductOpeningAtZOmega * powerOfAlpha6) %% Constants.R).
   sp. skip.  progress.
@@ -613,7 +652,7 @@ qed.
 lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
     (mem_0: mem)
     (low_dest low_stateOpening0AtZ low_stateOpening1AtZ low_stateOpening2AtZ: uint256)
-    (mid_dest mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
+    (mid_stateOpening0AtZ mid_stateOpening1AtZ mid_stateOpening2AtZ
            proofLookupGrandProductOpeningAtZOmega
            powerOfAlpha6
            zMinusLastOmega
@@ -634,9 +673,9 @@ lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
     ):
     equiv [
       AddAssignLookupLinearisationContributionWithV.low ~ AddAssignLookupLinearisationContributionWithV.mid:
-      = {Primops.memory} /\ Primops.memory{1} = mem_0 /\
+      Primops.memory{1} = mem_0 /\
       arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -701,8 +740,8 @@ proof.
     (
       ={arg, glob AddAssignLookupLinearisationContributionWithV} /\ Primops.memory{1} = mem_0 ==>
       ={res, glob AddAssignLookupLinearisationContributionWithV}) 
-    (= {Primops.memory} /\ Primops.memory{1} = mem_0 /\ arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+    (Primops.memory{1} = mem_0 /\ arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -774,7 +813,7 @@ proof.
       Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 res{2}.`1 res{2}.`2 /\ 
         Primops.memory{2} = mem_0)
     (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -842,7 +881,7 @@ proof.
     transitivity AddAssignLookupLinearisationContributionWithV.low'
       (={arg, glob AddAssignLookupLinearisationContributionWithV} ==> ={res, glob AddAssignLookupLinearisationContributionWithV})
       (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
-      arg{2} = (mid_dest, mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
+      arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
            powerOfAlpha6,
            zMinusLastOmega,
@@ -905,3 +944,127 @@ proof.
         by smt(). by progress. exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_low'.
         exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_mid.
 qed.
+
+lemma addAssignLookupLinearisationContributionWithV_mid_equiv_high:
+equiv [
+    AddAssignLookupLinearisationContributionWithV.mid ~ AddAssignLookupLinearisationContributionWithV.high:
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+    stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+    stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+    proofLookupGrandProductOpeningAtZOmega{1} = FieldR.asint proofLookupGrandProductOpeningAtZOmega{2} /\
+    powerOfAlpha6{1} = FieldR.asint powerOfAlpha6{2} /\
+    zMinusLastOmega{1} = FieldR.asint zMinusLastOmega{2} /\
+    v{1} = FieldR.asint v{2} /\
+    proofLookupTPolyOpeningAtZOmega{1} = FieldR.asint proofLookupTPolyOpeningAtZOmega{2} /\
+    betaLookup{1} = FieldR.asint betaLookup{2} /\
+    proofLookupTPolyOpeningAtZ{1} = FieldR.asint proofLookupTPolyOpeningAtZ{2} /\
+    betaGammaPlusGamma{1} = FieldR.asint betaGammaPlusGamma{2} /\
+    eta'{1} = FieldR.asint eta'{2} /\
+    proofLookupTableTypePolyOpeningAtZ{1} = FieldR.asint proofLookupTableTypePolyOpeningAtZ{2} /\
+    proofLookupSelectorPolyOpeningAtZ{1} = FieldR.asint proofLookupSelectorPolyOpeningAtZ{2} /\
+    gammaLookup{1} = FieldR.asint gammaLookup{2} /\
+    betaPlusOne{1} = FieldR.asint betaPlusOne{2} /\
+    powerOfAlpha7{1} = FieldR.asint powerOfAlpha7{2} /\
+    l0AtZ{1} = FieldR.asint l0AtZ{2} /\
+    powerOfAlpha8{1} = FieldR.asint powerOfAlpha8{2} /\
+      lNMinusOneAtZ{1} = FieldR.asint lNMinusOneAtZ{2} ==>
+    res{1}.`1 = FieldR.asint res{2}.`1 /\
+    res{1}.`2 = FieldR.asint res{2}.`2
+    ].
+    proof.
+      proc.
+      wp. skip. progress.
+      do rewrite FieldR.mulE.
+      rewrite Constants.r_eq_fieldr_p.
+      rewrite (modzMml (FieldR.asint v{2} * _) _).
+      rewrite modzMml. reflexivity.
+      pose x1 := proofLookupTPolyOpeningAtZOmega{2} * betaLookup{2}.
+      pose y1 := (FieldR.asint proofLookupTPolyOpeningAtZOmega{2}) * (FieldR.asint betaLookup{2}).
+      pose x2 := x1 + proofLookupTPolyOpeningAtZ{2}.
+      pose y2 := y1 + (FieldR.asint proofLookupTPolyOpeningAtZ{2}).
+      pose x3 := x2 + betaGammaPlusGamma{2}.
+      pose y3 := y2 + (FieldR.asint betaGammaPlusGamma{2}).
+      pose x4 := eta'{2} * stateOpening1AtZ{2}.
+      pose y4 := (FieldR.asint eta'{2}) * (FieldR.asint stateOpening1AtZ{2}).
+      pose x5 := eta'{2} * eta'{2}.
+      pose y5 := (FieldR.asint eta'{2}) * (FieldR.asint eta'{2}).
+      pose x6 := x5 * stateOpening2AtZ{2}.
+      pose y6 := y5 * (FieldR.asint stateOpening2AtZ{2}).
+      pose x7 := x5 * eta'{2}.
+      pose y7 := y5 * (FieldR.asint eta'{2}).
+      pose x8 := x7 * proofLookupTableTypePolyOpeningAtZ{2}.
+      pose y8 := y7 * (FieldR.asint proofLookupTableTypePolyOpeningAtZ{2}).
+      pose x9 := stateOpening0AtZ{2} + x4.
+      pose y9 := (FieldR.asint stateOpening0AtZ{2}) + y4.
+      pose x10 := x9 + x6.
+      pose y10 := y9 + y6.
+      pose x11 := x10 + x8.
+      pose y11 := y10 + y8.
+      pose x12 := x11 * proofLookupSelectorPolyOpeningAtZ{2}.
+      pose y12 := y11 * (FieldR.asint proofLookupSelectorPolyOpeningAtZ{2}).
+      pose x13 := x12 + gammaLookup{2}.
+      pose y13 := y12 + (FieldR.asint gammaLookup{2}).
+      pose x14 := x3 * x13.
+      pose y14 := y3 * y13.
+      pose x15 := -x14.
+      pose y15 := -y14.
+      pose x16 := x15 * betaPlusOne{2}.
+      pose y16 := y15 * (FieldR.asint betaPlusOne{2}).
+      pose x17 := x16 * powerOfAlpha6{2}.
+      pose y17 := y16 * (FieldR.asint powerOfAlpha6{2}).
+      pose x18 := x17 * zMinusLastOmega{2}.
+      pose y18 := y17 * (FieldR.asint zMinusLastOmega{2}).
+      pose x19 := powerOfAlpha7{2} * l0AtZ{2}.
+      pose y19 := (FieldR.asint powerOfAlpha7{2}) * (FieldR.asint l0AtZ{2}).
+      pose x20 := powerOfAlpha8{2} * lNMinusOneAtZ{2}.
+      pose y20 := (FieldR.asint powerOfAlpha8{2}) * (FieldR.asint lNMinusOneAtZ{2}).    
+      pose x21 := x18 + x19.
+      pose y21 := y18 + y19.
+      pose x22 := x21 + x20.
+      pose y22 := y21 + y20.    
+      rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x22 /y22. rewrite FieldR.addE. rewrite -modzDm. congr. congr. congr.
+      rewrite /x21 /y21. rewrite FieldR.addE. rewrite -modzDm. congr. congr. congr.
+      rewrite /x18 /y18. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x17 /y17. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x16 /y16. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x15 /y15. rewrite FieldR.oppE. rewrite -modzNm. congr. congr. congr.
+      rewrite /x14 /y14. rewrite FieldR.mulE. rewrite -modzMm. congr. congr. congr.
+      rewrite /x3 /y3. rewrite FieldR.addE. rewrite -modzDml. congr. congr. congr.
+      rewrite /x2 /y2. rewrite FieldR.addE. rewrite -modzDml. congr. congr. congr.
+      rewrite /x1 /y1. rewrite FieldR.mulE. rewrite Constants.r_eq_fieldr_p. reflexivity.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      rewrite /x13 /y13. rewrite FieldR.addE. rewrite -modzDml. congr. congr. congr.
+      rewrite /x12 /y12. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x11 /y11. rewrite FieldR.addE. rewrite -modzDm. congr. congr. congr.
+      rewrite /x10 /y10. rewrite FieldR.addE. rewrite -modzDm. congr. congr. congr.
+      rewrite /x9 /y9. rewrite FieldR.addE. rewrite -modzDmr. congr. congr. congr.
+      rewrite /x4 /y4. rewrite FieldR.mulE. rewrite Constants.r_eq_fieldr_p. reflexivity.
+      exact Constants.r_eq_fieldr_p.
+      rewrite /x6 /y6. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x5 /y5. rewrite FieldR.mulE. rewrite Constants.r_eq_fieldr_p. reflexivity.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      rewrite /x8 /y8. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x7 /y7. rewrite FieldR.mulE. rewrite -modzMml. congr. congr. congr.
+      rewrite /x5 /y5. rewrite FieldR.mulE. rewrite Constants.r_eq_fieldr_p. reflexivity.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+      rewrite /x19 /y19. rewrite FieldR.mulE. rewrite Constants.r_eq_fieldr_p. reflexivity.
+      exact Constants.r_eq_fieldr_p.
+      rewrite /x20 /y20. rewrite FieldR.mulE. rewrite Constants.r_eq_fieldr_p. reflexivity.
+      exact Constants.r_eq_fieldr_p.
+      exact Constants.r_eq_fieldr_p.
+  qed.
+
+
+    

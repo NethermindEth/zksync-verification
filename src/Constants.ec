@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import AllCore.
 require        EllipticCurve.
+require import Field.
 require import Int.
 require import IntDiv.
 require import UInt256.
@@ -15,8 +16,10 @@ lemma Q_int: Q = W256.to_uint VerifierConsts.Q_MOD
 lemma R_int: R = W256.to_uint VerifierConsts.R_MOD
     by rewrite /VerifierConsts.R_MOD W256.of_uintK rE pmod_small; [trivial | reflexivity].
 
-axiom q_eq_elliptic_curve_p: Q = EllipticCurve.p.
-axiom prime_r : prime R.
+axiom q_eq_fieldq_p: Q = FieldQ.p.
+axiom r_eq_fieldr_p: R = FieldR.p.    
+lemma prime_q : prime Q by rewrite q_eq_fieldq_p; exact FieldQ.prime_p.
+lemma prime_r : prime R by rewrite r_eq_fieldr_p; exact FieldR.prime_p.
 
 (* 0x1dba8b5bdd64ef6ce29a9039aca3c0e524395c43b9227b96c75090cc6cc7ec97 *)
 op OMEGA : int = 13446667982376394161563610564587413125564757801019538732601045199901075958935 axiomatized by omegaE.

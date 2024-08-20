@@ -105,7 +105,7 @@ module AddAssignPermutationLinearisationContributionWithV = {
 }.
 
 (* requries sub assign extracted fix *)
-(* lemma addAssignPermutationLinearisationContributionWithV_extracted_equiv_low :
+lemma addAssignPermutationLinearisationContributionWithV_extracted_equiv_low :
     equiv [
       Verifier_1261.usr_addAssignPermutationLinearisationContributionWithV ~ AddAssignPermutationLinearisationContributionWithV.low :
       ={arg, glob AddAssignPermutationLinearisationContributionWithV} ==>
@@ -116,7 +116,7 @@ proof.
   call (pointSubAssign_extracted_equiv_low). wp.
   call (pointMulIntoDest_extracted_equiv_low).
   inline*. wp. skip. rewrite /Constants.R. by progress.
-    qed. *)
+    qed.
 
 op addAssignPermutation_memory_footprint
 (mem_0: mem)
@@ -460,8 +460,8 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
               mem_1
             ).
                 skip. progress.
-                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
-                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_fieldq_p. assumption.
+                rewrite - Constants.q_eq_fieldq_p. assumption.
                 smt (@W256).
                 have H_range: 0 <= to_uint factor{1} < W256.modulus by exact W256.to_uint_cmp.
                 rewrite andabP in H_range. apply (weaken_and_right (0 <= to_uint factor{1}) _).
@@ -585,12 +585,12 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
                 rewrite load_store_diff. smt. smt.
                 rewrite load_store_same. rewrite W256.of_uintK. smt (@W256 @Utils @IntDiv).
                 rewrite load_store_same. rewrite W256.of_uintK. smt (@W256 @Utils @IntDiv).
-                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
-                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_fieldq_p. assumption.
+                rewrite - Constants.q_eq_fieldq_p. assumption.
                 rewrite - /buffer_point_dfl. assumption.
-                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_fieldq_p. assumption.
                 rewrite - /buffer_point_dfl. assumption.
-                rewrite - Constants.q_eq_elliptic_curve_p. assumption.
+                rewrite - Constants.q_eq_fieldq_p. assumption.
                 case H30. by progress. 
                 progress. exists x64. exists factor. exists x96. exists buffer_point_dfl. rewrite /addAssignPermutation_memory_footprint. simplify. congr.
                 rewrite /mem_6. congr.

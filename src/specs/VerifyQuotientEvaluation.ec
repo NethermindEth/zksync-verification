@@ -206,7 +206,7 @@ let m12 = store m11 STATE_L_N_MINUS_ONE_AT_Z_SLOT slnm1az in
 let m13 = lookupQuotientContribution_memory_footprint m12 v7 bpo bgpg zmlo v8 in
 m13.
 
-lemma VerifyQuotientEvaluation_low_equiv_mid (m : mem) (
+lemma verifyQuotientEvaluation_low_equiv_mid (m : mem) (
       stateAlphaG
       stateBetaG
       stateBetaLookupG
@@ -2253,7 +2253,7 @@ seq 1 1:(
   0 <= stateZMinusLastOmega{2} < Constants.R /\
   exists v7 v8, Primops.memory{1} = lookupQuotientContribution_memory_footprint m12 v7 (W256.of_int stateBetaPlusOne{2}) (W256.of_int stateBetaGammaPlusGamma{2}) (W256.of_int stateZMinusLastOmega{2}) v8
 ).
-call (LookupQuotientContribution_low_equiv_mid m12
+call (lookupQuotientContribution_low_equiv_mid m12
         stateBetaLookupG stateGammaLookupG
         a6 a7 a8
         proofLookupSPolyOpeningAtZOmegaG
