@@ -199,9 +199,9 @@ lemma prepareAggregatedCommitment_extracted_equiv_low:
       proc.
       seq 11 5: (#pre /\ _3{1} = AGGREGATED_AT_Z_X_SLOT /\ usr_aggregationChallenge{1} = aggregationChallenge{2}). inline*. wp. skip. by progress.
       seq 5 2: (#pre /\ usr_aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2}). inline Primops.mload. sp. call pointAddIntoDest_extracted_equiv_low. skip. by progress.
-      seq 22 8: (#pre /\ _9{1} = R_MOD /\ _10{1} = STATE_V_SLOT). wp. do 3! (call UpdateAggregationChallenge_extracted_equiv_low; wp). inline Primops.mload. wp. skip. rewrite /Constants.R. by progress.
-      seq 25 10: (#pre /\ usr_firstDCoeff{1} = firstDCoeff{2}). wp. do 4! (call UpdateAggregationChallenge_extracted_equiv_low; wp). inline*. wp. skip. by progress.
-      seq 17 8: (#pre /\ usr_firstTCoeff{1} = firstTCoeff{2} ). wp. do 2! (call UpdateAggregationChallenge_extracted_equiv_low; wp). inline*. wp. skip. by progress.
+      seq 22 8: (#pre /\ _9{1} = R_MOD /\ _10{1} = STATE_V_SLOT). wp. do 3! (call updateAggregationChallenge_extracted_equiv_low; wp). inline Primops.mload. wp. skip. rewrite /Constants.R. by progress.
+      seq 25 10: (#pre /\ usr_firstDCoeff{1} = firstDCoeff{2}). wp. do 4! (call updateAggregationChallenge_extracted_equiv_low; wp). inline*. wp. skip. by progress.
+      seq 17 8: (#pre /\ usr_firstTCoeff{1} = firstTCoeff{2} ). wp. do 2! (call updateAggregationChallenge_extracted_equiv_low; wp). inline*. wp. skip. by progress.
       seq 16 8: (#pre /\ _41{1} = AGGREGATED_OPENING_AT_Z_SLOT /\ _43{1} = STATE_U_SLOT /\_48{1} = AGGREGATED_AT_Z_OMEGA_X_SLOT). call pointMulIntoDest_extracted_equiv_low. inline*. wp. skip. by progress.
       seq 26 8: (#pre /\ usr_aggregatedOpeningAtZOmega{1} = aggregatedOpeningAtZOmega{2}). wp. inline Primops.mload. do 4! (call updateAggregationChallenge_105_extracted_equiv_low; wp). skip. by progress.
       call pointMulIntoDest_extracted_equiv_low.
