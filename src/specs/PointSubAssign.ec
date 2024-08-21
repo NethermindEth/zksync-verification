@@ -54,6 +54,10 @@ module PointSubAssign = {
     
     return ret;
   }
+
+  proc high(p1: g, p2: g): g = {
+    return p1 + (G.inv p2);
+  }
 }.
 
 lemma pointSubAssign_extracted_equiv_low :
@@ -311,3 +315,28 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
           have H_some : exists (r), result{2} = Some r. apply exists_of_is_some. smt ().
           case H_some. by progress.
       qed.
+
+lemma pointSubAssign_mid_equiv_high:
+    equiv [
+      PointSubAssign.mid ~ PointSubAssign.high:
+        p1{1} = F_to_int_point(aspoint_G1(p1{2})) /\
+        p2{1} = F_to_int_point(aspoint_G1(p2{2})) ==>
+        res{1} = Some(F_to_int_point(aspoint_G1(res{2})))
+    ].
+    proof.
+      proc.
+      inline*. wp. skip. progress.
+      smt (@EllipticCurve).
+      rewrite F_to_int_point_inzmod_1.
+      rewrite F_to_int_point_inzmod_2.
+      rewrite F_to_int_point_inzmod_1.
+      have ->: FieldQ.inF ((- (F_to_int_point (aspoint_G1 p2{2})).`2) %% Constants.Q) = (aspoint_G1 (G.inv p2{2})).`2.
+        rewrite neg_G1_snd.
+        rewrite Constants.q_eq_fieldq_p.
+        smt (@FieldQ).
+      rewrite -(neg_G1_fst p2{2}).
+      rewrite -(ecAdd_def (aspoint_G1 p1{2}).`1 (aspoint_G1 p1{2}).`2 (aspoint_G1 (G.inv p2{2})).`1 (aspoint_G1 (G.inv p2{2})).`2 p1{2} (G.inv p2{2})).
+      smt ().
+      smt ().
+      smt ().
+qed.

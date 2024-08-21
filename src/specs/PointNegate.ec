@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import AllCore.
 require        Constants.
+require import EllipticCurve.
 require import Field.
 require import Int.
 require import IntDiv.
@@ -50,6 +51,10 @@ module PointNegate = {
       ret <- Some (p.`1, -p.`2);
     }
     return ret;
+  }
+
+  proc high(p: g): g = {
+    return G.inv p;
   }
 }.
 
@@ -162,9 +167,9 @@ equiv [
       proc.
       wp. skip.
       progress.
-      smt (@EllipticCurve).
-      smt (@EllipticCurve).
-      smt (@EllipticCurve).
+      rewrite /F_to_int_point; simplify. smt(@FieldQ).
+      rewrite /F_to_int_point; simplify. smt(@FieldQ).
+      rewrite /F_to_int_point; simplify. smt(@FieldQ).
       exists (F_to_int_point (p{2}.`1, (-p{2}.`2)%FieldQ)).
       exists (p{2}.`1, (-p{2}.`2)%FieldQ).
       progress.
@@ -174,6 +179,47 @@ equiv [
       reflexivity.
     qed.
 
+lemma pointNegate_high_field_equiv_high:
+equiv [
+    PointNegate.high_field ~ PointNegate.high:
+      p{1} = aspoint_G1 p{2} ==>
+      res{1} = Some(aspoint_G1 res{2})
+    ].
+    proof.
+      proc.
+      wp. skip.
+      progress.
+      smt (@EllipticCurve).
+      smt (@EllipticCurve).
+qed.
 
+lemma pointNegate_mid_equiv_high:
+equiv [
+    PointNegate.mid ~ PointNegate.high:
+      point{1} = F_to_int_point (aspoint_G1 p{2}) ==>
+      res{1} = Some (F_to_int_point (aspoint_G1 res{2}))
+    ].
+    proof.
+      transitivity PointNegate.high_field
+      (
+        point{1} = F_to_int_point p{2} ==>
+        (
+          (res{1} = None /\ res{2} = None) \/
+          (exists (ret_int: int*int, ret_f: FieldQ.F*FieldQ.F),
+            res{1} = Some ret_int /\ res{2} = Some ret_f /\
+            ret_int = F_to_int_point ret_f
+          )
+        )
+      )
+      (
+        p{1} = aspoint_G1 p{2} ==>
+        res{1} = Some(aspoint_G1 res{2})
+      ).
+      progress. exists (aspoint_G1 arg{2}). by progress.
+      progress. smt ().
+      exact pointNegate_mid_equiv_high_field.
+      exact pointNegate_high_field_equiv_high.
+qed.
+      
       
     

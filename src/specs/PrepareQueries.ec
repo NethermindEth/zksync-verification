@@ -21,6 +21,9 @@ require import YulPrimops.
 
 import MemoryMap.
 
+abbrev ( + ) = FieldR.( + ).
+abbrev ( * ) = FieldR.( * ).
+
 module PrepareQueries = {
   proc low(): unit = {
     var _1, zInDomainSize, currentZ, _3, _6, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ, _18, _21, eta', currentEta;
@@ -229,6 +232,278 @@ module PrepareQueries = {
         );
       }
       return ret;
+  }
+
+  proc high_encapsulated(
+    zInDomainSize: FieldR.F,
+    quotient_poly_part_0: g,
+    quotient_poly_part_1: g,
+    quotient_poly_part_2: g,
+    quotient_poly_part_3: g,
+    stateOpening0AtZ: FieldR.F,
+    stateOpening1AtZ: FieldR.F,
+    stateOpening2AtZ: FieldR.F,
+    stateOpening3AtZ: FieldR.F,
+    vk_lookup_table_0: g,
+    vk_lookup_table_1: g,
+    vk_lookup_table_2: g,
+    vk_lookup_table_3: g,
+    state_eta: FieldR.F,
+    vk_gate_setup_0: g,
+    vk_gate_setup_1: g,
+    vk_gate_setup_2: g,
+    vk_gate_setup_3: g,
+    vk_gate_setup_4: g,
+    vk_gate_setup_5: g,
+    vk_gate_setup_6: g,
+    vk_gate_setup_7: g,
+    poly3_omega: FieldR.F,
+    v: FieldR.F,
+    z: FieldR.F,
+    gate_selector_0_opening: FieldR.F,
+    alpha: FieldR.F,
+    alpha2: FieldR.F,
+    alpha3: FieldR.F,
+    alpha4: FieldR.F,
+    alpha5: FieldR.F,
+    alpha6: FieldR.F,
+    alpha7: FieldR.F,
+    alpha8: FieldR.F,
+    state_beta: FieldR.F,
+    gamma: FieldR.F,
+    vk_gate_selector_1: g,
+    vk_permutation_3: g,
+    gp_omega: FieldR.F,
+    l0AtZ: FieldR.F,
+    poly0_opening: FieldR.F,
+    poly1_opening: FieldR.F,
+    poly2_opening: FieldR.F,
+    proofLookupGrandProductOpeningAtZOmega: FieldR.F,
+    zMinusLastOmega: FieldR.F,
+    proofLookupTPolyOpeningAtZOmega: FieldR.F,
+    betaLookup: FieldR.F,
+    proofLookupTPolyOpeningAtZ: FieldR.F,
+    betaGammaPlusGamma: FieldR.F,
+    proofLookupTableTypePolyOpeningAtZ: FieldR.F,
+    proofLookupSelectorPolyOpeningAtZ: FieldR.F,
+    gammaLookup: FieldR.F,
+    betaPlusOne: FieldR.F,
+    lNMinusOneAtZ: FieldR.F
+  ): (g * g * FieldR.F * FieldR.F * FieldR.F * g) = {
+      var currentEta, currentZ: FieldR.F;
+      var query_at_z_0, query_t_poly_aggregated, query_at_z_1: g;
+      var copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient: FieldR.F;
+
+      query_at_z_0 <- quotient_poly_part_0;
+      query_at_z_0 <@ PointMulAndAddIntoDest.high(
+        quotient_poly_part_1,
+        zInDomainSize,
+        query_at_z_0
+      );
+
+    
+      currentZ <- zInDomainSize * zInDomainSize;
+      query_at_z_0 <@ PointMulAndAddIntoDest.high(
+        quotient_poly_part_2,
+        currentZ,
+        query_at_z_0
+      );
+
+    
+      currentZ <- currentZ * zInDomainSize;
+      query_at_z_0 <@ PointMulAndAddIntoDest.high(
+        quotient_poly_part_3,
+        currentZ,
+        query_at_z_0
+      );
+
+
+      query_at_z_1 <@ MainGateLinearisationContributionWithV.high(
+        vk_gate_setup_0, vk_gate_setup_1, vk_gate_setup_2, vk_gate_setup_3, vk_gate_setup_4, vk_gate_setup_5, vk_gate_setup_6, vk_gate_setup_7,
+        stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ,
+        poly3_omega, v, gate_selector_0_opening
+      );
+
+      query_at_z_1 <@ AddAssignRescueCustomGateLinearisationContributionWithV.high (
+        query_at_z_1,
+        stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ,
+        alpha, alpha2, alpha3, v,
+        vk_gate_selector_1
+      );
+  
+      (copy_permutation_first_aggregated_commitment_coeff, query_at_z_1) <@ AddAssignPermutationLinearisationContributionWithV.high(
+        query_at_z_1, vk_permutation_3,
+        stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ,
+        state_beta, v, z, gamma, alpha4, alpha5, gp_omega, l0AtZ,
+        poly0_opening, poly1_opening, poly2_opening
+      );
+
+      (lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient) <@ AddAssignLookupLinearisationContributionWithV.high(
+        stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ,
+        proofLookupGrandProductOpeningAtZOmega,
+        alpha6,
+        zMinusLastOmega,
+        v,
+        proofLookupTPolyOpeningAtZOmega,
+        betaLookup,
+        proofLookupTPolyOpeningAtZ,
+        betaGammaPlusGamma,
+        state_eta,
+        proofLookupTableTypePolyOpeningAtZ,
+        proofLookupSelectorPolyOpeningAtZ,
+        gammaLookup,
+        betaPlusOne,
+        alpha7,
+        l0AtZ,
+        alpha8,
+        lNMinusOneAtZ
+      );
+    
+
+      query_t_poly_aggregated <- vk_lookup_table_0;
+      currentEta <- state_eta;
+      query_t_poly_aggregated <@ PointMulAndAddIntoDest.high(vk_lookup_table_1, currentEta, query_t_poly_aggregated);
+
+      currentEta <- state_eta * state_eta;
+      query_t_poly_aggregated <@ PointMulAndAddIntoDest.high(vk_lookup_table_2, currentEta, query_t_poly_aggregated);
+
+      currentEta <- currentEta * state_eta;
+      query_t_poly_aggregated <@ PointMulAndAddIntoDest.high(vk_lookup_table_3, currentEta, query_t_poly_aggregated);
+        
+      return (
+        query_at_z_0,
+        query_at_z_1,
+        copy_permutation_first_aggregated_commitment_coeff,
+        lookupSFirstAggregatedCommitment,
+        lookupGrandProductFirstAggregatedCoefficient,
+        query_t_poly_aggregated
+      );
+  }
+
+  proc high(
+    zInDomainSize: FieldR.F,
+    quotient_poly_part_0: g,
+    quotient_poly_part_1: g,
+    quotient_poly_part_2: g,
+    quotient_poly_part_3: g,
+    stateOpening0AtZ: FieldR.F,
+    stateOpening1AtZ: FieldR.F,
+    stateOpening2AtZ: FieldR.F,
+    stateOpening3AtZ: FieldR.F,
+    vk_lookup_table_0: g,
+    vk_lookup_table_1: g,
+    vk_lookup_table_2: g,
+    vk_lookup_table_3: g,
+    state_eta: FieldR.F,
+    vk_gate_setup_0: g,
+    vk_gate_setup_1: g,
+    vk_gate_setup_2: g,
+    vk_gate_setup_3: g,
+    vk_gate_setup_4: g,
+    vk_gate_setup_5: g,
+    vk_gate_setup_6: g,
+    vk_gate_setup_7: g,
+    poly3_omega: FieldR.F,
+    v: FieldR.F,
+    z: FieldR.F,
+    gate_selector_0_opening: FieldR.F,
+    alpha: FieldR.F,
+    alpha2: FieldR.F,
+    alpha3: FieldR.F,
+    alpha4: FieldR.F,
+    alpha5: FieldR.F,
+    alpha6: FieldR.F,
+    alpha7: FieldR.F,
+    alpha8: FieldR.F,
+    state_beta: FieldR.F,
+    gamma: FieldR.F,
+    vk_gate_selector_1: g,
+    vk_permutation_3: g,
+    gp_omega: FieldR.F,
+    l0AtZ: FieldR.F,
+    poly0_opening: FieldR.F,
+    poly1_opening: FieldR.F,
+    poly2_opening: FieldR.F,
+    proofLookupGrandProductOpeningAtZOmega: FieldR.F,
+    zMinusLastOmega: FieldR.F,
+    proofLookupTPolyOpeningAtZOmega: FieldR.F,
+    betaLookup: FieldR.F,
+    proofLookupTPolyOpeningAtZ: FieldR.F,
+    betaGammaPlusGamma: FieldR.F,
+    proofLookupTableTypePolyOpeningAtZ: FieldR.F,
+    proofLookupSelectorPolyOpeningAtZ: FieldR.F,
+    gammaLookup: FieldR.F,
+    betaPlusOne: FieldR.F,
+    lNMinusOneAtZ: FieldR.F
+  ): (g * g * FieldR.F * FieldR.F * FieldR.F * g) = {
+      var query_at_z_0, query_t_poly_aggregated, query_at_z_1: g;
+      var copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient: FieldR.F;
+
+      query_at_z_0 <- 
+        quotient_poly_part_0 +
+        (zInDomainSize * quotient_poly_part_1) +
+        ((zInDomainSize * zInDomainSize) * quotient_poly_part_2) +
+        ((zInDomainSize * zInDomainSize * zInDomainSize) * quotient_poly_part_3);
+
+  
+      copy_permutation_first_aggregated_commitment_coeff <- (
+        alpha4 * (z * state_beta + gamma + stateOpening0AtZ) *
+        (z * state_beta * (FieldR.inF Constants.NON_RESIDUE_0) + gamma + stateOpening1AtZ) *
+        (z * state_beta * (FieldR.inF Constants.NON_RESIDUE_1) + gamma + stateOpening2AtZ) *
+        (z * state_beta * (FieldR.inF Constants.NON_RESIDUE_2) + gamma + stateOpening3AtZ) +
+        l0AtZ * alpha5
+      ) * v;
+
+
+      query_at_z_1 <- (((
+        ((stateOpening0AtZ * stateOpening0AtZ - stateOpening1AtZ) * alpha) +
+        ((stateOpening1AtZ * stateOpening1AtZ - stateOpening2AtZ) * alpha2) +
+        ((stateOpening2AtZ * stateOpening0AtZ - stateOpening3AtZ) * alpha3)
+      ) * v) * vk_gate_selector_1) + ((v * gate_selector_0_opening) * (
+        (stateOpening0AtZ * vk_gate_setup_0) +
+        (stateOpening1AtZ * vk_gate_setup_1) +
+        (stateOpening2AtZ * vk_gate_setup_2) +
+        (stateOpening3AtZ * vk_gate_setup_3) +
+        ((stateOpening0AtZ * stateOpening1AtZ) * vk_gate_setup_4) +
+        ((stateOpening0AtZ * stateOpening2AtZ) * vk_gate_setup_5) +
+        vk_gate_setup_6 +
+        (poly3_omega * vk_gate_setup_7)
+      )) + (G.inv ((
+        alpha4 * state_beta * gp_omega *
+        (poly0_opening * state_beta + gamma + stateOpening0AtZ) *
+        (poly1_opening * state_beta + gamma + stateOpening1AtZ) *
+        (poly2_opening * state_beta + gamma + stateOpening2AtZ) *
+        v
+      ) * vk_permutation_3));
+
+
+      lookupSFirstAggregatedCommitment <- v * zMinusLastOmega * alpha6 * proofLookupGrandProductOpeningAtZOmega;
+      lookupGrandProductFirstAggregatedCoefficient 
+            <- ((- (proofLookupTPolyOpeningAtZOmega * betaLookup +
+            proofLookupTPolyOpeningAtZ + betaGammaPlusGamma) *
+            ((stateOpening0AtZ + state_eta * stateOpening1AtZ +
+              state_eta * state_eta * stateOpening2AtZ +
+              state_eta * state_eta * state_eta * proofLookupTableTypePolyOpeningAtZ) *
+            proofLookupSelectorPolyOpeningAtZ + gammaLookup)) *
+        betaPlusOne * alpha6 * zMinusLastOmega + alpha7 * l0AtZ +
+        alpha8 * lNMinusOneAtZ) *
+          v;
+    
+
+      query_t_poly_aggregated <-
+        vk_lookup_table_0 +
+        (state_eta * vk_lookup_table_1) +
+        (state_eta * state_eta) * vk_lookup_table_2 +
+        (state_eta * state_eta * state_eta) * vk_lookup_table_3;
+        
+      return (
+        query_at_z_0,
+        query_at_z_1,
+        copy_permutation_first_aggregated_commitment_coeff,
+        lookupSFirstAggregatedCommitment,
+        lookupGrandProductFirstAggregatedCoefficient,
+        query_t_poly_aggregated
+      );
   }
 }.
 
@@ -765,7 +1040,6 @@ equiv [
       exists (W256.of_int quotient_poly_part_0{2}.`1).
       exists (W256.of_int quotient_poly_part_0{2}.`2).
       rewrite /QUERIES_AT_Z_0_X_SLOT /QUERIES_AT_Z_0_Y_SLOT. simplify.
-      print store_store_swap_diff.
       do 2! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
       do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
       do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
@@ -2358,11 +2632,295 @@ equiv [
       by progress.
 qed.
 
+lemma prepareQueries_mid_equiv_high_encapsulated:
+    equiv [
+      PrepareQueries.mid ~ PrepareQueries.high_encapsulated:
+      zInDomainSize{1} = FieldR.asint zInDomainSize{2} /\
+      quotient_poly_part_0{1} = F_to_int_point(aspoint_G1 quotient_poly_part_0{2}) /\
+      quotient_poly_part_1{1} = F_to_int_point(aspoint_G1 quotient_poly_part_1{2}) /\
+      quotient_poly_part_2{1} = F_to_int_point(aspoint_G1 quotient_poly_part_2{2}) /\
+      quotient_poly_part_3{1} = F_to_int_point(aspoint_G1 quotient_poly_part_3{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      vk_lookup_table_0{1} = F_to_int_point(aspoint_G1 vk_lookup_table_0{2}) /\
+      vk_lookup_table_1{1} = F_to_int_point(aspoint_G1 vk_lookup_table_1{2}) /\
+      vk_lookup_table_2{1} = F_to_int_point(aspoint_G1 vk_lookup_table_2{2}) /\
+      vk_lookup_table_3{1} = F_to_int_point(aspoint_G1 vk_lookup_table_3{2}) /\
+      state_eta{1} = FieldR.asint state_eta{2} /\
+      vk_gate_setup_0{1} = F_to_int_point(aspoint_G1 vk_gate_setup_0{2}) /\
+      vk_gate_setup_1{1} = F_to_int_point(aspoint_G1 vk_gate_setup_1{2}) /\
+      vk_gate_setup_2{1} = F_to_int_point(aspoint_G1 vk_gate_setup_2{2}) /\
+      vk_gate_setup_3{1} = F_to_int_point(aspoint_G1 vk_gate_setup_3{2}) /\
+      vk_gate_setup_4{1} = F_to_int_point(aspoint_G1 vk_gate_setup_4{2}) /\
+      vk_gate_setup_5{1} = F_to_int_point(aspoint_G1 vk_gate_setup_5{2}) /\
+      vk_gate_setup_6{1} = F_to_int_point(aspoint_G1 vk_gate_setup_6{2}) /\
+      vk_gate_setup_7{1} = F_to_int_point(aspoint_G1 vk_gate_setup_7{2}) /\
+      poly3_omega{1} = FieldR.asint poly3_omega{2} /\
+      v{1} = FieldR.asint v{2} /\
+      z{1} = FieldR.asint z{2} /\
+      gate_selector_0_opening{1} = FieldR.asint gate_selector_0_opening{2} /\
+      alpha{1} = FieldR.asint alpha{2} /\
+      alpha2{1} = FieldR.asint alpha2{2} /\
+      alpha3{1} = FieldR.asint alpha3{2} /\
+      alpha4{1} = FieldR.asint alpha4{2} /\
+      alpha5{1} = FieldR.asint alpha5{2} /\
+      alpha6{1} = FieldR.asint alpha6{2} /\
+      alpha7{1} = FieldR.asint alpha7{2} /\
+      alpha8{1} = FieldR.asint alpha8{2} /\
+      state_beta{1} = FieldR.asint state_beta{2} /\
+      gamma{1} = FieldR.asint gamma{2} /\
+      vk_gate_selector_1{1} = F_to_int_point(aspoint_G1 vk_gate_selector_1{2}) /\
+      vk_permutation_3{1} = F_to_int_point(aspoint_G1 vk_permutation_3{2}) /\
+      gp_omega{1} = FieldR.asint gp_omega{2} /\
+      l0AtZ{1} = FieldR.asint l0AtZ{2} /\
+      poly0_opening{1} = FieldR.asint poly0_opening{2} /\
+      poly1_opening{1} = FieldR.asint poly1_opening{2} /\
+      poly2_opening{1} = FieldR.asint poly2_opening{2} /\
+      proofLookupGrandProductOpeningAtZOmega{1} = FieldR.asint proofLookupGrandProductOpeningAtZOmega{2} /\
+      zMinusLastOmega{1} = FieldR.asint zMinusLastOmega{2} /\
+      proofLookupTPolyOpeningAtZOmega{1} = FieldR.asint proofLookupTPolyOpeningAtZOmega{2} /\
+      betaLookup{1} = FieldR.asint betaLookup{2} /\
+      proofLookupTPolyOpeningAtZ{1} = FieldR.asint proofLookupTPolyOpeningAtZ{2} /\
+      betaGammaPlusGamma{1} = FieldR.asint betaGammaPlusGamma{2} /\
+      proofLookupTableTypePolyOpeningAtZ{1} = FieldR.asint proofLookupTableTypePolyOpeningAtZ{2} /\
+      proofLookupSelectorPolyOpeningAtZ{1} = FieldR.asint proofLookupSelectorPolyOpeningAtZ{2} /\
+      gammaLookup{1} = FieldR.asint gammaLookup{2} /\
+      betaPlusOne{1} = FieldR.asint betaPlusOne{2} /\
+      lNMinusOneAtZ{1} = FieldR.asint lNMinusOneAtZ{2} ==>
+      res{1} = Some(
+        F_to_int_point(aspoint_G1 res{2}.`1),
+        F_to_int_point(aspoint_G1 res{2}.`2),
+        FieldR.asint res{2}.`3,
+        FieldR.asint res{2}.`4,
+        FieldR.asint res{2}.`5,
+        F_to_int_point(aspoint_G1 res{2}.`6)
+      )
+    ].
+    proof.
+      proc.
+      simplify.
+      seq 5 2: (
+        #pre /\
+        !failed{1} /\
+        zInDomainSize{1} = FieldR.asint zInDomainSize{2} /\
+        query_at_z_0{1} = F_to_int_point(aspoint_G1 query_at_z_0{2})
+      ).
+      wp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      wp. skip. by progress.
+      seq 4 2: (
+        #pre /\
+        currentZ{1} = FieldR.asint currentZ{2}
+      ).
+      wp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      wp. skip. progress.
+      rewrite Constants.r_eq_fieldr_p.
+      rewrite FieldR.mulE. reflexivity.
 
+      seq 4 2: #pre.
+      wp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      wp. skip. progress.
+      rewrite Constants.r_eq_fieldr_p.
+      rewrite FieldR.mulE. reflexivity.
 
+      seq 3 1: (
+        #pre /\
+        query_at_z_1{1} = F_to_int_point(aspoint_G1 query_at_z_1{2})
+      ).
+      wp.
+      call mainGateLinearisation_mid_equiv_high.
+      skip. by progress.
 
+      seq 3 1: #pre.
+      wp.
+      call addAssignRescueCustomGateLinearisationContributionWithV_mid_equiv_high.
+      skip. by progress.
 
+      seq 3 1: (
+        #pre /\
+        copy_permutation_first_aggregated_commitment_coeff{1} = FieldR.asint copy_permutation_first_aggregated_commitment_coeff{2}
+      ).
+      wp.
+      call addAssignPermutationLinearisationContributionWithV_mid_equiv_high.
+      skip. by progress.
 
+      seq 1 1: (
+        #pre /\
+        lookupSFirstAggregatedCommitment{1} = FieldR.asint lookupSFirstAggregatedCommitment{2} /\
+        lookupGrandProductFirstAggregatedCoefficient{1} = FieldR.asint lookupGrandProductFirstAggregatedCoefficient{2}
+      ).
+      call addAssignLookupLinearisationContributionWithV_mid_equiv_high.
+      wp. skip. by progress.
 
+      seq 5 3: (
+        #pre /\
+        currentEta{1} = FieldR.asint currentEta{2} /\
+        query_t_poly_aggregated{1} = F_to_int_point(aspoint_G1 query_t_poly_aggregated{2})
+      ).
+      wp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      wp. skip. by progress.
+
+      seq 4 2: #pre.
+      wp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      wp. skip. progress.
+      rewrite Constants.r_eq_fieldr_p FieldR.mulE. reflexivity.
+
+      seq 4 2: #pre.
+      wp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      wp. skip. progress.
+      rewrite Constants.r_eq_fieldr_p FieldR.mulE. reflexivity.
+
+      wp. skip. by progress.
+qed.
+
+lemma prepareQueries_mid_equiv_high:
+    equiv [
+      PrepareQueries.mid ~ PrepareQueries.high:
+      zInDomainSize{1} = FieldR.asint zInDomainSize{2} /\
+      quotient_poly_part_0{1} = F_to_int_point(aspoint_G1 quotient_poly_part_0{2}) /\
+      quotient_poly_part_1{1} = F_to_int_point(aspoint_G1 quotient_poly_part_1{2}) /\
+      quotient_poly_part_2{1} = F_to_int_point(aspoint_G1 quotient_poly_part_2{2}) /\
+      quotient_poly_part_3{1} = F_to_int_point(aspoint_G1 quotient_poly_part_3{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      vk_lookup_table_0{1} = F_to_int_point(aspoint_G1 vk_lookup_table_0{2}) /\
+      vk_lookup_table_1{1} = F_to_int_point(aspoint_G1 vk_lookup_table_1{2}) /\
+      vk_lookup_table_2{1} = F_to_int_point(aspoint_G1 vk_lookup_table_2{2}) /\
+      vk_lookup_table_3{1} = F_to_int_point(aspoint_G1 vk_lookup_table_3{2}) /\
+      state_eta{1} = FieldR.asint state_eta{2} /\
+      vk_gate_setup_0{1} = F_to_int_point(aspoint_G1 vk_gate_setup_0{2}) /\
+      vk_gate_setup_1{1} = F_to_int_point(aspoint_G1 vk_gate_setup_1{2}) /\
+      vk_gate_setup_2{1} = F_to_int_point(aspoint_G1 vk_gate_setup_2{2}) /\
+      vk_gate_setup_3{1} = F_to_int_point(aspoint_G1 vk_gate_setup_3{2}) /\
+      vk_gate_setup_4{1} = F_to_int_point(aspoint_G1 vk_gate_setup_4{2}) /\
+      vk_gate_setup_5{1} = F_to_int_point(aspoint_G1 vk_gate_setup_5{2}) /\
+      vk_gate_setup_6{1} = F_to_int_point(aspoint_G1 vk_gate_setup_6{2}) /\
+      vk_gate_setup_7{1} = F_to_int_point(aspoint_G1 vk_gate_setup_7{2}) /\
+      poly3_omega{1} = FieldR.asint poly3_omega{2} /\
+      v{1} = FieldR.asint v{2} /\
+      z{1} = FieldR.asint z{2} /\
+      gate_selector_0_opening{1} = FieldR.asint gate_selector_0_opening{2} /\
+      alpha{1} = FieldR.asint alpha{2} /\
+      alpha2{1} = FieldR.asint alpha2{2} /\
+      alpha3{1} = FieldR.asint alpha3{2} /\
+      alpha4{1} = FieldR.asint alpha4{2} /\
+      alpha5{1} = FieldR.asint alpha5{2} /\
+      alpha6{1} = FieldR.asint alpha6{2} /\
+      alpha7{1} = FieldR.asint alpha7{2} /\
+      alpha8{1} = FieldR.asint alpha8{2} /\
+      state_beta{1} = FieldR.asint state_beta{2} /\
+      gamma{1} = FieldR.asint gamma{2} /\
+      vk_gate_selector_1{1} = F_to_int_point(aspoint_G1 vk_gate_selector_1{2}) /\
+      vk_permutation_3{1} = F_to_int_point(aspoint_G1 vk_permutation_3{2}) /\
+      gp_omega{1} = FieldR.asint gp_omega{2} /\
+      l0AtZ{1} = FieldR.asint l0AtZ{2} /\
+      poly0_opening{1} = FieldR.asint poly0_opening{2} /\
+      poly1_opening{1} = FieldR.asint poly1_opening{2} /\
+      poly2_opening{1} = FieldR.asint poly2_opening{2} /\
+      proofLookupGrandProductOpeningAtZOmega{1} = FieldR.asint proofLookupGrandProductOpeningAtZOmega{2} /\
+      zMinusLastOmega{1} = FieldR.asint zMinusLastOmega{2} /\
+      proofLookupTPolyOpeningAtZOmega{1} = FieldR.asint proofLookupTPolyOpeningAtZOmega{2} /\
+      betaLookup{1} = FieldR.asint betaLookup{2} /\
+      proofLookupTPolyOpeningAtZ{1} = FieldR.asint proofLookupTPolyOpeningAtZ{2} /\
+      betaGammaPlusGamma{1} = FieldR.asint betaGammaPlusGamma{2} /\
+      proofLookupTableTypePolyOpeningAtZ{1} = FieldR.asint proofLookupTableTypePolyOpeningAtZ{2} /\
+      proofLookupSelectorPolyOpeningAtZ{1} = FieldR.asint proofLookupSelectorPolyOpeningAtZ{2} /\
+      gammaLookup{1} = FieldR.asint gammaLookup{2} /\
+      betaPlusOne{1} = FieldR.asint betaPlusOne{2} /\
+      lNMinusOneAtZ{1} = FieldR.asint lNMinusOneAtZ{2} ==>
+      res{1} = Some(
+        F_to_int_point(aspoint_G1 res{2}.`1),
+        F_to_int_point(aspoint_G1 res{2}.`2),
+        FieldR.asint res{2}.`3,
+        FieldR.asint res{2}.`4,
+        FieldR.asint res{2}.`5,
+        F_to_int_point(aspoint_G1 res{2}.`6)
+      )
+    ].
+    transitivity PrepareQueries.high_encapsulated
+    (
+      zInDomainSize{1} = FieldR.asint zInDomainSize{2} /\
+      quotient_poly_part_0{1} = F_to_int_point(aspoint_G1 quotient_poly_part_0{2}) /\
+      quotient_poly_part_1{1} = F_to_int_point(aspoint_G1 quotient_poly_part_1{2}) /\
+      quotient_poly_part_2{1} = F_to_int_point(aspoint_G1 quotient_poly_part_2{2}) /\
+      quotient_poly_part_3{1} = F_to_int_point(aspoint_G1 quotient_poly_part_3{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      vk_lookup_table_0{1} = F_to_int_point(aspoint_G1 vk_lookup_table_0{2}) /\
+      vk_lookup_table_1{1} = F_to_int_point(aspoint_G1 vk_lookup_table_1{2}) /\
+      vk_lookup_table_2{1} = F_to_int_point(aspoint_G1 vk_lookup_table_2{2}) /\
+      vk_lookup_table_3{1} = F_to_int_point(aspoint_G1 vk_lookup_table_3{2}) /\
+      state_eta{1} = FieldR.asint state_eta{2} /\
+      vk_gate_setup_0{1} = F_to_int_point(aspoint_G1 vk_gate_setup_0{2}) /\
+      vk_gate_setup_1{1} = F_to_int_point(aspoint_G1 vk_gate_setup_1{2}) /\
+      vk_gate_setup_2{1} = F_to_int_point(aspoint_G1 vk_gate_setup_2{2}) /\
+      vk_gate_setup_3{1} = F_to_int_point(aspoint_G1 vk_gate_setup_3{2}) /\
+      vk_gate_setup_4{1} = F_to_int_point(aspoint_G1 vk_gate_setup_4{2}) /\
+      vk_gate_setup_5{1} = F_to_int_point(aspoint_G1 vk_gate_setup_5{2}) /\
+      vk_gate_setup_6{1} = F_to_int_point(aspoint_G1 vk_gate_setup_6{2}) /\
+      vk_gate_setup_7{1} = F_to_int_point(aspoint_G1 vk_gate_setup_7{2}) /\
+      poly3_omega{1} = FieldR.asint poly3_omega{2} /\
+      v{1} = FieldR.asint v{2} /\
+      z{1} = FieldR.asint z{2} /\
+      gate_selector_0_opening{1} = FieldR.asint gate_selector_0_opening{2} /\
+      alpha{1} = FieldR.asint alpha{2} /\
+      alpha2{1} = FieldR.asint alpha2{2} /\
+      alpha3{1} = FieldR.asint alpha3{2} /\
+      alpha4{1} = FieldR.asint alpha4{2} /\
+      alpha5{1} = FieldR.asint alpha5{2} /\
+      alpha6{1} = FieldR.asint alpha6{2} /\
+      alpha7{1} = FieldR.asint alpha7{2} /\
+      alpha8{1} = FieldR.asint alpha8{2} /\
+      state_beta{1} = FieldR.asint state_beta{2} /\
+      gamma{1} = FieldR.asint gamma{2} /\
+      vk_gate_selector_1{1} = F_to_int_point(aspoint_G1 vk_gate_selector_1{2}) /\
+      vk_permutation_3{1} = F_to_int_point(aspoint_G1 vk_permutation_3{2}) /\
+      gp_omega{1} = FieldR.asint gp_omega{2} /\
+      l0AtZ{1} = FieldR.asint l0AtZ{2} /\
+      poly0_opening{1} = FieldR.asint poly0_opening{2} /\
+      poly1_opening{1} = FieldR.asint poly1_opening{2} /\
+      poly2_opening{1} = FieldR.asint poly2_opening{2} /\
+      proofLookupGrandProductOpeningAtZOmega{1} = FieldR.asint proofLookupGrandProductOpeningAtZOmega{2} /\
+      zMinusLastOmega{1} = FieldR.asint zMinusLastOmega{2} /\
+      proofLookupTPolyOpeningAtZOmega{1} = FieldR.asint proofLookupTPolyOpeningAtZOmega{2} /\
+      betaLookup{1} = FieldR.asint betaLookup{2} /\
+      proofLookupTPolyOpeningAtZ{1} = FieldR.asint proofLookupTPolyOpeningAtZ{2} /\
+      betaGammaPlusGamma{1} = FieldR.asint betaGammaPlusGamma{2} /\
+      proofLookupTableTypePolyOpeningAtZ{1} = FieldR.asint proofLookupTableTypePolyOpeningAtZ{2} /\
+      proofLookupSelectorPolyOpeningAtZ{1} = FieldR.asint proofLookupSelectorPolyOpeningAtZ{2} /\
+      gammaLookup{1} = FieldR.asint gammaLookup{2} /\
+      betaPlusOne{1} = FieldR.asint betaPlusOne{2} /\
+      lNMinusOneAtZ{1} = FieldR.asint lNMinusOneAtZ{2} ==>
+      res{1} = Some(
+        F_to_int_point(aspoint_G1 res{2}.`1),
+        F_to_int_point(aspoint_G1 res{2}.`2),
+        FieldR.asint res{2}.`3,
+        FieldR.asint res{2}.`4,
+        FieldR.asint res{2}.`5,
+        F_to_int_point(aspoint_G1 res{2}.`6)
+      )
+    )
+    (
+      ={arg} ==> ={res}
+    ).
+    progress. exists arg{2}. by progress.
+    by progress.
+    exact prepareQueries_mid_equiv_high_encapsulated.
+    proc.
+      inline*. wp. skip. progress.
+      smt (@G).
+      smt (@G).
+qed.
 
 

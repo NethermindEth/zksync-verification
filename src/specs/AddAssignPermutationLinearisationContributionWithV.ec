@@ -15,6 +15,9 @@ require import YulPrimops.
 
 import MemoryMap.
 
+abbrev ( + ) = FieldR.( + ).
+abbrev ( * ) = FieldR.( * ).
+
 module AddAssignPermutationLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256, stateOpening3AtZ : uint256): unit = {
     var factor, _1, _3, gamma, _4, intermediateValue, _6, _7, _9, _10, _12, _13, l0AtZ, _16, _17, _18, _20, _21, _23, beta', gamma_1, _25, _26, _27, intermediateValue_1, _29, _30, _31, _33, _34, _35, _36;
@@ -125,6 +128,49 @@ module AddAssignPermutationLinearisationContributionWithV = {
       }
 
       return ret;
+  }
+
+  proc high_encapsulated(point: g, vk_permutation_3: g, stateOpening0AtZ: FieldR.F, stateOpening1AtZ: FieldR.F, stateOpening2AtZ: FieldR.F, stateOpening3AtZ: FieldR.F, state_beta: FieldR.F, state_v: FieldR.F, state_z: FieldR.F, state_gamma: FieldR.F, state_alpha4: FieldR.F, state_alpha5: FieldR.F, state_gp_omega: FieldR.F, state_l0AtZ: FieldR.F, poly0_opening: FieldR.F, poly1_opening: FieldR.F, poly2_opening: FieldR.F): FieldR.F * g = {
+      var buffer_point, ret_point, ret_factor;
+
+      ret_factor <- (
+        state_alpha4 * (state_z * state_beta + state_gamma + stateOpening0AtZ) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_0) + state_gamma + stateOpening1AtZ) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_1) + state_gamma + stateOpening2AtZ) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_2) + state_gamma + stateOpening3AtZ) +
+        state_l0AtZ * state_alpha5
+      ) * state_v;
+
+      buffer_point <@ PointMulIntoDest.high(vk_permutation_3, (
+        state_alpha4 * state_beta * state_gp_omega *
+        (poly0_opening * state_beta + state_gamma + stateOpening0AtZ) *
+        (poly1_opening * state_beta + state_gamma + stateOpening1AtZ) *
+        (poly2_opening * state_beta + state_gamma + stateOpening2AtZ) *
+        state_v
+      ));
+      ret_point <@ PointSubAssign.high(point, buffer_point);
+      return (ret_factor, ret_point);
+  }
+
+  proc high(point: g, vk_permutation_3: g, stateOpening0AtZ: FieldR.F, stateOpening1AtZ: FieldR.F, stateOpening2AtZ: FieldR.F, stateOpening3AtZ: FieldR.F, state_beta: FieldR.F, state_v: FieldR.F, state_z: FieldR.F, state_gamma: FieldR.F, state_alpha4: FieldR.F, state_alpha5: FieldR.F, state_gp_omega: FieldR.F, state_l0AtZ: FieldR.F, poly0_opening: FieldR.F, poly1_opening: FieldR.F, poly2_opening: FieldR.F): FieldR.F * g = {
+      var ret_point, ret_factor;
+
+      ret_factor <- (
+        state_alpha4 * (state_z * state_beta + state_gamma + stateOpening0AtZ) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_0) + state_gamma + stateOpening1AtZ) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_1) + state_gamma + stateOpening2AtZ) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_2) + state_gamma + stateOpening3AtZ) +
+        state_l0AtZ * state_alpha5
+      ) * state_v;
+
+      ret_point <- point + (G.inv ((
+        state_alpha4 * state_beta * state_gp_omega *
+        (poly0_opening * state_beta + state_gamma + stateOpening0AtZ) *
+        (poly1_opening * state_beta + state_gamma + stateOpening1AtZ) *
+        (poly2_opening * state_beta + state_gamma + stateOpening2AtZ) *
+        state_v
+      ) * vk_permutation_3));
+      return (ret_factor, ret_point);
   }
 }.
 
@@ -891,19 +937,147 @@ lemma addAssignPermutationLinearisationContributionWithV_low_equiv_mid (mem_0: m
       reflexivity.
     qed.
 
+lemma addAssignPermutationLinearisationContributionWithV_mid_equiv_high_encapsulated:
+    equiv [
+      AddAssignPermutationLinearisationContributionWithV.mid ~ AddAssignPermutationLinearisationContributionWithV.high_encapsulated:
+      point{1} = F_to_int_point(aspoint_G1 point{2}) /\
+      vk_permutation_3{1} = F_to_int_point(aspoint_G1 vk_permutation_3{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      state_beta{1} = FieldR.asint state_beta{2} /\
+      state_v{1} = FieldR.asint state_v{2} /\
+      state_z{1} = FieldR.asint state_z{2} /\
+      state_gamma{1} = FieldR.asint state_gamma{2} /\
+      state_alpha4{1} = FieldR.asint state_alpha4{2} /\
+      state_alpha5{1} = FieldR.asint state_alpha5{2} /\
+      state_gp_omega{1} = FieldR.asint state_gp_omega{2} /\
+      state_l0AtZ{1} = FieldR.asint state_l0AtZ{2} /\
+      poly0_opening{1} = FieldR.asint poly0_opening{2} /\
+      poly1_opening{1} = FieldR.asint poly1_opening{2} /\
+      poly2_opening{1} = FieldR.asint poly2_opening{2} ==>
+      res{1} = Some (FieldR.asint res{2}.`1, F_to_int_point(aspoint_G1 res{2}.`2))
+    ].
+    proof.
+      proc.
+      seq 18 1: (
+        #pre /\
+        ret_factor{1} = FieldR.asint ret_factor{2}
+      ).
+      wp. skip. progress.
+      rewrite FieldR.mulE Constants.r_eq_fieldr_p. congr. congr. congr.
+      rewrite FieldR.addE. congr. congr. congr; first last.
+        rewrite FieldR.mulE. reflexivity.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+        rewrite FieldR.inFK /Constants.NON_RESIDUE_2 pmod_small. rewrite -Constants.r_eq_fieldr_p /Constants.R. by progress. by progress.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+        rewrite FieldR.inFK /Constants.NON_RESIDUE_1 pmod_small. rewrite -Constants.r_eq_fieldr_p /Constants.R. by progress. by progress.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+        rewrite FieldR.inFK /Constants.NON_RESIDUE_0 pmod_small. rewrite -Constants.r_eq_fieldr_p /Constants.R. by progress. by progress.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+      sp.
+      seq 3 1: (
+        #pre /\
+        !failed{1} /\
+        buffer_point{1} = F_to_int_point(aspoint_G1 buffer_point{2})
+      ).
+      wp.
+      call pointMulIntoDest_mid_equiv_high.
+      skip. progress.
+      rewrite Constants.r_eq_fieldr_p.
+      rewrite FieldR.mulE. congr. congr. congr.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.addE. congr. congr. congr.
+        rewrite FieldR.mulE. reflexivity.
+      rewrite FieldR.mulE. congr. congr. congr; first last.
+      rewrite FieldR.mulE. reflexivity.
+      
+      seq 1 1: (
+        #pre /\
+        ret_point{1} = Some(F_to_int_point(aspoint_G1 ret_point{2}))
+      ).
+      call pointSubAssign_mid_equiv_high.
+      skip. progress.
+      wp. skip. by progress.
+qed.
 
-
-
-
-
-
-
-
-
-
-
-
-
+lemma addAssignPermutationLinearisationContributionWithV_mid_equiv_high:
+    equiv [
+      AddAssignPermutationLinearisationContributionWithV.mid ~ AddAssignPermutationLinearisationContributionWithV.high:
+      point{1} = F_to_int_point(aspoint_G1 point{2}) /\
+      vk_permutation_3{1} = F_to_int_point(aspoint_G1 vk_permutation_3{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      state_beta{1} = FieldR.asint state_beta{2} /\
+      state_v{1} = FieldR.asint state_v{2} /\
+      state_z{1} = FieldR.asint state_z{2} /\
+      state_gamma{1} = FieldR.asint state_gamma{2} /\
+      state_alpha4{1} = FieldR.asint state_alpha4{2} /\
+      state_alpha5{1} = FieldR.asint state_alpha5{2} /\
+      state_gp_omega{1} = FieldR.asint state_gp_omega{2} /\
+      state_l0AtZ{1} = FieldR.asint state_l0AtZ{2} /\
+      poly0_opening{1} = FieldR.asint poly0_opening{2} /\
+      poly1_opening{1} = FieldR.asint poly1_opening{2} /\
+      poly2_opening{1} = FieldR.asint poly2_opening{2} ==>
+      res{1} = Some (FieldR.asint res{2}.`1, F_to_int_point(aspoint_G1 res{2}.`2))
+    ].
+    proof.
+    transitivity AddAssignPermutationLinearisationContributionWithV.high_encapsulated
+    (
+      point{1} = F_to_int_point(aspoint_G1 point{2}) /\
+      vk_permutation_3{1} = F_to_int_point(aspoint_G1 vk_permutation_3{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      state_beta{1} = FieldR.asint state_beta{2} /\
+      state_v{1} = FieldR.asint state_v{2} /\
+      state_z{1} = FieldR.asint state_z{2} /\
+      state_gamma{1} = FieldR.asint state_gamma{2} /\
+      state_alpha4{1} = FieldR.asint state_alpha4{2} /\
+      state_alpha5{1} = FieldR.asint state_alpha5{2} /\
+      state_gp_omega{1} = FieldR.asint state_gp_omega{2} /\
+      state_l0AtZ{1} = FieldR.asint state_l0AtZ{2} /\
+      poly0_opening{1} = FieldR.asint poly0_opening{2} /\
+      poly1_opening{1} = FieldR.asint poly1_opening{2} /\
+      poly2_opening{1} = FieldR.asint poly2_opening{2} ==>
+      res{1} = Some (FieldR.asint res{2}.`1, F_to_int_point(aspoint_G1 res{2}.`2))
+    )
+    (
+      ={arg} ==> ={res}
+    ).
+    progress. exists (arg{2}). by progress.
+    progress. exact addAssignPermutationLinearisationContributionWithV_mid_equiv_high_encapsulated.
+    proc.
+      inline*. wp. skip. by progress.
+qed.
 
 
 

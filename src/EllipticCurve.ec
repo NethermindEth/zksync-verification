@@ -30,6 +30,9 @@ op on_curve : FieldQ.F * FieldQ.F -> bool.
 axiom aspoint_on_curve (p : g) : on_curve (aspoint_G1 p).
 axiom on_curve_as_point (x y : FieldQ.F) : on_curve (x, y) => exists p, aspoint_G1 p = (x, y).
 
+(* specific to the curve we're using *)
+axiom x_non_zero_y_zero_not_on_curve (x: FieldQ.F) : x <> FieldQ.zero => !on_curve (x, FieldQ.zero).
+
 (* TODO: Axioms for G2. *)
 
 op ( + ) = G.( * ).
