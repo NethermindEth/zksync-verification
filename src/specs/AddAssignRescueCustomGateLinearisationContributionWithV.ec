@@ -104,7 +104,9 @@ equiv [
       (
         (!Primops.reverted{1} /\ exists (p: (int*int)) (scratch1 scratch2 scratch3 scratch4: uint256), (
           Primops.memory{1} = addAssignRescue_memory_footprint mem_0 low_dest p scratch1 scratch2 scratch3 scratch4 /\
-          res{2} = Some p
+          res{2} = Some p /\
+          0 <= p.`1 < Constants.Q /\
+          0 <= p.`2 < Constants.Q
         ))  \/
         (Primops.reverted{1} /\ res{2} = None)
       )
@@ -176,5 +178,9 @@ equiv [
           exists (W256.of_int (FieldQ.asint y)).
           exists (W256.of_int point{2}.`1).
           exists (W256.of_int point{2}.`2).
-          by progress.
+          progress.
+          exact F_to_int_point_1_ge_zero.
+          exact F_to_int_point_1_lt_p.
+          exact F_to_int_point_2_ge_zero.
+          exact F_to_int_point_2_lt_p.          
       qed.

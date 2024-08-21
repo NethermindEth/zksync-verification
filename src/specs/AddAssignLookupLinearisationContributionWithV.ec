@@ -4,6 +4,7 @@ require import IntDiv.
 require import Memory.
 require import PurePrimops.
 require import UInt256.
+require import Utils.
 require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
@@ -339,22 +340,37 @@ lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_equiv_lo
       Primops.memory{1} = mem_0 
       ==> 
       Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 res{2}.`1 res{2}.`2 /\ 
-      Primops.memory{2} = mem_0
+      Primops.memory{2} = mem_0 /\
+      0 <= W256.to_uint res{2}.`1 < Constants.R /\
+      0 <= W256.to_uint res{2}.`2 < Constants.R
     ].
 proof.
   proc.
-  seq 7 7 : (#pre /\ ={factor1, factor2, factor3}).
+  seq 7 7 : (#pre /\ ={factor1, factor2, factor3} /\ 0 <= W256.to_uint factor3{2} < Constants.R).
   inline*. sp. skip. progress.
-  seq 1 0 : (={factor1, factor2, factor3} /\ ={dest, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ} /\ Primops.memory{2} = mem_0  /\ Primops.memory{1} = store mem_0 LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF factor3{1}).
-  inline*. sp. skip. progress.
+  exact to_uint_ge_zero.
+  by rewrite /mulmod; simplify; rewrite -Constants.R_int W256.of_uintK mod_R_W256_mod_R /Constants.R ltz_pmod.
+  seq 1 0 : (
+    ={factor1, factor2, factor3} /\
+    ={dest, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ} /\
+    Primops.memory{2} = mem_0 /\
+    Primops.memory{1} = store mem_0 LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF factor3{1} /\
+    0 <= W256.to_uint factor3{2} < Constants.R
+  ).
+  inline*. sp. skip. by progress.
   rewrite /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT
           /STATE_V_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT /STATE_BETA_LOOKUP_SLOT
           /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_ETA_SLOT
           /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /STATE_GAMMA_LOOKUP_SLOT
           /STATE_BETA_PLUS_ONE_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_L_0_AT_Z_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT
           /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFFLOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF.
-  seq 41 41 : (={factor3, factor4, factor5, factor6, factor7, factor8, factor11, factor12, factor13, factor14, factor15, fReconstructed,
-  fReconstructed1, fReconstructed2, fReconstructed3, fReconstructed4, currentEta, currentEta1, currentEta2} /\ Primops.memory{2} = mem_0 /\ Primops.memory{1} = store mem_0 LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF factor3{1}).
+  seq 41 41 : (
+    ={factor3, factor4, factor5, factor6, factor7, factor8, factor11, factor12, factor13, factor14, factor15, fReconstructed, fReconstructed1, fReconstructed2, fReconstructed3, fReconstructed4, currentEta, currentEta1, currentEta2} /\
+    Primops.memory{2} = mem_0 /\
+    Primops.memory{1} = store mem_0 LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF factor3{1} /\
+    0 <= W256.to_uint factor3{2} < Constants.R /\
+    0 <= W256.to_uint factor15{2} < Constants.R
+  ).
   inline*. sp. skip. progress.
   rewrite /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT load_store_diff; try by progress.
   rewrite /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT /STATE_BETA_LOOKUP_SLOT load_store_diff; try by progress.
@@ -395,6 +411,8 @@ proof.
   do! rewrite load_store_diff; try by progress.
   rewrite /STATE_ETA_SLOT /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF. progress.
   rewrite /STATE_ETA_SLOT /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF. progress.
+  exact to_uint_ge_zero.
+  by rewrite /mulmod; simplify; rewrite -Constants.R_int W256.of_uintK mod_R_W256_mod_R /Constants.R ltz_pmod.
   inline*. sp. skip. progress.
 qed.
 
@@ -517,7 +535,9 @@ lemma addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_msto
       W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
       ==>
       W256.to_uint res{1}.`1 = res{2}.`1 /\
-      W256.to_uint res{1}.`2 = res{2}.`2 
+      W256.to_uint res{1}.`2 = res{2}.`2 /\
+      0 <= res{2}.`1 < Constants.R /\
+      0 <= res{2}.`2 < Constants.R
     ].
 proof.
   have H_add: forall (a b c: int),  (a %% b + c) %% b = (a + c) %% b by smt(@IntDiv).
@@ -647,6 +667,10 @@ proof.
   progress.
   rewrite H43.
   smt (@W256 @Utils @IntDiv @Int).
+  by rewrite /Constants.R; exact modz_ge0.
+  by rewrite /Constants.R; exact ltz_pmod.
+  by rewrite /Constants.R; exact modz_ge0.
+  by rewrite /Constants.R; exact ltz_pmod.
 qed.
 
 lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
@@ -733,13 +757,16 @@ lemma addAssignLookupLinearisationContributionWithV_low_equiv_mid
       W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_8_SLOT) = powerOfAlpha8 /\
       W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
       ==>
+      0 <= res{2}.`1 < Constants.R /\
+      0 <= res{2}.`2 < Constants.R /\
       Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 (W256.of_int res{2}.`1) (W256.of_int res{2}.`2)
     ].
 proof. 
   transitivity AddAssignLookupLinearisationContributionWithV.low_no_reassignment
     (
       ={arg, glob AddAssignLookupLinearisationContributionWithV} /\ Primops.memory{1} = mem_0 ==>
-      ={res, glob AddAssignLookupLinearisationContributionWithV}) 
+      ={res, glob AddAssignLookupLinearisationContributionWithV}
+    ) 
     (Primops.memory{1} = mem_0 /\ arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
       arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
@@ -799,6 +826,8 @@ proof.
       W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_8_SLOT) = powerOfAlpha8 /\
       W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
       ==>
+      0 <= res{2}.`1 < Constants.R /\
+      0 <= res{2}.`2 < Constants.R /\
         Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 (W256.of_int res{2}.`1) (W256.of_int res{2}.`2)).
         progress. by smt().
         by progress.
@@ -811,7 +840,10 @@ proof.
       ={arg, glob AddAssignLookupLinearisationContributionWithV} /\ Primops.memory{1} = mem_0
       ==> 
       Primops.memory{1} = addAssignLookupLinearisationContributionWithV_memory_footprint mem_0 res{2}.`1 res{2}.`2 /\ 
-        Primops.memory{2} = mem_0)
+      Primops.memory{2} = mem_0 /\
+      0 <= W256.to_uint res{2}.`1 < Constants.R /\
+      0 <= W256.to_uint res{2}.`2 < Constants.R
+    )
     (arg{1} = (low_dest, low_stateOpening0AtZ, low_stateOpening1AtZ, low_stateOpening2AtZ) /\
       arg{2} = (mid_stateOpening0AtZ, mid_stateOpening1AtZ, mid_stateOpening2AtZ,
            proofLookupGrandProductOpeningAtZOmega,
@@ -871,11 +903,13 @@ proof.
       W256.to_uint (load Primops.memory{1} STATE_POWER_OF_ALPHA_8_SLOT) = powerOfAlpha8 /\
       W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
       ==>
+      0 <= res{2}.`1 < Constants.R /\
+      0 <= res{2}.`2 < Constants.R /\
       W256.to_uint res{1}.`1 = res{2}.`1 /\
       W256.to_uint res{1}.`2 = res{2}.`2 ).
         progress.
         by smt().
-    progress. rewrite -H -H0. do rewrite W256.to_uintK.
+    progress. rewrite -H7 -H8. do rewrite W256.to_uintK.
         by reflexivity.
     exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_equiv_low_no_reassignment_and_mstore.
     transitivity AddAssignLookupLinearisationContributionWithV.low'
@@ -940,7 +974,10 @@ proof.
       W256.to_uint (load Primops.memory{1} STATE_L_N_MINUS_ONE_AT_Z_SLOT) = lNMinusOneAtZ
       ==>
       W256.to_uint res{1}.`1 = res{2}.`1 /\
-        W256.to_uint res{1}.`2 = res{2}.`2 ).
+      W256.to_uint res{1}.`2 = res{2}.`2 /\
+      0 <= res{2}.`1 < Constants.R /\
+      0 <= res{2}.`2 < Constants.R
+    ).
         by smt(). by progress. exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_low'.
         exact addAssignLookupLinearisationContributionWithV_low_no_reassignment_and_mstore_equiv_mid.
 qed.

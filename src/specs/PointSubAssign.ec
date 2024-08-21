@@ -80,6 +80,10 @@ op pointSubAssign_memory_footprint (memory: mem) (p1 p2 x64 x96: uint256) (resul
   let mem_5 = store mem_4 p1 (W256.of_int result.`1) in
   store mem_5 (p1 + W256.of_int 32) (W256.of_int result.`2).
 
+lemma pointSubAssign_low_pspec_revert:
+phoare [ PointSubAssign.low : Primops.reverted ==> Primops.reverted] = 1%r.
+proof. proc; inline*; wp; by progress. qed.
+
 prover timeout=20.
 
 lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr_2: uint256) (point1 point2: int*int) :
@@ -103,6 +107,8 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
       ==>
       (Primops.reverted{1} /\ res{2} = None) \/
       (!Primops.reverted{1} /\ exists (p: int*int) (x64 x96: uint256),
+        0 <= p.`1 < Constants.Q /\
+        0 <= p.`2 < Constants.Q /\
         res{2} = Some p /\
         Primops.memory{1} = pointSubAssign_memory_footprint memory point_addr_1 point_addr_2 x64 x96 p
       )
@@ -295,5 +301,13 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
           exists y2{1}.
           progress.
           have H_res: exists (r: FieldQ.F*FieldQ.F), result{2} = Some r. smt ().
-          case H_res. by progress.
+          case H_res. progress.
+          exact F_to_int_point_1_ge_zero.
+          by rewrite Constants.q_eq_fieldq_p; exact F_to_int_point_1_lt_p.
+          exact F_to_int_point_2_ge_zero.
+          by rewrite Constants.q_eq_fieldq_p; exact F_to_int_point_2_lt_p.
+          case (result{2} = None). by progress.
+          progress.
+          have H_some : exists (r), result{2} = Some r. apply exists_of_is_some. smt ().
+          case H_some. by progress.
       qed.
