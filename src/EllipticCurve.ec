@@ -83,7 +83,7 @@ lemma ec_mul_result_on_curve (x1 y1 x2 y2 : FieldQ.F) (s : int) :
     
     
 
-op F_to_int_point (p : FieldQ.F * FieldQ.F) : (int * int) = (FieldQ.asint (fst p), FieldQ.asint (snd p)).
+  op F_to_int_point (p : FieldQ.F * FieldQ.F) : (int * int) = (FieldQ.asint (fst p), FieldQ.asint (snd p)).
 
 lemma F_to_int_point_inzmod_1 (p: FieldQ.F*FieldQ.F): FieldQ.inF (F_to_int_point p).`1 = p.`1.
     proof. rewrite /F_to_int_point. simplify. exact FieldQ.asintK. qed.
