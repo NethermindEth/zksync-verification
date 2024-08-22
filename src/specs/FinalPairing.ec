@@ -83,7 +83,7 @@ lemma finalPairing_extracted_equiv_low:
       skip.
       rewrite /Constants.R /Constants.OMEGA.
       by progress.
-      seq 76 47: (#pre /\ _21{1} = W256.zero /\ _24{1} = W256.of_int 32 /\ _46{1} = W256.of_int 8).
+      seq 76 47: (#pre /\ _21{1} = W256.zero /\ _24{1} = W256.of_int 32 /\ _45{1} = (of_int 384)%W256 /\  _46{1} = W256.of_int 8).
       sp.
       if. by progress.
       wp.
@@ -93,6 +93,40 @@ lemma finalPairing_extracted_equiv_low:
       wp. skip. by progress.
       wp.
       seq 4 2: (#pre /\ usr_success{1} = success{2}).
+      seq 2 1: (#pre).
+      inline*. wp. skip. by progress.
+      exists* Primops.memory{1}.
+      elim* => mem.
+      seq 1 1 : (#pre /\ tmp430{1} = success{2}).
+      progress.
+      call{1} (ConcretePrimops.staticcall_ec_pairing_pspec mem (PurePrimops.mload mem W256.zero, PurePrimops.mload mem (W256.of_int 32))
+         (PurePrimops.mload mem (W256.of_int 192), PurePrimops.mload mem (W256.of_int 224))
+         ((PurePrimops.mload mem (W256.of_int 64), PurePrimops.mload mem (W256.of_int 96)), (PurePrimops.mload mem (W256.of_int 128), PurePrimops.mload mem (W256.of_int 160)))
+         ((PurePrimops.mload mem (W256.of_int 256), PurePrimops.mload mem (W256.of_int 288)), (PurePrimops.mload mem (W256.of_int 320), PurePrimops.mload mem (W256.of_int 352)))
+           W256.zero W256.zero).
+      call{2} (ConcretePrimops.staticcall_ec_pairing_pspec mem (PurePrimops.mload mem W256.zero, PurePrimops.mload mem (W256.of_int 32))
+         (PurePrimops.mload mem (W256.of_int 192), PurePrimops.mload mem (W256.of_int 224))
+         ((PurePrimops.mload mem (W256.of_int 64), PurePrimops.mload mem (W256.of_int 96)), (PurePrimops.mload mem (W256.of_int 128), PurePrimops.mload mem (W256.of_int 160)))
+         ((PurePrimops.mload mem (W256.of_int 256), PurePrimops.mload mem (W256.of_int 288)), (PurePrimops.mload mem (W256.of_int 320), PurePrimops.mload mem (W256.of_int 352)))
+           W256.zero W256.zero).
+           progress. skip. progress.
+      case ((ConcretePrimops.staticcall_ec_pairing_should_succeed
+       ((PurePrimops.mload Primops.memory{2} W256.zero)%PurePrimops,
+        (PurePrimops.mload Primops.memory{2} ((of_int 32))%W256)%PurePrimops)
+       ((PurePrimops.mload Primops.memory{2} ((of_int 192))%W256)%PurePrimops,
+        (PurePrimops.mload Primops.memory{2} ((of_int 224))%W256)%PurePrimops)
+       (((PurePrimops.mload Primops.memory{2} ((of_int 64))%W256)%PurePrimops,
+         (PurePrimops.mload Primops.memory{2} ((of_int 96))%W256)%PurePrimops),
+        ((PurePrimops.mload Primops.memory{2} ((of_int 128))%W256)%PurePrimops,
+         (PurePrimops.mload Primops.memory{2} ((of_int 160))%W256)%PurePrimops))
+       (((PurePrimops.mload Primops.memory{2} ((of_int 256))%W256)%PurePrimops,
+         (PurePrimops.mload Primops.memory{2} ((of_int 288))%W256)%PurePrimops),
+        ((PurePrimops.mload Primops.memory{2} ((of_int 320))%W256)%PurePrimops,
+         (PurePrimops.mload Primops.memory{2} ((of_int 352))%W256)%PurePrimops)))%ConcretePrimops).
+      progress. smt(). 
+
+  
+      progress. 
       inline*.
       do 3! (rcondf{2} 8; first progress; first wp; first skip; first progress; first exact neq_small).
       do 3! (rcondf{1} 9; first progress; first wp; first skip; first progress; first exact neq_small).
