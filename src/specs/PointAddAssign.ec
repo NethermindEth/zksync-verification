@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import Array.
 require import EllipticCurve.
+require import Field.
 require import Logic.
 require import Memory.
 require import PointAddIntoDest.
@@ -88,7 +89,7 @@ equiv [
       arg{1} = (p1_addr, p2_addr) /\
     W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= -p1_addr /\
     W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= -p2_addr /\
-    0 <= p1.`1 < p /\ 0 <= p1.`2 < p /\ 0 <= p2.`1 < p /\ 0 <= p2.`2 < p /\
+    0 <= p1.`1 < FieldQ.p /\ 0 <= p1.`2 < FieldQ.p /\ 0 <= p2.`1 < FieldQ.p /\ 0 <= p2.`2 < FieldQ.p /\
     Primops.memory{1} = mem_0 /\
     W256.to_uint (load mem_0 p1_addr) = p1.`1 /\
     W256.to_uint (load mem_0 (p1_addr + W256.of_int 32)) = p1.`2 /\
@@ -98,9 +99,9 @@ equiv [
     !Primops.reverted{1} ==>
       (
         ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
-        exists (x y: F),
-        ecAdd_precompile (ZModField.inzmod p1.`1) (ZModField.inzmod p1.`2) (ZModField.inzmod p2.`1) (ZModField.inzmod p2.`2) = Some (x,y) /\
-        res{2} = Some (ZModField.asint x, ZModField.asint y) /\
+        exists (x y: FieldQ.F),
+        ecAdd_precompile (FieldQ.inF p1.`1) (FieldQ.inF p1.`2) (FieldQ.inF p2.`1) (FieldQ.inF p2.`2) = Some (x,y) /\
+        res{2} = Some (FieldQ.asint x, FieldQ.asint y) /\
         Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 p1_addr p1 p2 (x,y) /\
         !Primops.reverted{1}
       ) \/
@@ -123,7 +124,7 @@ equiv [
       arg{1} = (p1_addr, p2_addr, p1_addr) /\
       W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= -p1_addr /\
       W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= -p2_addr /\
-      0 <= p1.`1 < p /\ 0 <= p1.`2 < p /\ 0 <= p2.`1 < p /\ 0 <= p2.`2 < p /\
+      0 <= p1.`1 < FieldQ.p /\ 0 <= p1.`2 < FieldQ.p /\ 0 <= p2.`1 < FieldQ.p /\ 0 <= p2.`2 < FieldQ.p /\
       Primops.memory{1} = mem_0 /\
       W256.to_uint (load mem_0 p1_addr) = p1.`1 /\
       W256.to_uint (load mem_0 (p1_addr + W256.of_int 32)) = p1.`2 /\
@@ -133,9 +134,9 @@ equiv [
       !Primops.reverted{1} ==>
       (
         ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
-             exists (x y: F),
-        ecAdd_precompile (ZModField.inzmod p1.`1) (ZModField.inzmod p1.`2) (ZModField.inzmod p2.`1) (ZModField.inzmod p2.`2) = Some (x,y) /\
-        res{2} = Some (ZModField.asint x, ZModField.asint y) /\
+             exists (x y: FieldQ.F),
+        ecAdd_precompile (FieldQ.inF p1.`1) (FieldQ.inF p1.`2) (FieldQ.inF p2.`1) (FieldQ.inF p2.`2) = Some (x,y) /\
+        res{2} = Some (FieldQ.asint x, FieldQ.asint y) /\
         Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 p1_addr p1 p2 (x,y) /\
         !Primops.reverted{1}
       ) \/

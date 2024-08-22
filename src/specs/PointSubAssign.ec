@@ -3,6 +3,7 @@ pragma Goals:printall.
 require import Array.
 require        Constants.
 require import EllipticCurve.
+require import Field.
 require import Logic.
 require import Memory.
 require import PointAddAssign.
@@ -97,7 +98,7 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
       W256.to_uint (load Primops.memory{1} (point_addr_1 + W256.of_int 32)) = point1.`2 /\
       W256.to_uint (load Primops.memory{1} point_addr_2) = point2.`1 /\
       W256.to_uint (load Primops.memory{1} (point_addr_2 + W256.of_int 32)) = point2.`2 /\
-      0 <= point1.`1 < p /\ 0 <= point1.`2 < p /\ 0 <= point2.`1 < p /\ 0 <= point2.`2 < p /\ 
+      0 <= point1.`1 < FieldQ.p /\ 0 <= point1.`2 < FieldQ.p /\ 0 <= point2.`1 < FieldQ.p /\ 0 <= point2.`2 < FieldQ.p /\ 
       !Primops.reverted{1}
       ==>
       (Primops.reverted{1} /\ res{2} = None) \/
@@ -161,7 +162,7 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
         p1{2}.`2 = W256.to_uint point1_y /\
         p2{2}.`1 = W256.to_uint point2_x /\
         p2{2}.`2 = W256.to_uint point2_y /\
-        0 <= point1.`1 < p /\ 0 <= point1.`2 < p /\ 0 <= point2.`1 < p /\ 0 <= point2.`2 < p /\ 
+        0 <= point1.`1 < FieldQ.p /\ 0 <= point1.`2 < FieldQ.p /\ 0 <= point2.`1 < FieldQ.p /\ 0 <= point2.`2 < FieldQ.p /\ 
        !Primops.reverted{1}
     ).
       call{1} (ConcretePrimops.mstore_pspec mem_3 (W256.of_int 96) point2_y).
@@ -188,7 +189,7 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
         p1{2}.`2 = W256.to_uint point1_y /\
         p2{2}.`1 = W256.to_uint point2_x /\
         p2{2}.`2 = W256.to_uint point2_y /\
-        0 <= p1{2}.`1 < p /\ 0 <= p1{2}.`2 < p /\ 0 <= p2{2}.`1 < p /\ 0 <= p2{2}.`2 < p /\
+        0 <= p1{2}.`1 < FieldQ.p /\ 0 <= p1{2}.`2 < FieldQ.p /\ 0 <= p2{2}.`1 < FieldQ.p /\ 0 <= p2{2}.`2 < FieldQ.p /\
         exists neg_point,
           neg_p2_opt{2} = Some neg_point /\
           0 <= neg_point.`1 < Constants.Q /\ 0 <= neg_point.`2 < Constants.Q /\
@@ -208,15 +209,15 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
       rcondf{2} 1. progress. skip. progress. smt ().
       inline PointAddIntoDest.mid.
       inline Primops.gas Primops.staticcall.
-      rcondf{1} 8. progress. wp. skip. progress. smt (@W256 @Utils).
-      rcondt{1} 8. progress. wp. skip. by progress.
-      rcondt{1} 8. progress. wp. skip. by progress.
-      seq 11 5: (
+      rcondf{1} 9. progress. wp. skip. progress. smt (@W256 @Utils).
+      rcondt{1} 9. progress. wp. skip. by progress.
+      rcondt{1} 9. progress. wp. skip. by progress.
+      seq 12 5: (
         x1{2} = W256.to_uint x1{1} /\
         x2{2} = W256.to_uint x2{1} /\
         y1{2} = W256.to_uint y1{1} /\
         y2{2} = W256.to_uint y2{1} /\
-        0 <= x1{2} < p /\ 0 <= x2{2} < p /\ 0 <= y1{2} < p /\ 0 <= y2{2} < p /\
+        0 <= x1{2} < FieldQ.p /\ 0 <= x2{2} < FieldQ.p /\ 0 <= y1{2} < FieldQ.p /\ 0 <= y2{2} < FieldQ.p /\
         Primops.memory{1} = store (store mem_4 (W256.of_int 64) x2{1}) (W256.of_int 96) y2{1} /\
         !Primops.reverted{1} /\
         retOff{1} = point_addr_1
@@ -246,16 +247,16 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
           smt (). smt (). smt (). smt (@Constants). smt (). smt (@Constants). smt (). smt (@Constants).
         rewrite /mem_post_negate. rewrite load_store_same. congr. congr. rewrite load_store_diff. smt (@W256 @Utils). smt (@W256 @Utils). rewrite load_store_same. reflexivity. smt (). smt ().
       rcondf{1} 5. progress. wp. skip. progress.
-      have H_x1: x1{hr} = x1{hr} %% (W256.of_int p).
+      have H_x1: x1{hr} = x1{hr} %% (W256.of_int FieldQ.p).
         rewrite /W256.\umod /W256.ulift2. rewrite W256.of_uintK. rewrite pmod_small. progress. rewrite pmod_small. progress.
         smt (@Constants). smt (@Constants). smt (). rewrite W256.to_uintK. reflexivity.
-      have H_y1: y1{hr} = y1{hr} %% (W256.of_int p).
+      have H_y1: y1{hr} = y1{hr} %% (W256.of_int FieldQ.p).
         rewrite /W256.\umod /W256.ulift2. rewrite W256.of_uintK. rewrite pmod_small. progress. rewrite pmod_small. progress.
         smt (@Constants). smt (@Constants). smt (). rewrite W256.to_uintK. reflexivity.
-      have H_x2: x2{hr} = x2{hr} %% (W256.of_int p).
+      have H_x2: x2{hr} = x2{hr} %% (W256.of_int FieldQ.p).
         rewrite /W256.\umod /W256.ulift2. rewrite W256.of_uintK. rewrite pmod_small. progress. rewrite pmod_small. progress.
         smt (@Constants). smt (@Constants). smt (). rewrite W256.to_uintK. reflexivity.
-      have H_y2: y2{hr} = y2{hr} %% (W256.of_int p).
+      have H_y2: y2{hr} = y2{hr} %% (W256.of_int FieldQ.p).
         rewrite /W256.\umod /W256.ulift2. rewrite W256.of_uintK. rewrite pmod_small. progress. rewrite pmod_small. progress.
         smt (@Constants). smt (@Constants). smt (). rewrite W256.to_uintK. reflexivity.
         smt ().
@@ -263,10 +264,10 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
       seq 4 4: (
         #pre /\
         ={x1_F, y1_F, x2_F, y2_F} /\
-        x1_F{2} = ZModField.inzmod x1{2} /\
-        y1_F{2} = ZModField.inzmod y1{2} /\
-        x2_F{2} = ZModField.inzmod x2{2} /\
-        y2_F{2} = ZModField.inzmod y2{2}
+        x1_F{2} = FieldQ.inF x1{2} /\
+        y1_F{2} = FieldQ.inF y1{2} /\
+        x2_F{2} = FieldQ.inF x2{2} /\
+        y2_F{2} = FieldQ.inF y2{2}
       ). wp. skip. by progress.
       if{1}.
       (*failure case*)
@@ -276,7 +277,7 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
         seq 1 1: (#pre /\ ={result} (* /\ result{1} = ecAdd_precompile x1_F{1} y1_F{1} x2_F{1} y2_F{1}*) ). wp. skip. by progress.
         if{1}. sp. rcondt{1} 1. progress. skip. progress. rewrite /iszero /bool_of_uint256. smt (@W256 @Utils).
           call{1} (revertWithMessage_low_pspec). wp. skip. progress. left. progress.
-          have H_none: forall (a: (F*F) option), is_none a => a = None. smt ().
+          have H_none: forall (a: (FieldQ.F*FieldQ.F) option), is_none a => a = None. smt ().
           smt ().
         inline Primops.mstore. sp.
         rcondf{1} 1. progress. skip. progress. rewrite /iszero /bool_of_uint256. smt ().
@@ -289,10 +290,10 @@ lemma pointSubAssign_low_equiv_mid_fixed (memory: mem) (point_addr_1, point_addr
           rewrite store_store_same. rewrite (store_store_swap_diff mem_2 _ _ _ _). smt (@W256 @Utils). smt (@W256 @Utils).
           rewrite /mem_2 /mem_1. rewrite - /point1_x. rewrite - /point1_y.
           rewrite store_store_same.
-          exists (F_to_int_point (odflt (ZModField.zero, ZModField.zero) result{2})).
+          exists (F_to_int_point (odflt (FieldQ.zero, FieldQ.zero) result{2})).
           exists x2{1}.
           exists y2{1}.
           progress.
-          have H_res: exists (r: F*F), result{2} = Some r. smt ().
+          have H_res: exists (r: FieldQ.F*FieldQ.F), result{2} = Some r. smt ().
           case H_res. by progress.
       qed.
