@@ -111,7 +111,7 @@ module PrepareAggregatedCommitment = {
     
       firstDCoeff <- aggregationChallenge;
 
-      aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * proofStatePolys3OpeningAtZSlot %% Constants.R;
+      aggregatedOpeningAtZ <- (aggregatedOpeningAtZ + aggregationChallenge * proofStatePolys3OpeningAtZSlot) %% Constants.R;
 
       mUACRes <@ UpdateAggregationChallenge.mid(vkGateSelectors0Slot, proofGateSelectors0OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
       failed <- failed \/ is_none mUACRes;
@@ -133,7 +133,7 @@ module PrepareAggregatedCommitment = {
     
       firstTCoeff <- aggregationChallenge;
 
-      aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * proofLookupTPolyOpeningAtZSlot %% Constants.R;
+      aggregatedOpeningAtZ <- (aggregatedOpeningAtZ + aggregationChallenge * proofLookupTPolyOpeningAtZSlot) %% Constants.R;
 
       mUACRes <@ UpdateAggregationChallenge.mid(vkLookupSelectorSlot, proofLookupSelectorPolyOpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
       failed <- failed \/ is_none mUACRes;
@@ -147,7 +147,7 @@ module PrepareAggregatedCommitment = {
 
       aggregationChallenge <- aggregationChallenge * v_challenge %% Constants.R;
 
-      copyPermutationCoeff <- copyPermutationFirstAggregatedCommitmentCoeff + aggregationChallenge * u_challenge;
+      copyPermutationCoeff <- (copyPermutationFirstAggregatedCommitmentCoeff + aggregationChallenge * u_challenge) %% Constants.R;
     
       mPMID <@ PointMulIntoDest.mid(proofCopyPermutationGrandProductSlot.`1, proofCopyPermutationGrandProductSlot.`2, copyPermutationCoeff);
       failed <- failed \/ is_none mPMID;
@@ -175,7 +175,7 @@ module PrepareAggregatedCommitment = {
         failed <- failed \/ is_none mPairingPairWithGeneratorSlot;
         pairingPairWithGeneratorSlot <- odflt (0,0) mPairingPairWithGeneratorSlot;
       
-        aggregatedValue <- aggregatedOpeningAtZOmega * u_challenge + aggregatedOpeningAtZ %% Constants.R;
+        aggregatedValue <- (aggregatedOpeningAtZOmega * u_challenge + aggregatedOpeningAtZ) %% Constants.R;
       
         mPairingBufferPointSlot <@ PointMulIntoDest.mid(1, 2, aggregatedValue);
         failed <- failed \/ is_none mPairingBufferPointSlot;
@@ -279,7 +279,7 @@ pred prepareAggregatedCommitment_mem_inv (mem0 : mem) (queriesAtZ0Slot : (int * 
   proofStatePolys2Slot.`1 = W256.to_uint (load mem0 PROOF_STATE_POLYS_2_X_SLOT) /\
   proofStatePolys2Slot.`2 = W256.to_uint (load mem0 PROOF_STATE_POLYS_2_Y_SLOT) /\
   proofStatePolys2OpeningAtZSlot = W256.to_uint (load mem0 PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) /\
-  proofStatePolys3OpeningAtZSlot = W256.to_uint (load mem0 PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) /\
+  proofStatePolys3OpeningAtZSlot = W256.to_uint (load mem0 PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) /\
   vkGateSelectors0Slot.`1 = W256.to_uint (load mem0 VK_GATE_SELECTORS_0_X_SLOT) /\
   vkGateSelectors0Slot.`2 = W256.to_uint (load mem0 VK_GATE_SELECTORS_0_Y_SLOT) /\
   proofGateSelectors0OpeningAtZSlot = W256.to_uint (load mem0 PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) /\
@@ -575,9 +575,9 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
            queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
            to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
            W256.to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
-           exists (x y x' y' : int) (p : FieldQ.F * FieldQ.F),
-           Primops.memory{1} = UpdateAggregationChallenge_footprint x y x' y' (F_to_int_point p) mem0 /\
-           aggregatedAtZSlot{2} = (x', y')
+           exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int * int),
+           Primops.memory{1} = UpdateAggregationChallenge_footprint x y (FieldQ.asint newAggregateAtZSlot.`1) (FieldQ.asint newAggregateAtZSlot.`2) p mem0 /\
+           aggregatedAtZSlot{2} = (FieldQ.asint newAggregateAtZSlot.`1, FieldQ.asint newAggregateAtZSlot.`2)
          )
        ).
            wp.
@@ -647,7 +647,7 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
 
            progress. case H24. progress. progress. right. progress.
 
-           exists x y (FieldQ.asint newAggregateAtZSlot.`1) (FieldQ.asint newAggregateAtZSlot.`2) p.
+           exists x y newAggregateAtZSlot (F_to_int_point p).
            rewrite /UpdateAggregationChallenge_footprint /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress.
            do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress). rewrite store_store_same.
            do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress). rewrite store_store_same.
@@ -688,9 +688,9 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
            queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
            to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
            W256.to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
-           exists (x y x' y' : int) (p : FieldQ.F * FieldQ.F),
-           Primops.memory{1} = UpdateAggregationChallenge_footprint x y x' y' (F_to_int_point p) mem0 /\
-           aggregatedAtZSlot{2} = (x', y')
+           exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int * int),
+           Primops.memory{1} = UpdateAggregationChallenge_footprint x y (FieldQ.asint newAggregateAtZSlot.`1) (FieldQ.asint newAggregateAtZSlot.`2) p mem0 /\
+           aggregatedAtZSlot{2} = (FieldQ.asint newAggregateAtZSlot.`1, FieldQ.asint newAggregateAtZSlot.`2)
          )
        ).
            wp.
@@ -715,83 +715,1708 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
            call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
            call (UpdateAggregationChallenge_mid_of_low proofStatePolys1Slot_val aggregatedAtZSlot proofStatePolys1OpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge PROOF_STATE_POLYS_1_X_SLOT PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT mem2). skip. rewrite /PROOF_STATE_POLYS_1_X_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
            rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
-           case H; progress.
-           case H; progress.
-           case H; progress.
-           case H; progress.
-           case H; progress.
-           rewrite /F_to_int_pint. simplify. smt (@Field).
-           rewrite /F_to_int_pint. simplify. smt (@Field).
-           rewrite /F_to_int_pint. simplify. smt (@Field).
-           rewrite /F_to_int_pint. simplify. smt (@Field).
 
-           rewrite Utils.uint256_cast_neg of_uintK. progress.
-           rewrite Utils.uint256_cast_neg of_uintK. progress.
-           rewrite Utils.uint256_cast_neg of_uintK. progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt ().
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+           seq 1 3 :
+       (
+         (Primops.reverted{1} /\ failed{2}) \/
+         (
+           !Primops.reverted{1} /\
+           !failed{2} /\
+           prepareAggregatedCommitment_mem_inv mem0 queriesAtZ0Slot{2}
+           proofQuotientPolyOpeningAtZSlot{2} queriesAtZ1Slot{2} v_challenge{2}
+           proofLinearisationPolyOpeningAtZSlot{2} proofStatePolys0XSlot{2}
+           proofStatePolys0OpeningAtZSlot{2} proofStatePolys1Slot{2}
+           proofStatePolys1OpeningAtZSlot{2} proofStatePolys2Slot{2}
+           proofStatePolys2OpeningAtZSlot{2} proofStatePolys3OpeningAtZSlot{2}
+           vkGateSelectors0Slot{2} proofGateSelectors0OpeningAtZSlot{2}
+           vkPermutation0Slot{2} proofCopyPermutationPolys0OpeningAtZSlot{2}
+           vkPermutation1Slot{2} proofCopyPermutationPolys1OpeningAtZSlot{2}
+           vkPermutation2Slot{2} proofCopyPermutationPolys2OpeningAtZSlot{2}
+           proofLookupTPolyOpeningAtZSlot{2} vkLookupSelectorSlot{2}
+           proofLookupSelectorPolyOpeningAtZSlot{2} vkLookupTableTypeSlot{2}
+           proofLookupTableTypePolyOpeningAtZSlot{2}
+           copyPermutationFirstAggregatedCommitmentCoeff{2} u_challenge{2}
+           proofCopyPermutationGrandProductSlot{2}
+           proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2}
+           proofStatePolys3Slot{2} proofStatePolys3OpeningAtZOmegaSlot{2}
+           aggregatedAtZOmegaSlot{2} proofLookupSPolySlot{2}
+           proofLookupSPolyOpeningAtZOmegaSlot{2}
+           lookupSFirstAggregatedCommitmentCoeff{2} proofLookupGrandProductSlot{2}
+           proofLookupGrandProductOpeningAtZOmegaSlot{2}
+           lookupGrandProductFirstAggregatedCommitmentCoeff{2}
+           queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
+           to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
+           W256.to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
+           exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int * int),
+           Primops.memory{1} = UpdateAggregationChallenge_footprint x y (FieldQ.asint newAggregateAtZSlot.`1) (FieldQ.asint newAggregateAtZSlot.`2) p mem0 /\
+           aggregatedAtZSlot{2} = (FieldQ.asint newAggregateAtZSlot.`1, FieldQ.asint newAggregateAtZSlot.`2)
+         )
+       ).
+           wp.
+           exists* proofStatePolys2Slot{2}.
+           elim*=> proofStatePolys2Slot_val.
+           progress.
+           exists* proofStatePolys2OpeningAtZSlot{2}.
+           elim*=> proofStatePolys2OpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low proofStatePolys2Slot_val aggregatedAtZSlot proofStatePolys2OpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge PROOF_STATE_POLYS_2_X_SLOT PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT mem2). skip. rewrite /PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
            smt (@W256).
            smt ().
-       
-           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening; progress; case H; progress.
-           exact F_to_int_point_1_ge_zero.
-           exact F_to_int_point_1_lt_p.
-           exact F_to_int_point_2_ge_zero.
-           exact F_to_int_point_2_lt_p.
-       
-           by rewrite /PROOF_STATE_POLYS_1_X_SLOT W256.of_intN'; progress.
-           by rewrite /PROOF_STATE_POLYS_1_X_SLOT; progress; rewrite W256.of_intN'; progress.
-           by rewrite /PROOF_STATE_POLYS_1_X_SLOT W256.of_intN'; progress.
-           rewrite /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-           rewrite /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-           rewrite /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
-           rewrite /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT. progress.
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
 
-           rewrite of_uintK modz_small. progress. apply (Utils.lt_trans _ FieldR.p). assumption. rewrite -Constants.r_eq_fieldr_p. smt (). reflexivity.
-       
-           rewrite /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT /STATE_V_SLOT. simplify.
-           do 6! (rewrite load_store_diff; progress).
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
 
-           rewrite /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT /PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT. simplify.
-           do 6! (rewrite load_store_diff; progress).
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
 
-           rewrite /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT /PROOF_STATE_POLYS_0_X_SLOT. simplify.
-           do 6! (rewrite load_store_diff; progress).
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
 
-           rewrite H74 /PROOF_STATE_POLYS_0_X_SLOT. progress.
-
-           rewrite /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT /PROOF_STATE_POLYS_0_X_SLOT. simplify.
-           do 6! (rewrite load_store_diff; progress).
-
-           rewrite H75 /PROOF_STATE_POLYS_0_Y_SLOT. progress.
-
-           rewrite /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT. simplify.
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
            rewrite load_store_diff; progress.
-           rewrite load_store_same /F_to_int_point of_uintK modz_small. progress. smt (@Field).
-           apply (Utils.lt_trans _ FieldQ.p). smt (@Field).
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
            rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
            progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
 
-           rewrite /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT. simplify.
-           rewrite load_store_same /F_to_int_point. progress.
-           rewrite of_uintK modz_small. progress. smt (@Field).
-           apply (Utils.lt_trans _ FieldQ.p). smt (@Field).
-           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
            reflexivity.
-
-           progress. case H24. progress. progress. right. progress.
-
-           exists x y newAggregateAtZXSlot.`1 newAggregateAtZXSlot.`2 p.
-           rewrite /UpdateAggregationChallenge_footprint /pointAddIntoDest_memory_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress.
-           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress). rewrite store_store_same.
-           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress). rewrite store_store_same.
-           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress). rewrite store_store_same.
-           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress). rewrite store_store_same.
-           rewrite (store_store_swap_diff _ _ (W256.of_int 4512)); progress. rewrite store_store_same.
-           rewrite (store_store_swap_diff _ _ (W256.of_int 4512)); progress. rewrite store_store_same.
-           rewrite -(store_store_swap_diff _ _ (W256.of_int 4512)); progress.
+           rewrite req.
+           smt ().
 
        
+           seq 3 2 : (
+           Primops.reverted{1} /\ failed{2} \/
+           !Primops.reverted{1} /\
+           !failed{2} /\
+           prepareAggregatedCommitment_mem_inv mem0 queriesAtZ0Slot{2}
+           proofQuotientPolyOpeningAtZSlot{2} queriesAtZ1Slot{2} v_challenge{2}
+           proofLinearisationPolyOpeningAtZSlot{2} proofStatePolys0XSlot{2}
+           proofStatePolys0OpeningAtZSlot{2} proofStatePolys1Slot{2}
+           proofStatePolys1OpeningAtZSlot{2} proofStatePolys2Slot{2}
+           proofStatePolys2OpeningAtZSlot{2} proofStatePolys3OpeningAtZSlot{2}
+           vkGateSelectors0Slot{2} proofGateSelectors0OpeningAtZSlot{2}
+           vkPermutation0Slot{2} proofCopyPermutationPolys0OpeningAtZSlot{2}
+           vkPermutation1Slot{2} proofCopyPermutationPolys1OpeningAtZSlot{2}
+           vkPermutation2Slot{2} proofCopyPermutationPolys2OpeningAtZSlot{2}
+           proofLookupTPolyOpeningAtZSlot{2} vkLookupSelectorSlot{2}
+           proofLookupSelectorPolyOpeningAtZSlot{2} vkLookupTableTypeSlot{2}
+           proofLookupTableTypePolyOpeningAtZSlot{2}
+           copyPermutationFirstAggregatedCommitmentCoeff{2} u_challenge{2}
+           proofCopyPermutationGrandProductSlot{2}
+           proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2}
+           proofStatePolys3Slot{2} proofStatePolys3OpeningAtZOmegaSlot{2}
+           aggregatedAtZOmegaSlot{2} proofLookupSPolySlot{2}
+           proofLookupSPolyOpeningAtZOmegaSlot{2}
+           lookupSFirstAggregatedCommitmentCoeff{2} proofLookupGrandProductSlot{2}
+           proofLookupGrandProductOpeningAtZOmegaSlot{2}
+           lookupGrandProductFirstAggregatedCommitmentCoeff{2}
+           queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
+         to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
+         to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
+         W256.to_uint firstDCoeff{1} = firstDCoeff{2} /\
+           exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int *
+           int),
+           Primops.memory{1} =
+           UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0 /\
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ).
+           inline mload. sp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
 
-                    
+           rewrite /UpdateAggregationChallenge_footprint /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod. simplify.
+           do 6! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK Utils.mod_mod_eq_mod /Constants.R; progress. congr. congr. congr. smt ().
+
+           rewrite /UpdateAggregationChallenge_footprint /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod. simplify.
+           do 6! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK Utils.mod_mod_eq_mod /Constants.R; progress. congr. congr. congr. smt ().
        
+           exists x y newAggregateAtZSlot p. progress.
+       
+           seq 3 1 : #pre.
+
+           inline mload. sp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod /addmod. simplify.
+           do 6! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK of_uintK Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           rewrite Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           smt (@IntDiv).
+
+           exists x y newAggregateAtZSlot p. progress.
+
+           seq 1 3 : #pre.
+           wp.
+           exists* vkGateSelectors0Slot{2}.
+           elim*=> vkGateSelectors0Slot_val.
+           progress.
+           exists* proofGateSelectors0OpeningAtZSlot{2}.
+           elim*=> proofGateSelectors0OpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low vkGateSelectors0Slot_val aggregatedAtZSlot proofGateSelectors0OpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge VK_GATE_SELECTORS_0_X_SLOT PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT mem2). skip. rewrite /VK_GATE_SELECTORS_0_X_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt (@W256).
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+       seq 1 3 : #pre.
+           wp.
+           exists* vkPermutation0Slot{2}.
+           elim*=> vkPermutation0Slot_val.
+           progress.
+           exists* proofCopyPermutationPolys0OpeningAtZSlot{2}.
+           elim*=> proofCopyPermutationPolys0OpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low vkPermutation0Slot_val aggregatedAtZSlot proofCopyPermutationPolys0OpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge VK_PERMUTATION_0_X_SLOT PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT mem2). skip. rewrite /VK_PERMUTATION_0_X_SLOT /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt (@W256).
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+       seq 1 3 : #pre.
+           wp.
+           exists* vkPermutation1Slot{2}.
+           elim*=> vkPermutation1Slot_val.
+           progress.
+           exists* proofCopyPermutationPolys1OpeningAtZSlot{2}.
+           elim*=> proofCopyPermutationPolys1OpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low vkPermutation1Slot_val aggregatedAtZSlot proofCopyPermutationPolys1OpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge VK_PERMUTATION_1_X_SLOT PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT mem2). skip. rewrite /VK_PERMUTATION_1_X_SLOT /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt (@W256).
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+       seq 1 3 : #pre.
+           wp.
+           exists* vkPermutation2Slot{2}.
+           elim*=> vkPermutation2Slot_val.
+           progress.
+           exists* proofCopyPermutationPolys2OpeningAtZSlot{2}.
+           elim*=> proofCopyPermutationPolys2OpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low vkPermutation2Slot_val aggregatedAtZSlot proofCopyPermutationPolys2OpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge VK_PERMUTATION_2_X_SLOT PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT mem2). skip. rewrite /VK_PERMUTATION_2_X_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt (@W256).
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+       seq 3 2 : (
+           Primops.reverted{1} /\ failed{2} \/
+           !Primops.reverted{1} /\
+           !failed{2} /\
+           prepareAggregatedCommitment_mem_inv mem0 queriesAtZ0Slot{2}
+           proofQuotientPolyOpeningAtZSlot{2} queriesAtZ1Slot{2} v_challenge{2}
+           proofLinearisationPolyOpeningAtZSlot{2} proofStatePolys0XSlot{2}
+           proofStatePolys0OpeningAtZSlot{2} proofStatePolys1Slot{2}
+           proofStatePolys1OpeningAtZSlot{2} proofStatePolys2Slot{2}
+           proofStatePolys2OpeningAtZSlot{2} proofStatePolys3OpeningAtZSlot{2}
+           vkGateSelectors0Slot{2} proofGateSelectors0OpeningAtZSlot{2}
+           vkPermutation0Slot{2} proofCopyPermutationPolys0OpeningAtZSlot{2}
+           vkPermutation1Slot{2} proofCopyPermutationPolys1OpeningAtZSlot{2}
+           vkPermutation2Slot{2} proofCopyPermutationPolys2OpeningAtZSlot{2}
+           proofLookupTPolyOpeningAtZSlot{2} vkLookupSelectorSlot{2}
+           proofLookupSelectorPolyOpeningAtZSlot{2} vkLookupTableTypeSlot{2}
+           proofLookupTableTypePolyOpeningAtZSlot{2}
+           copyPermutationFirstAggregatedCommitmentCoeff{2} u_challenge{2}
+           proofCopyPermutationGrandProductSlot{2}
+           proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2}
+           proofStatePolys3Slot{2} proofStatePolys3OpeningAtZOmegaSlot{2}
+           aggregatedAtZOmegaSlot{2} proofLookupSPolySlot{2}
+           proofLookupSPolyOpeningAtZOmegaSlot{2}
+           lookupSFirstAggregatedCommitmentCoeff{2} proofLookupGrandProductSlot{2}
+           proofLookupGrandProductOpeningAtZOmegaSlot{2}
+           lookupGrandProductFirstAggregatedCommitmentCoeff{2}
+           queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
+         to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
+         to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
+           W256.to_uint firstDCoeff{1} = firstDCoeff{2} /\
+           W256.to_uint firstTCoeff{1} = firstTCoeff{2} /\
+           exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int *
+           int),
+           Primops.memory{1} =
+           UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0 /\
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ).
+           inline mload. sp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod. simplify.
+           do 6! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK Utils.mod_mod_eq_mod /Constants.R; progress. congr. congr. smt ().
+
+           rewrite /UpdateAggregationChallenge_footprint /STATE_V_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod. simplify.
+           do 6! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK Utils.mod_mod_eq_mod /Constants.R; progress. congr. congr. smt ().
+       
+           exists x y newAggregateAtZSlot p. progress.
+
+           seq 3 1 : #pre.
+
+           inline mload. sp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod /addmod. simplify.
+           do 6! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK of_uintK Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           rewrite Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           have ->: to_uint ((PurePrimops.mload mem0 ((of_int 2944))%W256)) = proofLookupTPolyOpeningAtZSlot{2}. smt ().
+       
+           smt (@IntDiv).
+
+           exists x y newAggregateAtZSlot p. progress.
+
+       seq 1 3 : #pre.
+           wp.
+           exists* vkLookupSelectorSlot{2}.
+           elim*=> vkLookupSelectorSlot_val.
+           progress.
+           exists* proofLookupSelectorPolyOpeningAtZSlot{2}.
+           elim*=> proofLookupSelectorPolyOpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low vkLookupSelectorSlot_val aggregatedAtZSlot proofLookupSelectorPolyOpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge VK_LOOKUP_SELECTOR_X_SLOT PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT mem2). skip. rewrite /VK_LOOKUP_SELECTOR_X_SLOT /PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt (@W256).
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+       seq 1 3 : #pre.
+           wp.
+           exists* vkLookupTableTypeSlot{2}.
+           elim*=> vkLookupTableTypeSlot_val.
+           progress.
+           exists* proofLookupTableTypePolyOpeningAtZSlot{2}.
+           elim*=> proofLookupTableTypePolyOpeningAtZSlot_val.
+           exists* aggregationChallenge{1}.
+           elim*=> aggregationChallenge_val.
+           exists* aggregatedOpeningAtZ{1}.
+           elim*=> aggregatedOpeningAtZ_val.
+           exists* aggregatedAtZSlot{2}.
+           elim*=> aggregatedAtZSlot.
+           exists* v_challenge{2}.
+           elim*=> v_challenge.
+           exists* Primops.memory{1}.
+           elim*=> mem2.
+           exists* failed{2}.
+           elim*=> failed2.
+           case failed2.
+           call UpdateAggregationChallenge_mid_of_low_er. skip. progress. smt (). left. smt ().
+           call (UpdateAggregationChallenge_mid_of_low vkLookupTableTypeSlot_val aggregatedAtZSlot proofLookupTableTypePolyOpeningAtZSlot_val aggregationChallenge_val aggregatedOpeningAtZ_val v_challenge VK_LOOKUP_TABLE_TYPE_X_SLOT PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT mem2). skip. rewrite /VK_LOOKUP_TABLE_TYPE_X_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT Constants.q_eq_fieldq_p.
+           rewrite /prepareAggregatedCommitment_mem_inv /pointInField /isOpening. progress.
+
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+           case H; progress.
+
+           exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.ge0_asint.
+           have J :
+       (
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ). smt ().
+           rewrite J. simplify. exact FieldQ.gtp_asint.
+
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           rewrite Utils.uint256_cast_neg. progress.
+           smt (@W256).
+           smt ().
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           do 6! (rewrite load_store_diff; progress). smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_diff; progress.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+
+           have J :
+       (
+         Primops.memory{1} =
+         UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0
+       ). smt ().
+           rewrite J /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /STATE_V_SLOT. simplify.
+           rewrite load_store_same of_uintK modz_small; progress.
+           exact FieldQ.ge0_asint.
+           apply (Utils.lt_trans _ FieldQ.p).
+           exact FieldQ.gtp_asint.
+           rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+           smt ().
+           smt ().
+
+           case reverted_L.
+           progress. smt ().
+           case H.
+           progress.
+           progress.
+           smt ().
+           smt ().
+           smt ().
+
+           have J :
+       (
+         exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256)
+         (newAggregateAtZSlot0 : FieldQ.F * FieldQ.F),
+         result_R =
+           Some
+         (to_uint newAggregationChallenge, to_uint newAggregatedOpeningAtZ,
+           F_to_int_point newAggregateAtZSlot0) /\
+         (exists (x0 y0 : int),
+           memory_L =
+           UpdateAggregationChallenge_footprint x0 y0
+           ((FieldQ.asint newAggregateAtZSlot0.`1))
+           ((FieldQ.asint newAggregateAtZSlot0.`2))
+           ((FieldQ.asint newAggregateAtZSlot.`1),
+             (FieldQ.asint newAggregateAtZSlot.`2))
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0))
+       ). smt ().
+           case J. move => i i' newAggregateAtZSlot0 [req J].
+           case J. move => x0 y0 J. exists x0 y0 newAggregateAtZSlot0 (F_to_int_point newAggregateAtZSlot). rewrite J. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. simplify.
+           do 5! (rewrite (store_store_swap_diff _ _ W256.zero); progress).
+           rewrite store_store_same.
+           do 4! (rewrite (store_store_swap_diff _ _ (W256.of_int 32)); progress).
+           rewrite store_store_same.
+           do 3! (rewrite (store_store_swap_diff _ _ (W256.of_int 64)); progress).
+           rewrite store_store_same.
+           do 2! (rewrite (store_store_swap_diff _ _ (W256.of_int 96)); progress).
+           rewrite store_store_same.
+           rewrite (store_store_swap_diff _ _ (W256.of_int 4480)); progress.
+           rewrite store_store_same.
+           rewrite store_store_same.
+           reflexivity.
+           rewrite req.
+           smt ().
+
+           seq 1 1 :
+       (
+         Primops.reverted{1} /\ failed{2} \/
+         !Primops.reverted{1} /\
+         !failed{2} /\
+         prepareAggregatedCommitment_mem_inv mem0 queriesAtZ0Slot{2}
+         proofQuotientPolyOpeningAtZSlot{2} queriesAtZ1Slot{2} v_challenge{2}
+         proofLinearisationPolyOpeningAtZSlot{2} proofStatePolys0XSlot{2}
+         proofStatePolys0OpeningAtZSlot{2} proofStatePolys1Slot{2}
+         proofStatePolys1OpeningAtZSlot{2} proofStatePolys2Slot{2}
+         proofStatePolys2OpeningAtZSlot{2} proofStatePolys3OpeningAtZSlot{2}
+         vkGateSelectors0Slot{2} proofGateSelectors0OpeningAtZSlot{2}
+         vkPermutation0Slot{2} proofCopyPermutationPolys0OpeningAtZSlot{2}
+         vkPermutation1Slot{2} proofCopyPermutationPolys1OpeningAtZSlot{2}
+         vkPermutation2Slot{2} proofCopyPermutationPolys2OpeningAtZSlot{2}
+         proofLookupTPolyOpeningAtZSlot{2} vkLookupSelectorSlot{2}
+         proofLookupSelectorPolyOpeningAtZSlot{2} vkLookupTableTypeSlot{2}
+         proofLookupTableTypePolyOpeningAtZSlot{2}
+         copyPermutationFirstAggregatedCommitmentCoeff{2} u_challenge{2}
+         proofCopyPermutationGrandProductSlot{2}
+         proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2}
+         proofStatePolys3Slot{2} proofStatePolys3OpeningAtZOmegaSlot{2}
+         aggregatedAtZOmegaSlot{2} proofLookupSPolySlot{2}
+         proofLookupSPolyOpeningAtZOmegaSlot{2}
+         lookupSFirstAggregatedCommitmentCoeff{2} proofLookupGrandProductSlot{2}
+         proofLookupGrandProductOpeningAtZOmegaSlot{2}
+         lookupGrandProductFirstAggregatedCommitmentCoeff{2}
+         queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
+         to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
+         to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
+         to_uint firstDCoeff{1} = firstDCoeff{2} /\
+         to_uint firstTCoeff{1} = firstTCoeff{2} /\
+         exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int *
+         int),
+         Primops.memory{1} =
+         PurePrimops.mstore
+         (UpdateAggregationChallenge_footprint x y
+         ((FieldQ.asint newAggregateAtZSlot.`1))
+         ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0) AGGREGATED_OPENING_AT_Z_SLOT aggregatedOpeningAtZ{1} /\
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ).
+
+           inline mstore. wp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
+
+           exists x y newAggregateAtZSlot p. progress.
+
+           seq 2 1 : #pre.
+
+           inline mload. wp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /STATE_V_SLOT /AGGREGATED_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /mulmod. simplify.
+
+           do 7! (rewrite load_store_diff; progress).
+
+           rewrite of_uintK -Constants.R_int Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           smt ().
+
+           exists x y newAggregateAtZSlot p. progress.
+
+           seq 4 1 :
+       (
+         Primops.reverted{1} /\ failed{2} \/
+         !Primops.reverted{1} /\
+         !failed{2} /\
+         prepareAggregatedCommitment_mem_inv mem0 queriesAtZ0Slot{2}
+         proofQuotientPolyOpeningAtZSlot{2} queriesAtZ1Slot{2} v_challenge{2}
+         proofLinearisationPolyOpeningAtZSlot{2} proofStatePolys0XSlot{2}
+         proofStatePolys0OpeningAtZSlot{2} proofStatePolys1Slot{2}
+         proofStatePolys1OpeningAtZSlot{2} proofStatePolys2Slot{2}
+         proofStatePolys2OpeningAtZSlot{2} proofStatePolys3OpeningAtZSlot{2}
+         vkGateSelectors0Slot{2} proofGateSelectors0OpeningAtZSlot{2}
+         vkPermutation0Slot{2} proofCopyPermutationPolys0OpeningAtZSlot{2}
+         vkPermutation1Slot{2} proofCopyPermutationPolys1OpeningAtZSlot{2}
+         vkPermutation2Slot{2} proofCopyPermutationPolys2OpeningAtZSlot{2}
+         proofLookupTPolyOpeningAtZSlot{2} vkLookupSelectorSlot{2}
+         proofLookupSelectorPolyOpeningAtZSlot{2} vkLookupTableTypeSlot{2}
+         proofLookupTableTypePolyOpeningAtZSlot{2}
+         copyPermutationFirstAggregatedCommitmentCoeff{2} u_challenge{2}
+         proofCopyPermutationGrandProductSlot{2}
+         proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2}
+         proofStatePolys3Slot{2} proofStatePolys3OpeningAtZOmegaSlot{2}
+         aggregatedAtZOmegaSlot{2} proofLookupSPolySlot{2}
+         proofLookupSPolyOpeningAtZOmegaSlot{2}
+         lookupSFirstAggregatedCommitmentCoeff{2} proofLookupGrandProductSlot{2}
+         proofLookupGrandProductOpeningAtZOmegaSlot{2}
+         lookupGrandProductFirstAggregatedCommitmentCoeff{2}
+         queriesTPolyAggregatedSlot{2} proofLookupTPolyOpeningAtZOmegaSlot{2} /\
+         to_uint aggregatedOpeningAtZ{1} = aggregatedOpeningAtZ{2} /\
+         to_uint aggregationChallenge{1} = aggregationChallenge{2} /\
+         to_uint firstDCoeff{1} = firstDCoeff{2} /\
+         to_uint firstTCoeff{1} = firstTCoeff{2} /\
+         to_uint copyPermutationCoeff{1} = copyPermutationCoeff{2} /\
+         exists (x y : int) (newAggregateAtZSlot : FieldQ.F * FieldQ.F) (p : int *
+         int),
+         Primops.memory{1} =
+         (PurePrimops.mstore
+           (UpdateAggregationChallenge_footprint x y
+             ((FieldQ.asint newAggregateAtZSlot.`1))
+             ((FieldQ.asint newAggregateAtZSlot.`2)) p mem0)
+               AGGREGATED_OPENING_AT_Z_SLOT aggregatedOpeningAtZ{1})%PurePrimops /\
+         aggregatedAtZSlot{2} =
+         ((FieldQ.asint newAggregateAtZSlot.`1),
+           (FieldQ.asint newAggregateAtZSlot.`2))
+       ).
+           inline mload. wp. skip. progress.
+           case H.
+           progress. left. progress.
+           progress. right. progress.
+
+           rewrite /UpdateAggregationChallenge_footprint /STATE_U_SLOT /AGGREGATED_OPENING_AT_Z_SLOT /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /addmod /mulmod. simplify.
+           do 14! (rewrite load_store_diff; progress).
+           rewrite -Constants.R_int of_uintK of_uintK Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           rewrite Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. rewrite /Constants.R. progress.
+           smt (@IntDiv).
+
+           exists x y newAggregateAtZSlot p. progress.
        
       
+       (* print modzDmr. *)
+       (* print modzDm. *)
+       (* print modzMm. *)
