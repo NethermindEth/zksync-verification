@@ -6,32 +6,32 @@ digraph zk {
         pointMulAndAddIntoDest
         mainGateLinearisationContributionWithV
         addAssignLookupLinearisationContributionWithV
+        addAssignPermutationLinearisationContributionWithV
+        pointSubAssign
+        pointNegate
+        addAssignRescueCustomGateLinearisationContributionWithV
+        prepareQueries
     }
     { node [style=filled fillcolor="aquamarine"]  
-        pointNegate
-        pointSubAssign
+        evaluateLagrangePolyOutOfDomain
+        updateAggregationChallenge1
     }
     { node [style=filled fillcolor="blue"]  
-        prepareAggregatedCommitment
-        prepareQueries
         finalPairing
         initializeTranscript
+        loadProof
     }
     { node [style=filled fillcolor="yellow"]
         modexp 
         permutationQuotientContribution 
-        evaluateLagrangePolyOutOfDomain
         lookupQuotientContribution
-        addAssignRescueCustomGateLinearisationContributionWithV
         updateAggregationChallenge2
-        updateAggregationChallenge1
-        addAssignPermutationLinearisationContributionWithV
         verifyQuotientEvaluation
         updateTranscript
         getTranscriptChallenge
+        prepareAggregatedCommitment
     }
     { node [style=filled fillcolor="red"]   
-        loadProof
         loadVerificationKey
         verify
     }
