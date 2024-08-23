@@ -1,11 +1,83 @@
 pragma Goals:printall.
 
+require import AllCore.
 require        Constants.
 require import PurePrimops.
 require import RevertWithMessage.
+require import Utils.
 require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
+
+import MemoryMap.
+
+op loadProof_memory_footprint (mem_0: mem)
+  (recursive: bool)
+  (proof_public_input: uint256)
+  (state_poly_0 state_poly_1 state_poly_2 state_poly_3: uint256*uint256)
+  (copy_permutation_grand_product: uint256*uint256)
+  (lookup_s_poly lookup_grand_product: uint256*uint256)
+  (quotient_poly_part_1 quotient_poly_part_2 quotient_poly_part_3: uint256*uint256)
+  (state_poly_0_opening_at_z state_poly_1_opening_at_z state_poly_2_opening_at_z state_poly_3_opening_at_z state_poly_3_opening_at_z_omega: uint256)
+  (gate_selector_0_opening_at_z: uint256)
+  (copy_permutation_poly_0_opening_at_z copy_permutation_poly_1_opening_at_z copy_permutation_poly_2_opening_at_z copy_permutation_grand_product_opening_at_z_omega: uint256)
+  (lookup_s_poly_opening_at_z_omega lookup_grand_product_opening_at_z_omega lookup_t_poly_opening_at_z lookup_t_poly_opening_at_z_omega lookup_selector_poly_opening_at_z lookup_table_type_poly_opening_at_z: uint256)
+  (quotient_poly_opening_at_z: uint256)
+  (linearisation_poly_opening_at_z: uint256)
+  (opening_proof_at_z opening_proof_at_z_omega: uint256*uint256)
+  (recursive_part_p1 recursive_part_p2: uint256*uint256)
+  =
+  let mem_1 = store mem_0 PROOF_PUBLIC_INPUT proof_public_input in
+  let mem_2 = store mem_1 PROOF_STATE_POLYS_0_X_SLOT state_poly_0.`1 in
+  let mem_3 = store mem_2 PROOF_STATE_POLYS_0_Y_SLOT state_poly_0.`2 in
+  let mem_4 = store mem_3 PROOF_STATE_POLYS_1_X_SLOT state_poly_1.`1 in
+  let mem_5 = store mem_4 PROOF_STATE_POLYS_1_Y_SLOT state_poly_1.`2 in
+  let mem_6 = store mem_5 PROOF_STATE_POLYS_2_X_SLOT state_poly_2.`1 in
+  let mem_7 = store mem_6 PROOF_STATE_POLYS_2_Y_SLOT state_poly_2.`2 in
+  let mem_8 = store mem_7 PROOF_STATE_POLYS_3_X_SLOT state_poly_3.`1 in
+  let mem_9 = store mem_8 PROOF_STATE_POLYS_3_Y_SLOT state_poly_3.`2 in
+  let mem_10 = store mem_9 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT copy_permutation_grand_product.`1 in
+  let mem_11 = store mem_10 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT copy_permutation_grand_product.`2 in
+  let mem_12 = store mem_11 PROOF_LOOKUP_S_POLY_X_SLOT lookup_s_poly.`1 in
+  let mem_13 = store mem_12 PROOF_LOOKUP_S_POLY_Y_SLOT lookup_s_poly.`2 in
+  let mem_14 = store mem_13 PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT lookup_grand_product.`1 in
+  let mem_15 = store mem_14 PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT lookup_grand_product.`2 in
+  let mem_16 = store mem_15 PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT quotient_poly_part_1.`1 in
+  let mem_17 = store mem_16 PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT quotient_poly_part_1.`2 in
+  let mem_18 = store mem_17 PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT quotient_poly_part_2.`1 in
+  let mem_19 = store mem_18 PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT quotient_poly_part_2.`2 in
+  let mem_20 = store mem_19 PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT quotient_poly_part_3.`1 in
+  let mem_21 = store mem_20 PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT quotient_poly_part_3.`2 in
+  let mem_22 = store mem_21 PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT state_poly_0_opening_at_z in
+  let mem_23 = store mem_22 PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT state_poly_1_opening_at_z in
+  let mem_24 = store mem_23 PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT state_poly_2_opening_at_z in
+  let mem_25 = store mem_24 PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT state_poly_3_opening_at_z in
+  let mem_26 = store mem_25 PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT state_poly_3_opening_at_z_omega in
+  let mem_27 = store mem_26 PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT gate_selector_0_opening_at_z in
+  let mem_28 = store mem_27 PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT copy_permutation_poly_0_opening_at_z in
+  let mem_29 = store mem_28 PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT copy_permutation_poly_1_opening_at_z in
+  let mem_30 = store mem_29 PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT copy_permutation_poly_2_opening_at_z in
+  let mem_31 = store mem_30 PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT copy_permutation_grand_product_opening_at_z_omega in
+  let mem_32 = store mem_31 PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT lookup_s_poly_opening_at_z_omega in
+  let mem_33 = store mem_32 PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT lookup_grand_product_opening_at_z_omega in
+  let mem_34 = store mem_33 PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT lookup_t_poly_opening_at_z in
+  let mem_35 = store mem_34 PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT lookup_t_poly_opening_at_z_omega in
+  let mem_36 = store mem_35 PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT lookup_selector_poly_opening_at_z in
+  let mem_37 = store mem_36 PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT lookup_table_type_poly_opening_at_z in
+  let mem_38 = store mem_37 PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT quotient_poly_opening_at_z in
+  let mem_39 = store mem_38 PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT linearisation_poly_opening_at_z in
+  let mem_40 = store mem_39 PROOF_OPENING_PROOF_AT_Z_X_SLOT opening_proof_at_z.`1 in
+  let mem_41 = store mem_40 PROOF_OPENING_PROOF_AT_Z_Y_SLOT opening_proof_at_z.`2 in
+  let mem_42 = store mem_41 PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT opening_proof_at_z_omega.`1 in
+  let mem_43 = store mem_42 PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT opening_proof_at_z_omega.`2 in
+  if recursive
+  then mem_43
+  else
+    let mem_44 = store mem_43 PROOF_RECURSIVE_PART_P1_X_SLOT recursive_part_p1.`1 in
+    let mem_45 = store mem_44 PROOF_RECURSIVE_PART_P1_Y_SLOT recursive_part_p1.`2 in
+    let mem_46 = store mem_45 PROOF_RECURSIVE_PART_P2_X_SLOT recursive_part_p2.`1 in
+    store mem_46 PROOF_RECURSIVE_PART_P2_Y_SLOT recursive_part_p2.`2.
+
 
 module LoadProof = {
     proc low(): unit = {
@@ -293,4 +365,286 @@ lemma loadProof_extracted_equiv_low:
       sp. call revertWithMessage_extracted_equiv_low. skip. by progress.
       skip. by progress.
     qed.
-    
+
+abbrev load_pair (m: mem) (addr: uint256) = (load m addr, load m (addr + W256.of_int 32)).
+op calldata_public_input_slot (offset: uint256) = offset + W256.of_int 4.
+
+lemma loadProof_low_pspec (mem_0: mem) (offset: uint256):
+    phoare [
+      LoadProof.low:
+      !Primops.reverted /\
+      Primops.memory = mem_0 ==>
+      (Primops.reverted) \/
+      (
+        !Primops.reverted (* /\
+        Primops.memory = loadProof_memory_footprint mem_0
+          (bool_of_uint256 (load PurePrimops.calldata VK_RECURSIVE_FLAG_SLOT)) (* recursive *)
+          (load PurePrimops.calldata (calldata_public_input_slot offset)) *)
+      )
+    ] = 1%r.
+    proof.
+      proc.
+      inline*.
+      wp. simplify.
+      skip.
+      move => &hr.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_Y_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_Y_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_X_SLOT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_X_SLOT; progress.
+      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_PUBLIC_INPUT; progress.
+        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_PUBLIC_INPUT; progress.
+      pose offset1 := load PurePrimops.calldata (W256.of_int 4).
+      pose offset2 := load PurePrimops.calldata (W256.of_int 36).
+      pose offset3 := load PurePrimops.calldata (W256.of_int 68).
+      pose cd_public_input := load PurePrimops.calldata (offset1 + W256.of_int 36).
+      pose cd_proof_length_in_words := load PurePrimops.calldata (offset2 + W256.of_int 4).
+      pose cd_x := load PurePrimops.calldata (offset2 + W256.of_int 36).
+      pose cd_y := load PurePrimops.calldata (offset2 + W256.of_int 68).
+      pose cd_x1 := load PurePrimops.calldata (offset2 + W256.of_int 100).
+      pose cd_y1 := load PurePrimops.calldata (offset2 + W256.of_int 132).
+      pose cd_x2 := load PurePrimops.calldata (offset2 + W256.of_int 164).
+      pose cd_y2 := load PurePrimops.calldata (offset2 + W256.of_int 196).
+      pose cd_x3 := load PurePrimops.calldata (offset2 + W256.of_int 228).
+      pose cd_y3 := load PurePrimops.calldata (offset2 + W256.of_int 260).
+      pose cd_x4 := load PurePrimops.calldata (offset2 + W256.of_int 292).
+      pose cd_y4 := load PurePrimops.calldata (offset2 + W256.of_int 324).
+      pose cd_x5 := load PurePrimops.calldata (offset2 + W256.of_int 356).
+      pose cd_y5 := load PurePrimops.calldata (offset2 + W256.of_int 388).
+      pose cd_x6 := load PurePrimops.calldata (offset2 + W256.of_int 420).
+      pose cd_y6 := load PurePrimops.calldata (offset2 + W256.of_int 452).
+      pose cd_x7 := load PurePrimops.calldata (offset2 + W256.of_int 484).
+      pose cd_y7 := load PurePrimops.calldata (offset2 + W256.of_int 516).
+      pose cd_x8 := load PurePrimops.calldata (offset2 + W256.of_int 548).
+      pose cd_y8 := load PurePrimops.calldata (offset2 + W256.of_int 580).
+      pose cd_x9 := load PurePrimops.calldata (offset2 + W256.of_int 612).
+      pose cd_y9 := load PurePrimops.calldata (offset2 + W256.of_int 644).
+      pose cd_x10 := load PurePrimops.calldata (offset2 + W256.of_int 676).
+      pose cd_y10 := load PurePrimops.calldata (offset2 + W256.of_int 708).
+      pose cd_state_poly_0_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 740).
+      pose cd_state_poly_1_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 772).
+      pose cd_state_poly_2_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 804).
+      pose cd_state_poly_3_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 836).
+      pose cd_state_poly_3_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 868).
+      pose gate_selector_0_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 900).
+      pose copy_permutation_poly_0_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 932).
+      pose copy_permutation_poly_1_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 964).
+      pose copy_permutation_poly_2_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 996).
+      pose copy_permutation_grand_product_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1028).
+      pose lookup_s_poly_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1060).
+      pose lookup_grand_product_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1092).
+      pose cd_lookup_t_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1124).
+      pose cd_lookup_t_poly_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1156).
+      pose cd_lookup_selector_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1188).
+      pose cd_lookup_table_type_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1220).
+      pose cd_quotient_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1252).
+      pose cd_linearisation_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1284).
+      pose cd_x11 := load PurePrimops.calldata (offset2 + W256.of_int 1316).
+      pose cd_y11 := load PurePrimops.calldata (offset2 + W256.of_int 1348).
+      pose cd_x12 := load PurePrimops.calldata (offset2 + W256.of_int 1380).
+      pose cd_y12 := load PurePrimops.calldata (offset2 + W256.of_int 1412).
+      pose cd_recursive_proof_length_in_words := load PurePrimops.calldata (offset3 + W256.of_int 4).
+      pose cd_x13 := load PurePrimops.calldata (offset3 + W256.of_int 36).
+      pose cd_y13 := load PurePrimops.calldata (offset3 + W256.of_int 68).
+
+      pose cd_x12_2 := PurePrimops.mulmod (cd_x12 %% Q_MOD) (cd_x12 %% Q_MOD) Q_MOD.
+      pose cd_y12_2 := PurePrimops.mulmod (cd_y12 %% Q_MOD) (cd_y12 %% Q_MOD) Q_MOD.
+      pose cd_x12_3 := PurePrimops.mulmod (cd_x12 %% Q_MOD) cd_x12_2 Q_MOD.
+      pose on_curve_12 := PurePrimops.eq_uint256 cd_y12_2 (PurePrimops.addmod cd_x12_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x11_2 := PurePrimops.mulmod (cd_x11 %% Q_MOD) (cd_x11 %% Q_MOD) Q_MOD.
+      pose cd_y11_2 := PurePrimops.mulmod (cd_y11 %% Q_MOD) (cd_y11 %% Q_MOD) Q_MOD.
+      pose cd_x11_3 := PurePrimops.mulmod (cd_x11 %% Q_MOD) cd_x11_2 Q_MOD.
+      pose on_curve_11 := PurePrimops.eq_uint256 cd_y11_2 (PurePrimops.addmod cd_x11_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x10_2 := PurePrimops.mulmod (cd_x10 %% Q_MOD) (cd_x10 %% Q_MOD) Q_MOD.
+      pose cd_y10_2 := PurePrimops.mulmod (cd_y10 %% Q_MOD) (cd_y10 %% Q_MOD) Q_MOD.
+      pose cd_x10_3 := PurePrimops.mulmod (cd_x10 %% Q_MOD) cd_x10_2 Q_MOD.
+      pose on_curve_10 := PurePrimops.eq_uint256 cd_y10_2 (PurePrimops.addmod cd_x10_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x9_2 := PurePrimops.mulmod (cd_x9 %% Q_MOD) (cd_x9 %% Q_MOD) Q_MOD.
+      pose cd_y9_2 := PurePrimops.mulmod (cd_y9 %% Q_MOD) (cd_y9 %% Q_MOD) Q_MOD.
+      pose cd_x9_3 := PurePrimops.mulmod (cd_x9 %% Q_MOD) cd_x9_2 Q_MOD.
+      pose on_curve_9 := PurePrimops.eq_uint256 cd_y9_2 (PurePrimops.addmod cd_x9_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x8_2 := PurePrimops.mulmod (cd_x8 %% Q_MOD) (cd_x8 %% Q_MOD) Q_MOD.
+      pose cd_y8_2 := PurePrimops.mulmod (cd_y8 %% Q_MOD) (cd_y8 %% Q_MOD) Q_MOD.
+      pose cd_x8_3 := PurePrimops.mulmod (cd_x8 %% Q_MOD) cd_x8_2 Q_MOD.
+      pose on_curve_8 := PurePrimops.eq_uint256 cd_y8_2 (PurePrimops.addmod cd_x8_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x7_2 := PurePrimops.mulmod (cd_x7 %% Q_MOD) (cd_x7 %% Q_MOD) Q_MOD.
+      pose cd_y7_2 := PurePrimops.mulmod (cd_y7 %% Q_MOD) (cd_y7 %% Q_MOD) Q_MOD.
+      pose cd_x7_3 := PurePrimops.mulmod (cd_x7 %% Q_MOD) cd_x7_2 Q_MOD.
+      pose on_curve_7 := PurePrimops.eq_uint256 cd_y7_2 (PurePrimops.addmod cd_x7_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x6_2 := PurePrimops.mulmod (cd_x6 %% Q_MOD) (cd_x6 %% Q_MOD) Q_MOD.
+      pose cd_y6_2 := PurePrimops.mulmod (cd_y6 %% Q_MOD) (cd_y6 %% Q_MOD) Q_MOD.
+      pose cd_x6_3 := PurePrimops.mulmod (cd_x6 %% Q_MOD) cd_x6_2 Q_MOD.
+      pose on_curve_6 := PurePrimops.eq_uint256 cd_y6_2 (PurePrimops.addmod cd_x6_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x5_2 := PurePrimops.mulmod (cd_x5 %% Q_MOD) (cd_x5 %% Q_MOD) Q_MOD.
+      pose cd_y5_2 := PurePrimops.mulmod (cd_y5 %% Q_MOD) (cd_y5 %% Q_MOD) Q_MOD.
+      pose cd_x5_3 := PurePrimops.mulmod (cd_x5 %% Q_MOD) cd_x5_2 Q_MOD.
+      pose on_curve_5 := PurePrimops.eq_uint256 cd_y5_2 (PurePrimops.addmod cd_x5_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x4_2 := PurePrimops.mulmod (cd_x4 %% Q_MOD) (cd_x4 %% Q_MOD) Q_MOD.
+      pose cd_y4_2 := PurePrimops.mulmod (cd_y4 %% Q_MOD) (cd_y4 %% Q_MOD) Q_MOD.
+      pose cd_x4_3 := PurePrimops.mulmod (cd_x4 %% Q_MOD) cd_x4_2 Q_MOD.
+      pose on_curve_4 := PurePrimops.eq_uint256 cd_y4_2 (PurePrimops.addmod cd_x4_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x3_2 := PurePrimops.mulmod (cd_x3 %% Q_MOD) (cd_x3 %% Q_MOD) Q_MOD.
+      pose cd_y3_2 := PurePrimops.mulmod (cd_y3 %% Q_MOD) (cd_y3 %% Q_MOD) Q_MOD.
+      pose cd_x3_3 := PurePrimops.mulmod (cd_x3 %% Q_MOD) cd_x3_2 Q_MOD.
+      pose on_curve_3 := PurePrimops.eq_uint256 cd_y3_2 (PurePrimops.addmod cd_x3_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x2_2 := PurePrimops.mulmod (cd_x2 %% Q_MOD) (cd_x2 %% Q_MOD) Q_MOD.
+      pose cd_y2_2 := PurePrimops.mulmod (cd_y2 %% Q_MOD) (cd_y2 %% Q_MOD) Q_MOD.
+      pose cd_x2_3 := PurePrimops.mulmod (cd_x2 %% Q_MOD) cd_x2_2 Q_MOD.
+      pose on_curve_2 := PurePrimops.eq_uint256 cd_y2_2 (PurePrimops.addmod cd_x2_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x1_2 := PurePrimops.mulmod (cd_x1 %% Q_MOD) (cd_x1 %% Q_MOD) Q_MOD.
+      pose cd_y1_2 := PurePrimops.mulmod (cd_y1 %% Q_MOD) (cd_y1 %% Q_MOD) Q_MOD.
+      pose cd_x1_3 := PurePrimops.mulmod (cd_x1 %% Q_MOD) cd_x1_2 Q_MOD.
+      pose on_curve_1 := PurePrimops.eq_uint256 cd_y1_2 (PurePrimops.addmod cd_x1_3 (W256.of_int 3) Q_MOD).
+
+      pose cd_x0_2 := PurePrimops.mulmod (cd_x %% Q_MOD) (cd_x %% Q_MOD) Q_MOD.
+      pose cd_y0_2 := PurePrimops.mulmod (cd_y %% Q_MOD) (cd_y %% Q_MOD) Q_MOD.
+      pose cd_x0_3 := PurePrimops.mulmod (cd_x %% Q_MOD) cd_x0_2 Q_MOD.
+      pose on_curve_0 := PurePrimops.eq_uint256 cd_y0_2 (PurePrimops.addmod cd_x0_3 (W256.of_int 3) Q_MOD).
+
+
+
+
+
+
+
+

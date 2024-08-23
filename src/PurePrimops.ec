@@ -14,7 +14,8 @@ import MemoryMap.
 (* definitions ========== *)
 
 (* uninterpreted functions *)
-op calldata : uint256 array.
+op calldata : mem.
+op calldatasize: uint256.
 op callvalue : uint256.
 op keccak256_f : uint8 array -> uint256.
 
