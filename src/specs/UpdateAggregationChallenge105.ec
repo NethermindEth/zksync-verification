@@ -100,11 +100,11 @@ lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int
       ==>
       (res{2} = None /\ Primops.reverted{1}) \/
       (
-        exists (newAggregationChallenge newAggregatedOpeningAtZ : int) (newAggregateAtZXSlot : int * int),
-        res{2} = Some (newAggregationChallenge, newAggregatedOpeningAtZ, newAggregateAtZXSlot) /\
-        res{1} = (W256.of_int newAggregationChallenge, W256.of_int newAggregatedOpeningAtZ) /\
+        exists (newAggregationChallenge newAggregatedOpeningAtZ : uint256) (newAggregateAtZXSlot : FieldQ.F * FieldQ.F),
+        res{2} = Some (W256.to_uint newAggregationChallenge, W256.to_uint newAggregatedOpeningAtZ, F_to_int_point newAggregateAtZXSlot) /\
+        res{1} = (newAggregationChallenge, newAggregatedOpeningAtZ) /\
         (exists (x y: int),
-        Primops.memory{1} = UpdateAggregationChallenge105_footprint x y newAggregateAtZXSlot.`1 newAggregateAtZXSlot.`2 curAggregatedAtZOmegaXSlot memory0) /\
+        Primops.memory{1} = UpdateAggregationChallenge105_footprint x y (FieldQ.asint newAggregateAtZXSlot.`1) (FieldQ.asint newAggregateAtZXSlot.`2) curAggregatedAtZOmegaXSlot memory0) /\
         ! Primops.reverted{1}
       )   
     ]. proof.
@@ -131,119 +131,114 @@ lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int
         rewrite mod_mod_eq_mod. smt (). smt ().
         congr. smt (@Utils).
 
-        exists (to_uint (PurePrimops.mload Primops.memory{1} STATE_V_SLOT) * to_uint curAggregationChallenge{1} %% Constants.R).
+        exists (W256.of_int (to_uint (PurePrimops.mload Primops.memory{1} STATE_V_SLOT) * to_uint curAggregationChallenge{1} %% Constants.R)).
         exists
-    (
-      (to_uint (PurePrimops.mload Primops.memory{1} STATE_V_SLOT) *
-        to_uint curAggregationChallenge{1} %% Constants.R *
-        to_uint (PurePrimops.mload Primops.memory{1} valueAtZ_Omega{1}) +
-        to_uint curAggregatedOpeningAtZ_Omega{1}) %%
-        Constants.R
+    (W256.of_int 
+      (
+        (to_uint (PurePrimops.mload Primops.memory{1} STATE_V_SLOT) *
+          to_uint curAggregationChallenge{1} %% Constants.R *
+          to_uint (PurePrimops.mload Primops.memory{1} valueAtZ_Omega{1}) +
+          to_uint curAggregatedOpeningAtZ_Omega{1}) %%
+          Constants.R
+      )
     ).
-        exists (odflt (0, 0) result_R).
+        pose r_F := odflt (0, 0) result_R.
+    
+        exists (FieldQ.inF r_F.`1, FieldQ.inF r_F.`2).
         progress.
     
-        rewrite /PurePrimops.mulmod -Constants.R_int. simplify.
-        congr. smt ().
+        rewrite of_uintK Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. smt (). reflexivity.
+        rewrite of_uintK Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. smt (). reflexivity.
 
-        rewrite /PurePrimops.mulmod /PurePrimops.mulmod /PurePrimops.addmod. simplify. rewrite -Constants.R_int of_uintK of_uintK.
-        rewrite mod_mod_eq_mod. smt (). smt ().
-        rewrite mod_mod_eq_mod. smt (). smt ().
-        have ->: to_uint (PurePrimops.mload memory_L valueAtZ_Omega{1}) = to_uint (PurePrimops.mload Primops.memory{1} valueAtZ_Omega{1}).
         have J :
     (
-      exists (x y : FieldQ.F),
-      ecMul_precompile ((FieldQ.inF queriesCommitmentPoint{2}.`1))
-        ((FieldQ.inF queriesCommitmentPoint{2}.`2))
-        ((W256.to_uint ((PurePrimops.mload Primops.memory{1} STATE_U_SLOT)) *
-          W256.to_uint ((PurePrimops.mload Primops.memory{1} STATE_V_SLOT)) *
-          W256.to_uint curAggregationChallenge{1} + W256.to_uint previousCoeff{1}) %%
-          Constants.R) =
-          Some (x, y) /\
-        (ConcretePrimops.staticcall_ec_add_should_succeed
-          ((W256.of_int ((FieldQ.asint x))),
-            (W256.of_int ((FieldQ.asint y))))
-          ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`1),
-            (W256.of_int curAggregatedAtZOmegaXSlot{2}.`2))) /\
-              exists (x' y' : FieldQ.F),
-              ecAdd_precompile x y
-        ((FieldQ.inF curAggregatedAtZOmegaXSlot{2}.`1))
-        ((FieldQ.inF curAggregatedAtZOmegaXSlot{2}.`2)) =
-          Some (x', y') /\
-        result_R = Some (F_to_int_point (x', y')) /\
-        memory_L =
-        (PurePrimops.mstore
-          ((PurePrimops.mstore
+      exists (x y x' y' : FieldQ.F),
+      ecAdd_precompile x y
+      ((FieldQ.inF curAggregatedAtZOmegaXSlot{2}.`1))
+      ((FieldQ.inF curAggregatedAtZOmegaXSlot{2}.`2)) =
+        Some (x', y') /\
+      result_R = Some (F_to_int_point (x', y')) 
+    ). smt ().
+        case J. progress.
+        have ->: r_F = odflt (0, 0) (Some (F_to_int_point (x', y'))). smt ().
+        rewrite /F_to_int_point. simplify.
+        rewrite FieldQ.inFK FieldQ.inFK modz_small.
+        progress.
+        exact FieldQ.ge0_asint.
+        have ->: `|FieldQ.p| = FieldQ.p. smt ().
+        exact FieldQ.gtp_asint.
+        rewrite modz_small.
+        progress.
+        exact FieldQ.ge0_asint.
+        have ->: `|FieldQ.p| = FieldQ.p. smt ().
+        exact FieldQ.gtp_asint.
+        progress.
+
+        rewrite /mulmod -Constants.R_int. simplify.
+        smt ().
+
+        rewrite /mulmod /addmod -Constants.R_int. simplify.
+        rewrite of_uintK of_uintK Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. smt ().
+        rewrite Utils.mod_mod_eq_mod. rewrite /Constants.R. progress. smt ().
+
+        rewrite -modzDm.
+        rewrite -(modzDm _ (to_uint curAggregatedOpeningAtZ_Omega{1})).
+        rewrite -modzMm.
+        rewrite -(modzMm (to_uint curAggregationChallenge{1})).
+        rewrite -(modzMm _ (to_uint ((PurePrimops.mload Primops.memory{1} valueAtZ_Omega{1})))).
+        rewrite -(modzMm _ (to_uint curAggregationChallenge{1})).
+        rewrite mod_mod_eq_mod' mod_mod_eq_mod' mod_mod_eq_mod'.
+        have ->: PurePrimops.mload memory_L valueAtZ_Omega{1} = PurePrimops.mload Primops.memory{1} valueAtZ_Omega{1}.
+        have J :
+    (
+      exists (x y x' y' : FieldQ.F),
+           memory_L =
+           (PurePrimops.mstore
               ((PurePrimops.mstore
                   ((PurePrimops.mstore
                       ((PurePrimops.mstore
-                          ((PurePrimops.mstore Primops.memory{1} W256.zero
-                              ((W256.of_int ((FieldQ.asint x))))))
-                          ((W256.of_int 32))
-                          ((W256.of_int ((FieldQ.asint y))))))
-                      ((W256.of_int 64))
-                      ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`1))))
-                  ((W256.of_int 96))
-                  ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`2))))
-                    AGGREGATED_AT_Z_OMEGA_X_SLOT
-              ((W256.of_int ((FieldQ.asint x'))))))
-          (AGGREGATED_AT_Z_OMEGA_X_SLOT + (W256.of_int 32))
-          ((W256.of_int ((FieldQ.asint y')))))
-      ). smt ().
-          case J. move => x y [J1 [J2 J3]]. case J3. move => x' y' [J3 [J4 J5]]. rewrite J5.
-          rewrite /AGGREGATED_AT_Z_OMEGA_X_SLOT.
-          do 3! (rewrite load_store_diff; progress).
-          smt (@Utils).
-          smt (@Utils).
-          rewrite load_store_diff. smt (@Utils). smt (@Utils).
-          rewrite load_store_diff. smt (@Utils). smt (@Utils).
-          rewrite load_store_diff. smt (@Utils). smt (@Utils).
-          reflexivity.
-      
-        smt (@Utils).
+                          ((PurePrimops.mstore
+                              ((PurePrimops.mstore Primops.memory{1} W256.zero
+                                  ((W256.of_int ((FieldQ.asint x))))))
+                              ((W256.of_int 32))
+                              ((W256.of_int ((FieldQ.asint y))))))
+                          ((W256.of_int 64))
+                          ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`1))))
+                      ((W256.of_int 96))
+                      ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`2))))
+                  AGGREGATED_AT_Z_OMEGA_X_SLOT
+                  ((W256.of_int ((FieldQ.asint x'))))))
+              (AGGREGATED_AT_Z_OMEGA_X_SLOT + (W256.of_int 32))
+              ((W256.of_int ((FieldQ.asint y')))))
+          ). smt ().
+              case J. progress.
+              do 2! (rewrite load_store_diff; try assumption).
+              rewrite load_store_diff. smt (@Utils). smt (@Utils).
+              rewrite load_store_diff. smt (@Utils). smt (@Utils).
+              rewrite load_store_diff. smt (@Utils). smt (@Utils).
+              rewrite load_store_diff. smt (@Utils). smt (@Utils).
+              reflexivity.
+              smt (@IntDiv).
+              case H46. move => [J J'].
+              case J'. move => x y J'.
+              case J'. move => [J0 [J1 J2]].
+              case J2. move => x' y' [J2 [J3 [J4]]] NR.
+              rewrite J4.
+              have ->: r_F = odflt (0, 0) result_R. smt ().
+              rewrite /UpdateAggregationChallenge105_footprint. simplify.
+              exists (FieldQ.asint x) (FieldQ.asint y).
+              rewrite J3 /F_to_int_point. simplify.
+              rewrite FieldQ.asintK FieldQ.asintK. reflexivity.
+              smt ().
+              smt ().
+              smt ().
+              smt ().
+        qed.
 
-        have J :
-    (
-      exists (x y : FieldQ.F),
-        ecMul_precompile ((FieldQ.inF queriesCommitmentPoint{2}.`1))
-           ((FieldQ.inF queriesCommitmentPoint{2}.`2))
-           ((to_uint (PurePrimops.mload Primops.memory{1} STATE_U_SLOT) *
-             to_uint (PurePrimops.mload Primops.memory{1} STATE_V_SLOT) *
-             to_uint curAggregationChallenge{1} + to_uint previousCoeff{1}) %%
-            Constants.R) =
-         Some (x, y) /\
-         (ConcretePrimops.staticcall_ec_add_should_succeed
-            ((W256.of_int ((FieldQ.asint x))),
-             (W256.of_int ((FieldQ.asint y))))
-            ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`1),
-             (W256.of_int curAggregatedAtZOmegaXSlot{2}.`2))) /\
-         exists (x' y' : FieldQ.F),
-           ecAdd_precompile x y
-             ((FieldQ.inF curAggregatedAtZOmegaXSlot{2}.`1))
-             ((FieldQ.inF curAggregatedAtZOmegaXSlot{2}.`2)) =
-           Some (x', y') /\
-           result_R = Some (F_to_int_point (x', y')) /\
-           memory_L =
-           PurePrimops.mstore
-             (PurePrimops.mstore
-                (PurePrimops.mstore
-                   (PurePrimops.mstore
-                      (PurePrimops.mstore
-                         (PurePrimops.mstore Primops.memory{1} W256.zero
-                            ((W256.of_int ((FieldQ.asint x)))))
-                         ((W256.of_int 32))
-                         ((W256.of_int ((FieldQ.asint y)))))
-                      ((W256.of_int 64))
-                      ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`1)))
-                   ((W256.of_int 96))
-                   ((W256.of_int curAggregatedAtZOmegaXSlot{2}.`2)))
-                AGGREGATED_AT_Z_OMEGA_X_SLOT
-                ((W256.of_int ((FieldQ.asint x')))))
-             (AGGREGATED_AT_Z_OMEGA_X_SLOT + (W256.of_int 32))
-             ((W256.of_int ((FieldQ.asint y'))))
-           ). smt ().
-               case J. move=> x y [J1 [J2 J3]]. case J3. move => x' y' [J3 [J4 J5]]. rewrite /UpdateAggregationChallenge105_footprint J4 /F_to_int_point. progress. exists (FieldQ.asint x) (FieldQ.asint y). exact J5.
-               smt ().
-               smt ().
+lemma UpdateAggregationChallenge_105_mid_of_low_er : equiv [
+    UpdateAggregationChallenge_105.low ~ UpdateAggregationChallenge_105.mid :
+    Primops.reverted{1} ==> Primops.reverted{1}].    
+    proc. inline mload. sp. wp.
+
+    call PointMulAndAddIntoDest_low_equiv_mid_err. skip. progress.
   qed.
-    
