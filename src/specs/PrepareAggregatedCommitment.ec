@@ -3154,7 +3154,7 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
          rewrite load_store_same of_uintK modz_small.
          progress.
          exact FieldQ.ge0_asint.
-         apply (lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+         apply (Utils.lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
          reflexivity.
        
          have J : memory_L =
@@ -3182,7 +3182,7 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
          rewrite load_store_same of_uintK modz_small.
          progress.
          exact FieldQ.ge0_asint.
-         apply (lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+         apply (Utils.lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
          reflexivity.
 
          have J : memory_L =
@@ -3210,7 +3210,7 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
          rewrite load_store_same of_uintK modz_small.
          progress.
          exact FieldQ.ge0_asint.
-         apply (lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+         apply (Utils.lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
          reflexivity.
 
        have J : memory_L =
@@ -3238,7 +3238,7 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
          rewrite load_store_same of_uintK modz_small.
          progress.
          exact FieldQ.ge0_asint.
-         apply (lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
+         apply (Utils.lt_trans _ FieldQ.p). exact FieldQ.gtp_asint. rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
          reflexivity.
 
          smt ().
@@ -3463,7 +3463,7 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
            skip. progress.
            rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
            rewrite -Constants.q_eq_fieldq_p /Constants.Q. progress.
-           apply (lt_trans _ Constants.R). assumption. rewrite /Constants.R. progress.
+           apply (Utils.lt_trans _ Constants.R). assumption. rewrite /Constants.R. progress.
            rewrite /PAIRING_BUFFER_POINT_X_SLOT Utils.uint256_cast_neg. progress.
            rewrite /PAIRING_BUFFER_POINT_X_SLOT Utils.uint256_cast_neg. progress.
            rewrite /PAIRING_BUFFER_POINT_X_SLOT /PAIRING_BUFFER_POINT_Y_SLOT. simplify.

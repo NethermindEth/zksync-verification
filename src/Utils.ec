@@ -441,7 +441,7 @@ lemma uint256_le_add_32_sub (a b: uint256) : W256.of_int 32 < b - a => W256.of_i
 lemma uint256_le_sub_add_32 (a b: uint256): W256.of_int 64 <= b - a => W256.of_int 32 <= b - (a + W256.of_int 32).
     proof.
       progress.
-      smt timeout=10.
+      smt timeout=100.
     qed.
 
 lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
