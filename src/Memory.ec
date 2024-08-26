@@ -50,6 +50,7 @@ axiomatized by storeE.
 op load (memory: mem) (idx: uint256): uint256 =
   W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
+op load_pair (memory: mem) (idx: uint256) = (load memory idx, load memory (idx + W256.of_int 32)).
 
 lemma add_neq_32 (x: uint256) (y: int):
     1 <= y /\ y < 32 => x <> x + W256.of_int y.
