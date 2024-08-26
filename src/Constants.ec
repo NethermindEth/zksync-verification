@@ -1,7 +1,6 @@
 pragma Goals:printall.
 
 require import AllCore.
-require        EllipticCurve.
 require import Field.
 require import Int.
 require import IntDiv.
@@ -42,3 +41,16 @@ lemma non_residue_1_int: W256.to_uint VerifierConsts.NON_RESIDUES_1 = NON_RESIDU
   by rewrite /VerifierConsts.NON_RESIDUES_1 W256.of_uintK /NON_RESIDUE_1 pmod_small; [trivial | reflexivity].
 lemma non_residue_2_int: W256.to_uint VerifierConsts.NON_RESIDUES_2 = NON_RESIDUE_2
   by rewrite /VerifierConsts.NON_RESIDUES_2 W256.of_uintK /NON_RESIDUE_2 pmod_small; [trivial | reflexivity].
+
+op OMEGAFr = FieldR.inF OMEGA axiomatized by omegaFrE.
+op DOMAIN_SIZEFr = FieldR.inF DOMAIN_SIZE axiomatized by domain_sizeFrE.
+
+lemma omega_eq_omegaFr : FieldR.asint OMEGAFr = OMEGA. 
+proof.
+  rewrite omegaFrE FieldR.inFK /OMEGA -r_eq_fieldr_p /R. progress. 
+qed.
+
+lemma domain_eq_domainFr : FieldR.asint DOMAIN_SIZEFr = DOMAIN_SIZE.
+proof.
+  rewrite domain_sizeFrE FieldR.inFK /DOMAIN_SIZE -r_eq_fieldr_p /R. progress.
+qed.
