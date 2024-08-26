@@ -14,6 +14,10 @@ require import YulPrimops.
 
 import MemoryMap.
 
+abbrev ( * ) = FieldR.( * ).
+abbrev ( + ) = FieldR.( + ).
+abbrev ( - ) = FieldR.( - ).
+
 module AddAssignRescueCustomGateLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256, stateOpening3AtZ : uint256): unit = {
     var accumulator, intermediateValue, _4, _7, _10, _12;
@@ -45,6 +49,25 @@ module AddAssignRescueCustomGateLinearisationContributionWithV = {
     ) * state_v) %% Constants.R;
     ret <@ PointMulAndAddIntoDest.mid(vk_gate_selector_1.`1, vk_gate_selector_1.`2, n, point.`1, point.`2);
     return ret;
+  }
+
+  proc high_encapsulated(point: g, stateOpening0AtZ: FieldR.F, stateOpening1AtZ: FieldR.F, stateOpening2AtZ: FieldR.F, stateOpening3AtZ: FieldR.F, state_alpha: FieldR.F, state_alpha2: FieldR.F, state_alpha3: FieldR.F, state_v: FieldR.F, vk_gate_selector_1: g): g = {
+    var n, ret;
+    n <- (
+      ((stateOpening0AtZ * stateOpening0AtZ - stateOpening1AtZ) * state_alpha) +
+      ((stateOpening1AtZ * stateOpening1AtZ - stateOpening2AtZ) * state_alpha2) +
+      ((stateOpening2AtZ * stateOpening0AtZ - stateOpening3AtZ) * state_alpha3)
+    ) * state_v;
+    ret <@ PointMulAndAddIntoDest.high(vk_gate_selector_1, n, point);
+    return ret;
+  }
+
+  proc high(point: g, stateOpening0AtZ: FieldR.F, stateOpening1AtZ: FieldR.F, stateOpening2AtZ: FieldR.F, stateOpening3AtZ: FieldR.F, state_alpha: FieldR.F, state_alpha2: FieldR.F, state_alpha3: FieldR.F, state_v: FieldR.F, vk_gate_selector_1: g): g = {
+    return (((
+      ((stateOpening0AtZ * stateOpening0AtZ - stateOpening1AtZ) * state_alpha) +
+      ((stateOpening1AtZ * stateOpening1AtZ - stateOpening2AtZ) * state_alpha2) +
+      ((stateOpening2AtZ * stateOpening0AtZ - stateOpening3AtZ) * state_alpha3)
+    ) * state_v) * vk_gate_selector_1) + point;
   }
 }.
 
@@ -104,7 +127,9 @@ equiv [
       (
         (!Primops.reverted{1} /\ exists (p: (int*int)) (scratch1 scratch2 scratch3 scratch4: uint256), (
           Primops.memory{1} = addAssignRescue_memory_footprint mem_0 low_dest p scratch1 scratch2 scratch3 scratch4 /\
-          res{2} = Some p
+          res{2} = Some p /\
+          0 <= p.`1 < Constants.Q /\
+          0 <= p.`2 < Constants.Q
         ))  \/
         (Primops.reverted{1} /\ res{2} = None)
       )
@@ -176,5 +201,110 @@ equiv [
           exists (W256.of_int (FieldQ.asint y)).
           exists (W256.of_int point{2}.`1).
           exists (W256.of_int point{2}.`2).
-          by progress.
+          progress.
+          exact F_to_int_point_1_ge_zero.
+          exact F_to_int_point_1_lt_p.
+          exact F_to_int_point_2_ge_zero.
+          exact F_to_int_point_2_lt_p.          
       qed.
+
+lemma addAssignRescueCustomGateLinearisationContributionWithV_mid_equiv_high:
+    equiv [
+      AddAssignRescueCustomGateLinearisationContributionWithV.mid ~ AddAssignRescueCustomGateLinearisationContributionWithV.high :
+      point{1} = F_to_int_point(aspoint_G1 point{2}) /\
+      vk_gate_selector_1{1} = F_to_int_point(aspoint_G1 vk_gate_selector_1{2}) /\
+      stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+      stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+      stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+      stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+      state_alpha{1} = FieldR.asint state_alpha{2} /\
+      state_alpha2{1} = FieldR.asint state_alpha2{2} /\
+      state_alpha3{1} = FieldR.asint state_alpha3{2} /\
+      state_v{1} = FieldR.asint state_v{2} ==>
+      res{1} = Some (F_to_int_point(aspoint_G1 res{2}))
+    ].
+    proof.
+      transitivity AddAssignRescueCustomGateLinearisationContributionWithV.high_encapsulated
+      (
+        point{1} = F_to_int_point(aspoint_G1 point{2}) /\
+        vk_gate_selector_1{1} = F_to_int_point(aspoint_G1 vk_gate_selector_1{2}) /\
+        stateOpening0AtZ{1} = FieldR.asint stateOpening0AtZ{2} /\
+        stateOpening1AtZ{1} = FieldR.asint stateOpening1AtZ{2} /\
+        stateOpening2AtZ{1} = FieldR.asint stateOpening2AtZ{2} /\
+        stateOpening3AtZ{1} = FieldR.asint stateOpening3AtZ{2} /\
+        state_alpha{1} = FieldR.asint state_alpha{2} /\
+        state_alpha2{1} = FieldR.asint state_alpha2{2} /\
+        state_alpha3{1} = FieldR.asint state_alpha3{2} /\
+        state_v{1} = FieldR.asint state_v{2} ==>
+        res{1} = Some (F_to_int_point(aspoint_G1 res{2}))
+      )
+      (
+        ={arg} ==> ={res}
+      ).
+      progress. exists arg{2}. by progress.
+      by progress.
+      proc.
+      sp.
+      call pointMulAndAddIntoDest_mid_equiv_high.
+      skip.
+      progress.
+      rewrite FieldR.mulE.
+      rewrite -modzMm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite pmod_small. progress. exact FieldR.ge0_asint. rewrite Constants.r_eq_fieldr_p. exact FieldR.gtp_asint. reflexivity.
+      rewrite FieldR.addE.
+      rewrite -modzDm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite FieldR.mulE.
+      rewrite -modzMm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite pmod_small. progress. exact FieldR.ge0_asint. rewrite Constants.r_eq_fieldr_p. exact FieldR.gtp_asint. reflexivity.
+      rewrite FieldR.addE.
+      rewrite -modzDm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite FieldR.oppE Constants.r_eq_fieldr_p. reflexivity.
+      rewrite FieldR.mulE Constants.r_eq_fieldr_p. reflexivity.
+      rewrite FieldR.addE.
+      rewrite -modzDm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite FieldR.mulE.
+      rewrite -modzMm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite pmod_small. progress. exact FieldR.ge0_asint. rewrite Constants.r_eq_fieldr_p. exact FieldR.gtp_asint. reflexivity.
+      rewrite FieldR.addE.
+      rewrite -modzDm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite FieldR.oppE Constants.r_eq_fieldr_p. reflexivity.
+      rewrite FieldR.mulE Constants.r_eq_fieldr_p. reflexivity.
+      rewrite FieldR.mulE.
+      rewrite -modzMm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite pmod_small. progress. exact FieldR.ge0_asint. rewrite Constants.r_eq_fieldr_p. exact FieldR.gtp_asint. reflexivity.
+      rewrite FieldR.addE.
+      rewrite -modzDm.
+      congr. congr; first last. exact Constants.r_eq_fieldr_p. congr; first last.
+      rewrite FieldR.oppE Constants.r_eq_fieldr_p. reflexivity.
+      rewrite FieldR.mulE Constants.r_eq_fieldr_p. reflexivity.
+      
+      proc.
+      inline*. wp. skip. by progress.
+qed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
