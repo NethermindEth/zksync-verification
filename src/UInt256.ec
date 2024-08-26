@@ -15,6 +15,7 @@ op uint256_as_signed (x : uint256) : int =
   then W256.to_uint x
   else - (340282366920938463463374607431768211457 - (W256.to_uint x)).
 op bool_of_uint256 (x : uint256) : bool = x <> W256.zero.
+op uint256_of_bool (x : bool) : uint256 = if x then W256.one else W256.zero.
 
 (* op try_u256_to_u8 (x: uint256) : uint8 option =
   if W256.to_uint x < (2^8)

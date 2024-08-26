@@ -33,13 +33,27 @@ axiom on_curve_as_point (x y : FieldQ.F) : on_curve (x, y) => exists p, aspoint_
 (* specific to the curve we're using *)
 axiom x_non_zero_y_zero_not_on_curve (x: FieldQ.F) : x <> FieldQ.zero => !on_curve (x, FieldQ.zero).
 
-(* TODO: Axioms for G2. *)
+axiom zero_G2 : (aspoint_G2 G.e) = ((FieldQ.zero, FieldQ.zero), (FieldQ.zero, FieldQ.zero)).
+axiom neg_G2_fst (x : g) : fst (aspoint_G2 (G.inv x)) = fst (aspoint_G2 x).
+axiom neg_G2_snd (x : g) : snd (aspoint_G2 (G.inv x)) = (-(fst (snd (aspoint_G2 x))), -(snd (snd (aspoint_G2 x)))).
+
+op on_curve_G2 : (FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F) -> bool.
+
+axiom aspoint_on_curve_G2 (p : g) : on_curve_G2 (aspoint_G2 p).
+axiom on_curve_as_point_G2 (x1 y1 x2 y2 : FieldQ.F) : on_curve_G2 ((x1, y1), (x2, y2)) => exists p, aspoint_G2 p = ((x1, y1), (x2, y2)).
 
 op ( + ) = G.( * ).
 op ( * ) (x: FieldR.F, y: g) = G.( ^ ) y (FieldR.asint x).
 
+op e: g -> g -> g.
+
+axiom e_bilin (m n : FieldR.F) (x1 x2 : g) : e (m * x1) (n * x2) = (FieldR.(+) m n) * (e x1 x2).
+axiom e_non_deg_1 (x : g) : x <> G.e => exists y, e x y <> G.e.
+axiom e_non_deg_2 (y : g) : y <> G.e => exists x, e x y <> G.e.
+
 op ecAdd_precompile (x1 y1 x2 y2 : FieldQ.F) : (FieldQ.F * FieldQ.F) option.  
 op ecMul_precompile (x y : FieldQ.F) (s : int) : (FieldQ.F * FieldQ.F) option.
+op ecPairing_precompile (input1 input2 : ((FieldQ.F *  FieldQ.F) * ((FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F)))) : bool option.
 
 axiom ecAdd_def (x1 y1 x2 y2 : FieldQ.F) (p1 p2 : g) :
   aspoint_G1 p1 = (x1, y1)
@@ -56,6 +70,16 @@ axiom ecMul_def (x y : FieldQ.F) (s : int) (p : g):
 axiom ecMul_fail (x y : FieldQ.F) (s : int) :
   !(on_curve (x, y)) => ecMul_precompile x y s = None.
 
+axiom ecPairing_def (input1 input2 : ((FieldQ.F * FieldQ.F) * ((FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F)))) (p1 p2 q1 q2: g) :
+  aspoint_G1 p1 = fst input1
+    => aspoint_G1 p2 = fst input2
+    => aspoint_G2 q1 = snd input1
+    => aspoint_G2 q2 = snd input2
+    => Some (e (p1 + p2) (q1 + q2) = G.e) = ecPairing_precompile input1 input2.
+
+axiom ecPairing_fail (input1 input2 : ((FieldQ.F * FieldQ.F) * ((FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F)))):
+  !(on_curve (fst input1)) \/ !(on_curve (fst input2)) \/ !(on_curve_G2 (snd input1)) \/ !(on_curve_G2 (snd input2)) => ecPairing_precompile input1 input2 = None.    
+    
 lemma ec_add_result_on_curve (x1 y1 x2 y2 x3 y3 : FieldQ.F):
     ecAdd_precompile x1 y1 x2 y2 = Some (x3, y3) =>
     on_curve (x3, y3).
@@ -84,8 +108,6 @@ lemma ec_mul_result_on_curve (x1 y1 x2 y2 : FieldQ.F) (s : int) :
     rewrite -H''. exact (aspoint_on_curve (FieldR.inF s * p)).
   qed.
     
-    
-
 op F_to_int_point (p : FieldQ.F * FieldQ.F) : (int * int) = (FieldQ.asint (fst p), FieldQ.asint (snd p)).
 
 lemma F_to_int_point_inzmod_1 (p: FieldQ.F*FieldQ.F): FieldQ.inF (F_to_int_point p).`1 = p.`1.
