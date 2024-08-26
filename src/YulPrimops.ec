@@ -292,6 +292,10 @@ hoare [ Primops.mstore :
       by progress.
   qed.
 
+lemma mstore_spec_revert:
+hoare [ Primops.mstore: Primops.reverted ==> Primops.reverted ].
+    proof. proc. wp. skip. by auto. qed.
+  
 lemma mstore8_pspec:
     forall (memory: mem) (idx': uint256) (val': uint256),
 phoare [ Primops.mstore8 :
