@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import Array.
 require import EllipticCurve.
+require import Field.
 require import Logic.
 require import Memory.
 require import PointAddIntoDest.
@@ -12,6 +13,8 @@ require import UInt256.
 require import Utils.
 require import YulPrimops.
 require import Verifier.
+
+import MemoryMap.
 
 module PointAddAssign = {
   proc low(p1, p2) = {
@@ -48,6 +51,19 @@ proof.
   inline*. wp. skip. by progress.
 qed.
 
+lemma pointAddAssign_low_pspec_revert:
+    phoare [ PointAddAssign.low :
+    Primops.reverted ==>
+    Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline Primops.mload Primops.mstore Primops.gas.
+      sp.
+      inline*. wp. skip. by progress.
+    qed.
+    
+
 lemma pointAddAssign_low_equiv_into_dest :
 equiv [
     PointAddAssign.low ~ PointAddIntoDest.low:
@@ -65,4 +81,84 @@ equiv [
       if. by progress.
       inline*. wp. skip. by progress.
       skip. by progress.
+  qed.
+
+lemma pointAddAssign_low_equiv_into_dest_mid (mem_0: mem) (p1_addr p2_addr: uint256) (p1 p2: int*int) :
+equiv [
+    PointAddAssign.low ~ PointAddIntoDest.mid:
+      arg{1} = (p1_addr, p2_addr) /\
+    W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= -p1_addr /\
+    W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= -p2_addr /\
+    0 <= p1.`1 < FieldQ.p /\ 0 <= p1.`2 < FieldQ.p /\ 0 <= p2.`1 < FieldQ.p /\ 0 <= p2.`2 < FieldQ.p /\
+    Primops.memory{1} = mem_0 /\
+    W256.to_uint (load mem_0 p1_addr) = p1.`1 /\
+    W256.to_uint (load mem_0 (p1_addr + W256.of_int 32)) = p1.`2 /\
+    W256.to_uint (load mem_0 p2_addr) = p2.`1 /\
+    W256.to_uint (load mem_0 (p2_addr + W256.of_int 32)) = p2.`2 /\
+      arg{2} = (p1.`1, p1.`2, p2.`1, p2.`2) /\
+    !Primops.reverted{1} ==>
+      (
+        ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+        exists (x y: FieldQ.F),
+        ecAdd_precompile (FieldQ.inF p1.`1) (FieldQ.inF p1.`2) (FieldQ.inF p2.`1) (FieldQ.inF p2.`2) = Some (x,y) /\
+        res{2} = Some (FieldQ.asint x, FieldQ.asint y) /\
+        Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 p1_addr p1 p2 (x,y) /\
+        !Primops.reverted{1}
+      ) \/
+      (
+        !ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+        res{2} = None /\
+        Primops.reverted{1}
+      )
+    ].
+    proof.
+      transitivity PointAddIntoDest.low
+    (
+      arg{2} = (arg{1}.`1, arg{1}.`2, arg{1}.`1) /\
+      arg{1} = (p1_addr, p2_addr) /\
+      ={glob PointAddAssign} ==>
+      (Primops.reverted{1} /\ Primops.reverted{2}) \/
+      ={glob PointAddAssign}
+    )
+    (
+      arg{1} = (p1_addr, p2_addr, p1_addr) /\
+      W256.of_int 128 <= p1_addr /\ W256.of_int 64 <= -p1_addr /\
+      W256.of_int 128 <= p2_addr /\ W256.of_int 64 <= -p2_addr /\
+      0 <= p1.`1 < FieldQ.p /\ 0 <= p1.`2 < FieldQ.p /\ 0 <= p2.`1 < FieldQ.p /\ 0 <= p2.`2 < FieldQ.p /\
+      Primops.memory{1} = mem_0 /\
+      W256.to_uint (load mem_0 p1_addr) = p1.`1 /\
+      W256.to_uint (load mem_0 (p1_addr + W256.of_int 32)) = p1.`2 /\
+      W256.to_uint (load mem_0 p2_addr) = p2.`1 /\
+      W256.to_uint (load mem_0 (p2_addr + W256.of_int 32)) = p2.`2 /\
+      arg{2} = (p1.`1, p1.`2, p2.`1, p2.`2) /\
+      !Primops.reverted{1} ==>
+      (
+        ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+             exists (x y: FieldQ.F),
+        ecAdd_precompile (FieldQ.inF p1.`1) (FieldQ.inF p1.`2) (FieldQ.inF p2.`1) (FieldQ.inF p2.`2) = Some (x,y) /\
+        res{2} = Some (FieldQ.asint x, FieldQ.asint y) /\
+        Primops.memory{1} = pointAddIntoDest_memory_footprint mem_0 p1_addr p1 p2 (x,y) /\
+        !Primops.reverted{1}
+      ) \/
+      (
+        !ConcretePrimops.staticcall_ec_add_should_succeed (W256.of_int p1.`1, W256.of_int p1.`2) (W256.of_int p2.`1, W256.of_int p2.`2) /\
+        res{2} = None /\
+        Primops.reverted{1}
+      )
+    ).
+        progress.
+        exists (Primops.memory{1}) (Primops.reverted{1}) (p1_addr, p2_addr, p1_addr).
+        by progress.
+        progress.
+        smt ().
+        conseq (_ :
+      arg{2} = (arg{1}.`1, arg{1}.`2, arg{1}.`1) /\
+      ={glob PointAddAssign} ==>
+      (Primops.reverted{1} /\ Primops.reverted{2}) \/
+      ={glob PointAddAssign}
+    ).
+        by progress.
+        exact pointAddAssign_low_equiv_into_dest.
+        exact pointAddIntoDest_low_equiv_mid.
     qed.
+    

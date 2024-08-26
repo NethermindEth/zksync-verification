@@ -118,7 +118,7 @@ op lookupQuotientContribution_memory_footprint
   let m5 = modexp_memory_footprint m4 betaGamma (DOMAIN_SIZE - W256.one) v in
   m5.
 
-lemma LookupQuotientContribution_low_equiv_mid (
+lemma lookupQuotientContribution_low_equiv_mid (
 stateBetaLookupG
 stateGammaLookupG
 statePowerOfAlpha6G

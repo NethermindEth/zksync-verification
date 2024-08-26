@@ -2,6 +2,7 @@ pragma Goals:printall.
 
 require import AllCore.
 require        Constants.
+require import Field.
 require import PointAddAssign.
 require import PointMulAndAddIntoDest.
 require import PointMulIntoDest.
@@ -116,7 +117,7 @@ equiv [
         ((mid_stateOpening2AtZ * mid_stateOpening0AtZ - mid_stateOpening3AtZ) * mid_state_alpha3)
       ) * mid_state_v) %% Constants.R.
       call (
-      PointMulAndAddIntoDest_mid_of_low
+      pointMulAndAddIntoDest_low_equiv_mid
       (W256.to_uint (load mem_0 VK_GATE_SELECTORS_1_X_SLOT))
       (W256.to_uint (load mem_0 (VK_GATE_SELECTORS_1_X_SLOT + W256.of_int 32)))
       mid_point.`1
@@ -129,7 +130,7 @@ equiv [
           inline Primops.mload.
           wp.
           skip.
-          rewrite Constants.q_eq_elliptic_curve_p.
+          rewrite Constants.q_eq_fieldq_p.
           progress.
           smt ().
           smt ().
@@ -171,8 +172,8 @@ equiv [
           progress.
           rewrite /addAssignRescue_memory_footprint.
           exists (F_to_int_point (x', y')).
-          exists (W256.of_int (ZModField.asint x)).
-          exists (W256.of_int (ZModField.asint y)).
+          exists (W256.of_int (FieldQ.asint x)).
+          exists (W256.of_int (FieldQ.asint y)).
           exists (W256.of_int point{2}.`1).
           exists (W256.of_int point{2}.`2).
           by progress.

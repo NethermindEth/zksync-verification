@@ -14,17 +14,7 @@ require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
 
-import FieldQ.
 import MemoryMap.
-
-type Point = F * F.
-
-pred IsPointValid (point: Point) =
-  !(point.`1 <> FieldQ.zero /\ point.`2 = FieldQ.zero).
-
-(* High *)
-op pointNegate (point: Point): Point option =
-  if !IsPointValid point then None else Some (point.`1, -(point.`2)).
 
 module PointNegate = {
   proc low(usr_point : uint256): unit = {
@@ -48,6 +38,16 @@ module PointNegate = {
       ret <- None;
     } else {
       ret <- Some (point.`1, (-point.`2) %% Constants.Q);
+    }
+    return ret;
+  }
+
+  proc high_field(p: FieldQ.F*FieldQ.F) : (FieldQ.F*FieldQ.F) option = {
+    var ret: (FieldQ.F*FieldQ.F) option;
+    if (p.`1 <> FieldQ.zero /\ p.`2 = FieldQ.zero) {
+      ret <- None;
+    } else {
+      ret <- Some (p.`1, -p.`2);
     }
     return ret;
   }
@@ -146,3 +146,34 @@ lemma pointNegate_low_equiv_mid (memory: mem) (point_address: uint256) (point_x_
      smt (@W256).
 qed.
 
+lemma pointNegate_mid_equiv_high_field:
+equiv [
+    PointNegate.mid ~ PointNegate.high_field:
+      point{1} = F_to_int_point p{2} ==>
+      (
+        (res{1} = None /\ res{2} = None) \/
+        (exists (ret_int: int*int, ret_f: FieldQ.F*FieldQ.F),
+          res{1} = Some ret_int /\ res{2} = Some ret_f /\
+          ret_int = F_to_int_point ret_f
+        )
+      )
+    ].
+    proof.
+      proc.
+      wp. skip.
+      progress.
+      smt (@EllipticCurve).
+      smt (@EllipticCurve).
+      smt (@EllipticCurve).
+      exists (F_to_int_point (p{2}.`1, (-p{2}.`2)%FieldQ)).
+      exists (p{2}.`1, (-p{2}.`2)%FieldQ).
+      progress.
+      rewrite Constants.q_eq_fieldq_p.
+      rewrite /F_to_int_point. simplify.
+      rewrite FieldQ.oppE.
+      reflexivity.
+    qed.
+
+
+      
+    
