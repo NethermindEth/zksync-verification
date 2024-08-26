@@ -42,8 +42,8 @@ op loadProof_memory_footprint (mem_0: mem)
   let mem_13 = store mem_12 PROOF_LOOKUP_S_POLY_Y_SLOT lookup_s_poly.`2 in
   let mem_14 = store mem_13 PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT lookup_grand_product.`1 in
   let mem_15 = store mem_14 PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT lookup_grand_product.`2 in
-  let mem_16 = store mem_15 PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT quotient_poly_part_1.`1 in
-  let mem_17 = store mem_16 PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT quotient_poly_part_1.`2 in
+  let mem_16 = store mem_15 PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT quotient_poly_part_0.`1 in
+  let mem_17 = store mem_16 PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT quotient_poly_part_0.`2 in
   let mem_18 = store mem_17 PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT quotient_poly_part_1.`1 in
   let mem_19 = store mem_18 PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT quotient_poly_part_1.`2 in
   let mem_20 = store mem_19 PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT quotient_poly_part_2.`1 in
@@ -73,12 +73,12 @@ op loadProof_memory_footprint (mem_0: mem)
   let mem_44 = store mem_43 PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT opening_proof_at_z_omega.`1 in
   let mem_45 = store mem_44 PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT opening_proof_at_z_omega.`2 in
   if recursive
-  then mem_45
-  else
+  then
     let mem_46 = store mem_45 PROOF_RECURSIVE_PART_P1_X_SLOT recursive_part_p1.`1 in
     let mem_47 = store mem_46 PROOF_RECURSIVE_PART_P1_Y_SLOT recursive_part_p1.`2 in
     let mem_48 = store mem_47 PROOF_RECURSIVE_PART_P2_X_SLOT recursive_part_p2.`1 in
-    store mem_48 PROOF_RECURSIVE_PART_P2_Y_SLOT recursive_part_p2.`2.
+    store mem_48 PROOF_RECURSIVE_PART_P2_Y_SLOT recursive_part_p2.`2
+  else mem_45.
 
 op on_curve_int (p: int*int) = 
   ((p.`1 * ((p.`1 * p.`1) %% Constants.Q) %% Constants.Q) + 3) %% Constants.Q =
@@ -2242,13 +2242,17 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       rcondt{2} 1. by progress.
       rcondf{1} 1. progress. skip. progress. rewrite H1. rewrite /uint256_of_bool. progress. smt ().
       
-      seq 2 1: #pre.
+      seq 2 1: (#pre /\ recursive /\ vk_recursive_flag{2}).
       wp. skip. progress.
       have H_four: forall (x: uint256), x <> W256.of_int 4 => W256.to_uint x <> 4. smt (@W256).
       rewrite /bit_and /eq_uint256 /uint256_of_bool.
       case (PurePrimops.load_calldata_recursive_proof_length = (W256.of_int 4)).
       progress. rewrite H2. progress. case (isValid{2}). by progress. by progress.
       progress. rewrite H_four. assumption. case (isValid{2}). by progress. by progress.
+      rewrite H0 in H1.
+      rewrite /bool_of_uint256 /uint256_of_bool in H1.
+      case recursive. by progress.
+      move => H_rec. have H2 := H1. rewrite H_rec in H2. smt (@W256).
 
       seq 12 1 : (
         !Primops.reverted{1} /\
@@ -2342,7 +2346,9 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
         isValid{1} = uint256_of_bool isValid{2} /\
         offset{1} = PurePrimops.load_calldata_offset_3 /\
         recursiveProofLengthInWords{1} = PurePrimops.load_calldata_recursive_proof_length /\
-        _263{1} = uint256_of_bool vk_recursive_flag{2}
+        _263{1} = uint256_of_bool vk_recursive_flag{2} /\
+        vk_recursive_flag{2} /\
+        recursive
       ).
       inline*. wp. skip. progress.
       congr. congr. rewrite /point_to_uint. simplify.
@@ -2463,7 +2469,9 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
         offset{1} = PurePrimops.load_calldata_offset_3 /\
         recursiveProofLengthInWords{1} = PurePrimops.load_calldata_recursive_proof_length /\
         _263{1} = uint256_of_bool vk_recursive_flag{2} /\
-        ret_recursive_part_p1{2} = Some(recursive_part_p1.`1{2} %% Constants.Q, recursive_part_p1.`2{2} %% Constants.Q)
+        ret_recursive_part_p1{2} = Some(recursive_part_p1.`1{2} %% Constants.Q, recursive_part_p1.`2{2} %% Constants.Q) /\
+        vk_recursive_flag{2} /\
+        recursive
       ).
       inline*. wp. skip. progress.
       congr. congr. rewrite /point_to_uint. simplify.
@@ -2491,7 +2499,7 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
 
       case (isValid{2}).
       rcondt{2} 1. by progress.
-      rcondf{1} 1. progress. skip. progress. rewrite /bool_of_uint256 /iszero /uint256_of_bool H1. progress. smt (@W256).
+      rcondf{1} 1. progress. skip. progress. rewrite /bool_of_uint256 /iszero /uint256_of_bool. progress. smt (@W256).
       wp. skip. progress.
       exists (
         W256.to_uint PurePrimops.load_calldata_public_input %% 2^253,
@@ -2529,380 +2537,88 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
         Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p1),
         Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p2)
       ). progress.
+      rewrite /loadProof_memory_footprint. progress.
+      rewrite H2. progress.
+      pose mem_1 := store mem_0 _ _.
+      pose mem_1' := store mem_0 _ _.
+      have ->: mem_1' = mem_1. rewrite /mem_1 /mem_1'. rewrite uint256_cast_mod W256.of_uintK. by progress.
+      do 15! have ->: forall (x), W256.of_int ((point_to_uint x).`1 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`1 by progress.
+      do 15! have ->: forall (x), W256.of_int ((point_to_uint x).`2 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`2 by progress.
+      reflexivity.
 
 
+      (*!isValid{2}*)
+      rcondf{2} 1. by progress.
+      rcondt{1} 1. progress. skip. progress. rewrite H3 /uint256_of_bool /iszero /bool_of_uint256. progress. smt (@W256).
+      call{1} revertWithMessage_low_pspec. wp. skip. by progress.
+
+      (*!recursive*)
+      rcondf{2} 1. by progress.
+      rcondt{1} 1. progress. skip. progress. rewrite H1. by progress.
+      seq 2 3: (#pre /\ !recursive /\ ret_recursive_part_p1{2} = None /\ ret_recursive_part_p2{2} = None).
+      wp. skip. progress.
+      rewrite /bit_and /iszero /uint256_of_bool.
+      have H_zero: forall (x: uint256), x <> W256.zero => W256.to_uint x <> 0. smt (@W256).
+      case (PurePrimops.load_calldata_recursive_proof_length = W256.zero).
+      progress. rewrite H2. progress. case (isValid{2}). by progress. by progress.
+      progress. rewrite H_zero. assumption. case (isValid{2}). by progress. by progress.
+      rewrite H0 in H1.
+      rewrite /bool_of_uint256 /uint256_of_bool in H1.
+      case recursive. move => H_rec. have H2 := H1. rewrite H_rec in H2. smt (@W256).
+      by progress.
+
+      case (isValid{2}).
+      rcondt{2} 1. by progress.
+      rcondf{1} 1. progress. skip. progress. rewrite H3 /uint256_of_bool /iszero /bool_of_uint256. progress. smt (@W256).
+      wp. skip. progress.
+      exists (
+        W256.to_uint PurePrimops.load_calldata_public_input %% 2^253,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_0,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_1,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_2,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_3,
+        point_to_uint_mod_q PurePrimops.load_calldata_copy_permutation_grand_product,
+        point_to_uint_mod_q PurePrimops.load_calldata_lookup_s_poly,
+        point_to_uint_mod_q PurePrimops.load_calldata_lookup_grand_product,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_0,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_1,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_2,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_3,
+        W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z %% Constants.R,
+        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z,
+        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z_omega,
+        None,
+        None
+      ). progress.
+      rewrite /loadProof_memory_footprint. progress.
+      rewrite H2. progress.
+      pose mem_1 := store mem_0 _ _.
+      pose mem_1' := store mem_0 _ _.
+      have ->: mem_1' = mem_1. rewrite /mem_1 /mem_1'. rewrite uint256_cast_mod W256.of_uintK. by progress.
+      do 13! have ->: forall (x), W256.of_int ((point_to_uint x).`1 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`1 by progress.
+      do 13! have ->: forall (x), W256.of_int ((point_to_uint x).`2 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`2 by progress.
+      reflexivity.
 
 
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-      rewrite -/PurePrimops.load_calldata_opening_proof_at_z_omega.
-      rewrite -/PurePrimops.load_calldata_opening_proof_at_z.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_3.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_2.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_1.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_0.
-      rewrite -/PurePrimops.load_calldata_lookup_grand_product.
-      rewrite -/PurePrimops.load_calldata_lookup_s_poly.
-      rewrite -/PurePrimops.load_calldata_copy_permutation_grand_product.
-      rewrite -/PurePrimops.load_calldata_state_poly_3.
-      rewrite -/PurePrimops.load_calldata_state_poly_2.
-      rewrite -/PurePrimops.load_calldata_state_poly_1.
-      rewrite -/PurePrimops.load_calldata_state_poly_0.
-      rewrite -/PurePrimops.load_calldata_proof_length.
-      rewrite -/PurePrimops.load_calldata_public_input_length.
-      rewrite -/PurePrimops.load_calldata_opening_proof_at_z_omega.
-      rewrite -/PurePrimops.load_calldata_opening_proof_at_z.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_3.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_2.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_1.
-      rewrite -/PurePrimops.load_calldata_quotient_poly_part_0.
-      rewrite -/PurePrimops.load_calldata_lookup_grand_product.
-      rewrite -/PurePrimops.load_calldata_lookup_s_poly.
-      rewrite -/PurePrimops.load_calldata_copy_permutation_grand_product.
-      rewrite -/PurePrimops.load_calldata_state_poly_3.
-      rewrite -/PurePrimops.load_calldata_state_poly_2.
-      rewrite -/PurePrimops.load_calldata_state_poly_1.
-      rewrite -/PurePrimops.load_calldata_state_poly_0.
-      rewrite -/PurePrimops.load_calldata_proof_length.
-      rewrite -/PurePrimops.load_calldata_public_input_length.
-      have ->: PurePrimops.load_calldata_public_input_length = W256.one.
-        apply uint256_eq_of_eq. by progress.
-      have ->: PurePrimops.eq_uint256 W256.one W256.one = W256.one.
-        rewrite /eq_uint256. by progress.
-      have ->: PurePrimops.load_calldata_proof_length = W256.of_int 44.
-        apply uint256_eq_of_eq. by progress.
-      have ->: PurePrimops.eq_uint256 (W256.of_int 44) (W256.of_int 44) = W256.one.
-        rewrite /eq_uint256. by progress.
-      have ->: PurePrimops.bit_and W256.one W256.one = W256.one.
-        rewrite /bit_and. by progress.
-      rewrite H4 H5 H6 H7 H8 H9 H10 H11 H12 H13 H14 H15 H16.
-      rewrite /uint256_of_bool. progress.
-      rewrite /bit_and. progress.
-      have ->: PurePrimops.load_calldata_recursive_proof_length = W256.of_int 4.
-        apply uint256_eq_of_eq. by progress.
-      rewrite /iszero.
-      have ->: W256.of_int 4 <> W256.zero. rewrite -W256.to_uintK.
-
-
-
-    
-
-lemma loadProof_low_pspec (mem_0: mem) (offset: uint256):
-    phoare [
-      LoadProof.low:
-      !Primops.reverted /\
-      Primops.memory = mem_0 ==>
-      (Primops.reverted) \/
-      (
-        !Primops.reverted /\
-        Primops.memory = loadProof_memory_footprint mem_0
-          (bool_of_uint256 (load PurePrimops.calldata VK_RECURSIVE_FLAG_SLOT)) (* recursive *)
-          (load PurePrimops.calldata (calldata_public_input_slot offset)) *)
-      )
-    ] = 1%r.
-    proof.
-      proc.
-      inline*.
-      wp. simplify.
-      skip.
-      move => &hr.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_LOOKUP_S_POLY_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_3_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_2_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_1_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_Y_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_Y_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_X_SLOT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_STATE_POLYS_0_X_SLOT; progress.
-      rewrite (load_store_diff _ _ VK_RECURSIVE_FLAG_SLOT).
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_PUBLIC_INPUT; progress.
-        by rewrite /VK_RECURSIVE_FLAG_SLOT /PROOF_PUBLIC_INPUT; progress.
-      pose offset1 := load PurePrimops.calldata (W256.of_int 4).
-      pose offset2 := load PurePrimops.calldata (W256.of_int 36).
-      pose offset3 := load PurePrimops.calldata (W256.of_int 68).
-      pose cd_public_input_length_in_words := load PurePrimops.calldata (offset1 + W256.of_int 4).
-      pose cd_public_input := load PurePrimops.calldata (offset1 + W256.of_int 36).
-      pose cd_proof_length_in_words := load PurePrimops.calldata (offset2 + W256.of_int 4).
-      pose cd_x := load PurePrimops.calldata (offset2 + W256.of_int 36).
-      pose cd_y := load PurePrimops.calldata (offset2 + W256.of_int 68).
-      pose cd_x1 := load PurePrimops.calldata (offset2 + W256.of_int 100).
-      pose cd_y1 := load PurePrimops.calldata (offset2 + W256.of_int 132).
-      pose cd_x2 := load PurePrimops.calldata (offset2 + W256.of_int 164).
-      pose cd_y2 := load PurePrimops.calldata (offset2 + W256.of_int 196).
-      pose cd_x3 := load PurePrimops.calldata (offset2 + W256.of_int 228).
-      pose cd_y3 := load PurePrimops.calldata (offset2 + W256.of_int 260).
-      pose cd_x4 := load PurePrimops.calldata (offset2 + W256.of_int 292).
-      pose cd_y4 := load PurePrimops.calldata (offset2 + W256.of_int 324).
-      pose cd_x5 := load PurePrimops.calldata (offset2 + W256.of_int 356).
-      pose cd_y5 := load PurePrimops.calldata (offset2 + W256.of_int 388).
-      pose cd_x6 := load PurePrimops.calldata (offset2 + W256.of_int 420).
-      pose cd_y6 := load PurePrimops.calldata (offset2 + W256.of_int 452).
-      pose cd_x7 := load PurePrimops.calldata (offset2 + W256.of_int 484).
-      pose cd_y7 := load PurePrimops.calldata (offset2 + W256.of_int 516).
-      pose cd_x8 := load PurePrimops.calldata (offset2 + W256.of_int 548).
-      pose cd_y8 := load PurePrimops.calldata (offset2 + W256.of_int 580).
-      pose cd_x9 := load PurePrimops.calldata (offset2 + W256.of_int 612).
-      pose cd_y9 := load PurePrimops.calldata (offset2 + W256.of_int 644).
-      pose cd_x10 := load PurePrimops.calldata (offset2 + W256.of_int 676).
-      pose cd_y10 := load PurePrimops.calldata (offset2 + W256.of_int 708).
-      pose cd_state_poly_0_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 740).
-      pose cd_state_poly_1_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 772).
-      pose cd_state_poly_2_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 804).
-      pose cd_state_poly_3_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 836).
-      pose cd_state_poly_3_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 868).
-      pose gate_selector_0_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 900).
-      pose copy_permutation_poly_0_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 932).
-      pose copy_permutation_poly_1_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 964).
-      pose copy_permutation_poly_2_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 996).
-      pose copy_permutation_grand_product_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1028).
-      pose lookup_s_poly_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1060).
-      pose lookup_grand_product_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1092).
-      pose cd_lookup_t_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1124).
-      pose cd_lookup_t_poly_opening_at_z_omega := load PurePrimops.calldata (offset2 + W256.of_int 1156).
-      pose cd_lookup_selector_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1188).
-      pose cd_lookup_table_type_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1220).
-      pose cd_quotient_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1252).
-      pose cd_linearisation_poly_opening_at_z := load PurePrimops.calldata (offset2 + W256.of_int 1284).
-      pose cd_x11 := load PurePrimops.calldata (offset2 + W256.of_int 1316).
-      pose cd_y11 := load PurePrimops.calldata (offset2 + W256.of_int 1348).
-      pose cd_x12 := load PurePrimops.calldata (offset2 + W256.of_int 1380).
-      pose cd_y12 := load PurePrimops.calldata (offset2 + W256.of_int 1412).
-      pose cd_recursive_proof_length_in_words := load PurePrimops.calldata (offset3 + W256.of_int 4).
-      pose cd_x13 := load PurePrimops.calldata (offset3 + W256.of_int 36).
-      pose cd_y13 := load PurePrimops.calldata (offset3 + W256.of_int 68).
-      pose cd_x14 := load PurePrimops.calldata (offset3 + W256.of_int 100).
-      pose cd_y14 := load PurePrimops.calldata (offset3 + W256.of_int 132).
-
-      pose cd_x14_2 := PurePrimops.mulmod (cd_x14 %% Q_MOD) (cd_x14 %% Q_MOD) Q_MOD.
-      pose cd_y14_2 := PurePrimops.mulmod (cd_y14 %% Q_MOD) (cd_y14 %% Q_MOD) Q_MOD.
-      pose cd_x14_3 := PurePrimops.mulmod (cd_x14 %% Q_MOD) cd_x14_2 Q_MOD.
-      pose on_curve_14 := PurePrimops.eq_uint256 cd_y14_2 (PurePrimops.addmod cd_x14_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x13_2 := PurePrimops.mulmod (cd_x13 %% Q_MOD) (cd_x13 %% Q_MOD) Q_MOD.
-      pose cd_y13_2 := PurePrimops.mulmod (cd_y13 %% Q_MOD) (cd_y13 %% Q_MOD) Q_MOD.
-      pose cd_x13_3 := PurePrimops.mulmod (cd_x13 %% Q_MOD) cd_x13_2 Q_MOD.
-      pose on_curve_13 := PurePrimops.eq_uint256 cd_y13_2 (PurePrimops.addmod cd_x13_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x12_2 := PurePrimops.mulmod (cd_x12 %% Q_MOD) (cd_x12 %% Q_MOD) Q_MOD.
-      pose cd_y12_2 := PurePrimops.mulmod (cd_y12 %% Q_MOD) (cd_y12 %% Q_MOD) Q_MOD.
-      pose cd_x12_3 := PurePrimops.mulmod (cd_x12 %% Q_MOD) cd_x12_2 Q_MOD.
-      pose on_curve_12 := PurePrimops.eq_uint256 cd_y12_2 (PurePrimops.addmod cd_x12_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x11_2 := PurePrimops.mulmod (cd_x11 %% Q_MOD) (cd_x11 %% Q_MOD) Q_MOD.
-      pose cd_y11_2 := PurePrimops.mulmod (cd_y11 %% Q_MOD) (cd_y11 %% Q_MOD) Q_MOD.
-      pose cd_x11_3 := PurePrimops.mulmod (cd_x11 %% Q_MOD) cd_x11_2 Q_MOD.
-      pose on_curve_11 := PurePrimops.eq_uint256 cd_y11_2 (PurePrimops.addmod cd_x11_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x10_2 := PurePrimops.mulmod (cd_x10 %% Q_MOD) (cd_x10 %% Q_MOD) Q_MOD.
-      pose cd_y10_2 := PurePrimops.mulmod (cd_y10 %% Q_MOD) (cd_y10 %% Q_MOD) Q_MOD.
-      pose cd_x10_3 := PurePrimops.mulmod (cd_x10 %% Q_MOD) cd_x10_2 Q_MOD.
-      pose on_curve_10 := PurePrimops.eq_uint256 cd_y10_2 (PurePrimops.addmod cd_x10_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x9_2 := PurePrimops.mulmod (cd_x9 %% Q_MOD) (cd_x9 %% Q_MOD) Q_MOD.
-      pose cd_y9_2 := PurePrimops.mulmod (cd_y9 %% Q_MOD) (cd_y9 %% Q_MOD) Q_MOD.
-      pose cd_x9_3 := PurePrimops.mulmod (cd_x9 %% Q_MOD) cd_x9_2 Q_MOD.
-      pose on_curve_9 := PurePrimops.eq_uint256 cd_y9_2 (PurePrimops.addmod cd_x9_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x8_2 := PurePrimops.mulmod (cd_x8 %% Q_MOD) (cd_x8 %% Q_MOD) Q_MOD.
-      pose cd_y8_2 := PurePrimops.mulmod (cd_y8 %% Q_MOD) (cd_y8 %% Q_MOD) Q_MOD.
-      pose cd_x8_3 := PurePrimops.mulmod (cd_x8 %% Q_MOD) cd_x8_2 Q_MOD.
-      pose on_curve_8 := PurePrimops.eq_uint256 cd_y8_2 (PurePrimops.addmod cd_x8_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x7_2 := PurePrimops.mulmod (cd_x7 %% Q_MOD) (cd_x7 %% Q_MOD) Q_MOD.
-      pose cd_y7_2 := PurePrimops.mulmod (cd_y7 %% Q_MOD) (cd_y7 %% Q_MOD) Q_MOD.
-      pose cd_x7_3 := PurePrimops.mulmod (cd_x7 %% Q_MOD) cd_x7_2 Q_MOD.
-      pose on_curve_7 := PurePrimops.eq_uint256 cd_y7_2 (PurePrimops.addmod cd_x7_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x6_2 := PurePrimops.mulmod (cd_x6 %% Q_MOD) (cd_x6 %% Q_MOD) Q_MOD.
-      pose cd_y6_2 := PurePrimops.mulmod (cd_y6 %% Q_MOD) (cd_y6 %% Q_MOD) Q_MOD.
-      pose cd_x6_3 := PurePrimops.mulmod (cd_x6 %% Q_MOD) cd_x6_2 Q_MOD.
-      pose on_curve_6 := PurePrimops.eq_uint256 cd_y6_2 (PurePrimops.addmod cd_x6_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x5_2 := PurePrimops.mulmod (cd_x5 %% Q_MOD) (cd_x5 %% Q_MOD) Q_MOD.
-      pose cd_y5_2 := PurePrimops.mulmod (cd_y5 %% Q_MOD) (cd_y5 %% Q_MOD) Q_MOD.
-      pose cd_x5_3 := PurePrimops.mulmod (cd_x5 %% Q_MOD) cd_x5_2 Q_MOD.
-      pose on_curve_5 := PurePrimops.eq_uint256 cd_y5_2 (PurePrimops.addmod cd_x5_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x4_2 := PurePrimops.mulmod (cd_x4 %% Q_MOD) (cd_x4 %% Q_MOD) Q_MOD.
-      pose cd_y4_2 := PurePrimops.mulmod (cd_y4 %% Q_MOD) (cd_y4 %% Q_MOD) Q_MOD.
-      pose cd_x4_3 := PurePrimops.mulmod (cd_x4 %% Q_MOD) cd_x4_2 Q_MOD.
-      pose on_curve_4 := PurePrimops.eq_uint256 cd_y4_2 (PurePrimops.addmod cd_x4_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x3_2 := PurePrimops.mulmod (cd_x3 %% Q_MOD) (cd_x3 %% Q_MOD) Q_MOD.
-      pose cd_y3_2 := PurePrimops.mulmod (cd_y3 %% Q_MOD) (cd_y3 %% Q_MOD) Q_MOD.
-      pose cd_x3_3 := PurePrimops.mulmod (cd_x3 %% Q_MOD) cd_x3_2 Q_MOD.
-      pose on_curve_3 := PurePrimops.eq_uint256 cd_y3_2 (PurePrimops.addmod cd_x3_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x2_2 := PurePrimops.mulmod (cd_x2 %% Q_MOD) (cd_x2 %% Q_MOD) Q_MOD.
-      pose cd_y2_2 := PurePrimops.mulmod (cd_y2 %% Q_MOD) (cd_y2 %% Q_MOD) Q_MOD.
-      pose cd_x2_3 := PurePrimops.mulmod (cd_x2 %% Q_MOD) cd_x2_2 Q_MOD.
-      pose on_curve_2 := PurePrimops.eq_uint256 cd_y2_2 (PurePrimops.addmod cd_x2_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x1_2 := PurePrimops.mulmod (cd_x1 %% Q_MOD) (cd_x1 %% Q_MOD) Q_MOD.
-      pose cd_y1_2 := PurePrimops.mulmod (cd_y1 %% Q_MOD) (cd_y1 %% Q_MOD) Q_MOD.
-      pose cd_x1_3 := PurePrimops.mulmod (cd_x1 %% Q_MOD) cd_x1_2 Q_MOD.
-      pose on_curve_1 := PurePrimops.eq_uint256 cd_y1_2 (PurePrimops.addmod cd_x1_3 (W256.of_int 3) Q_MOD).
-
-      pose cd_x0_2 := PurePrimops.mulmod (cd_x %% Q_MOD) (cd_x %% Q_MOD) Q_MOD.
-      pose cd_y0_2 := PurePrimops.mulmod (cd_y %% Q_MOD) (cd_y %% Q_MOD) Q_MOD.
-      pose cd_x0_3 := PurePrimops.mulmod (cd_x %% Q_MOD) cd_x0_2 Q_MOD.
-      pose on_curve_0 := PurePrimops.eq_uint256 cd_y0_2 (PurePrimops.addmod cd_x0_3 (W256.of_int 3) Q_MOD).
-      
-      pose public_input_length_valid := PurePrimops.eq_uint256 cd_public_input_length_in_words W256.one.
-      pose proof_length_valid := PurePrimops.eq_uint256 cd_proof_length_in_words (W256.of_int 44).
-      pose public_input_and_proof_lengths_valid := PurePrimops.bit_and proof_length_valid public_input_length_valid.
-      pose lengths_valid_and_points_on_curve :=
-        PurePrimops.bit_and on_curve_12
-          (PurePrimops.bit_and on_curve_11
-            (PurePrimops.bit_and on_curve_10
-              (PurePrimops.bit_and on_curve_9
-                (PurePrimops.bit_and on_curve_8
-                  (PurePrimops.bit_and on_curve_7
-                    (PurePrimops.bit_and on_curve_6
-                      (PurePrimops.bit_and on_curve_5
-                        (PurePrimops.bit_and on_curve_4
-                          (PurePrimops.bit_and on_curve_3
-                            (PurePrimops.bit_and on_curve_2
-                              (PurePrimops.bit_and on_curve_1
-                                (PurePrimops.bit_and on_curve_0
-                                  public_input_and_proof_lengths_valid)))))))))))).
-
-
-
-
+      (*!isValid{2}*)
+      rcondf{2} 1. by progress.
+      rcondt{1} 1. progress. skip. progress. rewrite H3 /uint256_of_bool /iszero /bool_of_uint256. progress. smt (@W256).
+      call{1} revertWithMessage_low_pspec. wp. skip. by progress.
+qed.
