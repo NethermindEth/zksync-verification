@@ -325,11 +325,7 @@ hoare [ Primops.mstore8 :
       skip.
       by progress.
   qed.
-
-lemma mstore_spec_revert:
-hoare [ Primops.mstore: Primops.reverted ==> Primops.reverted ].
-    proof. proc. wp. skip. by auto. qed.
-
+  
 lemma keccak256_pspec (off size: uint256):
     phoare [ Primops.keccak256 :
       arg = (off, size) ==>

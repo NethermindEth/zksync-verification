@@ -54,6 +54,27 @@ op load (memory: mem) (idx: uint256): uint256 =
   W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
 
+lemma load_store8_diff_32 (memory: mem) (idx idx2 val: uint256):
+    W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 => load (store8 memory idx val) idx2 = load memory idx2.
+    proof.
+      progress.
+      rewrite loadE loadE.
+      apply W256.ext_eq. progress.
+      rewrite W32u8.pack32wE. trivial.
+      rewrite W32u8.pack32wE. trivial.
+      congr.
+      pose y := x %/ 8.
+      have H_y_lower: 0 <= y by smt (@IntDiv).
+      have H_y_upper: y < 32 by smt (@IntDiv).
+      rewrite W32u8.Pack.initE.
+      rewrite W32u8.Pack.initE. simplify. congr.
+      rewrite store8E. simplify.
+      pose z := 31 - y.
+      have H_z_lower: 0 <= z by smt ().
+      have H_z_upper: z < 32 by smt ().
+      rewrite Map.get_set_neqE. apply uint256_neq_sym. exact add_neq_of_diff. reflexivity.
+    qed.
+
 lemma load8_store8_same (memory: mem) (idx val: uint256):
     (store8 memory idx val).[idx] = W8.of_int (W256.to_uint val).
 proof. rewrite /store8. simplify. smt (@SmtMap). qed.
@@ -88,6 +109,181 @@ proof.
 progress. rewrite storeE. simplify.
 do 31! (rewrite Map.get_set_neqE; first exact add_neq_of_diff).
 rewrite Map.get_set_neqE. smt(@Utils). reflexivity.
+qed.
+
+lemma store8_store8_same (memory: mem) (idx val val2):
+      store8 (store8 memory idx val2) idx val = store8 memory idx val.
+proof. rewrite store8E store8E store8E. progress. smt (@Map). qed.
+
+lemma store_store8_swap_diff (memory: mem) (idx idx2 val val2: uint256):
+    (exists w, idx2 = idx +  W256.of_int w /\ 1 <= w < W256.modulus - 32) =>
+    store (store8 memory idx val) idx2 val2 = store8 (store memory idx2 val2) idx val.
+    proof.
+      have I: forall w, 1 <= w => w < W256.modulus - 32 => 1 <= w /\ w < W256.modulus. by smt().
+      have II: forall w y, 1 <= w => w < W256.modulus - 32 => 1 <= y < 32 => 1 <= (w+y) /\ (w+y) < W256.modulus. by smt().
+      progress.
+      rewrite storeE store8E storeE store8E.
+      progress.
+      apply Map.map_eqP. progress.
+      case (x = idx + W256.of_int w). progress.
+      do 31! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply I; by progress).
+      do 31! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress. 
+      case (x = idx + W256.of_int (w + 1)). progress.
+      do 30! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 30! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress. 
+      case (x = idx + W256.of_int (w + 2)). progress.
+      do 29! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 29! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress. 
+      case (x = idx + W256.of_int (w + 3)). progress.
+      do 28! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 28! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+      case (x = idx + W256.of_int (w + 4)). progress.
+      do 27! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 27! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+      case (x = idx + W256.of_int (w + 5)). progress.
+      do 26! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 26! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+      case (x = idx + W256.of_int (w + 6)). progress.
+      do 25! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 25! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+      case (x = idx + W256.of_int (w + 7)). progress.
+      do 24! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 24! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 8)). progress.
+      do 23! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 23! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 9)). progress.
+      do 22! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 22! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 10)). progress.
+      do 21! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 21! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 11)). progress.
+      do 20! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 20! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 12)). progress.
+      do 19! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 19! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 13)). progress.
+      do 18! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 18! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 14)). progress.
+      do 17! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 17! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 15)). progress.
+      do 16! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 16! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 16)). progress.
+      do 15! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 15! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 17)). progress.
+      do 14! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 14! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 18)). progress.
+      do 13! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 13! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 19)). progress.
+      do 12! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 12! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 20)). progress.
+      do 11! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 11! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 21)). progress.
+      do 10! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 10! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 22)). progress.
+      do 9! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 9! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 23)). progress.
+      do 8! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 8! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 24)). progress.
+      do 7! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 7! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 25)). progress.
+      do 6! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 6! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 26)). progress.
+      do 5! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 5! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 27)). progress.
+      do 4! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 4! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 28)). progress.
+      do 3! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 3! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 29)). progress.
+      do 2! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 2! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 30)). progress.
+      do 1! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      do 1! (rewrite Map.get_set_neqE; first (apply add_2_neq'; apply mod256_neq_mod256_plus_plus; by progress)).
+      rewrite Map.get_set_sameE; reflexivity. progress.
+case (x = idx + W256.of_int (w + 31)). progress.
+      rewrite Map.get_set_sameE. rewrite Map.get_set_neqE; first (apply uint256_neq_sym; apply add_neq; apply II; by progress).
+      rewrite Map.get_set_sameE. reflexivity. progress.
+      smt (@W256 @Map).
 qed.
 
 lemma add_neq_32 (x: uint256) (y: int):

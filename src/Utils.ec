@@ -771,6 +771,20 @@ lemma uint256_to_uint_sub_eq_sub_to_uint (x y : uint256) : x <= y => W256.to_uin
       rewrite J'' of_uintK J''. reflexivity. 
     qed.    
 
+lemma mod256_neq_mod256_plus_plus w x y:
+    1 <= w < W256.modulus - 32 =>
+    1 <= x < 32 =>
+    1 <= y < 32 =>
+    y <> x =>
+    (w + y) %% W256.modulus <> (w + x) %% W256.modulus.
+proof. smt(@W256). qed.
+
+lemma mod256_neq_mod256_plus w x:
+    1 <= w < W256.modulus - 32 =>
+    1 <= x < 32 =>
+    w %% W256.modulus <> (w + x) %% W256.modulus.
+proof. smt(@W256). qed.
+
     
 (* logic *)
   

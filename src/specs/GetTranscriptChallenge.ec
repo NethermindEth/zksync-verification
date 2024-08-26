@@ -110,10 +110,9 @@ skip. progress. rewrite /shl shlMP. smt(@W256). smt(@W256).
 seq 1 0: (#pre /\ W256.to_uint _6{1} = 2^253 - 1 /\ _6{1} = VerifierConsts.FR_MASK).
 wp. skip. progress; rewrite /shl /FR_MASK shlMP; smt(@W256).
 
-seq 1 1: (#pre /\ to_uint _9{1} = keccakCM 2 s0{2} s1{2} c{2}).
-call{1} (ConcretePrimops.keccak256_pspec TRANSCRIPT_BEGIN_SLOT (W256.of_int 72)).
-wp. skip. progress.
-apply keccak256_challange_mid. progress.
+seq 1 0: (#pre /\ to_uint _9{1} = keccakCM 2 s0{2} s1{2} c{2}).
+call {1} (keccak256_pspec_challange m2 2 transcriptState0G transcriptState1G numChallangeG).
+skip; progress.
 rewrite /m2 /m1 load8_store_diff /TRANSCRIPT_DST_BYTE_SLOT /TRANSCRIPT_CHALLENGE_SLOT; try by progress.
 rewrite load8_store8_same. by progress.
 rewrite /m2 /m1 load_store_diff /TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_CHALLENGE_SLOT; try by progress.
