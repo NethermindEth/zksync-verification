@@ -378,10 +378,10 @@ module LoadProof = {
         (copy_permutation_grand_product.`1 %% Constants.Q, copy_permutation_grand_product.`2 %% Constants.Q),
         (lookup_s_poly.`1 %% Constants.Q, lookup_s_poly.`2 %% Constants.Q),
         (lookup_grand_product.`1 %% Constants.Q, lookup_grand_product.`2 %% Constants.Q),
-        (quotient_poly_part_0.`1 %% Constants.Q, quotient_poly_part_0.`1 %% Constants.Q),
-        (quotient_poly_part_1.`1 %% Constants.Q, quotient_poly_part_1.`1 %% Constants.Q),
-        (quotient_poly_part_2.`1 %% Constants.Q, quotient_poly_part_2.`1 %% Constants.Q),
-        (quotient_poly_part_3.`1 %% Constants.Q, quotient_poly_part_3.`1 %% Constants.Q),
+        (quotient_poly_part_0.`1 %% Constants.Q, quotient_poly_part_0.`2 %% Constants.Q),
+        (quotient_poly_part_1.`1 %% Constants.Q, quotient_poly_part_1.`2 %% Constants.Q),
+        (quotient_poly_part_2.`1 %% Constants.Q, quotient_poly_part_2.`2 %% Constants.Q),
+        (quotient_poly_part_3.`1 %% Constants.Q, quotient_poly_part_3.`2 %% Constants.Q),
         state_poly_0_opening_at_z %% Constants.R,
         state_poly_1_opening_at_z %% Constants.R,
         state_poly_2_opening_at_z %% Constants.R,
@@ -2245,11 +2245,302 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       seq 2 1: #pre.
       wp. skip. progress.
       have H_four: forall (x: uint256), x <> W256.of_int 4 => W256.to_uint x <> 4. smt (@W256).
+      rewrite /bit_and /eq_uint256 /uint256_of_bool.
+      case (PurePrimops.load_calldata_recursive_proof_length = (W256.of_int 4)).
+      progress. rewrite H2. progress. case (isValid{2}). by progress. by progress.
+      progress. rewrite H_four. assumption. case (isValid{2}). by progress. by progress.
+
+      seq 12 1 : (
+        !Primops.reverted{1} /\
+        Primops.memory{1} = store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store mem_0
+          PROOF_PUBLIC_INPUT (PurePrimops.load_calldata_public_input %% W256.of_int (2^253)))
+          PROOF_STATE_POLYS_0_X_SLOT (W256.of_int (state_poly_0{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_0_Y_SLOT (W256.of_int (state_poly_0{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_1_X_SLOT (W256.of_int (state_poly_1{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_1_Y_SLOT (W256.of_int (state_poly_1{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_2_X_SLOT (W256.of_int (state_poly_2{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_2_Y_SLOT (W256.of_int (state_poly_2{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_3_X_SLOT (W256.of_int (state_poly_3{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_3_Y_SLOT (W256.of_int (state_poly_3{2}.`2 %% Constants.Q)))
+          PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT (W256.of_int (copy_permutation_grand_product{2}.`1 %% Constants.Q)))
+          PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT (W256.of_int (copy_permutation_grand_product{2}.`2 %% Constants.Q)))
+          PROOF_LOOKUP_S_POLY_X_SLOT (W256.of_int (lookup_s_poly{2}.`1 %% Constants.Q)))
+          PROOF_LOOKUP_S_POLY_Y_SLOT (W256.of_int (lookup_s_poly{2}.`2 %% Constants.Q)))
+          PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT (W256.of_int (lookup_grand_product{2}.`1 %% Constants.Q)))
+          PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT (W256.of_int (lookup_grand_product{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT (W256.of_int (quotient_poly_part_0{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT (W256.of_int (quotient_poly_part_0{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT (W256.of_int (quotient_poly_part_1{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT (W256.of_int (quotient_poly_part_1{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT (W256.of_int (quotient_poly_part_2{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT (W256.of_int (quotient_poly_part_2{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT (W256.of_int (quotient_poly_part_3{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT (W256.of_int (quotient_poly_part_3{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT (W256.of_int (state_poly_0_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT (W256.of_int (state_poly_1_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT (W256.of_int (state_poly_2_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT (W256.of_int (state_poly_3_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (state_poly_3_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT (W256.of_int (gate_selector_0_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT (W256.of_int (copy_permutation_poly_0_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT (W256.of_int (copy_permutation_poly_1_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT (W256.of_int (copy_permutation_poly_2_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (copy_permutation_grand_product_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (lookup_s_poly_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (lookup_grand_product_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT (W256.of_int (lookup_t_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (lookup_t_poly_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT (W256.of_int (lookup_selector_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT (W256.of_int (lookup_table_type_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT (W256.of_int (quotient_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT (W256.of_int (linearisation_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_OPENING_PROOF_AT_Z_X_SLOT (W256.of_int (opening_proof_at_z{2}.`1 %% Constants.Q)))
+          PROOF_OPENING_PROOF_AT_Z_Y_SLOT (W256.of_int (opening_proof_at_z{2}.`2 %% Constants.Q)))
+          PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT (W256.of_int (opening_proof_at_z_omega{2}.`1 %% Constants.Q)))
+          PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT (W256.of_int (opening_proof_at_z_omega{2}.`2 %% Constants.Q)))
+          PROOF_RECURSIVE_PART_P1_X_SLOT (W256.of_int (recursive_part_p1{2}.`1 %% Constants.Q)))
+          PROOF_RECURSIVE_PART_P1_Y_SLOT (W256.of_int (recursive_part_p1{2}.`2 %% Constants.Q)) /\
+        load mem_0 VK_RECURSIVE_FLAG_SLOT = uint256_of_bool recursive /\
+        public_input_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_public_input_length /\
+        public_input{2} = W256.to_uint PurePrimops.load_calldata_public_input /\
+        proof_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_proof_length /\
+        state_poly_0{2} = point_to_uint PurePrimops.load_calldata_state_poly_0 /\
+        state_poly_1{2} = point_to_uint PurePrimops.load_calldata_state_poly_1 /\
+        state_poly_2{2} = point_to_uint PurePrimops.load_calldata_state_poly_2 /\
+        state_poly_3{2} = point_to_uint PurePrimops.load_calldata_state_poly_3 /\
+        copy_permutation_grand_product{2} = point_to_uint PurePrimops.load_calldata_copy_permutation_grand_product /\
+        lookup_s_poly{2} = point_to_uint PurePrimops.load_calldata_lookup_s_poly /\
+        lookup_grand_product{2} = point_to_uint PurePrimops.load_calldata_lookup_grand_product /\
+        quotient_poly_part_0{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_0 /\
+        quotient_poly_part_1{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_1 /\
+        quotient_poly_part_2{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_2 /\
+        quotient_poly_part_3{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_3 /\
+        state_poly_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z /\
+        state_poly_1_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z /\
+        state_poly_2_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z /\
+        state_poly_3_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z /\
+        state_poly_3_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega /\
+        gate_selector_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z /\
+        copy_permutation_poly_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z /\
+        copy_permutation_poly_1_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z /\
+        copy_permutation_poly_2_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z /\
+        copy_permutation_grand_product_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega /\
+        lookup_s_poly_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega /\
+        lookup_grand_product_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega /\
+        lookup_t_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z /\
+        lookup_t_poly_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega /\
+        lookup_selector_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z /\
+        lookup_table_type_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z /\
+        quotient_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z /\
+        linearisation_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z /\
+        opening_proof_at_z{2} = point_to_uint PurePrimops.load_calldata_opening_proof_at_z /\
+        opening_proof_at_z_omega{2} = point_to_uint PurePrimops.load_calldata_opening_proof_at_z_omega /\
+        recursive_proof_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_recursive_proof_length /\
+        vk_recursive_flag{2} = bool_of_uint256 (load mem_0 VK_RECURSIVE_FLAG_SLOT) /\
+        recursive_part_p1{2} = point_to_uint PurePrimops.load_calldata_recursive_part_p1 /\
+        recursive_part_p2{2} = point_to_uint PurePrimops.load_calldata_recursive_part_p2 /\
+        isValid{1} = uint256_of_bool isValid{2} /\
+        offset{1} = PurePrimops.load_calldata_offset_3 /\
+        recursiveProofLengthInWords{1} = PurePrimops.load_calldata_recursive_proof_length /\
+        _263{1} = uint256_of_bool vk_recursive_flag{2}
+      ).
+      inline*. wp. skip. progress.
+      congr. congr. rewrite /point_to_uint. simplify.
+      rewrite /PurePrimops.load_calldata_recursive_part_p1 /load_pair.
+      simplify.
+      rewrite uint256_cast_mod.
+      rewrite Constants.Q_int.
+      reflexivity.
+
+      rewrite /point_to_uint. simplify.
+      rewrite /PurePrimops.load_calldata_recursive_part_p1 /load_pair.
+      simplify.
+      rewrite uint256_cast_mod.
+      rewrite Constants.Q_int.
+      reflexivity.
+
+      rewrite on_curve_int_uint256.
+      rewrite /point_to_uint /PurePrimops.load_calldata_recursive_part_p1 /load_pair.
+      rewrite /bit_and /uint256_of_bool.
+      simplify.
+      smt (@W256).
+
+      seq 0 1 : (#pre /\ ret_recursive_part_p1{2} = Some(recursive_part_p1.`1{2} %% Constants.Q, recursive_part_p1.`2{2} %% Constants.Q)).
+      wp. skip. by progress.
+
+      seq 13 1 : (
+        !Primops.reverted{1} /\
+        Primops.memory{1} = store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store(store mem_0
+          PROOF_PUBLIC_INPUT (PurePrimops.load_calldata_public_input %% W256.of_int (2^253)))
+          PROOF_STATE_POLYS_0_X_SLOT (W256.of_int (state_poly_0{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_0_Y_SLOT (W256.of_int (state_poly_0{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_1_X_SLOT (W256.of_int (state_poly_1{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_1_Y_SLOT (W256.of_int (state_poly_1{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_2_X_SLOT (W256.of_int (state_poly_2{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_2_Y_SLOT (W256.of_int (state_poly_2{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_3_X_SLOT (W256.of_int (state_poly_3{2}.`1 %% Constants.Q)))
+          PROOF_STATE_POLYS_3_Y_SLOT (W256.of_int (state_poly_3{2}.`2 %% Constants.Q)))
+          PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT (W256.of_int (copy_permutation_grand_product{2}.`1 %% Constants.Q)))
+          PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT (W256.of_int (copy_permutation_grand_product{2}.`2 %% Constants.Q)))
+          PROOF_LOOKUP_S_POLY_X_SLOT (W256.of_int (lookup_s_poly{2}.`1 %% Constants.Q)))
+          PROOF_LOOKUP_S_POLY_Y_SLOT (W256.of_int (lookup_s_poly{2}.`2 %% Constants.Q)))
+          PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT (W256.of_int (lookup_grand_product{2}.`1 %% Constants.Q)))
+          PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT (W256.of_int (lookup_grand_product{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT (W256.of_int (quotient_poly_part_0{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT (W256.of_int (quotient_poly_part_0{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT (W256.of_int (quotient_poly_part_1{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT (W256.of_int (quotient_poly_part_1{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT (W256.of_int (quotient_poly_part_2{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT (W256.of_int (quotient_poly_part_2{2}.`2 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT (W256.of_int (quotient_poly_part_3{2}.`1 %% Constants.Q)))
+          PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT (W256.of_int (quotient_poly_part_3{2}.`2 %% Constants.Q)))
+          PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT (W256.of_int (state_poly_0_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT (W256.of_int (state_poly_1_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT (W256.of_int (state_poly_2_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT (W256.of_int (state_poly_3_opening_at_z{2} %% Constants.R)))
+          PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (state_poly_3_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT (W256.of_int (gate_selector_0_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT (W256.of_int (copy_permutation_poly_0_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT (W256.of_int (copy_permutation_poly_1_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT (W256.of_int (copy_permutation_poly_2_opening_at_z{2} %% Constants.R)))
+          PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (copy_permutation_grand_product_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (lookup_s_poly_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (lookup_grand_product_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT (W256.of_int (lookup_t_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT (W256.of_int (lookup_t_poly_opening_at_z_omega{2} %% Constants.R)))
+          PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT (W256.of_int (lookup_selector_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT (W256.of_int (lookup_table_type_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT (W256.of_int (quotient_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT (W256.of_int (linearisation_poly_opening_at_z{2} %% Constants.R)))
+          PROOF_OPENING_PROOF_AT_Z_X_SLOT (W256.of_int (opening_proof_at_z{2}.`1 %% Constants.Q)))
+          PROOF_OPENING_PROOF_AT_Z_Y_SLOT (W256.of_int (opening_proof_at_z{2}.`2 %% Constants.Q)))
+          PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT (W256.of_int (opening_proof_at_z_omega{2}.`1 %% Constants.Q)))
+          PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT (W256.of_int (opening_proof_at_z_omega{2}.`2 %% Constants.Q)))
+          PROOF_RECURSIVE_PART_P1_X_SLOT (W256.of_int (recursive_part_p1{2}.`1 %% Constants.Q)))
+          PROOF_RECURSIVE_PART_P1_Y_SLOT (W256.of_int (recursive_part_p1{2}.`2 %% Constants.Q)))
+          PROOF_RECURSIVE_PART_P2_X_SLOT (W256.of_int (recursive_part_p2{2}.`1 %% Constants.Q)))
+          PROOF_RECURSIVE_PART_P2_Y_SLOT (W256.of_int (recursive_part_p2{2}.`2 %% Constants.Q)) /\
+        load mem_0 VK_RECURSIVE_FLAG_SLOT = uint256_of_bool recursive /\
+        public_input_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_public_input_length /\
+        public_input{2} = W256.to_uint PurePrimops.load_calldata_public_input /\
+        proof_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_proof_length /\
+        state_poly_0{2} = point_to_uint PurePrimops.load_calldata_state_poly_0 /\
+        state_poly_1{2} = point_to_uint PurePrimops.load_calldata_state_poly_1 /\
+        state_poly_2{2} = point_to_uint PurePrimops.load_calldata_state_poly_2 /\
+        state_poly_3{2} = point_to_uint PurePrimops.load_calldata_state_poly_3 /\
+        copy_permutation_grand_product{2} = point_to_uint PurePrimops.load_calldata_copy_permutation_grand_product /\
+        lookup_s_poly{2} = point_to_uint PurePrimops.load_calldata_lookup_s_poly /\
+        lookup_grand_product{2} = point_to_uint PurePrimops.load_calldata_lookup_grand_product /\
+        quotient_poly_part_0{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_0 /\
+        quotient_poly_part_1{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_1 /\
+        quotient_poly_part_2{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_2 /\
+        quotient_poly_part_3{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_3 /\
+        state_poly_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z /\
+        state_poly_1_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z /\
+        state_poly_2_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z /\
+        state_poly_3_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z /\
+        state_poly_3_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega /\
+        gate_selector_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z /\
+        copy_permutation_poly_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z /\
+        copy_permutation_poly_1_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z /\
+        copy_permutation_poly_2_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z /\
+        copy_permutation_grand_product_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega /\
+        lookup_s_poly_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega /\
+        lookup_grand_product_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega /\
+        lookup_t_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z /\
+        lookup_t_poly_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega /\
+        lookup_selector_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z /\
+        lookup_table_type_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z /\
+        quotient_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z /\
+        linearisation_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z /\
+        opening_proof_at_z{2} = point_to_uint PurePrimops.load_calldata_opening_proof_at_z /\
+        opening_proof_at_z_omega{2} = point_to_uint PurePrimops.load_calldata_opening_proof_at_z_omega /\
+        recursive_proof_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_recursive_proof_length /\
+        vk_recursive_flag{2} = bool_of_uint256 (load mem_0 VK_RECURSIVE_FLAG_SLOT) /\
+        recursive_part_p1{2} = point_to_uint PurePrimops.load_calldata_recursive_part_p1 /\
+        recursive_part_p2{2} = point_to_uint PurePrimops.load_calldata_recursive_part_p2 /\
+        isValid{1} = uint256_of_bool isValid{2} /\
+        offset{1} = PurePrimops.load_calldata_offset_3 /\
+        recursiveProofLengthInWords{1} = PurePrimops.load_calldata_recursive_proof_length /\
+        _263{1} = uint256_of_bool vk_recursive_flag{2} /\
+        ret_recursive_part_p1{2} = Some(recursive_part_p1.`1{2} %% Constants.Q, recursive_part_p1.`2{2} %% Constants.Q)
+      ).
+      inline*. wp. skip. progress.
+      congr. congr. rewrite /point_to_uint. simplify.
+      rewrite /PurePrimops.load_calldata_recursive_part_p2 /load_pair.
+      simplify.
+      rewrite uint256_cast_mod.
+      rewrite Constants.Q_int.
+      reflexivity.
+
+      rewrite /point_to_uint. simplify.
+      rewrite /PurePrimops.load_calldata_recursive_part_p2 /load_pair.
+      simplify.
+      rewrite uint256_cast_mod.
+      rewrite Constants.Q_int.
+      reflexivity.
+
+      rewrite on_curve_int_uint256.
+      rewrite /point_to_uint /PurePrimops.load_calldata_recursive_part_p2 /load_pair.
+      rewrite /bit_and /uint256_of_bool.
+      simplify.
+      smt (@W256).
+
+      seq 0 1 : (#pre /\ ret_recursive_part_p2{2} = Some(recursive_part_p2.`1{2} %% Constants.Q, recursive_part_p2.`2{2} %% Constants.Q)).
+      wp. skip. by progress.
+
+      case (isValid{2}).
+      rcondt{2} 1. by progress.
+      rcondf{1} 1. progress. skip. progress. rewrite /bool_of_uint256 /iszero /uint256_of_bool H1. progress. smt (@W256).
+      wp. skip. progress.
+      exists (
+        W256.to_uint PurePrimops.load_calldata_public_input %% 2^253,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_0,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_1,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_2,
+        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_3,
+        point_to_uint_mod_q PurePrimops.load_calldata_copy_permutation_grand_product,
+        point_to_uint_mod_q PurePrimops.load_calldata_lookup_s_poly,
+        point_to_uint_mod_q PurePrimops.load_calldata_lookup_grand_product,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_0,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_1,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_2,
+        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_3,
+        W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z %% Constants.R,
+        W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z %% Constants.R,
+        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z,
+        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z_omega,
+        Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p1),
+        Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p2)
+      ). progress.
 
 
 
 
 
+
+
+
+
+
+
+      
 
 
 
