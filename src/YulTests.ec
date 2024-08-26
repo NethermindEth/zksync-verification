@@ -169,12 +169,11 @@ lemma mstore8_test_correctness (a b: uint256): hoare[
     ].
     proof.
       proc.
-
       inline *.
       wp.
       skip.
       progress.
-      rewrite loadE storeE.
+      rewrite loadE storeE store8E store8E.
       simplify.
       do 32! rewrite W32u8.get_zero.
       apply W256.ext_eq.
