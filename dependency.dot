@@ -11,25 +11,25 @@ digraph zk {
         pointNegate
         addAssignRescueCustomGateLinearisationContributionWithV
         prepareQueries
+        evaluateLagrangePolyOutOfDomain
+        lookupQuotientContribution
     }
     { node [style=filled fillcolor="aquamarine"]  
-        evaluateLagrangePolyOutOfDomain
         updateAggregationChallenge1
+        getTranscriptChallenge
+        updateTranscript
+        permutationQuotientContribution
     }
     { node [style=filled fillcolor="blue"]  
         finalPairing
-        initializeTranscript
-        loadProof
     }
     { node [style=filled fillcolor="yellow"]
-        modexp 
-        permutationQuotientContribution 
-        lookupQuotientContribution
+        modexp  
         updateAggregationChallenge2
         verifyQuotientEvaluation
-        updateTranscript
-        getTranscriptChallenge
         prepareAggregatedCommitment
+        initializeTranscript
+        loadProof
     }
     { node [style=filled fillcolor="red"]   
         loadVerificationKey
