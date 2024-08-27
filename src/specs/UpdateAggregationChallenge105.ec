@@ -39,6 +39,15 @@ module UpdateAggregationChallenge_105 = {
       }
       return ret;
     }
+
+    proc high(queriesCommitmentPoint : g, valueAtZ_Omega : FieldR.F, previousCoeff : FieldR.F, curAggregationChallenge : FieldR.F, curAggregatedOpeningAtZ_Omega : FieldR.F, v_challenge : FieldR.F, u_challenge : FieldR.F, curAggregatedAtZOmegaXSlot : g) : (FieldR.F * FieldR.F * g) = {
+        var newAggregationChallenge, finalCoeff, newAggregatedOpeningAtZ_Omega; 
+        newAggregationChallenge <- v_challenge * curAggregationChallenge;
+        finalCoeff <- u_challenge * v_challenge * curAggregationChallenge + previousCoeff;
+        curAggregatedAtZOmegaXSlot <@ PointMulAndAddIntoDest.high(queriesCommitmentPoint, finalCoeff, curAggregatedAtZOmegaXSlot);
+        newAggregatedOpeningAtZ_Omega <- newAggregationChallenge * valueAtZ_Omega + curAggregatedOpeningAtZ_Omega;
+        return (newAggregationChallenge, newAggregatedOpeningAtZ_Omega, curAggregatedAtZOmegaXSlot);
+    }
     
 }.
 
@@ -236,3 +245,17 @@ lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int
               smt ().
               smt ().
         qed.
+
+lemma updateAggregationChallenge_105_mid_equiv_high :
+equiv [
+    UpdateAggregationChallenge_105.mid ~ UpdateAggregationChallenge_105.high :
+      arg{1} = (F_to_int_point (aspoint_G1 queriesCommitmentPoint{2}), FieldR.asint valueAtZ_Omega{2}, FieldR.asint previousCoeff{2}, FieldR.asint curAggregationChallenge{2}, FieldR.asint curAggregatedOpeningAtZ_Omega{2}, FieldR.asint v_challenge{2}, FieldR.asint u_challenge{2}, F_to_int_point (aspoint_G1 curAggregatedAtZOmegaXSlot{2})) ==>
+      res{1} = Some (FieldR.asint res{2}.`1, FieldR.asint res{2}.`2, F_to_int_point (aspoint_G1 res{2}.`3))
+    ]. proof.
+        proc. wp. sp.
+        call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+        rewrite FieldR.addE FieldR.mulE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        rewrite FieldR.mulE -Constants.r_eq_fieldr_p. reflexivity.
+        rewrite FieldR.addE FieldR.mulE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+  qed.
+    

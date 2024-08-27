@@ -36,6 +36,12 @@ module UpdateAggregationChallenge = {
       }
       return ret;
   }
+  proc high(queriesCommitmentPoint : g, valueAtZ : FieldR.F, curAggregationChallenge : FieldR.F, curAggregatedOpeningAtZ : FieldR.F, v_challenge : FieldR.F, currAggregatedAtZSlot : g) : (FieldR.F * FieldR.F * g) = {
+      var newAggregationChallenge; 
+      newAggregationChallenge <- v_challenge * curAggregationChallenge;
+      currAggregatedAtZSlot <@ PointMulAndAddIntoDest.high(queriesCommitmentPoint, newAggregationChallenge, currAggregatedAtZSlot);
+      return (newAggregationChallenge, newAggregationChallenge * valueAtZ + curAggregatedOpeningAtZ, currAggregatedAtZSlot);
+  }
 }.
 
 lemma updateAggregationChallenge_equiv_revert : equiv [
@@ -241,3 +247,14 @@ lemma updateAggregationChallenge_low_equiv_mid (queriesCommitmentPoint : int * i
     qed.
 
         
+lemma updateAggregationChallenge_mid_equiv_high :
+equiv [
+    UpdateAggregationChallenge.mid ~ UpdateAggregationChallenge.high :
+      arg{1} = (F_to_int_point (aspoint_G1 queriesCommitmentPoint{2}), FieldR.asint valueAtZ{2}, FieldR.asint curAggregationChallenge{2}, FieldR.asint curAggregatedOpeningAtZ{2}, FieldR.asint v_challenge{2}, F_to_int_point (aspoint_G1 currAggregatedAtZSlot{2})) ==>
+      res{1} = Some (FieldR.asint res{2}.`1, FieldR.asint res{2}.`2, F_to_int_point (aspoint_G1 res{2}.`3))
+    ]. proof.
+        proc. wp. sp.
+        call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+        smt.
+        smt.
+    qed.
