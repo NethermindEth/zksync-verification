@@ -2,12 +2,18 @@ pragma Goals:printall.
 
 require import AllCore.
 require        Constants.
+require import Field.
 require import PurePrimops.
 require import UInt256.
 require import Verifier.
 require import YulPrimops.
 require import Utils.
 require import VerifierConsts.
+
+abbrev (-) = FieldR.(-).
+abbrev ( * ) = FieldR.( * ).
+abbrev ( + ) = FieldR.( + ).
+abbrev [-] = FieldR.([-]).
 
 module PermutationQuotientContribution = {
   proc low(): uint256 = {
@@ -73,6 +79,30 @@ module PermutationQuotientContribution = {
     inv2 <- Constants.R - (statePowerOfAlpha5 * stateL0AtZ) %% Constants.R;
     
     return (inv1 + inv2) %% Constants.R;
+  }
+
+  proc high(
+    statePowerOfAlpha4
+    statePowerOfAlpha5
+    proofCopyPermutationGrandProductOpeningAtZOmega
+    stateBeta
+    stateGamma
+    proofCopyPermutationPolys0OpeningAtZ
+    proofCopyPermutationPolys1OpeningAtZ
+    proofCopyPermutationPolys2OpeningAtZ
+    proofStatePolys0OpeningAtZ
+    proofStatePolys1OpeningAtZ
+    proofStatePolys2OpeningAtZ
+    proofStatePolys3OpeningAtZ
+    stateL0AtZ : FieldR.F
+  ) = {
+    return (
+      -statePowerOfAlpha4 * proofCopyPermutationGrandProductOpeningAtZOmega 
+         * (proofCopyPermutationPolys0OpeningAtZ * stateBeta + stateGamma + proofStatePolys0OpeningAtZ) 
+         * (proofCopyPermutationPolys1OpeningAtZ * stateBeta + stateGamma + proofStatePolys1OpeningAtZ) 
+         * (proofCopyPermutationPolys2OpeningAtZ * stateBeta + stateGamma + proofStatePolys2OpeningAtZ) 
+         * (proofStatePolys3OpeningAtZ + stateGamma)
+      -statePowerOfAlpha5 * stateL0AtZ);
   }
 }.
 
@@ -557,4 +587,86 @@ skip. progress. rewrite /addmod; progress.
 rewrite W256.to_uint_small. progress. smt(@W256 @Utils). smt(@W256 @Utils). smt. smt. smt.
 qed. 
 
+lemma permutationQuotientContribution_mid_equiv_high(
+    statePowerOfAlpha4G
+    statePowerOfAlpha5G
+    proofCopyPermutationGrandProductOpeningAtZOmegaG
+    stateBetaG
+    stateGammaG
+    proofCopyPermutationPolys0OpeningAtZG
+    proofCopyPermutationPolys1OpeningAtZG
+    proofCopyPermutationPolys2OpeningAtZG
+    proofStatePolys0OpeningAtZG
+    proofStatePolys1OpeningAtZG
+    proofStatePolys2OpeningAtZG
+    proofStatePolys3OpeningAtZG
+    stateL0AtZG : FieldR.F
+) :
+equiv [PermutationQuotientContribution.mid ~ PermutationQuotientContribution.high :
+  arg{1} = (
+    FieldR.asint statePowerOfAlpha4G,
+    FieldR.asint statePowerOfAlpha5G,
+    FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmegaG,
+    FieldR.asint stateBetaG,
+    FieldR.asint stateGammaG,
+    FieldR.asint proofCopyPermutationPolys0OpeningAtZG,
+    FieldR.asint proofCopyPermutationPolys1OpeningAtZG,
+    FieldR.asint proofCopyPermutationPolys2OpeningAtZG,
+    FieldR.asint proofStatePolys0OpeningAtZG,
+    FieldR.asint proofStatePolys1OpeningAtZG,
+    FieldR.asint proofStatePolys2OpeningAtZG,
+    FieldR.asint proofStatePolys3OpeningAtZG,
+    FieldR.asint stateL0AtZG) /\
+  arg{2} = (
+    statePowerOfAlpha4G,
+    statePowerOfAlpha5G,
+    proofCopyPermutationGrandProductOpeningAtZOmegaG,
+    stateBetaG,
+    stateGammaG,
+    proofCopyPermutationPolys0OpeningAtZG,
+    proofCopyPermutationPolys1OpeningAtZG,
+    proofCopyPermutationPolys2OpeningAtZG,
+    proofStatePolys0OpeningAtZG,
+    proofStatePolys1OpeningAtZG,
+    proofStatePolys2OpeningAtZG,
+    proofStatePolys3OpeningAtZG,
+    stateL0AtZG)
+  ==>
+    FieldR.inF res{1} = res{2}].
+proof.
+proc. 
+seq 1 0 : (#pre /\ FieldR.inF s0BGa{1} = proofCopyPermutationPolys0OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys0OpeningAtZG).
+wp. skip. progress.
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFM. do! rewrite FieldR.asintK.
+by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF s1BGb{1} = proofCopyPermutationPolys1OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys1OpeningAtZG).
+wp. skip. progress.
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFM. do! rewrite FieldR.asintK.
+by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF s2BGc{1} = proofCopyPermutationPolys2OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys2OpeningAtZG).
+wp. skip. progress.
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFM. do! rewrite FieldR.asintK.
+by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF s3G{1} = proofStatePolys3OpeningAtZG  + stateGammaG).
+wp. skip. progress.
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD. do! rewrite FieldR.asintK.
+by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF inv1{1} = - (statePowerOfAlpha4G * proofCopyPermutationGrandProductOpeningAtZOmegaG
+  * (proofCopyPermutationPolys0OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys0OpeningAtZG)
+  * (proofCopyPermutationPolys1OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys1OpeningAtZG)
+  * (proofCopyPermutationPolys2OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys2OpeningAtZG)
+  * (proofStatePolys3OpeningAtZG  + stateGammaG))).
+wp. skip. progress.
+rewrite Constants.r_eq_fieldr_p FieldR.inFD FieldR.inFN -FieldR.inF_mod. do! rewrite FieldR.inFM. do! rewrite FieldR.asintK.
+rewrite FieldR.inF_mod H H0 H1 H2 IntDiv.modzz.
+by smt(@FieldR).
+seq 1 0 : (#pre /\ FieldR.inF inv2{1} = - statePowerOfAlpha5G * stateL0AtZG). 
+wp. skip. progress.
+rewrite Constants.r_eq_fieldr_p FieldR.inFD FieldR.inFN -FieldR.inF_mod. do! rewrite FieldR.inFM. do! rewrite FieldR.asintK.
+rewrite FieldR.inF_mod  IntDiv.modzz.
+by smt(@FieldR).
+skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD H3 H4.
+by reflexivity.
+qed. 
 end section.
