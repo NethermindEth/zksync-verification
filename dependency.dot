@@ -13,21 +13,21 @@ digraph zk {
         prepareQueries
         evaluateLagrangePolyOutOfDomain
         lookupQuotientContribution
+        updateAggregationChallenge2
+        updateAggregationChallenge1
+        permutationQuotientContribution
     }
     { node [style=filled fillcolor="aquamarine"]  
-        updateAggregationChallenge1
         getTranscriptChallenge
         updateTranscript
-        permutationQuotientContribution
+        prepareAggregatedCommitment
+        verifyQuotientEvaluation
     }
     { node [style=filled fillcolor="blue"]  
         finalPairing
     }
     { node [style=filled fillcolor="yellow"]
         modexp  
-        updateAggregationChallenge2
-        verifyQuotientEvaluation
-        prepareAggregatedCommitment
         initializeTranscript
         loadProof
     }
