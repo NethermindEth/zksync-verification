@@ -38,6 +38,13 @@ module UpdateAggregationChallenge = {
   }
 }.
 
+lemma updateAggregationChallenge_equiv_revert : equiv [
+    UpdateAggregationChallenge.low ~ UpdateAggregationChallenge.mid :
+    Primops.reverted{1} ==> Primops.reverted{1}].    
+    proc. inline mload. sp. wp.
+    call PointMulAndAddIntoDest_low_equiv_mid_err. skip. progress.
+  qed.
+
 lemma updateAggregationChallenge_extracted_equiv_low :
     equiv [
       Verifier_1261.usr_updateAggregationChallenge ~ UpdateAggregationChallenge.low :
@@ -52,7 +59,7 @@ proof.
 qed.
 
 
-op UpdateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZSlot : int * int) (mem_0 : mem) =
+op updateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZSlot : int * int) (mem_0 : mem) =
   let mem_1 = store mem_0 W256.zero (W256.of_int x) in
   let mem_2 = store mem_1 (W256.of_int 32) (W256.of_int y) in
   let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int currAggregatedAtZSlot.`1) in
@@ -60,7 +67,7 @@ op UpdateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZSlot
   let mem_5 = store mem_4 AGGREGATED_AT_Z_X_SLOT (W256.of_int x') in
   store mem_5 AGGREGATED_AT_Z_Y_SLOT (W256.of_int y').
 
-lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int) (currAggregatedAtZSlot : int * int) (valueAtZ : int) (curAggregationChallenge : uint256) (curAggregatedOpeningAtZ : uint256) (v_challenge : int) (queriesCommitmentPoint_addr valueAtZ_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
+lemma updateAggregationChallenge_low_equiv_mid (queriesCommitmentPoint : int * int) (currAggregatedAtZSlot : int * int) (valueAtZ : int) (curAggregationChallenge : uint256) (curAggregatedOpeningAtZ : uint256) (v_challenge : int) (queriesCommitmentPoint_addr valueAtZ_addr : uint256) (memory0 : MemoryMap.mem) : equiv [
     UpdateAggregationChallenge.low ~ UpdateAggregationChallenge.mid :
     Primops.memory{1} = memory0 /\
     0 <= queriesCommitmentPoint.`1 < Constants.Q /\
@@ -93,7 +100,7 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
         res{2} = Some (W256.to_uint newAggregationChallenge, W256.to_uint newAggregatedOpeningAtZ, F_to_int_point newAggregateAtZSlot) /\
         res{1} = (newAggregationChallenge, newAggregatedOpeningAtZ) /\
         (exists (x y: int),
-        Primops.memory{1} = UpdateAggregationChallenge_footprint x y (FieldQ.asint newAggregateAtZSlot.`1) (FieldQ.asint newAggregateAtZSlot.`2) currAggregatedAtZSlot memory0) /\
+        Primops.memory{1} = updateAggregationChallenge_footprint x y (FieldQ.asint newAggregateAtZSlot.`1) (FieldQ.asint newAggregateAtZSlot.`2) currAggregatedAtZSlot memory0) /\
         ! Primops.reverted{1}
       )   
     ]. proof.
@@ -155,9 +162,6 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
     
         rewrite /addmod /mulmod -Constants.R_int. simplify. rewrite of_uintK of_uintK Utils.mod_mod_eq_mod. smt (). smt ().
         rewrite Utils.mod_mod_eq_mod. smt (). smt ().
-        (* rewrite modz_small. *)
-        (* reflexivity.  *)
-        (* rewrite of_uintK. *)
         pose v_chal := to_uint (PurePrimops.mload Primops.memory{1} STATE_V_SLOT).
         pose cAO := to_uint curAggregatedOpeningAtZ{1}.
         pose cAC := to_uint curAggregationChallenge{1}.
@@ -230,17 +234,10 @@ lemma UpdateAggregationChallenge_mid_of_low (queriesCommitmentPoint : int * int)
           ((W256.of_int ((FieldQ.asint y')))))
       )
     ). smt ().
-        case J. progress. rewrite /UpdateAggregationChallenge_footprint. simplify. exists (FieldQ.asint x) (FieldQ.asint y).
+        case J. progress. rewrite /updateAggregationChallenge_footprint. simplify. exists (FieldQ.asint x) (FieldQ.asint y).
         congr. congr. smt (@Field). rewrite /AGGREGATED_AT_Z_X_SLOT /AGGREGATED_AT_Z_Y_SLOT. progress. smt (@Field).
         smt ().
         smt ().
     qed.
-
-lemma UpdateAggregationChallenge_mid_of_low_er : equiv [
-    UpdateAggregationChallenge.low ~ UpdateAggregationChallenge.mid :
-    Primops.reverted{1} ==> Primops.reverted{1}].    
-    proc. inline mload. sp. wp.
-    call PointMulAndAddIntoDest_low_equiv_mid_err. skip. progress.
-  qed.
 
         

@@ -42,6 +42,14 @@ module UpdateAggregationChallenge_105 = {
     
 }.
 
+lemma updateAggregationChallenge_105_equiv_revert : equiv [
+    UpdateAggregationChallenge_105.low ~ UpdateAggregationChallenge_105.mid :
+    Primops.reverted{1} ==> Primops.reverted{1}].    
+    proc. inline mload. sp. wp.
+
+    call PointMulAndAddIntoDest_low_equiv_mid_err. skip. progress.
+  qed.
+
 lemma updateAggregationChallenge_105_extracted_equiv_low :
     equiv [
       Verifier_1261.usr_updateAggregationChallenge_105 ~ UpdateAggregationChallenge_105.low :
@@ -55,7 +63,7 @@ proof.
   skip. rewrite /Constants.R. by progress.
 qed.
 
-op UpdateAggregationChallenge105_footprint (x y x' y' : int) (currAggregatedAtZXSlot : int * int) (mem_0 : mem) =
+op updateAggregationChallenge105_footprint (x y x' y' : int) (currAggregatedAtZXSlot : int * int) (mem_0 : mem) =
   let mem_1 = store mem_0 W256.zero (W256.of_int x) in
   let mem_2 = store mem_1 (W256.of_int 32) (W256.of_int y) in
   let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int currAggregatedAtZXSlot.`1) in
@@ -71,12 +79,6 @@ lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int
     0 <= queriesCommitmentPoint.`2 < Constants.Q /\
     0 <= curAggregatedAtZOmegaXSlot.`1 < Constants.Q /\
     0 <= curAggregatedAtZOmegaXSlot.`2 < Constants.Q /\
-    (* 0 <= valueAtZ_Omega < Constants.R /\ *)
-    (* 0 <= previousCoeff < Constants.R /\ *)
-    (* 0 <= curAggregationChallenge < Constants.R /\ *)
-    (* 0 <= curAggregatedOpeningAtZ_Omega < Constants.R /\ *)
-    (* 0 <= v_challenge < Constants.R /\ *)
-    (* 0 <= u_challenge < Constants.R /\ *)
     W256.of_int 128 <= queriesCommitmentPoint_addr /\
     W256.of_int 64 <= - queriesCommitmentPoint_addr /\
     W256.of_int 128 <= queriesCommitmentPoint_addr + W256.of_int 32 /\
@@ -104,7 +106,7 @@ lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int
         res{2} = Some (W256.to_uint newAggregationChallenge, W256.to_uint newAggregatedOpeningAtZ, F_to_int_point newAggregateAtZXSlot) /\
         res{1} = (newAggregationChallenge, newAggregatedOpeningAtZ) /\
         (exists (x y: int),
-        Primops.memory{1} = UpdateAggregationChallenge105_footprint x y (FieldQ.asint newAggregateAtZXSlot.`1) (FieldQ.asint newAggregateAtZXSlot.`2) curAggregatedAtZOmegaXSlot memory0) /\
+        Primops.memory{1} = updateAggregationChallenge105_footprint x y (FieldQ.asint newAggregateAtZXSlot.`1) (FieldQ.asint newAggregateAtZXSlot.`2) curAggregatedAtZOmegaXSlot memory0) /\
         ! Primops.reverted{1}
       )   
     ]. proof.
@@ -234,11 +236,3 @@ lemma updateAggregationChallenge_105_low_equiv_mid (queriesCommitmentPoint : int
               smt ().
               smt ().
         qed.
-
-lemma UpdateAggregationChallenge_105_mid_of_low_er : equiv [
-    UpdateAggregationChallenge_105.low ~ UpdateAggregationChallenge_105.mid :
-    Primops.reverted{1} ==> Primops.reverted{1}].    
-    proc. inline mload. sp. wp.
-
-    call PointMulAndAddIntoDest_low_equiv_mid_err. skip. progress.
-  qed.
