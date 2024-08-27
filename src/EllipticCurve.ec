@@ -33,7 +33,6 @@ axiom on_curve_as_point (x y : FieldQ.F) : on_curve (x, y) => exists p, aspoint_
 (* specific to the curve we're using *)
 axiom x_non_zero_y_zero_not_on_curve (x: FieldQ.F) : x <> FieldQ.zero => !on_curve (x, FieldQ.zero).
 
-
 axiom zero_G2 : (aspoint_G2 G.e) = ((FieldQ.zero, FieldQ.zero), (FieldQ.zero, FieldQ.zero)).
 axiom neg_G2_fst (x : g) : fst (aspoint_G2 (G.inv x)) = fst (aspoint_G2 x).
 axiom neg_G2_snd (x : g) : snd (aspoint_G2 (G.inv x)) = (-(fst (snd (aspoint_G2 x))), -(snd (snd (aspoint_G2 x)))).

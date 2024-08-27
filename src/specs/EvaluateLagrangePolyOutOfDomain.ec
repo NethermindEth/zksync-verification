@@ -4,6 +4,7 @@ require import AllCore.
 require import Int.
 require import IntDiv.
 require        Constants.
+require import Field.
 require import Utils.
 require import Modexp.
 require import PurePrimops.
@@ -14,6 +15,10 @@ require import VerifierConsts.
 require import YulPrimops.
 
 import MemoryMap.
+
+abbrev (-) = FieldR.(-).
+abbrev ( * ) = FieldR.( * ).
+abbrev ( + ) = FieldR.( + ).
 
 module EvaluateLagrangePolyOutOfDomain = {
   proc low(polyNum: uint256, at: uint256): uint256 = {
@@ -82,7 +87,25 @@ module EvaluateLagrangePolyOutOfDomain = {
       *)
     }  
     return r;
-  }  
+  }
+
+  proc high(polyNum: int, at: FieldR.F): FieldR.F option = {
+      var r, omegaPolyNum, atDomainSize, zd1;
+
+      omegaPolyNum <- Constants.OMEGAFr ^ polyNum;
+      atDomainSize <- at^Constants.DOMAIN_SIZE;
+
+      zd1 <-atDomainSize - (FieldR.inF 1);
+
+      if (zd1 = FieldR.zero) {
+        r <- None;
+      } else {
+        r <- Some ((omegaPolyNum * zd1) * ((Constants.DOMAIN_SIZEFr * (at - omegaPolyNum)) ^ (- 1)));
+      }
+    
+      return r;
+    
+  }
 }.
 
 lemma evaluateLagrangePolyOutOfDomain_extracted_equiv_low:
@@ -301,3 +324,58 @@ progress. exists (to_uint poly256, to_uint at256). by progress.
 progress. elim H0. progress. by smt(). by smt().
 apply evaluateLagrangePolyOutOfDomain_low_equiv_mid'.
 proc. inline Modexp.mid. wp. skip. progress. by smt(). by smt(). qed.
+
+lemma lagrange (x: FieldR.F) : x ^ Constants.DOMAIN_SIZE <> FieldR.one => forall (n: int), x <> Constants.OMEGAFr ^ n. 
+proof. admit. qed.
+    
+lemma evaluateLagrangePolyOutOfDomain_mid_equiv_high (memory : mem) (polyInt: int) (atF: FieldR.F):
+equiv [
+    EvaluateLagrangePolyOutOfDomain.mid ~ EvaluateLagrangePolyOutOfDomain.high :
+      0 <= polyInt /\
+      arg{1} = (polyInt, FieldR.asint atF) /\
+      arg{2} = (polyInt, atF) 
+      ==>
+      omap FieldR.inF res{1} = res{2}
+    ].
+proof.
+  proc.
+  seq 3 3: (#pre /\ FieldR.inF omegaPolyNum{1} = omegaPolyNum{2} /\ FieldR.inF atDomainSize{1} = atDomainSize{2} /\ FieldR.inF zd1{1} = zd1{2} /\ zd1{1} = zd1{1} %% FieldR.p
+           /\ zd1{2} = at{2} ^ Constants.DOMAIN_SIZE - FieldR.one /\ omegaPolyNum{2} = Constants.OMEGAFr ^ polyNum{2}).
+  wp. skip. progress.
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp -Constants.omega_eq_omegaFr H FieldR.asintK /( ^ ); by progress.
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE FieldR.asintK /(^); by progress.
+  rewrite Constants.r_eq_fieldr_p FieldR.inFB_mod -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE /(^) FieldR.asintK; by progress. 
+  rewrite -Constants.r_eq_fieldr_p. rewrite IntDiv.modz_mod; by reflexivity. 
+  case (zd1{1} = 0).
+  if; progress; do! (wp; skip; progress); progress. 
+  if. progress.
+  rewrite H0 -FieldR.inFK.
+  search FieldR.asint.
+  rewrite -FieldR.zeroE.
+  congr.
+  wp. skip. progress. 
+  seq 1 0: (#pre /\ FieldR.inF num{1} = omegaPolyNum{2} * zd1{2}).  
+  wp. skip. progress.
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM; by reflexivity. 
+    seq 1 0: (#pre /\ FieldR.inF den{1} = Constants.DOMAIN_SIZEFr * (atF - omegaPolyNum{2}) ).
+  wp. skip. progress.
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.inFB FieldR.asintK /DOMAIN_SIZEFr; by reflexivity.
+  seq 1 0: (#pre /\ FieldR.inF inv{1} = (Constants.DOMAIN_SIZEFr * (atF - omegaPolyNum{2})) ^ (-1) ).  
+  wp. skip. progress. 
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod. 
+  rewrite FieldR.inF_exp -Constants.r_eq_fieldr_p /Constants.R; progress.
+  have -> : 21888242871839275222246405745257275088548364400416034343698204186575808495615 = Constants.R - 2 by rewrite /Constants.R; progress.
+  rewrite Constants.r_eq_fieldr_p -FieldR.inv_exp_sub_p_2.
+  have HHH : forall (n: int), at{2} <> Constants.OMEGAFr ^ n. apply lagrange.
+  have blu: ((at{2} ^ Constants.DOMAIN_SIZE) - FieldR.one) <> FieldR.zero. by smt (@FieldR). 
+  by smt (@FieldR).
+  rewrite H6 FieldR.ZrRing.unitrMr FieldR.unitE /DOMAIN_SIZEFr /Constants.DOMAIN_SIZE. have -> : FieldR.zero = FieldR.inF 0 by smt(@FieldR).
+  rewrite -FieldR.eq_inF -Constants.r_eq_fieldr_p /Constants.R; by progress.
+  rewrite H2.
+  by smt (@FieldR).
+  by smt (@FieldR).
+  wp. skip. progress. 
+  rewrite Constants.r_eq_fieldr_p FieldR.inFM_mod.
+  rewrite H7.
+    congr.
+qed. 
