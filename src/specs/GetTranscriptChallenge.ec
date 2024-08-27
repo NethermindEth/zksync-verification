@@ -54,9 +54,9 @@ proof. proc; inline*; wp; skip; by auto. qed.
 
 import MemoryMap PurePrimops.
 
-op getTranscriptChallenge_memory_footprint (m: mem) (c : uint256) : mem =
+op getTranscriptChallenge_memory_footprint (m: mem) (c : int) : mem =
 let m1 = store8 m TRANSCRIPT_DST_BYTE_SLOT (W256.of_int 2) in
-let m2 = store m1 TRANSCRIPT_CHALLENGE_SLOT c in 
+let m2 = store m1 TRANSCRIPT_CHALLENGE_SLOT (W256.of_int (c * 2^224)) in 
 m2.
 
 lemma getTranscriptChallenge_low_equiv_mid (m : mem) (
@@ -74,7 +74,7 @@ W256.to_uint (mload m TRANSCRIPT_STATE_0_SLOT) = transcriptState0G /\
 W256.to_uint (mload m TRANSCRIPT_STATE_1_SLOT) = transcriptState1G
 ==>
 !Primops.reverted{1} /\
-Primops.memory{1} = getTranscriptChallenge_memory_footprint m (W256.of_int (numChallangeG * 2^224)) /\
+Primops.memory{1} = getTranscriptChallenge_memory_footprint m numChallangeG /\
 W256.to_uint res{1} = res{2} /\
 0 <= res{2} < 2^253
 ].
