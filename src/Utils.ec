@@ -7,6 +7,8 @@ require import Logic.
 require import UInt256.
 import StdOrder.
 
+prover timeout=20.
+
   (* option *)
 
 lemma exists_of_is_some ['a] (ov : 'a option) : is_some ov => exists (v : 'a), ov = Some v. progress. smt (). qed.
@@ -50,6 +52,18 @@ lemma sub_mono_lt (a b c : int) : 0 <= b => a < c => a - b < c. progress. smt().
 
 lemma mul_add_mod_eq (a b m : int) : 0 < m => ((m * a) + b) %% m = b %% m.
     smt ().
+  qed.
+
+lemma add_mod_mod_eq_add_mod (a b m : int) : (a + (b %% m)) %% m = (a + b) %% m.
+    smt (@IntDiv).
+  qed.
+
+ lemma add_mod_eq_mod_add_mod_mod (a b m : int) : (a + b) %% m = ((a %% m) + (b %% m)) %% m.
+    smt (@IntDiv).
+  qed.
+
+lemma mul_mod_eq_mod_mul_mod_mod (a b m : int) : (a * b) %% m = ((a %% m) * (b %% m)) %% m.
+    smt (@IntDiv).
   qed.
   
  (* tuples *)
@@ -438,7 +452,7 @@ lemma uint256_le_add_32_sub (a b: uint256) : W256.of_int 32 < b - a => W256.of_i
 lemma uint256_le_sub_add_32 (a b: uint256): W256.of_int 64 <= b - a => W256.of_int 32 <= b - (a + W256.of_int 32).
     proof.
       progress.
-      smt timeout=10.
+      smt timeout=100.
     qed.
 
 lemma small_neg_mono (a b c : uint256) : a <= b => c <= a => a - c <= b - c.
