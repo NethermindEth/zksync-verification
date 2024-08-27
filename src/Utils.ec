@@ -212,6 +212,8 @@ lemma uint256_le_lt_trans (a b c : uint256) : a <= b => b < c => a <= c. smt (@W
 lemma uint256_lt_le_trans (a b c : uint256) : a < b => b <= c => a < c. smt (@W256). qed.
 lemma uint256_lt_lt_trans (a b c : uint256) : a < b => b < c => a < c. smt (@W256). qed.
   
+lemma int_lt_lt_trans (a b c : int) : a < b => b < c => a < c. smt (@IntDiv). qed.
+
 lemma uint256_ord1 (a b c : uint256) : W256.to_uint a + W256.to_uint c <= W256.to_uint b => c <= b => a <= b - c.
     progress.
     smt.

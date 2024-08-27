@@ -78,7 +78,7 @@ lemma load_store8_diff_32 (memory: mem) (idx idx2 val: uint256):
 lemma load8_store8_same (memory: mem) (idx val: uint256):
     (store8 memory idx val).[idx] = W8.of_int (W256.to_uint val).
 proof. rewrite /store8. simplify. smt (@SmtMap). qed.
-    
+
 lemma load_store8_diff (memory: mem) (idx idx2 val: uint256):
     (exists w, idx2 = idx + W256.of_int w /\ 1 <= w < W256.modulus - 32) => 
     load (store8 memory idx val) idx2 = load memory idx2.
@@ -113,7 +113,8 @@ qed.
 
 lemma store8_store8_same (memory: mem) (idx val val2):
       store8 (store8 memory idx val2) idx val = store8 memory idx val.
-proof. rewrite store8E store8E store8E. progress. smt (@Map). qed.
+proof.
+rewrite store8E store8E store8E. progress. smt (@Map). qed.
 
 lemma store_store8_swap_diff (memory: mem) (idx idx2 val val2: uint256):
     (exists w, idx2 = idx +  W256.of_int w /\ 1 <= w < W256.modulus - 32) =>
@@ -420,13 +421,6 @@ lemma swap_aux2 (a b: uint256):
       smt (@W256).
       smt (@W256).
     qed.
-
-(* lemma swap_aux3 (idx idx2 x: uint256):
-    W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 =>
-    idx <= x < idx + W256.of_int 32 =>
-    forall (i: int), 0 <= i < 32 => x <> idx2 + (W256.of_int i).
-    progress.
-    smt(@W256 @Utils). *)
     
 lemma store_store_swap_diff (memory: mem) (idx idx2 val val2: uint256):
     W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 =>
