@@ -163,7 +163,7 @@ module VerifyQuotientEvaluation = {
     );
   }
 
-  proc high (
+  proc high_encapsulated (
       stateAlpha
       stateBeta
       stateBetaLookup
@@ -3236,7 +3236,7 @@ rewrite /eq_uint256 /iszero /bool_of_uint256 in H26. smt(@W256).
 smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt().
 qed.
 
-lemma verifyQuotientEvaluation_mid_equiv_high (
+lemma verifyQuotientEvaluation_mid_equiv_high_encapsulated (
       stateAlphaG
       stateBetaG
       stateBetaLookupG
@@ -3259,7 +3259,7 @@ lemma verifyQuotientEvaluation_mid_equiv_high (
       stateZInDomainSizeG
       proofQuotientPolyOpeningAtZG: FieldR.F
 ) :
-equiv [VerifyQuotientEvaluation.mid ~ VerifyQuotientEvaluation.high :
+equiv [VerifyQuotientEvaluation.mid ~ VerifyQuotientEvaluation.high_encapsulated :
 arg{1} = (FieldR.asint stateAlphaG, FieldR.asint stateBetaG, FieldR.asint stateBetaLookupG, FieldR.asint stateGammaG, FieldR.asint stateGammaLookupG, FieldR.asint stateZG,
    FieldR.asint proofPublicInputG, FieldR.asint proofCopyPermutationPolys0OpeningAtZG,
    FieldR.asint proofCopyPermutationPolys1OpeningAtZG, FieldR.asint proofCopyPermutationPolys2OpeningAtZG,
