@@ -3745,3 +3745,181 @@ proof.
   wp. skip. progress. 
   by smt (@FieldR). by smt(@FieldR).
 qed. 
+
+lemma verifyQuotientEvaluation_mid_equiv_high (
+      stateAlphaG
+      stateBetaG
+      stateBetaLookupG
+      stateGammaG
+      stateGammaLookupG
+      stateZG
+      proofPublicInputG
+      proofCopyPermutationPolys0OpeningAtZG
+      proofCopyPermutationPolys1OpeningAtZG
+      proofCopyPermutationPolys2OpeningAtZG
+      proofStatePolys0OpeningAtZG
+      proofStatePolys1OpeningAtZG
+      proofStatePolys2OpeningAtZG
+      proofStatePolys3OpeningAtZG
+      proofLookupSPolyOpeningAtZOmegaG
+      proofLookupGrandProductOpeningAtZOmegaG
+      proofGateSelectors0OpeningAtZG
+      proofLinearisationPolyOpeningAtZG
+      proofCopyPermutationGrandProductOpeningAtZOmegaG
+      stateZInDomainSizeG
+      proofQuotientPolyOpeningAtZG: FieldR.F
+) :
+equiv [VerifyQuotientEvaluation.mid ~ VerifyQuotientEvaluation.high :
+arg{1} = (FieldR.asint stateAlphaG, FieldR.asint stateBetaG, FieldR.asint stateBetaLookupG, FieldR.asint stateGammaG, FieldR.asint stateGammaLookupG, FieldR.asint stateZG,
+   FieldR.asint proofPublicInputG, FieldR.asint proofCopyPermutationPolys0OpeningAtZG,
+   FieldR.asint proofCopyPermutationPolys1OpeningAtZG, FieldR.asint proofCopyPermutationPolys2OpeningAtZG,
+   FieldR.asint proofStatePolys0OpeningAtZG, FieldR.asint proofStatePolys1OpeningAtZG,
+   FieldR.asint proofStatePolys2OpeningAtZG, FieldR.asint proofStatePolys3OpeningAtZG,
+   FieldR.asint proofLookupSPolyOpeningAtZOmegaG, FieldR.asint proofLookupGrandProductOpeningAtZOmegaG,
+   FieldR.asint proofGateSelectors0OpeningAtZG, FieldR.asint proofLinearisationPolyOpeningAtZG,
+   FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmegaG, FieldR.asint stateZInDomainSizeG,
+   FieldR.asint proofQuotientPolyOpeningAtZG) /\
+arg{2} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+    proofQuotientPolyOpeningAtZG)
+==>
+  res{1}.`1 = res{2}.`1 /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE - FieldR.one <> FieldR.zero /\
+  FieldR.inF res{1}.`2 = res{2}.`2 /\
+  FieldR.inF res{1}.`3 = res{2}.`3 /\
+  FieldR.inF res{1}.`4 = res{2}.`4 /\
+  FieldR.inF res{1}.`5 = res{2}.`5 /\
+  FieldR.inF res{1}.`6 = res{2}.`6 /\
+  FieldR.inF res{1}.`7 = res{2}.`7 /\
+  FieldR.inF res{1}.`8 = res{2}.`8 /\
+  FieldR.inF res{1}.`9 = res{2}.`9 /\
+  FieldR.inF res{1}.`10 = res{2}.`10 /\
+  FieldR.inF res{1}.`11 = res{2}.`11 /\
+  FieldR.inF res{1}.`12 = res{2}.`12)].
+proof.
+  transitivity VerifyQuotientEvaluation.high_encapsulated
+    (arg{1} = (FieldR.asint stateAlphaG, FieldR.asint stateBetaG, FieldR.asint stateBetaLookupG, FieldR.asint stateGammaG, FieldR.asint stateGammaLookupG, FieldR.asint stateZG,
+   FieldR.asint proofPublicInputG, FieldR.asint proofCopyPermutationPolys0OpeningAtZG,
+   FieldR.asint proofCopyPermutationPolys1OpeningAtZG, FieldR.asint proofCopyPermutationPolys2OpeningAtZG,
+   FieldR.asint proofStatePolys0OpeningAtZG, FieldR.asint proofStatePolys1OpeningAtZG,
+   FieldR.asint proofStatePolys2OpeningAtZG, FieldR.asint proofStatePolys3OpeningAtZG,
+   FieldR.asint proofLookupSPolyOpeningAtZOmegaG, FieldR.asint proofLookupGrandProductOpeningAtZOmegaG,
+   FieldR.asint proofGateSelectors0OpeningAtZG, FieldR.asint proofLinearisationPolyOpeningAtZG,
+   FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmegaG, FieldR.asint stateZInDomainSizeG,
+   FieldR.asint proofQuotientPolyOpeningAtZG) /\
+arg{2} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+    proofQuotientPolyOpeningAtZG)
+==>
+  res{1}.`1 = res{2}.`1 /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE - FieldR.one <> FieldR.zero /\
+  FieldR.inF res{1}.`2 = res{2}.`2 /\
+  FieldR.inF res{1}.`3 = res{2}.`3 /\
+  FieldR.inF res{1}.`4 = res{2}.`4 /\
+  FieldR.inF res{1}.`5 = res{2}.`5 /\
+  FieldR.inF res{1}.`6 = res{2}.`6 /\
+  FieldR.inF res{1}.`7 = res{2}.`7 /\
+  FieldR.inF res{1}.`8 = res{2}.`8 /\
+  FieldR.inF res{1}.`9 = res{2}.`9 /\
+  FieldR.inF res{1}.`10 = res{2}.`10 /\
+  FieldR.inF res{1}.`11 = res{2}.`11 /\
+    FieldR.inF res{1}.`12 = res{2}.`12))
+  (={arg} /\
+arg{1} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+    proofQuotientPolyOpeningAtZG)
+  ==>
+res{1}.`1 = res{2}.`1 /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE <> FieldR.one /\
+  res{1}.`2 = res{2}.`2 /\
+  res{1}.`3 = res{2}.`3 /\
+  res{1}.`4 = res{2}.`4 /\
+  res{1}.`5 = res{2}.`5 /\
+  res{1}.`6 = res{2}.`6 /\
+  res{1}.`7 = res{2}.`7 /\
+  res{1}.`8 = res{2}.`8 /\
+  res{1}.`9 = res{2}.`9 /\
+  res{1}.`10 = res{2}.`10 /\
+  res{1}.`11 = res{2}.`11 /\
+    res{1}.`12 = res{2}.`12)).
+    by smt(). by smt(). exact verifyQuotientEvaluation_mid_equiv_high_encapsulated.
+  transitivity VerifyQuotientEvaluation.high'
+    (={arg} /\
+arg{1} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+    proofQuotientPolyOpeningAtZG)
+  ==>
+res{1}.`1 = res{2}.`1 /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE <> FieldR.one /\
+  res{1}.`2 = res{2}.`2 /\
+  res{1}.`3 = res{2}.`3 /\
+  res{1}.`4 = res{2}.`4 /\
+  res{1}.`5 = res{2}.`5 /\
+  res{1}.`6 = res{2}.`6 /\
+  res{1}.`7 = res{2}.`7 /\
+  res{1}.`8 = res{2}.`8 /\
+  res{1}.`9 = res{2}.`9 /\
+  res{1}.`10 = res{2}.`10 /\
+  res{1}.`11 = res{2}.`11 /\
+    res{1}.`12 = res{2}.`12))
+  (={arg} /\
+arg{1} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+    proofQuotientPolyOpeningAtZG)
+  ==>
+res{1}.`1 = res{2}.`1 /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE <> FieldR.one /\
+  res{1}.`2 = res{2}.`2 /\
+  res{1}.`3 = res{2}.`3 /\
+  res{1}.`4 = res{2}.`4 /\
+  res{1}.`5 = res{2}.`5 /\
+  res{1}.`6 = res{2}.`6 /\
+  res{1}.`7 = res{2}.`7 /\
+  res{1}.`8 = res{2}.`8 /\
+  res{1}.`9 = res{2}.`9 /\
+  res{1}.`10 = res{2}.`10 /\
+  res{1}.`11 = res{2}.`11 /\
+    res{1}.`12 = res{2}.`12)).
+    by smt(). by smt(). exact verifyQuotientEvaluation_high_encapsulated_equiv_high'.
+    exact verifyQuotientEvaluation_high'_equiv_high.
+qed. 
