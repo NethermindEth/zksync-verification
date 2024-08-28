@@ -258,6 +258,87 @@ module VerifyQuotientEvaluation = {
       stateZMinusLastOmega
     );
   }
+
+  proc high (
+      stateAlpha
+      stateBeta
+      stateBetaLookup
+      stateGamma
+      stateGammaLookup
+      stateZ
+      proofPublicInput
+      proofCopyPermutationPolys0OpeningAtZ
+      proofCopyPermutationPolys1OpeningAtZ
+      proofCopyPermutationPolys2OpeningAtZ
+      proofStatePolys0OpeningAtZ
+      proofStatePolys1OpeningAtZ
+      proofStatePolys2OpeningAtZ
+      proofStatePolys3OpeningAtZ
+      proofLookupSPolyOpeningAtZOmega
+      proofLookupGrandProductOpeningAtZOmega
+      proofGateSelectors0OpeningAtZ
+      proofLinearisationPolyOpeningAtZ
+      proofCopyPermutationGrandProductOpeningAtZOmega
+      stateZInDomainSize
+      proofQuotientPolyOpeningAtZ : FieldR.F) :
+  (bool option * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F) = {
+    var r, pqc, lqc;
+    var statePowerOfAlpha2, statePowerOfAlpha3, statePowerOfAlpha4, statePowerOfAlpha5,
+        statePowerOfAlpha6, statePowerOfAlpha7, statePowerOfAlpha8 : FieldR.F;
+    var stateL0AtZ, stateLnMinusOneAtZ, stateBetaPlusOne,
+        stateBetaGammaPlusGamma, stateZMinusLastOmega : FieldR.F;
+    var atDomainSize, stateZAtDomainSize : FieldR.F;
+
+    statePowerOfAlpha2 <- stateAlpha^2;
+    statePowerOfAlpha3 <- stateAlpha^3;
+    statePowerOfAlpha4 <- stateAlpha^4;
+    statePowerOfAlpha5 <- stateAlpha^5;
+    statePowerOfAlpha6 <- stateAlpha^6;
+    statePowerOfAlpha7 <- stateAlpha^7;
+    statePowerOfAlpha8 <- stateAlpha^8;
+
+    stateZAtDomainSize <- stateZ^Constants.DOMAIN_SIZE;
+
+    if (stateZAtDomainSize = FieldR.one) {
+      r <- None;
+    } else {
+      stateL0AtZ <- (stateZAtDomainSize - FieldR.one) * ((Constants.DOMAIN_SIZEFr * (stateZ - FieldR.one)) ^ (- 1));
+      stateLnMinusOneAtZ <- (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (stateZAtDomainSize - FieldR.one)) * ((Constants.DOMAIN_SIZEFr * (stateZ - Constants.OMEGAFr^(Constants.DOMAIN_SIZE- 1))) ^ (- 1)); 
+
+      pqc <- -statePowerOfAlpha4 * proofCopyPermutationGrandProductOpeningAtZOmega 
+         * (proofCopyPermutationPolys0OpeningAtZ * stateBeta + stateGamma + proofStatePolys0OpeningAtZ) 
+         * (proofCopyPermutationPolys1OpeningAtZ * stateBeta + stateGamma + proofStatePolys1OpeningAtZ) 
+         * (proofCopyPermutationPolys2OpeningAtZ * stateBeta + stateGamma + proofStatePolys2OpeningAtZ) 
+         * (proofStatePolys3OpeningAtZ + stateGamma)
+      -statePowerOfAlpha5 * stateL0AtZ;
+
+      (lqc, stateBetaPlusOne, stateBetaGammaPlusGamma, stateZMinusLastOmega) <- (
+      ((statePowerOfAlpha6 * (proofLookupSPolyOpeningAtZOmega * stateBetaLookup + stateGammaLookup * (stateBetaLookup + FieldR.one)) * proofLookupGrandProductOpeningAtZOmega) * (stateZ - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1)) 
+        - statePowerOfAlpha7 * stateL0AtZ 
+        - statePowerOfAlpha8 * stateLnMinusOneAtZ * (stateGammaLookup * (stateBetaLookup + FieldR.one)) ^ (Constants.DOMAIN_SIZE - 1)), 
+        (stateBetaLookup + FieldR.one), 
+        stateGammaLookup * (stateBetaLookup + FieldR.one), 
+        stateZ - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1));
+
+        r <- Some ((proofQuotientPolyOpeningAtZ * (stateZInDomainSize - FieldR.one)) 
+         = (proofLinearisationPolyOpeningAtZ + stateL0AtZ * proofPublicInput * proofGateSelectors0OpeningAtZ + pqc + lqc));
+    }
+    
+    return (r,
+      statePowerOfAlpha2,
+      statePowerOfAlpha3,
+      statePowerOfAlpha4,
+      statePowerOfAlpha5,
+      statePowerOfAlpha6, 
+      statePowerOfAlpha7,
+      statePowerOfAlpha8,
+      stateL0AtZ,
+      stateLnMinusOneAtZ,
+      stateBetaPlusOne,
+      stateBetaGammaPlusGamma,
+      stateZMinusLastOmega
+    );
+  }
 }.
 
 lemma verifyQuotientEvaluation_extracted_equiv_low:
@@ -3452,3 +3533,86 @@ case (elpodL0{1} = None).
   by reflexivity.
 qed.
   
+lemma verifyQuotientEvaluation_high_encapsulated_equiv_high (
+      stateAlphaG
+      stateBetaG
+      stateBetaLookupG
+      stateGammaG
+      stateGammaLookupG
+      stateZG
+      proofPublicInputG
+      proofCopyPermutationPolys0OpeningAtZG
+      proofCopyPermutationPolys1OpeningAtZG
+      proofCopyPermutationPolys2OpeningAtZG
+      proofStatePolys0OpeningAtZG
+      proofStatePolys1OpeningAtZG
+      proofStatePolys2OpeningAtZG
+      proofStatePolys3OpeningAtZG
+      proofLookupSPolyOpeningAtZOmegaG
+      proofLookupGrandProductOpeningAtZOmegaG
+      proofGateSelectors0OpeningAtZG
+      proofLinearisationPolyOpeningAtZG
+      proofCopyPermutationGrandProductOpeningAtZOmegaG
+      stateZInDomainSizeG
+      proofQuotientPolyOpeningAtZG: FieldR.F
+) :
+equiv [VerifyQuotientEvaluation.high_encapsulated ~ VerifyQuotientEvaluation.high :
+={arg} /\
+arg{1} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+    proofQuotientPolyOpeningAtZG)
+  ==>
+res{1}.`1 = res{2}.`1 /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE <> FieldR.one /\
+  res{1}.`2 = res{2}.`2 /\
+  res{1}.`3 = res{2}.`3 /\
+  res{1}.`4 = res{2}.`4 /\
+  res{1}.`5 = res{2}.`5 /\
+  res{1}.`6 = res{2}.`6 /\
+  res{1}.`7 = res{2}.`7 /\
+  res{1}.`8 = res{2}.`8 /\
+  res{1}.`9 = res{2}.`9 /\
+  res{1}.`10 = res{2}.`10 /\
+  res{1}.`11 = res{2}.`11 /\
+    res{1}.`12 = res{2}.`12)].
+proof.
+  proc.
+  seq 7 7 : (#pre /\ ={statePowerOfAlpha2, statePowerOfAlpha3, statePowerOfAlpha4, statePowerOfAlpha5, statePowerOfAlpha6, statePowerOfAlpha7, statePowerOfAlpha8}).
+  wp. skip. by progress.
+  case (stateZG ^ Constants.DOMAIN_SIZE = FieldR.one).
+  seq 1 1 : (#pre /\ elpodL0{1} = None /\ stateZAtDomainSize{2} = FieldR.one).
+  inline*. rcondt{1} 6. progress. wp. skip. progress. rewrite H. by smt(@FieldR).
+  sp. skip. by progress.
+  rcondt{1} 1. by progress.
+  rcondt{2} 1. by progress.
+  wp. skip. progress.
+  seq 0 1 : (#pre /\ stateZAtDomainSize{2} = stateZG ^ Constants.DOMAIN_SIZE).
+  wp. skip. by progress. 
+  seq 1 0 : (#pre /\ elpodL0{1} = Some (((stateZAtDomainSize{2} - FieldR.one) * (Constants.DOMAIN_SIZEFr * (stateZG - FieldR.one)) ^ -1))).
+  inline*. rcondf{1} 6. progress. wp. skip. progress. by smt(@FieldR).
+  wp. skip. progress. by smt(@FieldR).
+  rcondf{1} 1. by progress.
+  rcondf{2} 1. by progress. 
+  seq 1 1 : (#pre /\ ={stateL0AtZ}).
+  wp. skip. by progress. 
+  seq 1 0 : (#pre /\ elpodLn{1} = Some (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (stateZAtDomainSize{2} - FieldR.one) * (Constants.DOMAIN_SIZEFr * (stateZG - Constants.OMEGAFr^(Constants.DOMAIN_SIZE - 1))) ^ -1)).
+  inline*. 
+  rcondf{1} 6. progress.
+  wp. skip. progress. by smt(@FieldR). 
+  wp. skip. progress.
+  seq 1 1 : (#pre /\ ={stateLnMinusOneAtZ}). 
+  wp. skip. by progress. 
+  seq 1 1 : (#pre /\ ={pqc}).  
+  inline*. wp. skip. by progress. 
+  seq 1 1 : (#pre /\ ={lqc, stateBetaPlusOne, stateBetaGammaPlusGamma, stateZMinusLastOmega}).
+  inline*. wp. skip. by progress.
+  wp. skip. by progress.
+qed. 
