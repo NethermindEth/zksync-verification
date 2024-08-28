@@ -2,6 +2,7 @@ pragma Goals:printall.
 prover timeout=10.
 
 require import AllCore.
+require import List.
 require import Array.
 require import Int.
 require import IntDiv.
@@ -29,7 +30,7 @@ module Primops = {
   }
 
   proc mstore8(idx : uint256, val : uint256) : unit = {
-    memory <- memory.[idx<-W8.of_int (W256.to_uint val)];
+    memory <- PurePrimops.mstore8 memory idx val;
   }
 
   proc evm_return(retOff : uint256, retSize : uint256) : unit = {
@@ -294,7 +295,41 @@ hoare [ Primops.mstore :
 lemma mstore_spec_revert:
 hoare [ Primops.mstore: Primops.reverted ==> Primops.reverted ].
     proof. proc. wp. skip. by auto. qed.
+  
+lemma mstore8_pspec:
+    forall (memory: mem) (idx': uint256) (val': uint256),
+phoare [ Primops.mstore8 :
+    arg = (idx', val') /\
+    Primops.memory = memory  ==>
+      Primops.memory = PurePrimops.mstore8 memory idx' val'
+    ] = 1%r.
+    proof.
+      progress.
+      proc.
+      wp.
+      skip.
+      by progress.
+    qed.
 
+lemma mstore8_pspec_revert :
+phoare [ Primops.mstore8 : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. proc; wp; skip; by auto. qed.
+    
+lemma mstore8_spec:
+    forall (memory: mem) (idx': uint256) (val': uint256),
+hoare [ Primops.mstore8 :
+    arg = (idx', val') /\
+    Primops.memory = memory ==>
+      Primops.memory = PurePrimops.mstore8 memory idx' val'
+    ].
+    proof.
+      progress.
+      proc.
+      wp.
+      skip.
+      by progress.
+  qed.
+  
 lemma keccak256_pspec (off size: uint256):
     phoare [ Primops.keccak256 :
       arg = (off, size) ==>

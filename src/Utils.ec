@@ -124,6 +124,10 @@ lemma neq_small (x y: int):
       by progress.
     qed.
 
+lemma uint256_neq_ltz (x y : uint256): (x <> y) <=> (x < y \/ y < x) by smt(@W256).
+
+lemma uint256_neq_sym (x y : uint256): (x <> y) <=> (y <> x) by smt(@W256).
+    
 lemma uint256_eq_of_eq (a b : uint256) : W256.to_uint a = W256.to_uint b => a = b.
     smt.
   qed.
@@ -222,6 +226,8 @@ lemma uint256_le_lt_trans (a b c : uint256) : a <= b => b < c => a <= c. smt (@W
 lemma uint256_lt_le_trans (a b c : uint256) : a < b => b <= c => a < c. smt (@W256). qed.
 lemma uint256_lt_lt_trans (a b c : uint256) : a < b => b < c => a < c. smt (@W256). qed.
   
+lemma int_lt_lt_trans (a b c : int) : a < b => b < c => a < c. smt (@IntDiv). qed.
+
 lemma uint256_ord1 (a b c : uint256) : W256.to_uint a + W256.to_uint c <= W256.to_uint b => c <= b => a <= b - c.
     progress.
     smt.
@@ -780,6 +786,20 @@ lemma uint256_to_uint_sub_eq_sub_to_uint (x y : uint256) : x <= y => W256.to_uin
       apply mod_eq_self. smt (). exact J. exact J'. 
       rewrite J'' of_uintK J''. reflexivity. 
     qed.    
+
+lemma mod256_neq_mod256_plus_plus w x y:
+    1 <= w < W256.modulus - 32 =>
+    1 <= x < 32 =>
+    1 <= y < 32 =>
+    y <> x =>
+    (w + y) %% W256.modulus <> (w + x) %% W256.modulus.
+proof. smt(@W256). qed.
+
+lemma mod256_neq_mod256_plus w x:
+    1 <= w < W256.modulus - 32 =>
+    1 <= x < 32 =>
+    w %% W256.modulus <> (w + x) %% W256.modulus.
+proof. smt(@W256). qed.
 
     
 (* logic *)
