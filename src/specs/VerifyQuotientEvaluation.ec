@@ -3281,8 +3281,8 @@ arg{2} =
     proofQuotientPolyOpeningAtZG)
 ==>
   res{1}.`1 = res{2}.`1 /\
-  (res{1}.`1 <> None <=>
-    (stateZG ^ Constants.DOMAIN_SIZE - FieldR.one <> FieldR.zero)) /\
+  (res{1}.`1 <> None =>
+    stateZG ^ Constants.DOMAIN_SIZE - FieldR.one <> FieldR.zero /\
   FieldR.inF res{1}.`2 = res{2}.`2 /\
   FieldR.inF res{1}.`3 = res{2}.`3 /\
   FieldR.inF res{1}.`4 = res{2}.`4 /\
@@ -3293,7 +3293,7 @@ arg{2} =
   FieldR.inF res{1}.`9 = res{2}.`9 /\
   FieldR.inF res{1}.`10 = res{2}.`10 /\
   FieldR.inF res{1}.`11 = res{2}.`11 /\
-  FieldR.inF res{1}.`12 = res{2}.`12].
+  FieldR.inF res{1}.`12 = res{2}.`12)].
 proof.
   proc.
   seq 1 1 : (
@@ -3355,13 +3355,23 @@ proof.
   skip. by progress. 
   case (elpodL0{1} = None).
   if. progress. wp. skip. progress.
-  
-  by smt().
   seq 0 0 : (false).
   skip. progress. by smt().
   inline*. wp. skip. by progress. 
   if. progress. by smt(). 
   sp. skip. by progress.
+  seq 0 0 : (false).
+  skip. progress. by smt().
+  inline*. wp. skip. progress.
+ seq 1 1 : (#pre /\ omap FieldR.inF elpodL0{1} = elpodL0{2} /\ omap FieldR.asint elpodL0{2} = elpodL0{1} /\ (elpodL0{2} <> None <=> (stateZG^Constants.DOMAIN_SIZE - FieldR.one <> FieldR.zero))).
+  call{1} (evaluateLagrangePolyOutOfDomain_mid_equiv_high 0 stateZG).
+  skip. by progress.
+case (elpodL0{1} = None).
+  seq 0 0 : (false).
+  skip. progress. by smt().
+  inline*. wp. skip. by progress.
+  if. progress. by smt().
+  sp. skip. by progress. 
   seq 1 1 : (#pre /\ FieldR.inF stateL0AtZ{1} = stateL0AtZ{2} /\ stateL0AtZ{1} = FieldR.asint stateL0AtZ{2}).
   wp. skip. progress. by smt().
   by smt().
@@ -3414,16 +3424,31 @@ proof.
   elim*.
   move =>
   stateL0AtZ_L.
-  print lookupQuotientContribution_mid_equiv_high.
   call (lookupQuotientContribution_mid_equiv_high stateBetaLookupG stateGammaLookupG statePowerOfAlpha6_L statePowerOfAlpha7_L statePowerOfAlpha8_L
         proofLookupSPolyOpeningAtZOmegaG proofLookupGrandProductOpeningAtZOmegaG stateZG stateL0AtZ_L stateLnMinusOneAtZ_L).
   skip. by progress. 
   seq 1 0 : (#pre /\ FieldR.inF lqcR{1} = stateL0AtZ{2} * proofPublicInputG * proofGateSelectors0OpeningAtZ{2} +
     pqc{2} + lqc{2}).
   wp. skip. progress.   
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD H16.
+  by reflexivity.    
+  seq 1 0 : (#pre /\ FieldR.inF plpo{1} = proofLinearisationPolyOpeningAtZG + stateL0AtZ{2} * proofPublicInputG * proofGateSelectors0OpeningAtZ{2} +
+    pqc{2} + lqc{2} /\ plpo{1} = FieldR.asint (FieldR.inF plpo{1})).
+  wp. skip. progress. 
+    rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD H17 FieldR.asintK. by smt(@FieldR).
   rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD.
-    
-    by smt(@FieldR).
-  rewrite FieldR.inF_asint.
-  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK H4. by reflexivity.
+  rewrite FieldR.addE FieldR.eq_inF FieldR.inFD FieldR.inFD. do! rewrite FieldR.asintK. by reflexivity.
+    seq 1 0 : (#pre /\ FieldR.inF vanishing{1} = stateZInDomainSizeG - FieldR.one).
+  wp. skip. progress. 
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.asintK FieldR.inFD FieldR.inFN FieldR.inF_mod. by smt(@FieldR).
+  seq 1 0 : (#pre /\ FieldR.inF lhs{1} = proofQuotientPolyOpeningAtZG * (stateZInDomainSizeG - FieldR.one) /\ lhs{1} = FieldR.asint (FieldR.inF lhs{1})).
+  wp. skip. progress. 
+    rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK H20. by reflexivity.
+  rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.mulE FieldR.eq_inF FieldR.inFM.
+  do! rewrite FieldR.asintK. by reflexivity.
+  sp. skip. progress. 
+    rewrite H19 H22 H18 H21.
+  rewrite FieldR.asint_eq.
+  by reflexivity.
+qed.
   
