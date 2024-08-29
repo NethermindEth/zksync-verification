@@ -340,6 +340,21 @@ module VerifyQuotientEvaluation = {
     );
   }
 
+  (* r_0 = alpha^0 * L_0(z) * PI * q_{main selector}(z) + r(z)         -- main gate contribution
+    
+         - alpha^4 * z_perm(z*omega)(sigma_0(z) * beta + gamma + a(z)) \
+                               (sigma_1(z) * beta + gamma + b(z))      |
+                               (sigma_2(z) * beta + gamma + c(z))      | - permutation contribution
+                               (sigma_3(z) + gamma)                    |
+         - alpha^5 * L_0(z)                                            /
+    
+         + alpha^6 * (s(z*omega) * beta' + gamma' (beta' + 1))         \
+                   * (z - omega^{n-1}) * z_lookup(z*omega)             | - lookup contribution
+         - alpha^7 * L_0(z)                                            |
+         - alpha^8 * L_{n-1}(z) * (gamma' (beta' + 1))^{n-1}           /
+    
+     In the end we should check that t(z)*Z_H(z) = r(z) + r_0! *)
+
   proc high (
       stateAlpha
       stateBeta
