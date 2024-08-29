@@ -79,7 +79,7 @@ module PrepareAggregatedCommitment = {
     PointMulIntoDest.low(PAIRING_BUFFER_POINT_X_SLOT, aggregatedValue, PAIRING_BUFFER_POINT_X_SLOT); (* <- *)
   }
 
-  proc mid(queriesAtZ0Slot : (int * int), proofQuotientPolyOpeningAtZSlot : int, queriesAtZ1Slot : int * int, v_challenge : int, proofLinearisationPolyOpeningAtZSlot : int, proofStatePolys0XSlot : int * int, proofStatePolys0OpeningAtZSlot : int, proofStatePolys1Slot : int * int, proofStatePolys1OpeningAtZSlot : int, proofStatePolys2Slot : int * int, proofStatePolys2OpeningAtZSlot : int, proofStatePolys3OpeningAtZSlot : int, vkGateSelectors0Slot : int * int, proofGateSelectors0OpeningAtZSlot : int, vkPermutation0Slot : int * int, proofCopyPermutationPolys0OpeningAtZSlot : int, vkPermutation1Slot : int * int, proofCopyPermutationPolys1OpeningAtZSlot : int, vkPermutation2Slot : int * int, proofCopyPermutationPolys2OpeningAtZSlot : int, proofLookupTPolyOpeningAtZSlot : int, vkLookupSelectorSlot : int * int, proofLookupSelectorPolyOpeningAtZSlot : int, vkLookupTableTypeSlot : int * int, proofLookupTableTypePolyOpeningAtZSlot : int, copyPermutationFirstAggregatedCommitmentCoeff : int, u_challenge : int, proofCopyPermutationGrandProductSlot : int * int, proofCopyPermutationGrandProductOpeningAtZOmegaSlot : int, proofStatePolys3Slot : int * int, proofStatePolys3OpeningAtZOmegaSlot : int, proofLookupSPolySlot : int * int, proofLookupSPolyOpeningAtZOmegaSlot : int, lookupSFirstAggregatedCommitmentCoeff : int, proofLookupGrandProductSlot : int * int, proofLookupGrandProductOpeningAtZOmegaSlot : int, lookupGrandProductFirstAggregatedCommitmentCoeff : int, queriesTPolyAggregatedSlot : int * int, proofLookupTPolyOpeningAtZOmegaSlot : int) : ((int * int) * int * (int * int) * int * (int * int) * (int * int)) option= {
+  proc mid(queriesAtZ0Slot : (int * int), proofQuotientPolyOpeningAtZSlot : int, queriesAtZ1Slot : int * int, v_challenge : int, proofLinearisationPolyOpeningAtZSlot : int, proofStatePolys0XSlot : int * int, proofStatePolys0OpeningAtZSlot : int, proofStatePolys1Slot : int * int, proofStatePolys1OpeningAtZSlot : int, proofStatePolys2Slot : int * int, proofStatePolys2OpeningAtZSlot : int, proofStatePolys3OpeningAtZSlot : int, vkGateSelectors0Slot : int * int, proofGateSelectors0OpeningAtZSlot : int, vkPermutation0Slot : int * int, proofCopyPermutationPolys0OpeningAtZSlot : int, vkPermutation1Slot : int * int, proofCopyPermutationPolys1OpeningAtZSlot : int, vkPermutation2Slot : int * int, proofCopyPermutationPolys2OpeningAtZSlot : int, proofLookupTPolyOpeningAtZSlot : int, vkLookupSelectorSlot : int * int, proofLookupSelectorPolyOpeningAtZSlot : int, vkLookupTableTypeSlot : int * int, proofLookupTableTypePolyOpeningAtZSlot : int, copyPermutationFirstAggregatedCommitmentCoeff : int, u_challenge : int, proofCopyPermutationGrandProductSlot : int * int, proofCopyPermutationGrandProductOpeningAtZOmegaSlot : int, proofStatePolys3Slot : int * int, proofStatePolys3OpeningAtZOmegaSlot : int, proofLookupSPolySlot : int * int, proofLookupSPolyOpeningAtZOmegaSlot : int, lookupSFirstAggregatedCommitmentCoeff : int, proofLookupGrandProductSlot : int * int, proofLookupGrandProductOpeningAtZOmegaSlot : int, lookupGrandProductFirstAggregatedCommitmentCoeff : int, queriesTPolyAggregatedSlot : int * int, proofLookupTPolyOpeningAtZOmegaSlot : int) : ((int * int) * int * (int * int) * int * (int * int) * (int * int)) option = {
       var aggregationChallenge, aggregatedAtZSlot, aggregatedOpeningAtZ, mAggregatedAtZSlot, mUACRes, firstDCoeff, firstTCoeff, aggregatedOpeningAtZSlot, copyPermutationCoeff, mPMID, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, mUAC105, pairingPairWithGeneratorSlot, aggregatedValue, mPairingPairWithGeneratorSlot, pairingBufferPointSlot, mPairingBufferPointSlot, result;
       var failed : bool;
 
@@ -189,6 +189,74 @@ module PrepareAggregatedCommitment = {
 
         return result;
   }
+
+  proc high_encapsulated(queriesAtZ0Slot : g, proofQuotientPolyOpeningAtZSlot : FieldR.F, queriesAtZ1Slot : g, v_challenge : FieldR.F, proofLinearisationPolyOpeningAtZSlot : FieldR.F, proofStatePolys0XSlot : g, proofStatePolys0OpeningAtZSlot : FieldR.F, proofStatePolys1Slot : g, proofStatePolys1OpeningAtZSlot : FieldR.F, proofStatePolys2Slot : g, proofStatePolys2OpeningAtZSlot : FieldR.F, proofStatePolys3OpeningAtZSlot : FieldR.F, vkGateSelectors0Slot : g, proofGateSelectors0OpeningAtZSlot : FieldR.F, vkPermutation0Slot : g, proofCopyPermutationPolys0OpeningAtZSlot : FieldR.F, vkPermutation1Slot : g, proofCopyPermutationPolys1OpeningAtZSlot : FieldR.F, vkPermutation2Slot : g, proofCopyPermutationPolys2OpeningAtZSlot : FieldR.F, proofLookupTPolyOpeningAtZSlot : FieldR.F, vkLookupSelectorSlot : g, proofLookupSelectorPolyOpeningAtZSlot : FieldR.F, vkLookupTableTypeSlot : g, proofLookupTableTypePolyOpeningAtZSlot : FieldR.F, copyPermutationFirstAggregatedCommitmentCoeff : FieldR.F, u_challenge : FieldR.F, proofCopyPermutationGrandProductSlot : g, proofCopyPermutationGrandProductOpeningAtZOmegaSlot : FieldR.F, proofStatePolys3Slot : g, proofStatePolys3OpeningAtZOmegaSlot : FieldR.F, proofLookupSPolySlot : g, proofLookupSPolyOpeningAtZOmegaSlot : FieldR.F, lookupSFirstAggregatedCommitmentCoeff : FieldR.F, proofLookupGrandProductSlot : g, proofLookupGrandProductOpeningAtZOmegaSlot : FieldR.F, lookupGrandProductFirstAggregatedCommitmentCoeff : FieldR.F, queriesTPolyAggregatedSlot : g, proofLookupTPolyOpeningAtZOmegaSlot : FieldR.F) : (g * FieldR.F * g * FieldR.F * g * g) = {
+    var aggregationChallenge, aggregatedAtZSlot, aggregatedOpeningAtZ, firstDCoeff, firstTCoeff, aggregatedOpeningAtZSlot, copyPermutationCoeff, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, aggregatedValue, pairingBufferPointSlot;
+    
+      aggregatedAtZSlot <- queriesAtZ0Slot;
+      aggregatedOpeningAtZ <- proofQuotientPolyOpeningAtZSlot;
+    
+      aggregatedAtZSlot <@ PointAddIntoDest.high(aggregatedAtZSlot, queriesAtZ1Slot);
+
+      aggregationChallenge <- v_challenge;
+      aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * proofLinearisationPolyOpeningAtZSlot;
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(proofStatePolys0XSlot, proofStatePolys0OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(proofStatePolys1Slot, proofStatePolys1OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(proofStatePolys2Slot, proofStatePolys2OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      aggregationChallenge <- aggregationChallenge * v_challenge;
+    
+      firstDCoeff <- aggregationChallenge;
+
+      aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * proofStatePolys3OpeningAtZSlot;
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(vkGateSelectors0Slot, proofGateSelectors0OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(vkPermutation0Slot, proofCopyPermutationPolys0OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(vkPermutation1Slot, proofCopyPermutationPolys1OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(vkPermutation2Slot, proofCopyPermutationPolys2OpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      aggregationChallenge <- v_challenge * aggregationChallenge;
+    
+      firstTCoeff <- aggregationChallenge;
+
+      aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * proofLookupTPolyOpeningAtZSlot;
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(vkLookupSelectorSlot, proofLookupSelectorPolyOpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZ, aggregatedAtZSlot) <@ UpdateAggregationChallenge.high(vkLookupTableTypeSlot, proofLookupTableTypePolyOpeningAtZSlot, aggregationChallenge, aggregatedOpeningAtZ, v_challenge, aggregatedAtZSlot);
+
+        aggregatedOpeningAtZSlot <- aggregatedOpeningAtZ;
+
+        aggregationChallenge <- aggregationChallenge * v_challenge;
+
+        copyPermutationCoeff <- copyPermutationFirstAggregatedCommitmentCoeff + aggregationChallenge * u_challenge;
+    
+        aggregatedAtZOmegaSlot <@ PointMulIntoDest.high(proofCopyPermutationGrandProductSlot, copyPermutationCoeff);
+
+        aggregatedOpeningAtZOmega <- proofCopyPermutationGrandProductOpeningAtZOmegaSlot * aggregationChallenge;
+
+      (aggregationChallenge, aggregatedOpeningAtZOmega, aggregatedAtZOmegaSlot) <@ UpdateAggregationChallenge_105.high(proofStatePolys3Slot, proofStatePolys3OpeningAtZOmegaSlot, firstDCoeff, aggregationChallenge, aggregatedOpeningAtZOmega, v_challenge, u_challenge, aggregatedAtZOmegaSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZOmega, aggregatedAtZOmegaSlot) <@ UpdateAggregationChallenge_105.high(proofLookupSPolySlot, proofLookupSPolyOpeningAtZOmegaSlot, lookupSFirstAggregatedCommitmentCoeff, aggregationChallenge, aggregatedOpeningAtZOmega, v_challenge, u_challenge, aggregatedAtZOmegaSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZOmega, aggregatedAtZOmegaSlot) <@ UpdateAggregationChallenge_105.high(proofLookupGrandProductSlot, proofLookupGrandProductOpeningAtZOmegaSlot, lookupGrandProductFirstAggregatedCommitmentCoeff, aggregationChallenge, aggregatedOpeningAtZOmega, v_challenge, u_challenge, aggregatedAtZOmegaSlot);
+
+      (aggregationChallenge, aggregatedOpeningAtZOmega, aggregatedAtZOmegaSlot) <@ UpdateAggregationChallenge_105.high(queriesTPolyAggregatedSlot, proofLookupTPolyOpeningAtZOmegaSlot, firstTCoeff, aggregationChallenge, aggregatedOpeningAtZOmega, v_challenge, u_challenge, aggregatedAtZOmegaSlot);
+
+        pairingPairWithGeneratorSlot <@ PointAddIntoDest.high(aggregatedAtZSlot, aggregatedAtZOmegaSlot);
+      
+        aggregatedValue <- aggregatedOpeningAtZOmega * u_challenge + aggregatedOpeningAtZ;
+      
+        pairingBufferPointSlot <@ PointMulIntoDest.high(EllipticCurve.g_gen, aggregatedValue);
+
+        return (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot);
+  }
 }.
 
 lemma prepareAggregatedCommitment_extracted_equiv_low:
@@ -210,7 +278,65 @@ lemma prepareAggregatedCommitment_extracted_equiv_low:
       inline Primops.mstore Primops.mload. wp.
       call pointAddIntoDest_extracted_equiv_low.
       wp. skip. by progress.
-    qed.
+  qed.
+
+lemma prepareAggregatedCommitment_mid_equiv_high_encapsulated :
+  equiv [
+    PrepareAggregatedCommitment.mid ~ PrepareAggregatedCommitment.high_encapsulated :
+      arg{1} =
+      (
+        F_to_int_point (aspoint_G1 queriesAtZ0Slot{2}), FieldR.asint proofQuotientPolyOpeningAtZSlot{2}, F_to_int_point (aspoint_G1 queriesAtZ1Slot{2}),
+        FieldR.asint v_challenge{2}, FieldR.asint proofLinearisationPolyOpeningAtZSlot{2}, F_to_int_point (aspoint_G1 proofStatePolys0XSlot{2}),
+        FieldR.asint proofStatePolys0OpeningAtZSlot{2}, F_to_int_point (aspoint_G1 proofStatePolys1Slot{2}), FieldR.asint proofStatePolys1OpeningAtZSlot{2},
+        F_to_int_point (aspoint_G1 proofStatePolys2Slot{2}), FieldR.asint proofStatePolys2OpeningAtZSlot{2}, FieldR.asint proofStatePolys3OpeningAtZSlot{2},
+        F_to_int_point (aspoint_G1 vkGateSelectors0Slot{2}), FieldR.asint proofGateSelectors0OpeningAtZSlot{2}, F_to_int_point (aspoint_G1 vkPermutation0Slot{2}),
+        FieldR.asint proofCopyPermutationPolys0OpeningAtZSlot{2}, F_to_int_point (aspoint_G1 vkPermutation1Slot{2}), FieldR.asint proofCopyPermutationPolys1OpeningAtZSlot{2},
+        F_to_int_point (aspoint_G1 vkPermutation2Slot{2}), FieldR.asint proofCopyPermutationPolys2OpeningAtZSlot{2}, FieldR.asint proofLookupTPolyOpeningAtZSlot{2},
+        F_to_int_point (aspoint_G1 vkLookupSelectorSlot{2}), FieldR.asint proofLookupSelectorPolyOpeningAtZSlot{2}, F_to_int_point (aspoint_G1 vkLookupTableTypeSlot{2}),
+        FieldR.asint proofLookupTableTypePolyOpeningAtZSlot{2}, FieldR.asint copyPermutationFirstAggregatedCommitmentCoeff{2}, FieldR.asint u_challenge{2},
+        F_to_int_point (aspoint_G1 proofCopyPermutationGrandProductSlot{2}), FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmegaSlot{2},
+        F_to_int_point (aspoint_G1 proofStatePolys3Slot{2}), FieldR.asint proofStatePolys3OpeningAtZOmegaSlot{2}, F_to_int_point (aspoint_G1 proofLookupSPolySlot{2}),
+        FieldR.asint proofLookupSPolyOpeningAtZOmegaSlot{2}, FieldR.asint lookupSFirstAggregatedCommitmentCoeff{2}, F_to_int_point (aspoint_G1 proofLookupGrandProductSlot{2}),
+        FieldR.asint proofLookupGrandProductOpeningAtZOmegaSlot{2}, FieldR.asint lookupGrandProductFirstAggregatedCommitmentCoeff{2}, F_to_int_point (aspoint_G1 queriesTPolyAggregatedSlot{2}),
+        FieldR.asint proofLookupTPolyOpeningAtZOmegaSlot{2}
+      )
+      ==>
+      res{1} = Some (F_to_int_point (aspoint_G1 res{2}.`1), FieldR.asint res{2}.`2, F_to_int_point (aspoint_G1 res{2}.`3), FieldR.asint res{2}.`4, F_to_int_point (aspoint_G1 res{2}.`5), F_to_int_point (aspoint_G1 res{2}.`6))
+    ]. proof.
+        proc. simplify.
+        seq 1 0 : (#pre /\ !failed{1}). wp. skip. progress.
+        seq 2 2 : (#pre /\ aggregatedAtZSlot{1} = F_to_int_point (aspoint_G1 aggregatedAtZSlot{2}) /\ aggregatedOpeningAtZ{1} = FieldR.asint aggregatedOpeningAtZ{2}). wp. skip. progress.
+        seq 3 1 : #pre. wp. call pointAddIntoDest_mid_equiv_high. skip. progress.
+        seq 1 1 : (#pre /\ aggregationChallenge{1} = FieldR.asint aggregationChallenge{2}). wp. skip. progress. rewrite modz_small. progress. exact FieldR.ge0_asint.
+        have ->: `|Constants.R| = FieldR.p. have ->: `|Constants.R| = Constants.R. smt(@Constants). exact Constants.r_eq_fieldr_p. exact FieldR.gtp_asint.
+        reflexivity.
+        seq 1 1 : #pre. wp. skip. progress. rewrite FieldR.addE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 3 : (#pre /\ firstDCoeff{1} = FieldR.asint firstDCoeff{2}). wp. skip. progress. rewrite FieldR.addE FieldR.mulE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv). rewrite FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv). rewrite FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 3 : (#pre /\ firstTCoeff{1} = FieldR.asint firstTCoeff{2}). wp. skip. progress. rewrite FieldR.addE FieldR.mulE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv). rewrite FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv). rewrite FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_mid_equiv_high. skip. progress.
+        seq 3 3 : (#pre /\ copyPermutationCoeff{1} = FieldR.asint copyPermutationCoeff{2} /\ aggregatedOpeningAtZSlot{1} = FieldR.asint aggregatedOpeningAtZSlot{2}).  wp. skip. progress. rewrite FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv). rewrite FieldR.addE FieldR.mulE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        seq 3 1 : (#pre /\ aggregatedAtZOmegaSlot{1} = F_to_int_point (aspoint_G1 aggregatedAtZOmegaSlot{2})). wp. call pointMulIntoDest_mid_equiv_high. skip. progress.
+        seq 1 1 : (#pre /\ aggregatedOpeningAtZOmega{1} = FieldR.asint aggregatedOpeningAtZOmega{2}). wp. skip. progress. rewrite FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_105_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_105_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_105_mid_equiv_high. skip. progress.
+        seq 3 1 : #pre. wp. call updateAggregationChallenge_105_mid_equiv_high. skip. progress.
+        seq 3 1 : (#pre /\ pairingPairWithGeneratorSlot{1} = F_to_int_point (aspoint_G1 pairingPairWithGeneratorSlot{2})). wp. call pointAddIntoDest_mid_equiv_high. skip. progress.
+        seq 1 1 : (#pre /\ aggregatedValue{1} =  FieldR.asint aggregatedValue{2}). wp. skip. progress. rewrite FieldR.addE FieldR.mulE -Constants.r_eq_fieldr_p. smt (@IntDiv).
+        seq 3 1 : (#pre /\ pairingBufferPointSlot{1} = F_to_int_point (aspoint_G1 pairingBufferPointSlot{2})). wp. call pointMulIntoDest_mid_equiv_high. skip. progress.
+        rewrite EllipticCurve.gen_def /F_to_int_point. progress. rewrite FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. progress.
+        rewrite EllipticCurve.gen_def /F_to_int_point. progress. rewrite FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. progress.
+        rcondf {1} 1. progress.
+        wp. skip. progress.
+  qed.
     
 op prepareAggregatedCommitment_memory_footprint (mem_0 : mem) (aggregatedAtZSlot_rep : int * int) (aggregatedOpeningAtZSlot_rep : uint256) (aggregatedAtZOmegaXSlot_rep : int * int) (aggregatedOpeningAtZOmega_rep : uint256) (pairingPairWithGeneratorSlot_rep : int * int) (pairingBufferPointSlot_rep : int * int) (v1 v2 v3 v4 : uint256) : mem =
 let mem_0' = store (store (store (store mem_0 W256.zero v1) (W256.of_int 32) v2) (W256.of_int 64) v3) (W256.of_int 96) v4 in 
