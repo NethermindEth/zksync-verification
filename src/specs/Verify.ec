@@ -1,5 +1,8 @@
-require import FinalPairing.
+pragma Goals:printall.
+
 require import InitializeTranscript.
+require import Field.
+require import FinalPairing.
 require import LoadProof.
 require import LoadVerificationKey.
 require import PrepareAggregatedCommitment.
@@ -8,6 +11,107 @@ require import UInt256.
 require import Verifier.
 require import VerifyQuotientEvaluation.
 require import YulPrimops.
+
+op vk_gate_setup_0: g.
+axiom vk_gate_setup_0_F: aspoint_G1 vk_gate_setup_0 = (
+    FieldQ.inF 8752182643819278825281358491109311747488397345835400146720638359015287854690,
+    FieldQ.inF 11702890106774794311109464320829961639285524182517416836480964755620593036625
+).
+op vk_gate_setup_1: g.
+axiom vk_gate_setup_1_F: aspoint_G1 vk_gate_setup_1 = (
+    FieldQ.inF 20333726085237242816528533108173405517277666887513325731527458638169740323846,
+    FieldQ.inF 20895759739260899082484353863151962651671811489085862903974918191239970565727
+).
+op vk_gate_setup_2: g.
+axiom vk_gate_setup_2_F: aspoint_G1 vk_gate_setup_2 = (
+    FieldQ.inF 1568732599965362807326380099663611053862348508639087822144187543479274466412,
+    FieldQ.inF 5821054758250780059685638301776364871013117602597489359484409980131967326794
+).
+op vk_gate_setup_3: g.
+axiom vk_gate_setup_3_F: aspoint_G1 vk_gate_setup_3 = (
+    FieldQ.inF 1869564366554527726271945732583360837778279311090061338642468249261166609475,
+    FieldQ.inF 6787073056745945161826226704190290609825180409911049644428579916838155209697
+).
+op vk_gate_setup_4: g.
+axiom vk_gate_setup_4_F: aspoint_G1 vk_gate_setup_4 = (
+    FieldQ.inF 457576930265342335264945522969406804501107665328727087867171094316559181535,
+    FieldQ.inF 15424863073888926344027107060444259361026863904290125685775015743583967752523
+).
+op vk_gate_setup_5: g.
+axiom vk_gate_setup_5_F: aspoint_G1 vk_gate_setup_5 = (
+    FieldQ.inF 17470132079837949645292768946901897910488674334073656384858846314172720305794,
+    FieldQ.inF 545412623592733862227844066395948813122937527333953380716629283051527996076
+).
+op vk_gate_setup_6: g.
+axiom vk_gate_setup_6_F: aspoint_G1 vk_gate_setup_6 = (
+    FieldQ.inF 3542620684081214281078362979824071457719243923292217179618867142734017714197,
+    FieldQ.inF 10380438707000372753007289103897630883671902212004026295360039945231108187502
+).
+op vk_gate_setup_7: g.
+axiom vk_gate_setup_7_F: aspoint_G1 vk_gate_setup_7 = (
+    FieldQ.inF 13086775255118926036233880981068687796723800497694631087151014741591951564618,
+    FieldQ.inF 97194583370920108185062801930585216368005987855712538133473341181290744675
+).
+op vk_gate_selectors_0: g.
+axiom vk_gate_selectors_0_F: aspoint_G1 vk_gate_selectors_0 = (
+    FieldQ.inF 11090534100914016361232447120294745393211436081860550365760620284449885924457,
+    FieldQ.inF 6190121082107679677011313308624936965782748053078710395209485205617091614781
+).
+op vk_gate_selectors_1: g.
+axiom vk_gate_selectors_1_F: aspoint_G1 vk_gate_selectors_1 = (
+    FieldQ.inF 15086136319636422536776088427553286399949509263897119922379735045147898875009,
+    FieldQ.inF 14330561162787072568797012175184761164763459595199124517037991495673925464785
+).
+op vk_permutation_0: g.
+axiom vk_permutation_0_F: aspoint_G1 vk_permutation_0 = (
+    FieldQ.inF 21323538885080684424185174689480993185750201390966223018512354418490677522148,
+    FieldQ.inF 13825385863192118646834397710139923872086647553258488355179808994788744210563
+).
+op vk_permutation_1: g.
+axiom vk_permutation_1_F: aspoint_G1 vk_permutation_1 = (
+    FieldQ.inF 8390759602848414205412884900126185284679301543388803089358900543850868129488,
+    FieldQ.inF 7069161667387011886642940009688789554068768218554020114127791736575843662652
+).
+op vk_permutation_2: g.
+axiom vk_permutation_2_F: aspoint_G1 vk_permutation_2 = (
+    FieldQ.inF 21779692208264067614279093821878517213862501879831804234566704419708093761485,
+    FieldQ.inF 14513193766097634962386283396255157053671281137962954471134782133605379519908
+).
+op vk_permutation_3: g.
+axiom vk_permutation_3_F: aspoint_G1 vk_permutation_3 = (
+    FieldQ.inF 4751267043421347170875860608378639586591867931662910797110300384786346064625,
+    FieldQ.inF 11385717438670984215358012358002661303410243223751533068904005282628107986385
+).
+op vk_lookup_table_0: g.
+axiom vk_lookup_table_0_F: aspoint_G1 vk_lookup_table_0 = (
+    FieldQ.inF 20045313662746578028950791395157660351198208045597010788369662325700141348443,
+    FieldQ.inF 2200761695078532224145807378118591946349840073460005094399078719163643466856
+).
+op vk_lookup_table_1: g.
+axiom vk_lookup_table_1_F: aspoint_G1 vk_lookup_table_1 = (
+    FieldQ.inF 13866646217607640441607041956684111087071997201218815349460750486791109380780,
+    FieldQ.inF 13178446611795019678701878053235714968797421377761816259103804833273256298333
+).
+op vk_lookup_table_2: g.
+axiom vk_lookup_table_2_F: aspoint_G1 vk_lookup_table_2 = (
+    FieldQ.inF 5057503605752869531452842486824745179648819794307492731589448195268672785801,
+    FieldQ.inF 8597434312520299647191152876265164941580478223412397470356037586993894367875
+).
+op vk_lookup_table_3: g.
+axiom vk_lookup_table_3_F: aspoint_G1 vk_lookup_table_3 = (
+    FieldQ.inF 1342318055425277544055386589364579054544440640110901993487861472578322387903,
+    FieldQ.inF 4438354282468267034382897187461199764068502038746983055473062465446039509158
+).
+op vk_lookup_selector: g.
+axiom vk_lookup_selector_F: aspoint_G1 vk_lookup_selector = (
+    FieldQ.inF 21714794642552531775933093644480516421064284615960245486122726724547638127878,
+    FieldQ.inF 20374981665942106195451736226451722737514281476778224282304648903722926579601
+).
+op vk_lookup_table_type: g.
+axiom vk_lookup_table_type_F: aspoint_G1 vk_lookup_table_type = (
+    FieldQ.inF 196778531949039689886328474582670216324308721975620885373710029662715787742,
+    FieldQ.inF 11005776646725047106517461026899305486268481542412200771754169232553006481646
+).
 
 module Verify = {
   proc low(var__offset : uint256, var_length : uint256, var_offset : uint256, var__length : uint256, var_1250_offset : uint256, var_1250_length : uint256): uint256 = {
@@ -160,6 +264,146 @@ module Verify = {
    (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot) <- oget prepare_aggregated_commitment_opt;
 
   final_pairing_bool <@ FinalPairing.mid(state_u, state_z, pairingPairWithGeneratorSlot, pairingBufferPointSlot, _opening_proof_at_z, _opening_proof_at_z_omega, vk_recursive_flag, recursive_part_p1, recursive_part_p2);
+  failed <- failed \/ !final_pairing_bool;
+   
+  return !failed;
+ }
+
+  proc high_encapsulated (public_input_length_in_words: int, public_input: FieldR.F, proof_length_in_words: int, state_poly_0: g, state_poly_1: g, state_poly_2: g, state_poly_3: g, copy_permutation_grand_product: g, lookup_s_poly: g, lookup_grand_product: g, quotient_poly_part_0: g, quotient_poly_part_1: g, quotient_poly_part_2: g, quotient_poly_part_3: g, state_poly_0_opening_at_z: FieldR.F, state_poly_1_opening_at_z: FieldR.F, state_poly_2_opening_at_z: FieldR.F, state_poly_3_opening_at_z: FieldR.F, state_poly_3_opening_at_z_omega: FieldR.F, gate_selector_0_opening_at_z: FieldR.F, copy_permutation_poly_0_opening_at_z: FieldR.F, copy_permutation_poly_1_opening_at_z: FieldR.F, copy_permutation_poly_2_opening_at_z: FieldR.F, copy_permutation_grand_product_opening_at_z_omega: FieldR.F, lookup_s_poly_opening_at_z_omega: FieldR.F, lookup_grand_product_opening_at_z_omega: FieldR.F, lookup_t_poly_opening_at_z: FieldR.F, lookup_t_poly_opening_at_z_omega: FieldR.F, lookup_selector_poly_opening_at_z: FieldR.F, lookup_table_type_poly_opening_at_z: FieldR.F, quotient_poly_opening_at_z: FieldR.F, linearisation_poly_opening_at_z: FieldR.F, opening_proof_at_z: g, opening_proof_at_z_omega: g, recursive_proof_length_in_words: int, recursive_part_p1: g, recursive_part_p2: g) : bool = {
+     
+   (* load proof related *)
+   var load_proof_opt;
+   
+   (* load proof mod *)
+   var _public_input, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, 
+       _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, 
+       _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega, _lookup_grand_product_opening_at_z_omega, 
+       _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z, _lookup_table_type_poly_opening_at_z, 
+       _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z : FieldR.F; 
+   var _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product, _quotient_poly_part_0, 
+       _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _opening_proof_at_z, _opening_proof_at_z_omega: g;
+   var _recursive_part_p1, _recursive_part_p2: g option;
+    
+   (* load verification key related *)
+   var vk_gate_setup_0X, vk_gate_setup_0Y,
+       vk_gate_setup_1X, vk_gate_setup_1Y,
+       vk_gate_setup_2X, vk_gate_setup_2Y,
+       vk_gate_setup_3X, vk_gate_setup_3Y,
+       vk_gate_setup_4X, vk_gate_setup_4Y,
+       vk_gate_setup_5X, vk_gate_setup_5Y,
+       vk_gate_setup_6X, vk_gate_setup_6Y,
+       vk_gate_setup_7X, vk_gate_setup_7Y : int;
+   var vk_gate_selectors_0X, vk_gate_selectors_1X, 
+       vk_gate_selectors_0Y, vk_gate_selectors_1Y: int;
+   var vk_permutation_0X, vk_permutation_0Y, 
+       vk_permutation_1X, vk_permutation_1Y, 
+       vk_permutation_2X, vk_permutation_2Y, 
+       vk_permutation_3X, vk_permutation_3Y: int;
+   var vk_lookup_table_0X, vk_lookup_table_0Y,
+       vk_lookup_table_1X, vk_lookup_table_1Y,
+       vk_lookup_table_2X, vk_lookup_table_2Y,
+       vk_lookup_table_3X, vk_lookup_table_3Y: int;
+   var vk_lookup_selector_X, vk_lookup_selector_Y: int;
+   var vk_lookup_table_type_X, vk_lookup_table_type_Y: int;
+   var vk_recursive_flag: bool;
+
+   (* initialize transcript *)
+   var state_alpha, state_beta, state_gamma, state_eta;
+   var state_beta_lookup, state_gamma_lookup; 
+   var state_z, state_z_in_domain, state_v, state_u;
+
+   (* verify quotient evaluation *)
+   var alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8;
+   var l0_at_z, ln_minus_one_at_z, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega;
+   var verify_quotient_evaluation_opt;
+
+   (* prepare queries *)
+   var prepare_queries_opt;
+   var query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment,
+       lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated;
+
+   (* prepare aggregated commitment *)
+   var prepare_aggregated_commitment_opt;
+   var aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot;
+   
+   (* final pairing *)
+   var final_pairing_bool;  
+
+   var failed;
+   failed <- false;
+
+    (* _loadVerificationKeys *)
+    vk_gate_setup_0X <- 8752182643819278825281358491109311747488397345835400146720638359015287854690;
+    vk_gate_setup_0Y <- 11702890106774794311109464320829961639285524182517416836480964755620593036625;
+    vk_gate_setup_1X <- 20333726085237242816528533108173405517277666887513325731527458638169740323846;
+    vk_gate_setup_1Y <- 20895759739260899082484353863151962651671811489085862903974918191239970565727;
+    vk_gate_setup_2X <- 1568732599965362807326380099663611053862348508639087822144187543479274466412;
+    vk_gate_setup_2Y <- 5821054758250780059685638301776364871013117602597489359484409980131967326794;
+    vk_gate_setup_3X <- 1869564366554527726271945732583360837778279311090061338642468249261166609475;
+    vk_gate_setup_3Y <- 6787073056745945161826226704190290609825180409911049644428579916838155209697;
+    vk_gate_setup_4X <- 457576930265342335264945522969406804501107665328727087867171094316559181535;
+    vk_gate_setup_4Y <- 15424863073888926344027107060444259361026863904290125685775015743583967752523;
+    vk_gate_setup_5X <- 17470132079837949645292768946901897910488674334073656384858846314172720305794;
+    vk_gate_setup_5Y <- 545412623592733862227844066395948813122937527333953380716629283051527996076;
+    vk_gate_setup_6X <- 3542620684081214281078362979824071457719243923292217179618867142734017714197;
+    vk_gate_setup_6Y <- 10380438707000372753007289103897630883671902212004026295360039945231108187502;
+    vk_gate_setup_7X <- 13086775255118926036233880981068687796723800497694631087151014741591951564618;
+    vk_gate_setup_7Y <- 97194583370920108185062801930585216368005987855712538133473341181290744675;
+    
+    vk_gate_selectors_0X <- 11090534100914016361232447120294745393211436081860550365760620284449885924457;
+    vk_gate_selectors_0Y <- 6190121082107679677011313308624936965782748053078710395209485205617091614781;
+    vk_gate_selectors_1X <- 15086136319636422536776088427553286399949509263897119922379735045147898875009;
+    vk_gate_selectors_1Y <- 14330561162787072568797012175184761164763459595199124517037991495673925464785;
+
+    vk_permutation_0X <- 21323538885080684424185174689480993185750201390966223018512354418490677522148;
+    vk_permutation_0Y <- 13825385863192118646834397710139923872086647553258488355179808994788744210563;
+    vk_permutation_1X <- 8390759602848414205412884900126185284679301543388803089358900543850868129488;
+    vk_permutation_1Y <- 7069161667387011886642940009688789554068768218554020114127791736575843662652;
+    vk_permutation_2X <- 21779692208264067614279093821878517213862501879831804234566704419708093761485;
+    vk_permutation_2Y <- 14513193766097634962386283396255157053671281137962954471134782133605379519908;
+    vk_permutation_3X <- 4751267043421347170875860608378639586591867931662910797110300384786346064625;
+    vk_permutation_3Y <- 11385717438670984215358012358002661303410243223751533068904005282628107986385;
+
+    vk_lookup_table_0X <- 20045313662746578028950791395157660351198208045597010788369662325700141348443;
+    vk_lookup_table_0Y <- 2200761695078532224145807378118591946349840073460005094399078719163643466856;
+    vk_lookup_table_1X <- 13866646217607640441607041956684111087071997201218815349460750486791109380780;
+    vk_lookup_table_1Y <- 13178446611795019678701878053235714968797421377761816259103804833273256298333;
+    vk_lookup_table_2X <- 5057503605752869531452842486824745179648819794307492731589448195268672785801;
+    vk_lookup_table_2Y <- 8597434312520299647191152876265164941580478223412397470356037586993894367875;
+    vk_lookup_table_3X <- 1342318055425277544055386589364579054544440640110901993487861472578322387903;
+    vk_lookup_table_3Y <- 4438354282468267034382897187461199764068502038746983055473062465446039509158;
+
+    vk_lookup_selector_X <- 21714794642552531775933093644480516421064284615960245486122726724547638127878;
+    vk_lookup_selector_Y <- 20374981665942106195451736226451722737514281476778224282304648903722926579601;
+
+    vk_lookup_table_type_X <- 196778531949039689886328474582670216324308721975620885373710029662715787742;
+    vk_lookup_table_type_Y <- 11005776646725047106517461026899305486268481542412200771754169232553006481646;
+    
+    vk_recursive_flag <- false;
+    
+    load_proof_opt <@ LoadProof.high(public_input_length_in_words, public_input, proof_length_in_words, state_poly_0, state_poly_1, state_poly_2, state_poly_3, copy_permutation_grand_product, lookup_s_poly, lookup_grand_product, quotient_poly_part_0, quotient_poly_part_1, quotient_poly_part_2, quotient_poly_part_3, state_poly_0_opening_at_z, state_poly_1_opening_at_z, state_poly_2_opening_at_z, state_poly_3_opening_at_z, state_poly_3_opening_at_z_omega, gate_selector_0_opening_at_z, copy_permutation_poly_0_opening_at_z, copy_permutation_poly_1_opening_at_z, copy_permutation_poly_2_opening_at_z, copy_permutation_grand_product_opening_at_z_omega, lookup_s_poly_opening_at_z_omega, lookup_grand_product_opening_at_z_omega, lookup_t_poly_opening_at_z, lookup_t_poly_opening_at_z_omega, lookup_selector_poly_opening_at_z, lookup_table_type_poly_opening_at_z, quotient_poly_opening_at_z, linearisation_poly_opening_at_z, opening_proof_at_z, opening_proof_at_z_omega, recursive_proof_length_in_words, vk_recursive_flag, recursive_part_p1, recursive_part_p2);
+    failed <- failed \/ is_none load_proof_opt;
+    (_public_input, _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product,
+     _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z,
+     _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z,
+     _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega,
+     _lookup_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z,
+     _lookup_table_type_poly_opening_at_z, _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z, _opening_proof_at_z, _opening_proof_at_z_omega,
+     _recursive_part_p1, _recursive_part_p2) <- oget load_proof_opt;
+
+    (* initials1 and initials2 should be 0? *)
+    (state_alpha, state_beta, state_beta_lookup, state_gamma, state_gamma_lookup, state_eta, state_z, state_z_in_domain, state_v, state_u) <@ InitializeTranscript.high(0, 0, _public_input, _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _lookup_s_poly, _copy_permutation_grand_product, _lookup_grand_product, _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z, _lookup_selector_poly_opening_at_z, _lookup_table_type_poly_opening_at_z, _lookup_s_poly_opening_at_z_omega, _lookup_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z_omega, _linearisation_poly_opening_at_z, _opening_proof_at_z, _opening_proof_at_z_omega);
+    
+    (verify_quotient_evaluation_opt, alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8, l0_at_z, ln_minus_one_at_z, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega) <@ VerifyQuotientEvaluation.high(state_alpha, state_beta, state_beta_lookup, state_gamma, state_gamma_lookup, state_z, _public_input, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _lookup_s_poly_opening_at_z_omega, _lookup_grand_product_opening_at_z_omega, _gate_selector_0_opening_at_z, _linearisation_poly_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, state_z_in_domain, _quotient_poly_opening_at_z);
+    failed <- failed \/ !(odflt false verify_quotient_evaluation_opt);
+
+    (query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated) <@ PrepareQueries.high(state_z_in_domain, _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, vk_lookup_table_0, vk_lookup_table_1, vk_lookup_table_2, vk_lookup_table_3, state_eta, vk_gate_setup_0, vk_gate_setup_1, vk_gate_setup_2, vk_gate_setup_3, vk_gate_setup_4, vk_gate_setup_5, vk_gate_setup_6, vk_gate_setup_7, _state_poly_3_opening_at_z_omega, state_v, state_z, _gate_selector_0_opening_at_z, state_alpha, alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8, state_beta, state_gamma, vk_gate_selectors_1, vk_permutation_3, _copy_permutation_grand_product_opening_at_z_omega, l0_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _lookup_grand_product_opening_at_z_omega, z_minus_last_omega, _lookup_t_poly_opening_at_z_omega, state_beta_lookup, _lookup_t_poly_opening_at_z, beta_gamma_plus_gamma, _lookup_table_type_poly_opening_at_z, _lookup_selector_poly_opening_at_z, state_gamma_lookup, beta_plus_one, ln_minus_one_at_z);
+
+    prepare_aggregated_commitment_opt <@ PrepareAggregatedCommitment.high_encapsulated(query_at_z_0, _quotient_poly_opening_at_z, query_at_z_1, state_v, _linearisation_poly_opening_at_z, _state_poly_0, _state_poly_0_opening_at_z, _state_poly_1, _state_poly_1_opening_at_z, _state_poly_2, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, (vk_gate_selectors_0X, vk_gate_selectors_0Y), _gate_selector_0_opening_at_z, (vk_permutation_0X, vk_permutation_0Y), _copy_permutation_poly_0_opening_at_z, (vk_permutation_1X, vk_permutation_1Y), _copy_permutation_poly_1_opening_at_z, (vk_permutation_2X, vk_permutation_2Y), _copy_permutation_poly_2_opening_at_z, _lookup_t_poly_opening_at_z, (vk_lookup_selector_X, vk_lookup_selector_Y), _lookup_selector_poly_opening_at_z, (vk_lookup_table_type_X, vk_lookup_table_type_Y), _lookup_table_type_poly_opening_at_z, copy_permutation_first_aggregated_commitment_coeff, state_u, _copy_permutation_grand_product, _copy_permutation_grand_product_opening_at_z_omega, _state_poly_3, _state_poly_3_opening_at_z_omega, _lookup_s_poly, _lookup_s_poly_opening_at_z_omega, lookupSFirstAggregatedCommitment, _lookup_grand_product, _lookup_grand_product_opening_at_z_omega, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated, _lookup_t_poly_opening_at_z_omega);
+   failed <- failed \/ is_none prepare_aggregated_commitment_opt;
+   (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot) <- oget prepare_aggregated_commitment_opt;
+
+  final_pairing_bool <@ FinalPairing.high(state_u, state_z, pairingPairWithGeneratorSlot, pairingBufferPointSlot, _opening_proof_at_z, _opening_proof_at_z_omega, vk_recursive_flag, recursive_part_p1, recursive_part_p2);
   failed <- failed \/ !final_pairing_bool;
    
   return !failed;
