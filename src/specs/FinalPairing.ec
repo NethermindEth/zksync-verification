@@ -130,6 +130,46 @@ module FinalPairing = {
 
     return !failed;
   }
+
+  proc high_encapsulated(u: FieldR.F, z: FieldR.F, pairing_pair_with_generator: g, pairing_buffer_point: g, opening_proof_at_z: g, opening_proof_at_z_omega: g, vk_recursive_flag: bool, recursive_part_p1: g, recursive_part_p2: g): bool = {
+    var pairing_pair_with_x: g;
+
+    pairing_pair_with_generator <@ PointSubAssign.high(pairing_pair_with_generator, pairing_buffer_point);
+
+    pairing_pair_with_generator <@ PointMulAndAddIntoDest.high(opening_proof_at_z, z, pairing_pair_with_generator);
+
+    pairing_pair_with_generator <@ PointMulAndAddIntoDest.high(opening_proof_at_z_omega, z * Constants.OMEGAFr * u, pairing_pair_with_generator);
+
+    pairing_pair_with_x <@ PointMulAndAddIntoDest.high(opening_proof_at_z_omega, u, opening_proof_at_z);
+
+    pairing_pair_with_x <@ PointNegate.high(pairing_pair_with_x);
+
+    if (vk_recursive_flag)
+    {
+      pairing_pair_with_generator <@ PointMulAndAddIntoDest.high(recursive_part_p1, u * u, pairing_pair_with_generator);
+      pairing_pair_with_x <@ PointMulAndAddIntoDest.high(recursive_part_p2, u * u  , pairing_pair_with_x);
+    }
+
+    return e (pairing_pair_with_generator + pairing_pair_with_x) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e;
+  }
+
+  proc high(u: FieldR.F, z: FieldR.F, pairing_pair_with_generator: g, pairing_buffer_point: g, opening_proof_at_z: g, opening_proof_at_z_omega: g, vk_recursive_flag: bool, recursive_part_p1: g, recursive_part_p2: g): bool = {
+    var pairing_pair_with_x: g;
+
+    pairing_pair_with_generator <- pairing_pair_with_generator + (G.inv pairing_buffer_point);
+    pairing_pair_with_generator <- (z *opening_proof_at_z) + pairing_pair_with_generator;
+    pairing_pair_with_generator <- ((z * Constants.OMEGAFr * u) * opening_proof_at_z_omega) + pairing_pair_with_generator;
+    pairing_pair_with_x <- (u *opening_proof_at_z_omega) + opening_proof_at_z;
+    pairing_pair_with_x <- G.inv pairing_pair_with_x;
+
+    if (vk_recursive_flag)
+    {
+      pairing_pair_with_generator <- ((u * u) *recursive_part_p1) + pairing_pair_with_generator;
+      pairing_pair_with_x <- ((u * u) * recursive_part_p2) + pairing_pair_with_x;
+    }
+
+    return e (pairing_pair_with_generator + pairing_pair_with_x) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e;
+  }
 }.
 
 lemma finalPairing_extracted_equiv_low:
@@ -1569,6 +1609,138 @@ lemma finalPairing_low_equiv_mid:
           rcondf{1} 1. progress. skip. progress. rewrite H H0. progress. rewrite /bool_of_uint256 /iszero in H1. smt (@W256).
 qed.
 
+lemma finalPairing_mid_equiv_high_encapsulated:
+    equiv [
+      FinalPairing.mid ~ FinalPairing.high_encapsulated:
+      u{1} = FieldR.asint u{2} /\
+      z{1} = FieldR.asint z{2} /\
+      pairing_pair_with_generator{1} = F_to_int_point (aspoint_G1 pairing_pair_with_generator{2}) /\
+      pairing_buffer_point{1} = F_to_int_point (aspoint_G1 pairing_buffer_point{2}) /\
+      opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
+      opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
+      ={vk_recursive_flag} /\
+      recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
+      recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) ==>
+      ={res}
+    ].
+    proof.
+      proc.
+      simplify.
+      seq 6 1: (
+        #pre /\
+        !failed{1} /\
+        zOmega{1} = FieldR.asint (z{2} * Constants.OMEGAFr)        
+      ).
+      wp. sp.
+      call pointSubAssign_mid_equiv_high. skip. progress.
+      rewrite FieldR.mulE Constants.omega_eq_omegaFr Constants.r_eq_fieldr_p. reflexivity.
 
+      seq 3 1: #pre.
+      wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
 
+      seq 3 1: #pre.
+      wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+      do rewrite FieldR.mulE.
+      rewrite Constants.r_eq_fieldr_p. reflexivity.
 
+      seq 3 1: (
+        #pre /\
+        pairing_pair_with_x{1} = F_to_int_point(aspoint_G1 pairing_pair_with_x{2})
+      ).
+      wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+
+      seq 3 1: #pre.
+      wp. call pointNegate_mid_equiv_high. skip. by progress.
+
+      if. progress.
+
+      seq 4 1: (
+        #pre /\
+        uu{1} = FieldR.asint (u{2} * u{2})
+      ).
+      sp. wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+      rewrite FieldR.mulE Constants.r_eq_fieldr_p. reflexivity.
+
+      seq 3 1: #pre.
+      wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+
+      wp. skip. progress.
+      rewrite H. progress.
+      rewrite F_to_int_point_inzmod_1.
+      rewrite F_to_int_point_inzmod_2.
+      rewrite F_to_int_point_inzmod_1.
+      rewrite F_to_int_point_inzmod_2.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_1_1.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_1_2.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_2_1.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_2_2.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_1_1.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_1_2.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_2_1.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_2_2.
+      do rewrite FieldQ.asintK.
+      pose pairing := ecPairing_precompile _ _.
+      have H_pairing: pairing = ecPairing_precompile (aspoint_G1 pairing_pair_with_generator{2}, aspoint_G2 Constants.G2_ELEMENT_0_G) (aspoint_G1 pairing_pair_with_x{2}, aspoint_G2 Constants.G2_ELEMENT_1_G) by smt ().
+      have H_pairing_some: pairing = Some (e (pairing_pair_with_generator{2} + pairing_pair_with_x{2}) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e) by smt (ecPairing_def).
+      rewrite H_pairing_some.
+      by progress.
+
+      wp. skip. progress.
+      rewrite H. progress.
+      rewrite F_to_int_point_inzmod_1.
+      rewrite F_to_int_point_inzmod_2.
+      rewrite F_to_int_point_inzmod_1.
+      rewrite F_to_int_point_inzmod_2.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_1_1.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_1_2.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_2_1.
+      rewrite Constants.G2_ELEMENT_0_G_aspoint_2_2.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_1_1.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_1_2.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_2_1.
+      rewrite Constants.G2_ELEMENT_1_G_aspoint_2_2.
+      do rewrite FieldQ.asintK.
+      pose pairing := ecPairing_precompile _ _.
+      have H_pairing: pairing = ecPairing_precompile (aspoint_G1 pairing_pair_with_generator{2}, aspoint_G2 Constants.G2_ELEMENT_0_G) (aspoint_G1 pairing_pair_with_x{2}, aspoint_G2 Constants.G2_ELEMENT_1_G) by smt ().
+      have H_pairing_some: pairing = Some (e (pairing_pair_with_generator{2} + pairing_pair_with_x{2}) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e) by smt (ecPairing_def).
+      rewrite H_pairing_some.
+      by progress.
+qed.
+
+lemma finalPairing_mid_equiv_high:
+    equiv [
+      FinalPairing.mid ~ FinalPairing.high:
+      u{1} = FieldR.asint u{2} /\
+      z{1} = FieldR.asint z{2} /\
+      pairing_pair_with_generator{1} = F_to_int_point (aspoint_G1 pairing_pair_with_generator{2}) /\
+      pairing_buffer_point{1} = F_to_int_point (aspoint_G1 pairing_buffer_point{2}) /\
+      opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
+      opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
+      ={vk_recursive_flag} /\
+      recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
+      recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) ==>
+      ={res}
+    ].
+    proof.
+      transitivity FinalPairing.high_encapsulated
+      (
+        u{1} = FieldR.asint u{2} /\
+        z{1} = FieldR.asint z{2} /\
+        pairing_pair_with_generator{1} = F_to_int_point (aspoint_G1 pairing_pair_with_generator{2}) /\
+        pairing_buffer_point{1} = F_to_int_point (aspoint_G1 pairing_buffer_point{2}) /\
+        opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
+        opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
+        ={vk_recursive_flag} /\
+        recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
+        recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) ==>
+        ={res}
+      )
+      (
+        ={arg} ==> ={res}
+      ).
+      progress. exists arg{2}. by progress.
+      by progress.
+      exact finalPairing_mid_equiv_high_encapsulated.
+      proc.
+      inline*. wp. skip. by progress.
+qed.

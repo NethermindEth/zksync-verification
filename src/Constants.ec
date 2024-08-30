@@ -1,6 +1,7 @@
 pragma Goals:printall.
 
 require import AllCore.
+require        EllipticCurve.
 require import Field.
 require import Int.
 require import IntDiv.
@@ -93,3 +94,13 @@ lemma G2_element_1_int: G2_ELEMENT_1 = (
   by progress.
 qed.
 
+op G2_ELEMENT_0_G: EllipticCurve.g.
+op G2_ELEMENT_1_G: EllipticCurve.g.
+axiom G2_ELEMENT_0_G_aspoint_1_1: G2_ELEMENT_0.`1.`1 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_0_G).`1.`1.
+axiom G2_ELEMENT_0_G_aspoint_1_2: G2_ELEMENT_0.`1.`2 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_0_G).`1.`2.
+axiom G2_ELEMENT_0_G_aspoint_2_1: G2_ELEMENT_0.`2.`1 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_0_G).`2.`1.
+axiom G2_ELEMENT_0_G_aspoint_2_2: G2_ELEMENT_0.`2.`2 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_0_G).`2.`2.
+axiom G2_ELEMENT_1_G_aspoint_1_1: G2_ELEMENT_1.`1.`1 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_1_G).`1.`1.
+axiom G2_ELEMENT_1_G_aspoint_1_2: G2_ELEMENT_1.`1.`2 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_1_G).`1.`2.
+axiom G2_ELEMENT_1_G_aspoint_2_1: G2_ELEMENT_1.`2.`1 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_1_G).`2.`1.
+axiom G2_ELEMENT_1_G_aspoint_2_2: G2_ELEMENT_1.`2.`2 = FieldQ.asint (EllipticCurve.aspoint_G2 G2_ELEMENT_1_G).`2.`2.
