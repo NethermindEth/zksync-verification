@@ -328,14 +328,16 @@ proc. inline Modexp.mid. wp. skip. progress. by smt(). by smt(). qed.
 lemma lagrange (x: FieldR.F) : x ^ Constants.DOMAIN_SIZE <> FieldR.one => forall (n: int), x <> Constants.OMEGAFr ^ n. 
 proof. admit. qed.
     
-lemma evaluateLagrangePolyOutOfDomain_mid_equiv_high (memory : mem) (polyInt: int) (atF: FieldR.F):
+lemma evaluateLagrangePolyOutOfDomain_mid_equiv_high (polyInt: int) (atF: FieldR.F):
 equiv [
     EvaluateLagrangePolyOutOfDomain.mid ~ EvaluateLagrangePolyOutOfDomain.high :
       0 <= polyInt /\
       arg{1} = (polyInt, FieldR.asint atF) /\
       arg{2} = (polyInt, atF) 
       ==>
-      omap FieldR.inF res{1} = res{2}
+      omap FieldR.inF res{1} = res{2} /\
+      omap FieldR.asint res{2} = res{1} /\
+      (res{2} <> None <=> atF^Constants.DOMAIN_SIZE - FieldR.one <> FieldR.zero) 
     ].
 proof.
   proc.
@@ -348,12 +350,14 @@ proof.
   rewrite -Constants.r_eq_fieldr_p. rewrite IntDiv.modz_mod; by reflexivity. 
   case (zd1{1} = 0).
   if; progress; do! (wp; skip; progress); progress. 
+  rewrite -H1. by reflexivity.
   if. progress.
   rewrite H0 -FieldR.inFK.
   search FieldR.asint.
   rewrite -FieldR.zeroE.
   congr.
   wp. skip. progress. 
+  by progress. 
   seq 1 0: (#pre /\ FieldR.inF num{1} = omegaPolyNum{2} * zd1{2}).  
   wp. skip. progress.
   rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM; by reflexivity. 
@@ -378,4 +382,7 @@ proof.
   rewrite Constants.r_eq_fieldr_p FieldR.inFM_mod.
   rewrite H7.
     congr.
+    rewrite FieldR.mulE Constants.r_eq_fieldr_p FieldR.eq_inF. do! rewrite FieldR.inFM. do! rewrite FieldR.asintK.
+  rewrite H5 H7. by reflexivity.
+    rewrite -H1. by smt(@FieldR).
 qed. 
