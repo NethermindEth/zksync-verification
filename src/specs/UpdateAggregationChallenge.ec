@@ -12,6 +12,8 @@ require import YulPrimops.
 
 import MemoryMap.
 
+prover timeout=20.
+
 module UpdateAggregationChallenge = {
   proc low(queriesCommitmentPoint : uint256, valueAtZ : uint256, curAggregationChallenge : uint256, curAggregatedOpeningAtZ : uint256): (uint256 * uint256) = {
     var newAggregationChallenge, newAggregatedOpeningAtZ, _3, _5, _6;
@@ -35,6 +37,19 @@ module UpdateAggregationChallenge = {
           ret <- None;
       }
       return ret;
+  }
+  proc high_encapsulated(queriesCommitmentPoint : g, valueAtZ : FieldR.F, curAggregationChallenge : FieldR.F, curAggregatedOpeningAtZ : FieldR.F, v_challenge : FieldR.F, currAggregatedAtZSlot : g) : (FieldR.F * FieldR.F * g) = {
+      var newAggregationChallenge; 
+      newAggregationChallenge <- v_challenge * curAggregationChallenge;
+      currAggregatedAtZSlot <@ PointMulAndAddIntoDest.high(queriesCommitmentPoint, newAggregationChallenge, currAggregatedAtZSlot);
+      return (newAggregationChallenge, newAggregationChallenge * valueAtZ + curAggregatedOpeningAtZ, currAggregatedAtZSlot);
+  }
+
+  proc high(queriesCommitmentPoint : g, valueAtZ : FieldR.F, curAggregationChallenge : FieldR.F, curAggregatedOpeningAtZ : FieldR.F, v_challenge : FieldR.F, currAggregatedAtZSlot : g) : (FieldR.F * FieldR.F * g) = {
+      var newAggregationChallenge; 
+      newAggregationChallenge <- v_challenge * curAggregationChallenge;
+      currAggregatedAtZSlot <- newAggregationChallenge * queriesCommitmentPoint + currAggregatedAtZSlot;
+      return (newAggregationChallenge, newAggregationChallenge * valueAtZ + curAggregatedOpeningAtZ, currAggregatedAtZSlot);
   }
 }.
 
@@ -240,4 +255,32 @@ lemma updateAggregationChallenge_low_equiv_mid (queriesCommitmentPoint : int * i
         smt ().
     qed.
 
+        
+lemma updateAggregationChallenge_mid_equiv_high_encapsulated :
+equiv [
+    UpdateAggregationChallenge.mid ~ UpdateAggregationChallenge.high_encapsulated :
+      arg{1} = (F_to_int_point (aspoint_G1 queriesCommitmentPoint{2}), FieldR.asint valueAtZ{2}, FieldR.asint curAggregationChallenge{2}, FieldR.asint curAggregatedOpeningAtZ{2}, FieldR.asint v_challenge{2}, F_to_int_point (aspoint_G1 currAggregatedAtZSlot{2})) ==>
+      res{1} = Some (FieldR.asint res{2}.`1, FieldR.asint res{2}.`2, F_to_int_point (aspoint_G1 res{2}.`3))
+    ]. proof.
+        proc. wp. sp.
+        call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+        smt.
+        smt.
+    qed.
+
+lemma updateAggregationChallenge_mid_equiv_high :
+equiv [
+    UpdateAggregationChallenge.mid ~ UpdateAggregationChallenge.high :
+      arg{1} = (F_to_int_point (aspoint_G1 queriesCommitmentPoint{2}), FieldR.asint valueAtZ{2}, FieldR.asint curAggregationChallenge{2}, FieldR.asint curAggregatedOpeningAtZ{2}, FieldR.asint v_challenge{2}, F_to_int_point (aspoint_G1 currAggregatedAtZSlot{2})) ==>
+      res{1} = Some (FieldR.asint res{2}.`1, FieldR.asint res{2}.`2, F_to_int_point (aspoint_G1 res{2}.`3))
+    ]. proof.
+    transitivity UpdateAggregationChallenge.high_encapsulated (arg{1} = (F_to_int_point (aspoint_G1 queriesCommitmentPoint{2}), FieldR.asint valueAtZ{2}, FieldR.asint curAggregationChallenge{2}, FieldR.asint curAggregatedOpeningAtZ{2}, FieldR.asint v_challenge{2}, F_to_int_point (aspoint_G1 currAggregatedAtZSlot{2})) ==>
+      res{1} = Some (FieldR.asint res{2}.`1, FieldR.asint res{2}.`2, F_to_int_point (aspoint_G1 res{2}.`3))) (={arg} ==> ={res}).
+        progress.
+        exists arg{2}. by progress.
+        by progress.
+        exact updateAggregationChallenge_mid_equiv_high_encapsulated.
+        proc.
+        inline PointMulAndAddIntoDest.high. wp. skip. progress.
+  qed.
         

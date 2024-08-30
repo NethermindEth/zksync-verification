@@ -17,5 +17,9 @@ clone include ZModField
   rename "zmod" as "F"
   rename "ZModp" as "Zq".
 end FieldQ.
+
+abbrev (+) = (FieldR.(+)).
+abbrev ( * ) = (FieldR.( * )).
+
   
 op (^) (x : FieldR.F) (k : int) = FieldR.exp x k axiomatized by RexpE.

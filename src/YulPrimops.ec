@@ -210,11 +210,11 @@ module Primops = {
   }
 
   proc calldataload(i : uint256) : uint256 = {
-    return PurePrimops.calldata.[W256.to_uint i];
+    return load PurePrimops.calldata i;
   }
 
   proc calldatasize() = {
-    return W256.of_int (Array.size (PurePrimops.calldata));
+    return PurePrimops.calldatasize;
   }
 }.
 
@@ -349,7 +349,7 @@ proof. proc; wp; skip; by auto. qed.
 lemma calldataload_pspec (idx: uint256):
     phoare [Primops.calldataload:
       arg = idx ==>
-      res = PurePrimops.calldata.[W256.to_uint idx]
+      res = load PurePrimops.calldata idx
     ] = 1%r.
     proof.
       proc.

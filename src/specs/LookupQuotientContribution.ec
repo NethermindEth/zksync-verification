@@ -782,6 +782,73 @@ rewrite to_uintB. smt timeout=10. rewrite /lala H14. smt.
 smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt().
 qed.
 
+lemma lookupQuotientContribution_mid_equiv_high (
+stateBetaLookupG
+stateGammaLookupG
+statePowerOfAlpha6G
+statePowerOfAlpha7G
+statePowerOfAlpha8G
+proofLookupSPolyOpeningAtZOmegaG
+proofLookupGrandProductOpeningAtZOmegaG
+stateZG
+stateL0AtZG
+stateLnMinusOneAtZG : FieldR.F
+) :
+equiv [LookupQuotientContribution.mid ~ LookupQuotientContribution.high :
+arg{1} = (FieldR.asint stateBetaLookupG, FieldR.asint stateGammaLookupG, FieldR.asint statePowerOfAlpha6G,
+   FieldR.asint statePowerOfAlpha7G, FieldR.asint statePowerOfAlpha8G, FieldR.asint proofLookupSPolyOpeningAtZOmegaG,
+   FieldR.asint proofLookupGrandProductOpeningAtZOmegaG, FieldR.asint stateZG, FieldR.asint stateL0AtZG, FieldR.asint stateLnMinusOneAtZG) /\
+arg{2} =
+  (stateBetaLookupG, stateGammaLookupG, statePowerOfAlpha6G,
+   statePowerOfAlpha7G, statePowerOfAlpha8G, proofLookupSPolyOpeningAtZOmegaG,
+   proofLookupGrandProductOpeningAtZOmegaG, stateZG, stateL0AtZG, stateLnMinusOneAtZG)
+==>
+  FieldR.inF res{1}.`1 = res{2}.`1 /\
+  FieldR.inF res{1}.`2 = res{2}.`2 /\
+  FieldR.inF res{1}.`3 = res{2}.`3 /\
+  FieldR.inF res{1}.`4 = res{2}.`4
+].
+proof. 
+proc. 
+seq 1 0 : (#pre /\ FieldR.inF betaPlusOne{1} = stateBetaLookupG + FieldR.one).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.asintK. by reflexivity. 
+seq 1 0 : (#pre /\ FieldR.inF betaGamma{1} = stateGammaLookupG * (stateBetaLookupG + FieldR.one)).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK H. by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF f{1} = proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFM FieldR.asintK FieldR.asintK H0. by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF a6c'{1} = statePowerOfAlpha6G * (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)) * proofLookupGrandProductOpeningAtZOmegaG).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK FieldR.inFM FieldR.asintK H1. by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF lastOmega{1} = Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1)).
+inline*. wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE. simplify.
+have -> : 67108863 = Constants.DOMAIN_SIZE - 1 by rewrite /Constants.DOMAIN_SIZE; by reflexivity.
+rewrite -/Constants.OMEGAFr /(^). by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF zMinusLastOmega{1} = stateZG - Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1)).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.asintK FieldR.inFN H3. by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF a6c{1} = (statePowerOfAlpha6G * (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)) * proofLookupGrandProductOpeningAtZOmegaG) * (stateZG - Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1))).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM H2 H4.  by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF a7c{1} = statePowerOfAlpha7G * stateL0AtZG).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK FieldR.asintK. by reflexivity.
+seq 1 0 : (#pre /\ FieldR.inF betaGammaPowered{1} = stateGammaLookupG^(Constants.DOMAIN_SIZE - 1) * (stateBetaLookupG + FieldR.one)^(Constants.DOMAIN_SIZE - 1)).
+inline*. wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE. simplify.
+have -> : 67108863 = Constants.DOMAIN_SIZE - 1 by rewrite /Constants.DOMAIN_SIZE; by reflexivity.
+rewrite H0 /(^). by smt (@FieldR).
+seq 1 0 : (#pre /\ FieldR.inF a8c{1} = statePowerOfAlpha8G * stateLnMinusOneAtZG * stateGammaLookupG^(Constants.DOMAIN_SIZE - 1) * (stateBetaLookupG + FieldR.one)^(Constants.DOMAIN_SIZE - 1)).
+wp. skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.inFM FieldR.asintK FieldR.asintK H7. by smt(@FieldR).
+skip. progress. 
+rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFN FieldR.inFN H5 H6 H8.
+by  smt (@FieldR). 
+qed. 
+
 end section.
 
 lemma lookupQuotientContribution_mid_equiv_high (
