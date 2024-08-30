@@ -32,8 +32,8 @@ module UpdateTranscript = {
   
   proc mid(tS0 tS1 v : int) : int * int = {
     var state0, state1 : int;
-    state0 <- keccakTM 0 tS0 tS1 v;
-    state1 <- keccakTM 1 tS0 tS1 v;
+    state0 <- keccakT 0 tS0 tS1 v;
+    state1 <- keccakT 1 tS0 tS1 v;
     return (state0, state1);
   }
 }.
@@ -141,7 +141,7 @@ skip. by progress.
 
 seq 1 1: (#pre /\
   to_uint newState0{1} = state0{2} /\
-  state0{2} = keccakTM 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus).
+  state0{2} = keccakT 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus).
 wp. call{1} (keccak256_pspec_transcript m2 0 transcriptState0G transcriptState1G valueG).
 skip. progress.
 rewrite /m2 /m1 load8_store_diff /TRANSCRIPT_DST_BYTE_SLOT /TRANSCRIPT_CHALLENGE_SLOT; try by progress.
@@ -160,7 +160,7 @@ seq 1 0: (
    to_uint (mload m TRANSCRIPT_STATE_0_SLOT) = transcriptState0G /\
    to_uint (mload m TRANSCRIPT_STATE_1_SLOT) = transcriptState1G /\
   to_uint newState0{1} = state0{2} /\
-  state0{2} = keccakTM 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus /\
+  state0{2} = keccakT 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus /\
   Primops.memory{1} = m3
 ).
 call{1} (ConcretePrimops.mstore8_pspec m2 TRANSCRIPT_DST_BYTE_SLOT W256.one).
@@ -168,7 +168,7 @@ skip. by progress.
 
 seq 1 1: (#pre /\
   to_uint newState1{1} = state1{2} /\
-  state1{2} = keccakTM 1 tS0{2} tS1{2} v{2} /\ 0 <= state1{2} < W256.modulus).
+  state1{2} = keccakT 1 tS0{2} tS1{2} v{2} /\ 0 <= state1{2} < W256.modulus).
 wp. call{1} (keccak256_pspec_transcript m3 1 transcriptState0G transcriptState1G valueG).
 skip. progress.
 rewrite /m3 /m2 /m1 load8_store8_same. by progress.
@@ -191,9 +191,9 @@ seq 1 0:(
    to_uint (mload m TRANSCRIPT_STATE_0_SLOT) = transcriptState0G /\
    to_uint (mload m TRANSCRIPT_STATE_1_SLOT) = transcriptState1G /\
    to_uint newState0{1} = state0{2} /\
-   state0{2} = keccakTM 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus /\
+   state0{2} = keccakT 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus /\
   to_uint newState1{1} = state1{2} /\
-  state1{2} = keccakTM 1 tS0{2} tS1{2} v{2} /\ 0 <= state1{2} < W256.modulus /\
+  state1{2} = keccakT 1 tS0{2} tS1{2} v{2} /\ 0 <= state1{2} < W256.modulus /\
    Primops.memory{1} = m4
 ).
 call{1} (ConcretePrimops.mstore_pspec m3 TRANSCRIPT_STATE_1_SLOT ns1).
@@ -209,9 +209,9 @@ seq 1 0:(
   to_uint (mload m TRANSCRIPT_STATE_0_SLOT) = transcriptState0G /\
   to_uint (mload m TRANSCRIPT_STATE_1_SLOT) = transcriptState1G /\
   to_uint newState0{1} = state0{2} /\
-  state0{2} = keccakTM 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus /\
+  state0{2} = keccakT 0 tS0{2} tS1{2} v{2} /\ 0 <= state0{2} < W256.modulus /\
   to_uint newState1{1} = state1{2} /\
-  state1{2} = keccakTM 1 tS0{2} tS1{2} v{2} /\ 0 <= state1{2} < W256.modulus /\
+  state1{2} = keccakT 1 tS0{2} tS1{2} v{2} /\ 0 <= state1{2} < W256.modulus /\
    Primops.memory{1} = m5
 ).
 call{1} (ConcretePrimops.mstore_pspec m4 TRANSCRIPT_STATE_0_SLOT ns0).
