@@ -47,9 +47,10 @@ lemma verify_extracted_equiv_low:
     qed.
 
 
-lemma verify_failure_pspec :
-    phoare [ Verify.low :      
-      !on_curve_int (point_to_uint PurePrimops.load_calldata_copy_permutation_grand_product) \/
+lemma verify_failure_pspec (recursive: bool) :
+    phoare [ Verify.low :
+      (PurePrimops.mload Primops.memory VerifierConsts.VK_RECURSIVE_FLAG_SLOT = W256.zero) = recursive /\
+      (!on_curve_int (point_to_uint PurePrimops.load_calldata_copy_permutation_grand_product) \/
       !on_curve_int (point_to_uint PurePrimops.load_calldata_lookup_s_poly) \/
       !on_curve_int (point_to_uint PurePrimops.load_calldata_lookup_grand_product) \/
       !on_curve_int (point_to_uint PurePrimops.load_calldata_quotient_poly_part_0) \/
@@ -59,7 +60,7 @@ lemma verify_failure_pspec :
       !on_curve_int (point_to_uint PurePrimops.load_calldata_opening_proof_at_z) \/
       !on_curve_int (point_to_uint PurePrimops.load_calldata_opening_proof_at_z_omega) \/
       !on_curve_int (point_to_uint PurePrimops.load_calldata_recursive_part_p1) \/
-      !on_curve_int (point_to_uint PurePrimops.load_calldata_recursive_part_p2)
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_recursive_part_p2))
       ==>
       Primops.reverted
     ] = 1%r.
@@ -68,5 +69,10 @@ lemma verify_failure_pspec :
       seq 1 : (#pre).
       inline*. wp. skip. progress.
       inline*. wp. skip. progress.
+      smt.
+      exists* Primops.memory.
+      elim*. move => mem_0.
+      exists (PurePrimops.mload 0).
+      call (loadProof_low_equiv_mid) .
       inline LoadProof.low.
       
