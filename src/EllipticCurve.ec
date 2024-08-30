@@ -25,7 +25,7 @@ axiom zero_G1 : (aspoint_G1 G.e) = (FieldQ.zero, FieldQ.zero).
 axiom neg_G1_fst (x : g) : fst (aspoint_G1 (G.inv x)) = fst (aspoint_G1 x).
 axiom neg_G1_snd (x : g) : snd (aspoint_G1 (G.inv x)) = (- (snd (aspoint_G1 x))).
 
-op on_curve : FieldQ.F * FieldQ.F -> bool.
+op on_curve (p: FieldQ.F * FieldQ.F) : bool = (FieldQ.( * ) p.`2 p.`2) = FieldQ.(+) (FieldQ.( * ) p.`1 (FieldQ.( * ) p.`1 p.`1) ) (FieldQ.inF 3).
 
 axiom aspoint_on_curve (p : g) : on_curve (aspoint_G1 p).
 axiom on_curve_as_point (x y : FieldQ.F) : on_curve (x, y) => exists p, aspoint_G1 p = (x, y).

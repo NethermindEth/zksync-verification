@@ -2,6 +2,8 @@ pragma Goals:printall.
 
 require import AllCore.
 require        Constants.
+require import Field.
+require import EllipticCurve.
 require import PurePrimops.
 require import RevertWithMessage.
 require import Utils.
@@ -402,6 +404,67 @@ module LoadProof = {
         linearisation_poly_opening_at_z %% Constants.R,
         (opening_proof_at_z.`1 %% Constants.Q, opening_proof_at_z.`2 %% Constants.Q),
         (opening_proof_at_z_omega.`1 %% Constants.Q, opening_proof_at_z_omega.`2 %% Constants.Q),
+        ret_recursive_part_p1,
+        ret_recursive_part_p2
+      );
+    } else {
+      ret <- None;
+    }
+
+    return ret;
+    
+    }
+
+    proc high(public_input_length_in_words: int, public_input: FieldR.F, proof_length_in_words: int, state_poly_0: g, state_poly_1: g, state_poly_2: g, state_poly_3: g, copy_permutation_grand_product: g, lookup_s_poly: g, lookup_grand_product: g, quotient_poly_part_0: g, quotient_poly_part_1: g, quotient_poly_part_2: g, quotient_poly_part_3: g, state_poly_0_opening_at_z: FieldR.F, state_poly_1_opening_at_z: FieldR.F, state_poly_2_opening_at_z: FieldR.F, state_poly_3_opening_at_z: FieldR.F, state_poly_3_opening_at_z_omega: FieldR.F, gate_selector_0_opening_at_z: FieldR.F, copy_permutation_poly_0_opening_at_z: FieldR.F, copy_permutation_poly_1_opening_at_z: FieldR.F, copy_permutation_poly_2_opening_at_z: FieldR.F, copy_permutation_grand_product_opening_at_z_omega: FieldR.F, lookup_s_poly_opening_at_z_omega: FieldR.F, lookup_grand_product_opening_at_z_omega: FieldR.F, lookup_t_poly_opening_at_z: FieldR.F, lookup_t_poly_opening_at_z_omega: FieldR.F, lookup_selector_poly_opening_at_z: FieldR.F, lookup_table_type_poly_opening_at_z: FieldR.F, quotient_poly_opening_at_z: FieldR.F, linearisation_poly_opening_at_z: FieldR.F, opening_proof_at_z: g, opening_proof_at_z_omega: g, recursive_proof_length_in_words: int, vk_recursive_flag: bool, recursive_part_p1: g, recursive_part_p2: g) = {
+  var ret_recursive_part_p1, ret_recursive_part_p2: g option;
+  var isValid: bool;
+  var ret;
+    isValid <- public_input_length_in_words = 1;
+    isValid <- isValid /\ (proof_length_in_words = 44);
+    if (vk_recursive_flag) {
+      isValid <- isValid /\ (recursive_proof_length_in_words = 4);
+      ret_recursive_part_p1 <- Some recursive_part_p1;
+      ret_recursive_part_p2 <- Some recursive_part_p2;
+    } else {
+      isValid <- isValid /\ (recursive_proof_length_in_words = 0);
+      ret_recursive_part_p1 <- None;
+      ret_recursive_part_p2 <- None;
+    }
+
+    if (isValid) {
+      ret <- Some (
+        FieldR.inF ((FieldR.asint public_input) %% 2^253),
+        state_poly_0,
+        state_poly_1,
+        state_poly_2,
+        state_poly_3,
+        copy_permutation_grand_product,
+        lookup_s_poly,
+        lookup_grand_product,
+        quotient_poly_part_0,
+        quotient_poly_part_1,
+        quotient_poly_part_2,
+        quotient_poly_part_3,
+        state_poly_0_opening_at_z,
+        state_poly_1_opening_at_z,
+        state_poly_2_opening_at_z,
+        state_poly_3_opening_at_z,
+        state_poly_3_opening_at_z_omega,
+        gate_selector_0_opening_at_z,
+        copy_permutation_poly_0_opening_at_z,
+        copy_permutation_poly_1_opening_at_z,
+        copy_permutation_poly_2_opening_at_z,
+        copy_permutation_grand_product_opening_at_z_omega,
+        lookup_s_poly_opening_at_z_omega,
+        lookup_grand_product_opening_at_z_omega,
+        lookup_t_poly_opening_at_z,
+        lookup_t_poly_opening_at_z_omega,
+        lookup_selector_poly_opening_at_z,
+        lookup_table_type_poly_opening_at_z,
+        quotient_poly_opening_at_z,
+        linearisation_poly_opening_at_z,
+        opening_proof_at_z,
+        opening_proof_at_z_omega,
         ret_recursive_part_p1,
         ret_recursive_part_p2
       );
@@ -2558,3 +2621,321 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       rcondt{1} 1. progress. skip. progress. rewrite H3 /uint256_of_bool /iszero /bool_of_uint256. progress. smt (@W256).
       call{1} revertWithMessage_low_pspec. wp. skip. by progress.
 qed.
+
+op point_map (p: int * int) : (FieldQ.F * FieldQ.F) = (FieldQ.inF p.`1, FieldQ.inF p.`2).
+
+lemma point_map_on_curve (p : int * int) : on_curve (point_map p) => on_curve_int p.
+proof. 
+  rewrite /on_curve /on_curve_int /point_map /exp.
+  progress.
+  rewrite Constants.q_eq_fieldq_p FieldQ.eq_inF.
+  do! rewrite FieldQ.inFM. rewrite FieldQ.inFD -FieldQ.inF_mod FieldQ.inFM -FieldQ.inF_mod FieldQ.inFM.
+  by smt ().
+qed. 
+
+
+lemma loadProof_mid_equiv_high (recursive: bool):
+    equiv [
+      LoadProof.mid ~ LoadProof.high:
+      ={public_input_length_in_words, proof_length_in_words, vk_recursive_flag, recursive_proof_length_in_words} /\
+      vk_recursive_flag{1} = recursive /\
+      public_input{1} = (FieldR.asint public_input{2} %% 2 ^ 253) /\
+      point_map state_poly_0{1} = aspoint_G1 state_poly_0{2} /\
+      point_map state_poly_1{1} = aspoint_G1 state_poly_1{2} /\
+      point_map state_poly_2{1} = aspoint_G1 state_poly_2{2} /\
+      point_map state_poly_3{1} = aspoint_G1 state_poly_3{2} /\
+      point_map copy_permutation_grand_product{1} = aspoint_G1 copy_permutation_grand_product{2} /\
+      point_map lookup_s_poly{1} = aspoint_G1 lookup_s_poly{2} /\
+      point_map lookup_grand_product{1} = aspoint_G1 lookup_grand_product{2} /\
+      point_map quotient_poly_part_0{1} = aspoint_G1 quotient_poly_part_0{2} /\
+      point_map quotient_poly_part_1{1} = aspoint_G1 quotient_poly_part_1{2} /\
+      point_map quotient_poly_part_2{1} = aspoint_G1 quotient_poly_part_2{2} /\
+      point_map quotient_poly_part_3{1} = aspoint_G1 quotient_poly_part_3{2} /\
+      state_poly_0_opening_at_z{1} = FieldR.asint state_poly_0_opening_at_z{2} /\
+      state_poly_1_opening_at_z{1} = FieldR.asint state_poly_1_opening_at_z{2} /\
+      state_poly_2_opening_at_z{1} = FieldR.asint state_poly_2_opening_at_z{2} /\
+      state_poly_3_opening_at_z{1} = FieldR.asint state_poly_3_opening_at_z{2} /\
+      state_poly_3_opening_at_z_omega{1} = FieldR.asint state_poly_3_opening_at_z_omega{2} /\
+      gate_selector_0_opening_at_z{1} = FieldR.asint gate_selector_0_opening_at_z{2} /\
+      copy_permutation_poly_0_opening_at_z{1} = FieldR.asint copy_permutation_poly_0_opening_at_z{2} /\
+      copy_permutation_poly_1_opening_at_z{1} = FieldR.asint copy_permutation_poly_1_opening_at_z{2} /\
+      copy_permutation_poly_2_opening_at_z{1} = FieldR.asint copy_permutation_poly_2_opening_at_z{2} /\
+      copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2} /\
+      lookup_s_poly_opening_at_z_omega{1} = FieldR.asint lookup_s_poly_opening_at_z_omega{2} /\
+      lookup_grand_product_opening_at_z_omega{1} = FieldR.asint lookup_grand_product_opening_at_z_omega{2} /\
+      lookup_t_poly_opening_at_z{1} = FieldR.asint lookup_t_poly_opening_at_z{2} /\
+      lookup_t_poly_opening_at_z_omega{1} = FieldR.asint lookup_t_poly_opening_at_z_omega{2} /\
+      lookup_selector_poly_opening_at_z{1} = FieldR.asint lookup_selector_poly_opening_at_z{2} /\
+      lookup_table_type_poly_opening_at_z{1} = FieldR.asint lookup_table_type_poly_opening_at_z{2} /\
+      quotient_poly_opening_at_z{1} = FieldR.asint quotient_poly_opening_at_z{2} /\
+      linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
+      point_map opening_proof_at_z{1} = aspoint_G1 opening_proof_at_z{2} /\
+      point_map opening_proof_at_z_omega{1} = aspoint_G1 opening_proof_at_z_omega{2} /\
+      point_map recursive_part_p1{1} = aspoint_G1 recursive_part_p1{2} /\
+      point_map recursive_part_p2{1} = aspoint_G1 recursive_part_p2{2}
+       ==>
+      (res{1} = None /\ res{2} = None) \/
+      (
+        exists r1 r2,  res{1} = Some r1 /\ res{2} = Some r2 /\
+          r1.`1 = FieldR.asint r2.`1 /\
+          point_map r1.`2 = aspoint_G1 r2.`2 /\ 
+          point_map r1.`3 = aspoint_G1 r2.`3 /\
+          point_map r1.`4 = aspoint_G1 r2.`4 /\
+          point_map r1.`5 = aspoint_G1 r2.`5 /\
+          point_map r1.`6 = aspoint_G1 r2.`6 /\
+          point_map r1.`7 = aspoint_G1 r2.`7 /\
+          point_map r1.`8 = aspoint_G1 r2.`8 /\
+          point_map r1.`9 = aspoint_G1 r2.`9 /\
+          point_map r1.`10 = aspoint_G1 r2.`10 /\
+          point_map r1.`11 = aspoint_G1 r2.`11 /\
+          point_map r1.`12 = aspoint_G1 r2.`12 /\
+          r1.`13 = FieldR.asint r2.`13 /\
+          r1.`14 = FieldR.asint r2.`14 /\
+          r1.`15 = FieldR.asint r2.`15 /\
+          r1.`16 = FieldR.asint r2.`16 /\
+          r1.`17 = FieldR.asint r2.`17 /\
+          r1.`18 = FieldR.asint r2.`18 /\
+          r1.`19 = FieldR.asint r2.`19 /\
+          r1.`20 = FieldR.asint r2.`20 /\
+          r1.`21 = FieldR.asint r2.`21 /\
+          r1.`22 = FieldR.asint r2.`22 /\
+          r1.`23 = FieldR.asint r2.`23 /\
+          r1.`24 = FieldR.asint r2.`24 /\
+          r1.`25 = FieldR.asint r2.`25 /\
+          r1.`26 = FieldR.asint r2.`26 /\
+          r1.`27 = FieldR.asint r2.`27 /\
+          r1.`28 = FieldR.asint r2.`28 /\
+          r1.`29 = FieldR.asint r2.`29 /\
+          r1.`30 = FieldR.asint r2.`30 /\
+          point_map r1.`31 = aspoint_G1 r2.`31 /\
+          point_map r1.`32 = aspoint_G1 r2.`32 /\
+          omap point_map r1.`33 = omap aspoint_G1 r2.`33 /\
+          omap point_map r1.`34 = omap aspoint_G1 r2.`34
+      )    
+    ].
+    proof.
+      proc.
+      simplify. 
+      seq 15 2 : (#pre /\ ={isValid}).
+    wp. skip. 
+      by smt(@EllipticCurve point_map_on_curve).
+      case recursive.
+    rcondt{1} 1. by progress. 
+      rcondt{2} 1. by progress.
+      seq 5 3 : (#pre /\ omap point_map ret_recursive_part_p1{1} = omap aspoint_G1 ret_recursive_part_p1{2} /\ omap point_map ret_recursive_part_p2{1} = omap aspoint_G1 ret_recursive_part_p2{2}).
+      wp. skip. progress. by smt(@EllipticCurve point_map_on_curve).
+    rewrite Constants.q_eq_fieldq_p -H12 /point_map. by smt(@FieldQ).
+      rewrite Constants.q_eq_fieldq_p -H13 /point_map. by smt(@FieldQ).
+    exists* isValid{1}. elim*. move => isValid_L.
+      case isValid_L. rcondt{1} 1. by progress.
+      rcondt{2} 1. by progress. wp. skip. progress.
+   progress. simplify. exists ((FieldR.asint public_input{2})%FieldR %%
+   14474011154664524427946373126085988481658748083205070504932198000989141204992 %%
+   14474011154664524427946373126085988481658748083205070504932198000989141204992,
+   (state_poly_0{1}.`1 %% Constants.Q, state_poly_0{1}.`2 %% Constants.Q),
+   (state_poly_1{1}.`1 %% Constants.Q, state_poly_1{1}.`2 %% Constants.Q),
+   (state_poly_2{1}.`1 %% Constants.Q, state_poly_2{1}.`2 %% Constants.Q),
+   (state_poly_3{1}.`1 %% Constants.Q, state_poly_3{1}.`2 %% Constants.Q),
+   (copy_permutation_grand_product{1}.`1 %% Constants.Q,
+    copy_permutation_grand_product{1}.`2 %% Constants.Q),
+   (lookup_s_poly{1}.`1 %% Constants.Q, lookup_s_poly{1}.`2 %% Constants.Q),
+   (lookup_grand_product{1}.`1 %% Constants.Q,
+    lookup_grand_product{1}.`2 %% Constants.Q),
+   (quotient_poly_part_0{1}.`1 %% Constants.Q,
+    quotient_poly_part_0{1}.`2 %% Constants.Q),
+   (quotient_poly_part_1{1}.`1 %% Constants.Q,
+    quotient_poly_part_1{1}.`2 %% Constants.Q),
+   (quotient_poly_part_2{1}.`1 %% Constants.Q,
+    quotient_poly_part_2{1}.`2 %% Constants.Q),
+   (quotient_poly_part_3{1}.`1 %% Constants.Q,
+    quotient_poly_part_3{1}.`2 %% Constants.Q),
+   (FieldR.asint state_poly_0_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_1_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_2_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_3_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_3_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint gate_selector_0_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_poly_0_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_poly_1_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_poly_2_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2})%FieldR %%
+   Constants.R,
+   (FieldR.asint lookup_s_poly_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_grand_product_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_t_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_t_poly_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_selector_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_table_type_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint quotient_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint linearisation_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (opening_proof_at_z{1}.`1 %% Constants.Q,
+    opening_proof_at_z{1}.`2 %% Constants.Q),
+   (opening_proof_at_z_omega{1}.`1 %% Constants.Q,
+    opening_proof_at_z_omega{1}.`2 %% Constants.Q), ret_recursive_part_p1{1},
+   ret_recursive_part_p2{1}).
+  exists ((FieldR.inF
+      ((FieldR.asint public_input{2})%FieldR %%
+       14474011154664524427946373126085988481658748083205070504932198000989141204992))%FieldR,
+   state_poly_0{2}, state_poly_1{2}, state_poly_2{2}, state_poly_3{2},
+   copy_permutation_grand_product{2}, lookup_s_poly{2},
+   lookup_grand_product{2}, quotient_poly_part_0{2}, quotient_poly_part_1{2},
+   quotient_poly_part_2{2}, quotient_poly_part_3{2},
+   state_poly_0_opening_at_z{2}, state_poly_1_opening_at_z{2},
+   state_poly_2_opening_at_z{2}, state_poly_3_opening_at_z{2},
+   state_poly_3_opening_at_z_omega{2}, gate_selector_0_opening_at_z{2},
+   copy_permutation_poly_0_opening_at_z{2},
+   copy_permutation_poly_1_opening_at_z{2},
+   copy_permutation_poly_2_opening_at_z{2},
+   copy_permutation_grand_product_opening_at_z_omega{2},
+   lookup_s_poly_opening_at_z_omega{2},
+   lookup_grand_product_opening_at_z_omega{2}, lookup_t_poly_opening_at_z{2},
+   lookup_t_poly_opening_at_z_omega{2}, lookup_selector_poly_opening_at_z{2},
+   lookup_table_type_poly_opening_at_z{2}, quotient_poly_opening_at_z{2},
+   linearisation_poly_opening_at_z{2}, opening_proof_at_z{2},
+   opening_proof_at_z_omega{2}, ret_recursive_part_p1{2},
+        ret_recursive_part_p2{2}).
+        progress. rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R.
+        by smt(@IntDiv).
+        rewrite Constants.q_eq_fieldq_p -H /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H0 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H1 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H2 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H3 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H4 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H5 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H6 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H7 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H8 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H9 /point_map. by smt(@FieldQ).
+        rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+  rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR). rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR). 
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+        rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+  rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.q_eq_fieldq_p -H10 /point_map. by smt(@FieldQ).
+rewrite Constants.q_eq_fieldq_p -H11 /point_map. by smt(@FieldQ).
+rcondf{1} 1. by progress. 
+rcondf{2} 1. by progress. 
+wp. skip. by progress. 
+rcondf{1} 1. by progress. 
+rcondf{2} 1. by progress. 
+seq 3 3: (#pre /\ omap point_map ret_recursive_part_p1{1} = omap aspoint_G1 ret_recursive_part_p1{2} /\ omap point_map ret_recursive_part_p2{1} = omap aspoint_G1 ret_recursive_part_p2{2}).
+wp. skip. by progress.   
+exists* isValid{1}. elim*. move => isValid_L.
+      case isValid_L. rcondt{1} 1. by progress.
+      rcondt{2} 1. by progress. wp. skip. progress.
+exists ((FieldR.asint public_input{2})%FieldR %%
+   14474011154664524427946373126085988481658748083205070504932198000989141204992 %%
+   14474011154664524427946373126085988481658748083205070504932198000989141204992,
+   (state_poly_0{1}.`1 %% Constants.Q, state_poly_0{1}.`2 %% Constants.Q),
+   (state_poly_1{1}.`1 %% Constants.Q, state_poly_1{1}.`2 %% Constants.Q),
+   (state_poly_2{1}.`1 %% Constants.Q, state_poly_2{1}.`2 %% Constants.Q),
+   (state_poly_3{1}.`1 %% Constants.Q, state_poly_3{1}.`2 %% Constants.Q),
+   (copy_permutation_grand_product{1}.`1 %% Constants.Q,
+    copy_permutation_grand_product{1}.`2 %% Constants.Q),
+   (lookup_s_poly{1}.`1 %% Constants.Q, lookup_s_poly{1}.`2 %% Constants.Q),
+   (lookup_grand_product{1}.`1 %% Constants.Q,
+    lookup_grand_product{1}.`2 %% Constants.Q),
+   (quotient_poly_part_0{1}.`1 %% Constants.Q,
+    quotient_poly_part_0{1}.`2 %% Constants.Q),
+   (quotient_poly_part_1{1}.`1 %% Constants.Q,
+    quotient_poly_part_1{1}.`2 %% Constants.Q),
+   (quotient_poly_part_2{1}.`1 %% Constants.Q,
+    quotient_poly_part_2{1}.`2 %% Constants.Q),
+   (quotient_poly_part_3{1}.`1 %% Constants.Q,
+    quotient_poly_part_3{1}.`2 %% Constants.Q),
+   (
+     FieldR.asint state_poly_0_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_1_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_2_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_3_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint state_poly_3_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint gate_selector_0_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_poly_0_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_poly_1_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_poly_2_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2})%FieldR %%
+   Constants.R,
+   (FieldR.asint lookup_s_poly_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_grand_product_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_t_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_t_poly_opening_at_z_omega{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_selector_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint lookup_table_type_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint quotient_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (FieldR.asint linearisation_poly_opening_at_z{2})%FieldR %% Constants.R,
+   (opening_proof_at_z{1}.`1 %% Constants.Q,
+    opening_proof_at_z{1}.`2 %% Constants.Q),
+   (opening_proof_at_z_omega{1}.`1 %% Constants.Q,
+    opening_proof_at_z_omega{1}.`2 %% Constants.Q), ret_recursive_part_p1{1},
+   ret_recursive_part_p2{1}).
+exists  ((FieldR.inF
+      ((FieldR.asint public_input{2})%FieldR %%
+       14474011154664524427946373126085988481658748083205070504932198000989141204992))%FieldR,
+   state_poly_0{2}, state_poly_1{2}, state_poly_2{2}, state_poly_3{2},
+   copy_permutation_grand_product{2}, lookup_s_poly{2},
+   lookup_grand_product{2}, quotient_poly_part_0{2}, quotient_poly_part_1{2},
+   quotient_poly_part_2{2}, quotient_poly_part_3{2},
+   state_poly_0_opening_at_z{2}, state_poly_1_opening_at_z{2},
+   state_poly_2_opening_at_z{2}, state_poly_3_opening_at_z{2},
+   state_poly_3_opening_at_z_omega{2}, gate_selector_0_opening_at_z{2},
+   copy_permutation_poly_0_opening_at_z{2},
+   copy_permutation_poly_1_opening_at_z{2},
+   copy_permutation_poly_2_opening_at_z{2},
+   copy_permutation_grand_product_opening_at_z_omega{2},
+   lookup_s_poly_opening_at_z_omega{2},
+   lookup_grand_product_opening_at_z_omega{2}, lookup_t_poly_opening_at_z{2},
+   lookup_t_poly_opening_at_z_omega{2}, lookup_selector_poly_opening_at_z{2},
+   lookup_table_type_poly_opening_at_z{2}, quotient_poly_opening_at_z{2},
+   linearisation_poly_opening_at_z{2}, opening_proof_at_z{2},
+   opening_proof_at_z_omega{2}, ret_recursive_part_p1{2},
+   ret_recursive_part_p2{2}).
+progress. 
+rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R.
+        by smt(@IntDiv).
+        rewrite Constants.q_eq_fieldq_p -H /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H0 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H1 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H2 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H3 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H4 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H5 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H6 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H7 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H8 /point_map. by smt(@FieldQ).
+        rewrite Constants.q_eq_fieldq_p -H9 /point_map. by smt(@FieldQ).
+        rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+  rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR). rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR). 
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+        rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+  rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.r_eq_fieldr_p.  by smt(@FieldR).
+rewrite Constants.q_eq_fieldq_p -H10 /point_map. by smt(@FieldQ).
+rewrite Constants.q_eq_fieldq_p -H11 /point_map. by smt(@FieldQ).  
+        rcondf{1} 1. by progress.
+        rcondf{2} 1. by progress.
+        wp. skip. by progress.
+  qed.
