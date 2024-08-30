@@ -16,24 +16,24 @@ digraph zk {
         updateAggregationChallenge2
         updateAggregationChallenge1
         permutationQuotientContribution
+        verifyQuotientEvaluation
+        initializeTranscript
+        loadProof
+        finalPairing
     }
     { node [style=filled fillcolor="aquamarine"]  
-        getTranscriptChallenge
-        updateTranscript
         prepareAggregatedCommitment
-        verifyQuotientEvaluation
     }
     { node [style=filled fillcolor="blue"]  
-        finalPairing
+        verify
     }
     { node [style=filled fillcolor="yellow"]
         modexp  
-        initializeTranscript
-        loadProof
+        getTranscriptChallenge
+        updateTranscript
     }
     { node [style=filled fillcolor="red"]   
         loadVerificationKey
-        verify
     }
 
     initializeTranscript -> modexp
