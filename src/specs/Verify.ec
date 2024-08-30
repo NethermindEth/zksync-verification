@@ -1,9 +1,11 @@
+require import AllCore.
 require import FinalPairing.
 require import InitializeTranscript.
 require import LoadProof.
 require import LoadVerificationKey.
 require import PrepareAggregatedCommitment.
 require import PrepareQueries.
+require import PurePrimops.
 require import UInt256.
 require import Verifier.
 require import VerifyQuotientEvaluation.
@@ -43,3 +45,28 @@ lemma verify_extracted_equiv_low:
       call loadVerificationKey_extracted_equiv_low.
       wp. skip. by progress.
     qed.
+
+
+lemma verify_failure_pspec :
+    phoare [ Verify.low :      
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_copy_permutation_grand_product) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_lookup_s_poly) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_lookup_grand_product) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_quotient_poly_part_0) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_quotient_poly_part_1) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_quotient_poly_part_2) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_quotient_poly_part_3) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_opening_proof_at_z) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_opening_proof_at_z_omega) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_recursive_part_p1) \/
+      !on_curve_int (point_to_uint PurePrimops.load_calldata_recursive_part_p2)
+      ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      seq 1 : (#pre).
+      inline*. wp. skip. progress.
+      inline*. wp. skip. progress.
+      inline LoadProof.low.
+      
