@@ -14,8 +14,8 @@ require import YulPrimops.
    STATE1_SLOT    = 32 bytes [0x24(36) - 0x43 (67)] 31
    CHALLANGE_SLOT = 32 bytes [0x44(68) - 0x64(100)] 31 *)
 
-op keccakTM : int -> int -> int -> int -> int.
-op keccakCM : int -> int -> int -> int -> int.
+op keccakT : int -> int -> int -> int -> int.
+op keccakC : int -> int -> int -> int -> int.
 
 import MemoryMap PurePrimops.
 
@@ -26,8 +26,8 @@ axiom keccak256_transcript_mid (m: mem) (dst s0 s1 ch : int) :
   mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int ch
   =>
   ((W256.to_uint (PurePrimops.keccak256_f(Array.offun (fun (i: int) => m.[TRANSCRIPT_BEGIN_SLOT + (W256.of_int i)]) 100)) =
-  keccakTM dst s0 s1 ch) /\
-  0 <= keccakTM dst s0 s1 ch < W256.modulus).
+  keccakT dst s0 s1 ch) /\
+  0 <= keccakT dst s0 s1 ch < W256.modulus).
 
 lemma keccak256_pspec_transcript (m: mem) (dst s0 s1 ch: int):
     phoare [ Primops.keccak256 :
@@ -38,8 +38,8 @@ lemma keccak256_pspec_transcript (m: mem) (dst s0 s1 ch: int):
       mload m TRANSCRIPT_STATE_1_SLOT = W256.of_int s1 /\
       mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int ch
       ==>
-      W256.to_uint res = keccakTM dst s0 s1 ch /\
-      0 <= keccakTM dst s0 s1 ch < W256.modulus
+      W256.to_uint res = keccakT dst s0 s1 ch /\
+      0 <= keccakT dst s0 s1 ch < W256.modulus
     ] = 1%r.
 proof. proc.
 wp. skip. move=> &hr [[]] ? ? [] ? H. subst.
@@ -49,8 +49,8 @@ have k: m.[TRANSCRIPT_DST_BYTE_SLOT] = W8.of_int dst /\
   mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int ch
   =>
   ((W256.to_uint (PurePrimops.keccak256_f(Array.offun (fun (i: int) => m.[TRANSCRIPT_BEGIN_SLOT + (W256.of_int i)]) 100)) =
-  keccakTM dst s0 s1 ch) /\
-  0 <= keccakTM dst s0 s1 ch < W256.modulus).
+  keccakT dst s0 s1 ch) /\
+  0 <= keccakT dst s0 s1 ch < W256.modulus).
 apply keccak256_transcript_mid. apply k. auto.
 qed.
 
@@ -61,8 +61,8 @@ axiom keccak256_challange_mid (m: mem) (dst s0 s1 ch : int):
   mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int (ch * 2^224)
   =>
   W256.to_uint (PurePrimops.keccak256_f(Array.offun (fun (i: int) => m.[TRANSCRIPT_BEGIN_SLOT + (W256.of_int i)]) 72)) =
-  keccakCM dst s0 s1 ch /\
-  0 <= keccakCM dst s0 s1 ch < W256.modulus.
+  keccakC dst s0 s1 ch /\
+  0 <= keccakC dst s0 s1 ch < W256.modulus.
 
 lemma keccak256_pspec_challange (m: mem) (dst s0 s1 ch: int):
     phoare [ Primops.keccak256 :
@@ -73,8 +73,8 @@ lemma keccak256_pspec_challange (m: mem) (dst s0 s1 ch: int):
       mload m TRANSCRIPT_STATE_1_SLOT = W256.of_int s1 /\
       mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int (ch * 2^224)
       ==>
-      W256.to_uint res = keccakCM dst s0 s1 ch /\
-      0 <= keccakCM dst s0 s1 ch < W256.modulus
+      W256.to_uint res = keccakC dst s0 s1 ch /\
+      0 <= keccakC dst s0 s1 ch < W256.modulus
     ] = 1%r.
 proof. proc.
 wp. skip. move=> &hr [[]] ? ? [] ? H. subst.
@@ -84,7 +84,7 @@ have k: m.[TRANSCRIPT_DST_BYTE_SLOT] = W8.of_int dst /\
   mload m TRANSCRIPT_CHALLENGE_SLOT = W256.of_int (ch * 2^224)
   =>
   ((W256.to_uint (PurePrimops.keccak256_f(Array.offun (fun (i: int) => m.[TRANSCRIPT_BEGIN_SLOT + (W256.of_int i)]) 72)) =
-  keccakCM dst s0 s1 ch) /\
-  0 <= keccakCM dst s0 s1 ch < W256.modulus).
+  keccakC dst s0 s1 ch) /\
+  0 <= keccakC dst s0 s1 ch < W256.modulus).
 apply keccak256_challange_mid. apply k. auto.
 qed.

@@ -782,6 +782,8 @@ rewrite to_uintB. smt timeout=10. rewrite /lala H14. smt.
 smt(). smt(). smt(). smt(). smt(). smt(). smt(). smt().
 qed.
 
+end section.
+
 lemma lookupQuotientContribution_mid_equiv_high (
 stateBetaLookupG
 stateGammaLookupG
@@ -848,5 +850,3 @@ skip. progress.
 rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFN FieldR.inFN H5 H6 H8.
 by  smt (@FieldR). 
 qed. 
-
-end section.

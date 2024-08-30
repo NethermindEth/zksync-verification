@@ -53,6 +53,7 @@ axiomatized by store8E.
 op load (memory: mem) (idx: uint256): uint256 =
   W32u8.pack32_t (W32u8.Pack.init (fun (i: int) => memory.[idx + W256.of_int (31 - i)]))
 axiomatized by loadE.
+op load_pair (memory: mem) (idx: uint256) = (load memory idx, load memory (idx + W256.of_int 32)).
 
 lemma load_store8_diff_32 (memory: mem) (idx idx2 val: uint256):
     W256.of_int 32 <= idx2 - idx => W256.of_int 32 <= idx - idx2 => load (store8 memory idx val) idx2 = load memory idx2.
