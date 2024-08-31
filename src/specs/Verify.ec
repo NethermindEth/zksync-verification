@@ -73,12 +73,12 @@ module Verify = {
 
    (* prepare queries *)
    var prepare_queries_opt;
-   var query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment,
-       lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated;
+   var query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookup_s_first_aggregated_commitment,
+       lookup_grand_product_first_aggregated_coefficient, query_t_poly_aggregated;
 
    (* prepare aggregated commitment *)
    var prepare_aggregated_commitment_opt;
-   var aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot;
+   var aggregated_at_z, aggregated_opening_at_z, aggregated_at_z_omega, aggregated_opening_at_z_omega, pairing_pair_with_generator, pairing_buffer_point;
    
    (* final pairing *)
    var final_pairing_bool;  
@@ -153,13 +153,13 @@ module Verify = {
 
     prepare_queries_opt <@ PrepareQueries.mid(state_z_in_domain, _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, (vk_lookup_table_0X, vk_lookup_table_0Y), (vk_lookup_table_1X, vk_lookup_table_1Y), (vk_lookup_table_2X, vk_lookup_table_2Y), (vk_lookup_table_3X, vk_lookup_table_3Y), state_eta, (vk_gate_setup_0X, vk_gate_setup_0Y), (vk_gate_setup_1X, vk_gate_setup_1Y), (vk_gate_setup_2X, vk_gate_setup_2Y), (vk_gate_setup_3X, vk_gate_setup_3Y), (vk_gate_setup_4X, vk_gate_setup_4Y), (vk_gate_setup_5X, vk_gate_setup_5Y), (vk_gate_setup_6X, vk_gate_setup_6Y), (vk_gate_setup_7X, vk_gate_setup_7Y), _state_poly_3_opening_at_z_omega, state_v, state_z, _gate_selector_0_opening_at_z, state_alpha, alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8, state_beta, state_gamma, (vk_gate_selectors_1X, vk_gate_selectors_1Y), (vk_permutation_3X, vk_permutation_3Y), _copy_permutation_grand_product_opening_at_z_omega, l0_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _lookup_grand_product_opening_at_z_omega, z_minus_last_omega, _lookup_t_poly_opening_at_z_omega, state_beta_lookup, _lookup_t_poly_opening_at_z, beta_gamma_plus_gamma, _lookup_table_type_poly_opening_at_z, _lookup_selector_poly_opening_at_z, state_gamma_lookup, beta_plus_one, ln_minus_one_at_z);
     failed <- failed \/ is_none prepare_queries_opt;
-    (query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated) <- oget prepare_queries_opt;
+    (query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookup_s_first_aggregated_commitment, lookup_grand_product_first_aggregated_coefficient, query_t_poly_aggregated) <- oget prepare_queries_opt;
 
-    prepare_aggregated_commitment_opt <@ PrepareAggregatedCommitment.mid(query_at_z_0, _quotient_poly_opening_at_z, query_at_z_1, state_v, _linearisation_poly_opening_at_z, _state_poly_0, _state_poly_0_opening_at_z, _state_poly_1, _state_poly_1_opening_at_z, _state_poly_2, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, (vk_gate_selectors_0X, vk_gate_selectors_0Y), _gate_selector_0_opening_at_z, (vk_permutation_0X, vk_permutation_0Y), _copy_permutation_poly_0_opening_at_z, (vk_permutation_1X, vk_permutation_1Y), _copy_permutation_poly_1_opening_at_z, (vk_permutation_2X, vk_permutation_2Y), _copy_permutation_poly_2_opening_at_z, _lookup_t_poly_opening_at_z, (vk_lookup_selector_X, vk_lookup_selector_Y), _lookup_selector_poly_opening_at_z, (vk_lookup_table_type_X, vk_lookup_table_type_Y), _lookup_table_type_poly_opening_at_z, copy_permutation_first_aggregated_commitment_coeff, state_u, _copy_permutation_grand_product, _copy_permutation_grand_product_opening_at_z_omega, _state_poly_3, _state_poly_3_opening_at_z_omega, _lookup_s_poly, _lookup_s_poly_opening_at_z_omega, lookupSFirstAggregatedCommitment, _lookup_grand_product, _lookup_grand_product_opening_at_z_omega, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated, _lookup_t_poly_opening_at_z_omega);
+    prepare_aggregated_commitment_opt <@ PrepareAggregatedCommitment.mid(query_at_z_0, _quotient_poly_opening_at_z, query_at_z_1, state_v, _linearisation_poly_opening_at_z, _state_poly_0, _state_poly_0_opening_at_z, _state_poly_1, _state_poly_1_opening_at_z, _state_poly_2, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, (vk_gate_selectors_0X, vk_gate_selectors_0Y), _gate_selector_0_opening_at_z, (vk_permutation_0X, vk_permutation_0Y), _copy_permutation_poly_0_opening_at_z, (vk_permutation_1X, vk_permutation_1Y), _copy_permutation_poly_1_opening_at_z, (vk_permutation_2X, vk_permutation_2Y), _copy_permutation_poly_2_opening_at_z, _lookup_t_poly_opening_at_z, (vk_lookup_selector_X, vk_lookup_selector_Y), _lookup_selector_poly_opening_at_z, (vk_lookup_table_type_X, vk_lookup_table_type_Y), _lookup_table_type_poly_opening_at_z, copy_permutation_first_aggregated_commitment_coeff, state_u, _copy_permutation_grand_product, _copy_permutation_grand_product_opening_at_z_omega, _state_poly_3, _state_poly_3_opening_at_z_omega, _lookup_s_poly, _lookup_s_poly_opening_at_z_omega, lookup_s_first_aggregated_commitment, _lookup_grand_product, _lookup_grand_product_opening_at_z_omega, lookup_grand_product_first_aggregated_coefficient, query_t_poly_aggregated, _lookup_t_poly_opening_at_z_omega);
    failed <- failed \/ is_none prepare_aggregated_commitment_opt;
-   (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot) <- oget prepare_aggregated_commitment_opt;
+   (aggregated_at_z, aggregated_opening_at_z, aggregated_at_z_omega, aggregated_opening_at_z_omega, pairing_pair_with_generator, pairing_buffer_point) <- oget prepare_aggregated_commitment_opt;
 
-  final_pairing_bool <@ FinalPairing.mid(state_u, state_z, pairingPairWithGeneratorSlot, pairingBufferPointSlot, _opening_proof_at_z, _opening_proof_at_z_omega, vk_recursive_flag, recursive_part_p1, recursive_part_p2);
+  final_pairing_bool <@ FinalPairing.mid(state_u, state_z, pairing_pair_with_generator, pairing_buffer_point, _opening_proof_at_z, _opening_proof_at_z_omega, vk_recursive_flag, recursive_part_p1, recursive_part_p2);
   failed <- failed \/ !final_pairing_bool;
    
   return !failed;
@@ -192,7 +192,7 @@ op verify_memory_footprint (m: mem) =
 let m1 = loadVerificationKey_memory_footprint m in
 m1.
 
-(* lemma verify_low_equiv_mid (memory : mem):
+lemma verify_low_equiv_mid (memory : mem):
 equiv [
     Verify.low ~ Verify.mid :
       !Primops.reverted{1} /\ 
@@ -284,7 +284,7 @@ pose m40 := store m39 VK_LOOKUP_TABLE_TYPE_Y_SLOT (W256.of_int 11005776646725047
 pose m41 := store m40 VK_RECURSIVE_FLAG_SLOT W256.zero.
 
 pose mlvk := loadVerificationKey_memory_footprint memory.
-seq 41 41: (
+seq 41 42: (
 !Primops.reverted{1} /\ 
 Primops.memory{1} = mlvk /\
 W256.to_uint (load mlvk VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
@@ -430,7 +430,7 @@ do 3! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same o
 do 2! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 1! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 rewrite load_store_diff; try by simplify; try (rewrite load_store_same of_uintK; by simplify).
-rewrite load_store_same; by simplify.
+rewrite load_store_same /uint256_of_bool; by simplify.
 clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19 
       m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m41.
-*)
+
