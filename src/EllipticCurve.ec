@@ -51,6 +51,10 @@ axiom e_bilin (m n : FieldR.F) (x1 x2 : g) : e (m * x1) (n * x2) = (FieldR.(+) m
 axiom e_non_deg_1 (x : g) : x <> G.e => exists y, e x y <> G.e.
 axiom e_non_deg_2 (y : g) : y <> G.e => exists x, e x y <> G.e.
 
+op g_gen : g.
+axiom gen_def : aspoint_G1 g_gen = (FieldQ.inF 1, FieldQ.inF 2).
+axiom g_gen_is_gen (x : g) : exists (n : FieldR.F), n * g_gen = x.
+
 op ecAdd_precompile (x1 y1 x2 y2 : FieldQ.F) : (FieldQ.F * FieldQ.F) option.  
 op ecMul_precompile (x y : FieldQ.F) (s : int) : (FieldQ.F * FieldQ.F) option.
 op ecPairing_precompile (input1 input2 : ((FieldQ.F *  FieldQ.F) * ((FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F)))) : bool option.
