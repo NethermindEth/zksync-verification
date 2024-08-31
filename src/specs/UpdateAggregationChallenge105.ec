@@ -50,10 +50,9 @@ module UpdateAggregationChallenge_105 = {
     }
 
     proc high(queriesCommitmentPoint : g, valueAtZ_Omega : FieldR.F, previousCoeff : FieldR.F, curAggregationChallenge : FieldR.F, curAggregatedOpeningAtZ_Omega : FieldR.F, v_challenge : FieldR.F, u_challenge : FieldR.F, curAggregatedAtZOmegaXSlot : g) : (FieldR.F * FieldR.F * g) = {
-        var newAggregationChallenge, finalCoeff, newAggregatedOpeningAtZ_Omega; 
+        var newAggregationChallenge, newAggregatedOpeningAtZ_Omega; 
         newAggregationChallenge <- v_challenge * curAggregationChallenge;
-        finalCoeff <- u_challenge * v_challenge * curAggregationChallenge + previousCoeff;
-        curAggregatedAtZOmegaXSlot <- finalCoeff * queriesCommitmentPoint + curAggregatedAtZOmegaXSlot;
+        curAggregatedAtZOmegaXSlot <- (u_challenge * newAggregationChallenge + previousCoeff) * queriesCommitmentPoint + curAggregatedAtZOmegaXSlot;
         newAggregatedOpeningAtZ_Omega <- newAggregationChallenge * valueAtZ_Omega + curAggregatedOpeningAtZ_Omega;
         return (newAggregationChallenge, newAggregatedOpeningAtZ_Omega, curAggregatedAtZOmegaXSlot);
     }
@@ -285,4 +284,5 @@ equiv [
         exact updateAggregationChallenge_105_mid_equiv_high_encapsulated.
         proc.
         inline PointMulAndAddIntoDest.high. wp. skip. progress.
+        smt (@Field).
   qed.
