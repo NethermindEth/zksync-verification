@@ -2639,7 +2639,7 @@ lemma loadProof_mid_equiv_high (recursive: bool):
       LoadProof.mid ~ LoadProof.high:
       ={public_input_length_in_words, proof_length_in_words, vk_recursive_flag, recursive_proof_length_in_words} /\
       vk_recursive_flag{1} = recursive /\
-      public_input{1} = (FieldR.asint public_input{2} %% 2 ^ 253) /\
+      public_input{1} = FieldR.asint public_input{2} /\
       point_map state_poly_0{1} = aspoint_G1 state_poly_0{2} /\
       point_map state_poly_1{1} = aspoint_G1 state_poly_1{2} /\
       point_map state_poly_2{1} = aspoint_G1 state_poly_2{2} /\
@@ -2794,8 +2794,8 @@ lemma loadProof_mid_equiv_high (recursive: bool):
    linearisation_poly_opening_at_z{2}, opening_proof_at_z{2},
    opening_proof_at_z_omega{2}, ret_recursive_part_p1{2},
         ret_recursive_part_p2{2}).
-        progress. rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R.
-        by smt(@IntDiv).
+        progress. smt (@IntDiv).
+        rewrite pmod_small. progress. exact modz_ge0. exact ltz_pmod. rewrite FieldR.inFK. rewrite -Constants.r_eq_fieldr_p (pmod_small _ Constants.R) /Constants.R. progress. exact modz_ge0. smt (). reflexivity.
         rewrite Constants.q_eq_fieldq_p -H /point_map. by smt(@FieldQ).
         rewrite Constants.q_eq_fieldq_p -H0 /point_map. by smt(@FieldQ).
         rewrite Constants.q_eq_fieldq_p -H1 /point_map. by smt(@FieldQ).
@@ -2903,6 +2903,7 @@ exists  ((FieldR.inF
    opening_proof_at_z_omega{2}, ret_recursive_part_p1{2},
    ret_recursive_part_p2{2}).
 progress. 
+smt ().
 rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R.
         by smt(@IntDiv).
         rewrite Constants.q_eq_fieldq_p -H /point_map. by smt(@FieldQ).
