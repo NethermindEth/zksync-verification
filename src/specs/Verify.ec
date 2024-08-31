@@ -16,6 +16,10 @@ require import VerifyQuotientEvaluation.
 require import YulPrimops.
 require import PurePrimops.
 
+lemma initializeTranscript_low_pspec_revert:
+phoare [ InitializeTranscript.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. admit. qed.
+
 module Verify = {
   proc low(var__offset : uint256, var_length : uint256, var_offset : uint256, var__length : uint256, var_1250_offset : uint256, var_1250_length : uint256): uint256 = {
     LoadVerificationKey.low();
@@ -1367,6 +1371,15 @@ seq 1 1:(
   0 <= state_z_in_domain{2} < Constants.R /\
   0 <= state_v{2} < 2^253 /\ 0 <= state_u{2} < 2^253))
 ).
+exists* Primops.reverted{1}. elim*=> reverted.
+case reverted. progress.
+conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
+progress. case H2. by progress. by progress.
+progress. left. by progress.
+inline InitializeTranscript.mid UpdateTranscript.UpdateTranscript.mid GetTranscriptChallenge.GetTranscriptChallenge.mid Modexp.Modexp.mid. wp. sp.
+call{1} initializeTranscript_low_pspec_revert.
+skip. progress.
+
 call (unitializeTranscript_low_equiv_mid mlp 0 0 
 mod_public_input 
 mod_state_poly_0.`1 mod_state_poly_0.`2 
@@ -1401,7 +1414,13 @@ mod_linearisation_poly_opening_at_z
 mod_opening_proof_at_z.`1 mod_opening_proof_at_z.`2 
 mod_opening_proof_at_z_omega.`1 mod_opening_proof_at_z_omega.`2).
 skip. progress.
-rewrite /mlp /loadProof_memory_footprint
+
+
+
+
+
+
+(* rewrite /mlp /loadProof_memory_footprint
 /PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
 /PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
 /PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
@@ -1613,3 +1632,4 @@ Primops.memory{1} = m
 op initializeTranscript_memory_footprint (m: mem)
 (sEta sBeta sGamma sBetaLookup sGammaLookup sAlpha sZ sZInDomainSize sV sU : uint256)   
 (s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 : uint256) : mem =
+*)
