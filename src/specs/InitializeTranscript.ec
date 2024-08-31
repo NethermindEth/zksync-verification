@@ -433,7 +433,7 @@ let m26 = getTranscriptChallenge_memory_footprint m25 8 in
 let m27 = mstore m26 STATE_U_SLOT sU in
 m27.
 
-lemma unitializeTranscript_mid_equiv_high
+lemma initializeTranscript_mid_equiv_high
     (initialS0G initialS1G : int,
        publicInputG: FieldR.F,
        proofStatePolys0G: g,
@@ -549,16 +549,16 @@ proofLinearisationPolyOpeningAtZG,
 proofOpeningProofAtZG, 
 proofOpeningProofAtZOmegaG)
 ==>
-FieldR.inF res{1}.`1 = res{2}.`1   /\ 0 <= res{1}.`1 < 2^253 /\
-FieldR.inF res{1}.`2 = res{2}.`2   /\ 0 <= res{1}.`2 < 2^253 /\
-FieldR.inF res{1}.`3 = res{2}.`3   /\ 0 <= res{1}.`3 < 2^253 /\
-FieldR.inF res{1}.`4 = res{2}.`4   /\ 0 <= res{1}.`4 < 2^253 /\
-FieldR.inF res{1}.`5 = res{2}.`5   /\ 0 <= res{1}.`5 < 2^253 /\
-FieldR.inF res{1}.`6 = res{2}.`6   /\ 0 <= res{1}.`6 < 2^253 /\
-FieldR.inF res{1}.`7 = res{2}.`7   /\ 0 <= res{1}.`7 < 2^253 /\
-FieldR.inF res{1}.`8 = res{2}.`8   /\
-FieldR.inF res{1}.`9 = res{2}.`9   /\ 0 <= res{1}.`9 < 2^253 /\
-FieldR.inF res{1}.`10 = res{2}.`10 /\ 0 <= res{1}.`10 < 2^253
+res{1}.`1 = FieldR.asint res{2}.`1   /\ 0 <= res{1}.`1 < 2^253 /\
+res{1}.`2 = FieldR.asint res{2}.`2   /\ 0 <= res{1}.`2 < 2^253 /\
+res{1}.`3 = FieldR.asint res{2}.`3   /\ 0 <= res{1}.`3 < 2^253 /\
+res{1}.`4 = FieldR.asint res{2}.`4   /\ 0 <= res{1}.`4 < 2^253 /\
+res{1}.`5 = FieldR.asint res{2}.`5   /\ 0 <= res{1}.`5 < 2^253 /\
+res{1}.`6 = FieldR.asint res{2}.`6   /\ 0 <= res{1}.`6 < 2^253 /\
+res{1}.`7 = FieldR.asint res{2}.`7   /\ 0 <= res{1}.`7 < 2^253 /\
+res{1}.`8 = FieldR.asint res{2}.`8   /\
+res{1}.`9 = FieldR.asint res{2}.`9   /\ 0 <= res{1}.`9 < 2^253 /\
+res{1}.`10 = FieldR.asint res{2}.`10 /\ 0 <= res{1}.`10 < 2^253
 ].
 proof. proc.
 have I: forall a b c, 0 <= keccakC 2 a b c %% 2^253. by smt().
@@ -568,27 +568,39 @@ seq 9 9: (#pre /\
   ={state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3, state0_4,
     state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7, state0_8, state1_8}). 
 inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateEta{1} = stateEta{2} /\ 0 <= stateEta{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
+seq 1 1: (#pre /\ stateEta{1} = FieldR.asint stateEta{2} /\ 0 <= stateEta{1} < 2^253). 
+inline*. wp. skip. progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
 
 seq 2 2: (#pre /\ ={state0_9, state1_9, state0_10, state1_10}).
 inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateBeta{1} = stateBeta{2} /\ 0 <= stateBeta{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-seq 1 1: (#pre /\ FieldR.inF stateGamma{1} = stateGamma{2} /\ 0 <= stateGamma{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
+seq 1 1: (#pre /\ stateBeta{1} = FieldR.asint stateBeta{2} /\ 0 <= stateBeta{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+seq 1 1: (#pre /\ stateGamma{1} = FieldR.asint stateGamma{2} /\ 0 <= stateGamma{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
 
 seq 2 2: (#pre /\ ={state0_11, state1_11, state0_12, state1_12}).
 inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateBetaLookup{1} = stateBetaLookup{2} /\ 0 <= stateBetaLookup{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-seq 1 1: (#pre /\ FieldR.inF stateGammaLookup{1} = stateGammaLookup{2} /\ 0 <= stateGammaLookup{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
+seq 1 1: (#pre /\ stateBetaLookup{1} = FieldR.asint stateBetaLookup{2} /\ 0 <= stateBetaLookup{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+seq 1 1: (#pre /\ stateGammaLookup{1} = FieldR.asint stateGammaLookup{2} /\ 0 <= stateGammaLookup{1} < 2^253).
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
 
 seq 2 2: (#pre /\ ={state0_13, state1_13, state0_14, state1_14}).
 inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateAlpha{1} = stateAlpha{2} /\ 0 <= stateAlpha{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
+seq 1 1: (#pre /\ stateAlpha{1} = FieldR.asint stateAlpha{2} /\ 0 <= stateAlpha{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
 
 seq 8 8: (#pre /\ 
   ={state0_15, state1_15, state0_16, state1_16, state0_17, state1_17, state0_18, state1_18,
@@ -596,10 +608,19 @@ seq 8 8: (#pre /\
 inline *; wp; skip; by progress.
 
 seq 2 2: (#pre /\ 
-    FieldR.inF stateZ{1} = stateZ{2} /\ 0 <= stateZ{1} < 2^253 /\ 
-    FieldR.inF stateZInDomain{1} = stateZInDomain{2}).
-inline*; wp; skip; progress. apply I. apply II.
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE; smt (@FieldR).
+    stateZ{1} = FieldR.asint stateZ{2} /\ 0 <= stateZ{1} < 2^253 /\ 
+    stateZInDomain{1} = FieldR.asint stateZInDomain{2}).
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+  rewrite RexpE.
+  rewrite FieldR.exp_inF.
+  rewrite /Constants.DOMAIN_SIZE.
+  have ->: 0 <= 67108864 by trivial.
+  have ->: forall (a b: FieldR.F), (if true then a else b) = a by trivial.
+  rewrite FieldR.inFK.
+  rewrite Constants.r_eq_fieldr_p.
+  reflexivity.
 
 seq 8 8: (#pre /\
   ={state0_23, state1_23, state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, 
@@ -610,19 +631,23 @@ seq 10 10: (#pre /\
     state0_35, state1_35, state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, 
     state0_39, state1_39, state0_40, state1_40}).
 inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateV{1} = stateV{2} /\ 0 <= stateV{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
+seq 1 1: (#pre /\ stateV{1} = FieldR.asint stateV{2} /\ 0 <= stateV{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
 
 seq 4 4: (#pre /\
   ={state0_41, state1_41, state0_42, state1_42, state0_43, state1_43, state0_44, state1_44}).
 inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateU{1} = stateU{2} /\ 0 <= stateU{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
+seq 1 1: (#pre /\ stateU{1} = FieldR.asint stateU{2} /\ 0 <= stateU{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
 
 skip. progress.
 qed.
 
-lemma unitializeTranscript_low_equiv_mid (m : mem) (
+lemma initializeTranscript_low_equiv_mid (m : mem) (
       initialS0G initialS1G
       publicInputG
       proofStatePolys0XG proofStatePolys0YG

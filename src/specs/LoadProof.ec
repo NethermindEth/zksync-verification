@@ -2629,7 +2629,6 @@ lemma on_curve_int_of_cast (p: g): on_curve_int(F_to_int_point(aspoint_G1 p)).
       rewrite /on_curve_int /F_to_int_point. simplify.
       rewrite Constants.q_eq_fieldq_p.
       rewrite FieldQ.eq_inF.
-      print FieldQ.
       pose lhs := FieldQ.inF(_ + 3).
       rewrite FieldQ.inF_mod.
       rewrite -FieldQ.mulE.

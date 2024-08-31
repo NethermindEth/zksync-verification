@@ -682,6 +682,7 @@ lemma verify_mid_equiv_high_encapsulated:
         _copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint _copy_permutation_grand_product_opening_at_z_omega{2} /\
         _lookup_s_poly_opening_at_z_omega{1} = FieldR.asint _lookup_s_poly_opening_at_z_omega{2} /\
         _lookup_grand_product_opening_at_z_omega{1} = FieldR.asint _lookup_grand_product_opening_at_z_omega{2} /\
+        _lookup_t_poly_opening_at_z{1} = FieldR.asint _lookup_t_poly_opening_at_z{2} /\
         _lookup_t_poly_opening_at_z_omega{1} = FieldR.asint _lookup_t_poly_opening_at_z_omega{2} /\
         _lookup_selector_poly_opening_at_z{1} = FieldR.asint _lookup_selector_poly_opening_at_z{2} /\
         _lookup_table_type_poly_opening_at_z{1} = FieldR.asint _lookup_table_type_poly_opening_at_z{2} /\
@@ -693,24 +694,129 @@ lemma verify_mid_equiv_high_encapsulated:
         _recursive_part_p2{1} = (omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2}))
       )).
       wp.
-      call (loadProof_mid_equiv_high false). skip. rewrite /point_map.
-      have H_tuple: forall (p: g), ((aspoint_G1 p).`1, (aspoint_G1 p).`2) = aspoint_G1 p by smt ().
+      call (loadProof_mid_equiv_high false). skip.
       progress.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      rewrite F_to_int_point_inzmod_1 F_to_int_point_inzmod_2. exact H_tuple.
-      case H14. by progress. progress.
-      rewrite -H15 /F_to_int_point. print FieldQ.inFK.
-      (* replace point_map with F_to_int_point in loadProof mid to high *)      
+      case H. by progress. by progress.
+
+      seq 1 1: (
+        (failed{1} /\ failed{2}) \/ (
+          !failed{1} /\  !failed{2} /\
+          _public_input{1} = FieldR.asint _public_input{2} /\
+          _state_poly_0{1} = F_to_int_point (aspoint_G1 _state_poly_0{2}) /\
+          _state_poly_1{1} = F_to_int_point (aspoint_G1 _state_poly_1{2}) /\
+           _state_poly_2{1} = F_to_int_point (aspoint_G1 _state_poly_2{2}) /\
+          _state_poly_3{1} = F_to_int_point (aspoint_G1 _state_poly_3{2}) /\
+          _copy_permutation_grand_product{1} = F_to_int_point (aspoint_G1 _copy_permutation_grand_product{2}) /\
+          _lookup_s_poly{1} = F_to_int_point (aspoint_G1 _lookup_s_poly{2}) /\
+          _lookup_grand_product{1} = F_to_int_point (aspoint_G1 _lookup_grand_product{2}) /\
+          _quotient_poly_part_0{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_0{2}) /\
+          _quotient_poly_part_1{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_1{2}) /\
+          _quotient_poly_part_2{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_2{2}) /\
+          _quotient_poly_part_3{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_3{2}) /\
+          _state_poly_0_opening_at_z{1} = FieldR.asint _state_poly_0_opening_at_z{2} /\
+          _state_poly_1_opening_at_z{1} = FieldR.asint _state_poly_1_opening_at_z{2} /\
+          _state_poly_2_opening_at_z{1} = FieldR.asint _state_poly_2_opening_at_z{2} /\
+          _state_poly_3_opening_at_z{1} = FieldR.asint _state_poly_3_opening_at_z{2} /\
+          _state_poly_3_opening_at_z_omega{1} = FieldR.asint _state_poly_3_opening_at_z_omega{2} /\
+          _gate_selector_0_opening_at_z{1} = FieldR.asint _gate_selector_0_opening_at_z{2} /\
+          _copy_permutation_poly_0_opening_at_z{1} = FieldR.asint _copy_permutation_poly_0_opening_at_z{2} /\
+          _copy_permutation_poly_1_opening_at_z{1} = FieldR.asint _copy_permutation_poly_1_opening_at_z{2} /\
+          _copy_permutation_poly_2_opening_at_z{1} = FieldR.asint _copy_permutation_poly_2_opening_at_z{2} /\
+          _copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint _copy_permutation_grand_product_opening_at_z_omega{2} /\
+          _lookup_s_poly_opening_at_z_omega{1} = FieldR.asint _lookup_s_poly_opening_at_z_omega{2} /\
+          _lookup_grand_product_opening_at_z_omega{1} = FieldR.asint _lookup_grand_product_opening_at_z_omega{2} /\
+          _lookup_t_poly_opening_at_z_omega{1} = FieldR.asint _lookup_t_poly_opening_at_z_omega{2} /\
+          _lookup_selector_poly_opening_at_z{1} = FieldR.asint _lookup_selector_poly_opening_at_z{2} /\
+           _lookup_table_type_poly_opening_at_z{1} = FieldR.asint _lookup_table_type_poly_opening_at_z{2} /\
+          _quotient_poly_opening_at_z{1} = FieldR.asint _quotient_poly_opening_at_z{2} /\
+          _linearisation_poly_opening_at_z{1} = FieldR.asint _linearisation_poly_opening_at_z{2} /\
+          _opening_proof_at_z{1} = F_to_int_point (aspoint_G1 _opening_proof_at_z{2}) /\
+          _opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 _opening_proof_at_z_omega{2}) /\
+          _recursive_part_p1{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p1{2}) /\
+          _recursive_part_p2{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2}) /\
+          state_alpha{1} = FieldR.asint state_alpha{2} /\
+          state_beta{1} = FieldR.asint state_beta{2} /\
+          state_beta_lookup{1} = FieldR.asint state_beta_lookup{2} /\
+          state_gamma{1} = FieldR.asint state_gamma{2} /\
+          state_gamma_lookup{1} = FieldR.asint state_gamma_lookup{2} /\
+          state_eta{1} = FieldR.asint state_eta{2} /\
+          state_z{1} = FieldR.asint state_z{2} /\
+          state_z_in_domain{1} = FieldR.asint state_z_in_domain{2} /\
+          state_v{1} = FieldR.asint state_v{2} /\
+          state_u{1} = FieldR.asint state_u{2}
+        )
+      ).
+      case (failed{1}).
+      conseq (_: failed{1} /\ failed{2} ==> failed{1} /\ failed{2}).
+      progress. case H. by progress. by progress.
+      progress. left. rewrite H1 H2. by progress.
+      kill{1} 1. inline*. wp. skip. by progress.
+      kill{2} 1. inline*. wp. skip. by progress.
+      skip. by progress.
+      exists* _public_input{2}, _state_poly_0{2}, _state_poly_1{2}, _state_poly_2{2}, _state_poly_3{2}, _lookup_s_poly{2}, _copy_permutation_grand_product{2}, _lookup_grand_product{2}, _quotient_poly_part_0{2}, _quotient_poly_part_1{2}, _quotient_poly_part_2{2}, _quotient_poly_part_3{2}, _quotient_poly_opening_at_z{2}, _state_poly_0_opening_at_z{2}, _state_poly_1_opening_at_z{2}, _state_poly_2_opening_at_z{2}, _state_poly_3_opening_at_z{2}, _state_poly_3_opening_at_z_omega{2}, _gate_selector_0_opening_at_z{2}, _copy_permutation_poly_0_opening_at_z{2}, _copy_permutation_poly_1_opening_at_z{2}, _copy_permutation_poly_2_opening_at_z{2}, _copy_permutation_grand_product_opening_at_z_omega{2}, _lookup_t_poly_opening_at_z{2}, _lookup_selector_poly_opening_at_z{2}, _lookup_table_type_poly_opening_at_z{2}, _lookup_s_poly_opening_at_z_omega{2}, _lookup_grand_product_opening_at_z_omega{2}, _lookup_t_poly_opening_at_z_omega{2}, _linearisation_poly_opening_at_z{2}, _opening_proof_at_z{2}, _opening_proof_at_z_omega{2}.
+      elim* => _public_input_r _state_poly_0_r _state_poly_1_r _state_poly_2_r _state_poly_3_r _lookup_s_poly_r _copy_permutation_grand_product_r _lookup_grand_product_r _quotient_poly_part_0_r _quotient_poly_part_1_r _quotient_poly_part_2_r _quotient_poly_part_3_r _quotient_poly_opening_at_z_r _state_poly_0_opening_at_z_r _state_poly_1_opening_at_z_r _state_poly_2_opening_at_z_r _state_poly_3_opening_at_z_r _state_poly_3_opening_at_z_omega_r _gate_selector_0_opening_at_z_r _copy_permutation_poly_0_opening_at_z_r _copy_permutation_poly_1_opening_at_z_r _copy_permutation_poly_2_opening_at_z_r _copy_permutation_grand_product_opening_at_z_omega_r _lookup_t_poly_opening_at_z_r _lookup_selector_poly_opening_at_z_r _lookup_table_type_poly_opening_at_z_r _lookup_s_poly_opening_at_z_omega_r _lookup_grand_product_opening_at_z_omega_r _lookup_t_poly_opening_at_z_omega_r _linearisation_poly_opening_at_z_r _opening_proof_at_z_r _opening_proof_at_z_omega_r.
+      call (initializeTranscript_mid_equiv_high 0 0 _public_input_r _state_poly_0_r _state_poly_1_r _state_poly_2_r _state_poly_3_r _lookup_s_poly_r _copy_permutation_grand_product_r _lookup_grand_product_r _quotient_poly_part_0_r _quotient_poly_part_1_r _quotient_poly_part_2_r _quotient_poly_part_3_r _quotient_poly_opening_at_z_r _state_poly_0_opening_at_z_r _state_poly_1_opening_at_z_r _state_poly_2_opening_at_z_r _state_poly_3_opening_at_z_r _state_poly_3_opening_at_z_omega_r _gate_selector_0_opening_at_z_r _copy_permutation_poly_0_opening_at_z_r _copy_permutation_poly_1_opening_at_z_r _copy_permutation_poly_2_opening_at_z_r _copy_permutation_grand_product_opening_at_z_omega_r _lookup_t_poly_opening_at_z_r _lookup_selector_poly_opening_at_z_r _lookup_table_type_poly_opening_at_z_r _lookup_s_poly_opening_at_z_omega_r _lookup_grand_product_opening_at_z_omega_r _lookup_t_poly_opening_at_z_omega_r _linearisation_poly_opening_at_z_r _opening_proof_at_z_r _opening_proof_at_z_omega_r).
+      wp. skip. progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. progress. rewrite H H55. progress.
+      admit.
+      (* rewrite -H27 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H30 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H33 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H36 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H39 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H42 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H45 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      rewrite -H48 FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R pmod_small. smt (). reflexivity.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      case H. by progress. by progress.
+      admit. *)
+      qed.
