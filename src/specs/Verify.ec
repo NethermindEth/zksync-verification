@@ -15,9 +15,135 @@ require import Verifier.
 require import VerifyQuotientEvaluation.
 require import YulPrimops.
 require import PurePrimops.
+require import Utils.
 
 lemma initializeTranscript_low_pspec_revert:
 phoare [ InitializeTranscript.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. admit. qed.
+
+import MemoryMap VerifierConsts.
+
+lemma loadProof_low_equiv_mid_mod (mem_0: mem) (recursive: bool):
+    equiv [
+      LoadProof.low ~ LoadProof.mid:
+      !Primops.reverted{1} /\
+      Primops.memory{1} = mem_0 /\
+      load mem_0 VK_RECURSIVE_FLAG_SLOT = uint256_of_bool recursive /\
+      public_input_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_public_input_length /\
+      public_input{2} = W256.to_uint PurePrimops.load_calldata_public_input /\
+      proof_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_proof_length /\
+      state_poly_0{2} = point_to_uint PurePrimops.load_calldata_state_poly_0 /\
+      state_poly_1{2} = point_to_uint PurePrimops.load_calldata_state_poly_1 /\
+      state_poly_2{2} = point_to_uint PurePrimops.load_calldata_state_poly_2 /\
+      state_poly_3{2} = point_to_uint PurePrimops.load_calldata_state_poly_3 /\
+      copy_permutation_grand_product{2} = point_to_uint PurePrimops.load_calldata_copy_permutation_grand_product /\
+      lookup_s_poly{2} = point_to_uint PurePrimops.load_calldata_lookup_s_poly /\
+      lookup_grand_product{2} = point_to_uint PurePrimops.load_calldata_lookup_grand_product /\
+      quotient_poly_part_0{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_0 /\
+      quotient_poly_part_1{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_1 /\
+      quotient_poly_part_2{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_2 /\
+      quotient_poly_part_3{2} = point_to_uint PurePrimops.load_calldata_quotient_poly_part_3 /\
+      state_poly_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z /\
+      state_poly_1_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z /\
+      state_poly_2_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z /\
+      state_poly_3_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z /\
+      state_poly_3_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega /\
+      gate_selector_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z /\
+      copy_permutation_poly_0_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z /\
+      copy_permutation_poly_1_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z /\
+      copy_permutation_poly_2_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z /\
+      copy_permutation_grand_product_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega /\
+      lookup_s_poly_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega /\
+      lookup_grand_product_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega /\
+      lookup_t_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z /\
+      lookup_t_poly_opening_at_z_omega{2} = W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega /\
+      lookup_selector_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z /\
+      lookup_table_type_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z /\
+      quotient_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z /\
+      linearisation_poly_opening_at_z{2} = W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z /\
+      opening_proof_at_z{2} = point_to_uint PurePrimops.load_calldata_opening_proof_at_z /\
+      opening_proof_at_z_omega{2} = point_to_uint PurePrimops.load_calldata_opening_proof_at_z_omega /\
+      recursive_proof_length_in_words{2} = W256.to_uint PurePrimops.load_calldata_recursive_proof_length /\
+      vk_recursive_flag{2} = bool_of_uint256 (load mem_0 VK_RECURSIVE_FLAG_SLOT) /\
+      recursive_part_p1{2} = point_to_uint PurePrimops.load_calldata_recursive_part_p1 /\
+      recursive_part_p2{2} = point_to_uint PurePrimops.load_calldata_recursive_part_p2
+       ==>
+      (Primops.reverted{1} /\ res{2} = None) \/
+      (
+        !Primops.reverted{1} /\
+        exists r, res{2} = Some r /\
+        Primops.memory{1} = loadProof_memory_footprint
+          mem_0
+          recursive
+          (W256.of_int r.`1)
+          (point_of_uint r.`2)
+          (point_of_uint r.`3)
+          (point_of_uint r.`4)
+          (point_of_uint r.`5)
+          (point_of_uint r.`6)
+          (point_of_uint r.`7)
+          (point_of_uint r.`8)
+          (point_of_uint r.`9)
+          (point_of_uint r.`10)
+          (point_of_uint r.`11)
+          (point_of_uint r.`12)
+          (W256.of_int r.`13)
+          (W256.of_int r.`14)
+          (W256.of_int r.`15)
+          (W256.of_int r.`16)
+          (W256.of_int r.`17)
+          (W256.of_int r.`18)
+          (W256.of_int r.`19)
+          (W256.of_int r.`20)
+          (W256.of_int r.`21)
+          (W256.of_int r.`22)
+          (W256.of_int r.`23)
+          (W256.of_int r.`24)
+          (W256.of_int r.`25)
+          (W256.of_int r.`26)
+          (W256.of_int r.`27)
+          (W256.of_int r.`28)
+          (W256.of_int r.`29)
+          (W256.of_int r.`30)
+          (point_of_uint r.`31)
+          (point_of_uint r.`32)
+          (point_of_uint (odflt (0,0) r.`33))
+          (point_of_uint (odflt (0,0) r.`34))
+       /\
+       0 <= r.`1 < 2^253 /\
+       0 <= r.`2.`1 < Constants.Q /\ 0 <= r.`2.`2 < Constants.Q /\
+       0 <= r.`3.`1 < Constants.Q /\ 0 <= r.`3.`2 < Constants.Q /\
+       0 <= r.`4.`1 < Constants.Q /\ 0 <= r.`4.`2 < Constants.Q /\
+       0 <= r.`5.`1 < Constants.Q /\ 0 <= r.`5.`2 < Constants.Q /\
+       0 <= r.`6.`1 < Constants.Q /\ 0 <= r.`6.`2 < Constants.Q /\
+       0 <= r.`7.`1 < Constants.Q /\ 0 <= r.`7.`2 < Constants.Q /\
+       0 <= r.`8.`1 < Constants.Q /\ 0 <= r.`8.`2 < Constants.Q /\
+       0 <= r.`9.`1 < Constants.Q /\ 0 <= r.`9.`2 < Constants.Q /\
+       0 <= r.`10.`1 < Constants.Q /\ 0 <= r.`10.`2 < Constants.Q /\
+       0 <= r.`11.`1 < Constants.Q /\ 0 <= r.`11.`2 < Constants.Q /\
+       0 <= r.`12.`1 < Constants.Q /\ 0 <= r.`12.`2 < Constants.Q /\
+       0 <= r.`13 < Constants.R /\
+       0 <= r.`14 < Constants.R /\
+       0 <= r.`15 < Constants.R /\
+       0 <= r.`16 < Constants.R /\
+       0 <= r.`17 < Constants.R /\
+       0 <= r.`18 < Constants.R /\
+       0 <= r.`19 < Constants.R /\
+       0 <= r.`20 < Constants.R /\
+       0 <= r.`21 < Constants.R /\
+       0 <= r.`22 < Constants.R /\
+       0 <= r.`23 < Constants.R /\
+       0 <= r.`24 < Constants.R /\
+       0 <= r.`25 < Constants.R /\
+       0 <= r.`26 < Constants.R /\
+       0 <= r.`27 < Constants.R /\
+       0 <= r.`28 < Constants.R /\
+       0 <= r.`29 < Constants.R /\
+       0 <= r.`30 < Constants.R /\
+       0 <= r.`31.`1 < Constants.Q /\ 0 <= r.`31.`2 < Constants.Q /\
+       0 <= r.`32.`1 < Constants.Q /\ 0 <= r.`32.`2 < Constants.Q
+      )    
+    ].
 proof. admit. qed.
 
 module Verify = {
@@ -487,6 +613,12 @@ do 41! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
 clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19 
       m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m41.
 
+have aux: forall n x, 0 <= x < n => n < W256.modulus => x %% W256.modulus = x.
+progress. apply mod_eq_self. by simplify. by simplify. smt().
+
+have aux_q: Constants.Q < W256.modulus. smt().
+have aux_r: Constants.R < W256.modulus. smt().
+
 exists* vk_recursive_flag{2}; elim*=> rf.
 seq 1 3:(
  rf = vk_recursive_flag{2} /\ vk_recursive_flag{2} = false /\
@@ -597,51 +729,51 @@ seq 1 3:(
   mload mlvk TRANSCRIPT_STATE_1_SLOT = W256.zero /\
  ((Primops.reverted{1} /\ failed{2}) \/
  (!Primops.reverted{1} /\ !failed{2} /\
- (mload Primops.memory{1} PROOF_PUBLIC_INPUT = W256.of_int _public_input{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_0_X_SLOT = W256.of_int _state_poly_0{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_0_Y_SLOT = W256.of_int _state_poly_0{2}.`2 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_1_X_SLOT = W256.of_int _state_poly_1{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_1_Y_SLOT = W256.of_int _state_poly_1{2}.`2 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_2_X_SLOT = W256.of_int _state_poly_2{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_2_Y_SLOT = W256.of_int _state_poly_2{2}.`2 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_X_SLOT = W256.of_int _state_poly_3{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_Y_SLOT = W256.of_int _state_poly_3{2}.`2 /\
-  mload Primops.memory{1} PROOF_LOOKUP_S_POLY_X_SLOT = W256.of_int _lookup_s_poly{2}.`1 /\
-  mload Primops.memory{1} PROOF_LOOKUP_S_POLY_Y_SLOT = W256.of_int _lookup_s_poly{2}.`2 /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT = W256.of_int _copy_permutation_grand_product{2}.`1 /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT = W256.of_int _copy_permutation_grand_product{2}.`2 /\
-  mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT = W256.of_int _lookup_grand_product{2}.`1 /\
-  mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT = W256.of_int _lookup_grand_product{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT = W256.of_int _quotient_poly_part_0{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT = W256.of_int _quotient_poly_part_0{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT = W256.of_int _quotient_poly_part_1{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT = W256.of_int _quotient_poly_part_1{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT = W256.of_int _quotient_poly_part_2{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT = W256.of_int _quotient_poly_part_2{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT = W256.of_int _quotient_poly_part_3{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT = W256.of_int _quotient_poly_part_3{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT = W256.of_int _quotient_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _state_poly_0_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _state_poly_1_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _state_poly_2_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT = W256.of_int _state_poly_3_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _state_poly_3_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT = W256.of_int _gate_selector_0_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_0_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_1_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_2_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _copy_permutation_grand_product_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_t_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_selector_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_table_type_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_s_poly_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_grand_product_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_t_poly_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT = W256.of_int _linearisation_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_X_SLOT = W256.of_int _opening_proof_at_z{2}.`1 /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_Y_SLOT = W256.of_int _opening_proof_at_z{2}.`2 /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`1 /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_PUBLIC_INPUT) = _public_input{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = _copy_permutation_grand_product{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = _copy_permutation_grand_product{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = _lookup_grand_product{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = _lookup_grand_product{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = _quotient_poly_part_0{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = _quotient_poly_part_0{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = _quotient_poly_part_1{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = _quotient_poly_part_1{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = _quotient_poly_part_2{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = _quotient_poly_part_2{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = _quotient_poly_part_3{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = _quotient_poly_part_3{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = _quotient_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = _state_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = _state_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = _state_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = _state_poly_3_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) = _state_poly_3_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = _gate_selector_0_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = _copy_permutation_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = _copy_permutation_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = _copy_permutation_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = _lookup_t_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = _lookup_selector_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = _lookup_table_type_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_s_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _lookup_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_t_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = _linearisation_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_X_SLOT) = _opening_proof_at_z{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
   Primops.memory{1} = loadProof_memory_footprint
    mlvk vk_recursive_flag{2} (W256.of_int _public_input{2}) (point_of_uint _state_poly_0{2}) (point_of_uint _state_poly_1{2}) (point_of_uint _state_poly_2{2}) (point_of_uint _state_poly_3{2})
    (point_of_uint _copy_permutation_grand_product{2}) (point_of_uint _lookup_s_poly{2}) (point_of_uint _lookup_grand_product{2}) (point_of_uint _quotient_poly_part_0{2})
@@ -653,9 +785,9 @@ seq 1 3:(
    (W256.of_int _lookup_selector_poly_opening_at_z{2}) (W256.of_int _lookup_table_type_poly_opening_at_z{2}) (W256.of_int _quotient_poly_opening_at_z{2})
    (W256.of_int _linearisation_poly_opening_at_z{2}) (point_of_uint _opening_proof_at_z{2}) (point_of_uint _opening_proof_at_z_omega{2}) 
    (point_of_uint (odflt (0,0) _recursive_part_p1{2})) (point_of_uint (odflt (0,0) _recursive_part_p2{2}))
-)))
+))
 ).
-wp. call (loadProof_low_equiv_mid mlvk rf).
+wp. call (loadProof_low_equiv_mid_mod mlvk rf).
 skip. progress.
 rewrite H; smt().
 case H6. by progress. progress;
@@ -678,51 +810,51 @@ rewrite /loadProof_memory_footprint /point_of_uint
 /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
 /TRANSCRIPT_STATE_0_SLOT 
 /TRANSCRIPT_STATE_1_SLOT; progress.
-do 44! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 43! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 42! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 41! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 40! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 39! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 38! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 37! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 36! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 33! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 32! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 35! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 34! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 31! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 30! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 29! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 28! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 27! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 26! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 25! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 24! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 23! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 22! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 5! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 21! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 20! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 19! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 18! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 17! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 16! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 15! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 14! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 13! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 12! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 9! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 7! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 6! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 11! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 10! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 8! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 4! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 3! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 2! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-do 1! (rewrite load_store_diff; [by simplify | by simplify |]); apply load_store_same.
-apply load_store_same.
+do 44! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify. 
+do 43! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 42! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 41! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 40! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 39! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 38! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 37! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 33! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 32! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 35! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 34! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 31! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 30! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 29! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 28! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 27! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 26! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 25! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 24! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 23! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 22! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 5! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 21! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 20! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 19! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 18! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 17! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 16! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 15! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 14! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 13! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 12! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 7! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 6! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 11! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 10! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 8! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 4! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 3! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+do 1! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
 
 exists* 
 _public_input{2}, _state_poly_0{2}, _state_poly_1{2}, _state_poly_2{2}, _state_poly_3{2}, _copy_permutation_grand_product{2}, _lookup_s_poly{2}, _lookup_grand_product{2},
@@ -903,51 +1035,51 @@ seq 0 0:(
   to_uint (mload mlvk TRANSCRIPT_STATE_1_SLOT) = 0 /\
  ((Primops.reverted{1} /\ failed{2}) \/
  (!Primops.reverted{1} /\ !failed{2} /\
- (mload Primops.memory{1} PROOF_PUBLIC_INPUT = W256.of_int _public_input{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_0_X_SLOT = W256.of_int _state_poly_0{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_0_Y_SLOT = W256.of_int _state_poly_0{2}.`2 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_1_X_SLOT = W256.of_int _state_poly_1{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_1_Y_SLOT = W256.of_int _state_poly_1{2}.`2 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_2_X_SLOT = W256.of_int _state_poly_2{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_2_Y_SLOT = W256.of_int _state_poly_2{2}.`2 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_X_SLOT = W256.of_int _state_poly_3{2}.`1 /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_Y_SLOT = W256.of_int _state_poly_3{2}.`2 /\
-  mload Primops.memory{1} PROOF_LOOKUP_S_POLY_X_SLOT = W256.of_int _lookup_s_poly{2}.`1 /\
-  mload Primops.memory{1} PROOF_LOOKUP_S_POLY_Y_SLOT = W256.of_int _lookup_s_poly{2}.`2 /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT = W256.of_int _copy_permutation_grand_product{2}.`1 /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT = W256.of_int _copy_permutation_grand_product{2}.`2 /\
-  mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT = W256.of_int _lookup_grand_product{2}.`1 /\
-  mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT = W256.of_int _lookup_grand_product{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT = W256.of_int _quotient_poly_part_0{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT = W256.of_int _quotient_poly_part_0{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT = W256.of_int _quotient_poly_part_1{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT = W256.of_int _quotient_poly_part_1{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT = W256.of_int _quotient_poly_part_2{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT = W256.of_int _quotient_poly_part_2{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT = W256.of_int _quotient_poly_part_3{2}.`1 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT = W256.of_int _quotient_poly_part_3{2}.`2 /\
-  mload Primops.memory{1} PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT = W256.of_int _quotient_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _state_poly_0_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _state_poly_1_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _state_poly_2_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT = W256.of_int _state_poly_3_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _state_poly_3_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT = W256.of_int _gate_selector_0_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_0_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_1_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_2_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _copy_permutation_grand_product_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_t_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_selector_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_table_type_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_s_poly_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_grand_product_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_t_poly_opening_at_z_omega{2} /\
-  mload Primops.memory{1} PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT = W256.of_int _linearisation_poly_opening_at_z{2} /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_X_SLOT = W256.of_int _opening_proof_at_z{2}.`1 /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_Y_SLOT = W256.of_int _opening_proof_at_z{2}.`2 /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`1 /\
-  mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`2 /\
+ (W256.to_uint (mload Primops.memory{1} PROOF_PUBLIC_INPUT) = _public_input{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = _copy_permutation_grand_product{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = _copy_permutation_grand_product{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = _lookup_grand_product{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = _lookup_grand_product{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = _quotient_poly_part_0{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = _quotient_poly_part_0{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = _quotient_poly_part_1{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = _quotient_poly_part_1{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = _quotient_poly_part_2{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = _quotient_poly_part_2{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = _quotient_poly_part_3{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = _quotient_poly_part_3{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = _quotient_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = _state_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = _state_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = _state_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = _state_poly_3_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) = _state_poly_3_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = _gate_selector_0_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = _copy_permutation_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = _copy_permutation_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = _copy_permutation_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = _lookup_t_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = _lookup_selector_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = _lookup_table_type_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_s_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _lookup_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_t_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = _linearisation_poly_opening_at_z{2} /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_X_SLOT) = _opening_proof_at_z{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
+  W256.to_uint (mload Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
   Primops.memory{1} = mlp
 )))
 ).
@@ -1106,51 +1238,51 @@ seq 0 0:(
   to_uint (mload mlvk TRANSCRIPT_STATE_1_SLOT) = 0 /\
  ((Primops.reverted{1} /\ failed{2}) \/
  (!Primops.reverted{1} /\ !failed{2} /\
- (mload mlp PROOF_PUBLIC_INPUT = W256.of_int _public_input{2} /\
-  mload mlp PROOF_STATE_POLYS_0_X_SLOT = W256.of_int _state_poly_0{2}.`1 /\
-  mload mlp PROOF_STATE_POLYS_0_Y_SLOT = W256.of_int _state_poly_0{2}.`2 /\
-  mload mlp PROOF_STATE_POLYS_1_X_SLOT = W256.of_int _state_poly_1{2}.`1 /\
-  mload mlp PROOF_STATE_POLYS_1_Y_SLOT = W256.of_int _state_poly_1{2}.`2 /\
-  mload mlp PROOF_STATE_POLYS_2_X_SLOT = W256.of_int _state_poly_2{2}.`1 /\
-  mload mlp PROOF_STATE_POLYS_2_Y_SLOT = W256.of_int _state_poly_2{2}.`2 /\
-  mload mlp PROOF_STATE_POLYS_3_X_SLOT = W256.of_int _state_poly_3{2}.`1 /\
-  mload mlp PROOF_STATE_POLYS_3_Y_SLOT = W256.of_int _state_poly_3{2}.`2 /\
-  mload mlp PROOF_LOOKUP_S_POLY_X_SLOT = W256.of_int _lookup_s_poly{2}.`1 /\
-  mload mlp PROOF_LOOKUP_S_POLY_Y_SLOT = W256.of_int _lookup_s_poly{2}.`2 /\
-  mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT = W256.of_int _copy_permutation_grand_product{2}.`1 /\
-  mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT = W256.of_int _copy_permutation_grand_product{2}.`2 /\
-  mload mlp PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT = W256.of_int _lookup_grand_product{2}.`1 /\
-  mload mlp PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT = W256.of_int _lookup_grand_product{2}.`2 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT = W256.of_int _quotient_poly_part_0{2}.`1 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT = W256.of_int _quotient_poly_part_0{2}.`2 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT = W256.of_int _quotient_poly_part_1{2}.`1 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT = W256.of_int _quotient_poly_part_1{2}.`2 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT = W256.of_int _quotient_poly_part_2{2}.`1 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT = W256.of_int _quotient_poly_part_2{2}.`2 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT = W256.of_int _quotient_poly_part_3{2}.`1 /\
-  mload mlp PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT = W256.of_int _quotient_poly_part_3{2}.`2 /\
-  mload mlp PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT = W256.of_int _quotient_poly_opening_at_z{2} /\
-  mload mlp PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _state_poly_0_opening_at_z{2} /\
-  mload mlp PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _state_poly_1_opening_at_z{2} /\
-  mload mlp PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _state_poly_2_opening_at_z{2} /\
-  mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT = W256.of_int _state_poly_3_opening_at_z{2} /\
-  mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _state_poly_3_opening_at_z_omega{2} /\
-  mload mlp PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT = W256.of_int _gate_selector_0_opening_at_z{2} /\
-  mload mlp PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_0_opening_at_z{2} /\
-  mload mlp PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_1_opening_at_z{2} /\
-  mload mlp PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_2_opening_at_z{2} /\
-  mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _copy_permutation_grand_product_opening_at_z_omega{2} /\
-  mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_t_poly_opening_at_z{2} /\
-  mload mlp PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_selector_poly_opening_at_z{2} /\
-  mload mlp PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_table_type_poly_opening_at_z{2} /\
-  mload mlp PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_s_poly_opening_at_z_omega{2} /\
-  mload mlp PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_grand_product_opening_at_z_omega{2} /\
-  mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_t_poly_opening_at_z_omega{2} /\
-  mload mlp PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT = W256.of_int _linearisation_poly_opening_at_z{2} /\
-  mload mlp PROOF_OPENING_PROOF_AT_Z_X_SLOT = W256.of_int _opening_proof_at_z{2}.`1 /\
-  mload mlp PROOF_OPENING_PROOF_AT_Z_Y_SLOT = W256.of_int _opening_proof_at_z{2}.`2 /\
-  mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`1 /\
-  mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`2 /\
+ (W256.to_uint (mload mlp PROOF_PUBLIC_INPUT) = _public_input{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = _copy_permutation_grand_product{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = _copy_permutation_grand_product{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = _lookup_grand_product{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = _lookup_grand_product{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = _quotient_poly_part_0{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = _quotient_poly_part_0{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = _quotient_poly_part_1{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = _quotient_poly_part_1{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = _quotient_poly_part_2{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = _quotient_poly_part_2{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = _quotient_poly_part_3{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = _quotient_poly_part_3{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = _quotient_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = _state_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = _state_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = _state_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = _state_poly_3_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) = _state_poly_3_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = _gate_selector_0_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = _copy_permutation_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = _copy_permutation_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = _copy_permutation_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = _lookup_t_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = _lookup_selector_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = _lookup_table_type_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_s_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _lookup_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_t_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = _linearisation_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_X_SLOT) = _opening_proof_at_z{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
   Primops.memory{1} = mlp
 )))
 ).
@@ -1311,52 +1443,52 @@ seq 1 1:(
   to_uint (mload mlvk TRANSCRIPT_STATE_0_SLOT) = 0 /\
   to_uint (mload mlvk TRANSCRIPT_STATE_1_SLOT) = 0 /\
   ((Primops.reverted{1} /\ failed{2}) \/
-   (!Primops.reverted{1} /\ !failed{2} /\
-    mload mlp PROOF_PUBLIC_INPUT = W256.of_int _public_input{2} /\
-    mload mlp PROOF_STATE_POLYS_0_X_SLOT = W256.of_int _state_poly_0{2}.`1 /\
-    mload mlp PROOF_STATE_POLYS_0_Y_SLOT = W256.of_int _state_poly_0{2}.`2 /\
-    mload mlp PROOF_STATE_POLYS_1_X_SLOT = W256.of_int _state_poly_1{2}.`1 /\
-    mload mlp PROOF_STATE_POLYS_1_Y_SLOT = W256.of_int _state_poly_1{2}.`2 /\
-    mload mlp PROOF_STATE_POLYS_2_X_SLOT = W256.of_int _state_poly_2{2}.`1 /\
-    mload mlp PROOF_STATE_POLYS_2_Y_SLOT = W256.of_int _state_poly_2{2}.`2 /\
-    mload mlp PROOF_STATE_POLYS_3_X_SLOT = W256.of_int _state_poly_3{2}.`1 /\
-    mload mlp PROOF_STATE_POLYS_3_Y_SLOT = W256.of_int _state_poly_3{2}.`2 /\
-    mload mlp PROOF_LOOKUP_S_POLY_X_SLOT = W256.of_int _lookup_s_poly{2}.`1 /\
-    mload mlp PROOF_LOOKUP_S_POLY_Y_SLOT = W256.of_int _lookup_s_poly{2}.`2 /\
-    mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT = W256.of_int _copy_permutation_grand_product{2}.`1 /\
-    mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT = W256.of_int _copy_permutation_grand_product{2}.`2 /\
-    mload mlp PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT = W256.of_int _lookup_grand_product{2}.`1 /\
-    mload mlp PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT = W256.of_int _lookup_grand_product{2}.`2 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT = W256.of_int _quotient_poly_part_0{2}.`1 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT = W256.of_int _quotient_poly_part_0{2}.`2 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT = W256.of_int _quotient_poly_part_1{2}.`1 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT = W256.of_int _quotient_poly_part_1{2}.`2 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT = W256.of_int _quotient_poly_part_2{2}.`1 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT = W256.of_int _quotient_poly_part_2{2}.`2 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT = W256.of_int _quotient_poly_part_3{2}.`1 /\
-    mload mlp PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT = W256.of_int _quotient_poly_part_3{2}.`2 /\
-    mload mlp PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT = W256.of_int _quotient_poly_opening_at_z{2} /\
-    mload mlp PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _state_poly_0_opening_at_z{2} /\
-    mload mlp PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _state_poly_1_opening_at_z{2} /\
-    mload mlp PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _state_poly_2_opening_at_z{2} /\
-    mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT = W256.of_int _state_poly_3_opening_at_z{2} /\
-    mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _state_poly_3_opening_at_z_omega{2} /\
-    mload mlp PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT = W256.of_int _gate_selector_0_opening_at_z{2} /\
-    mload mlp PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_0_opening_at_z{2} /\
-    mload mlp PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_1_opening_at_z{2} /\
-    mload mlp PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT = W256.of_int _copy_permutation_poly_2_opening_at_z{2} /\
-    mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _copy_permutation_grand_product_opening_at_z_omega{2} /\
-    mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_t_poly_opening_at_z{2} /\
-    mload mlp PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_selector_poly_opening_at_z{2} /\
-    mload mlp PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT = W256.of_int _lookup_table_type_poly_opening_at_z{2} /\
-    mload mlp PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_s_poly_opening_at_z_omega{2} /\
-    mload mlp PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_grand_product_opening_at_z_omega{2} /\
-    mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT = W256.of_int _lookup_t_poly_opening_at_z_omega{2} /\
-    mload mlp PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT = W256.of_int _linearisation_poly_opening_at_z{2} /\
-    mload mlp PROOF_OPENING_PROOF_AT_Z_X_SLOT = W256.of_int _opening_proof_at_z{2}.`1 /\
-    mload mlp PROOF_OPENING_PROOF_AT_Z_Y_SLOT = W256.of_int _opening_proof_at_z{2}.`2 /\
-    mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`1 /\
-    mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT = W256.of_int _opening_proof_at_z_omega{2}.`2 /\
+    (!Primops.reverted{1} /\ !failed{2} /\
+    W256.to_uint (mload mlp PROOF_PUBLIC_INPUT) = _public_input{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = _copy_permutation_grand_product{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = _copy_permutation_grand_product{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = _lookup_grand_product{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = _lookup_grand_product{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = _quotient_poly_part_0{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = _quotient_poly_part_0{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = _quotient_poly_part_1{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = _quotient_poly_part_1{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = _quotient_poly_part_2{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = _quotient_poly_part_2{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = _quotient_poly_part_3{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = _quotient_poly_part_3{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = _quotient_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = _state_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = _state_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = _state_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = _state_poly_3_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) = _state_poly_3_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = _gate_selector_0_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = _copy_permutation_poly_0_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = _copy_permutation_poly_1_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = _copy_permutation_poly_2_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = _lookup_t_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = _lookup_selector_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = _lookup_table_type_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_s_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _lookup_grand_product_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_t_poly_opening_at_z_omega{2} /\
+  W256.to_uint (mload mlp PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = _linearisation_poly_opening_at_z{2} /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_X_SLOT) = _opening_proof_at_z{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
+  W256.to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
     (exists (s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21: uint256), Primops.memory{1} = initializeTranscript_memory_footprint mlp
      (W256.of_int state_eta{2}) (W256.of_int state_beta{2}) (W256.of_int state_gamma{2}) (W256.of_int state_beta_lookup{2}) (W256.of_int state_gamma_lookup{2}) (W256.of_int state_alpha{2})
      (W256.of_int state_z{2}) (W256.of_int state_z_in_domain{2}) (W256.of_int state_v{2}) (W256.of_int state_u{2})
@@ -1376,9 +1508,9 @@ case reverted. progress.
 conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
 progress. case H2. by progress. by progress.
 progress. left. by progress.
-inline InitializeTranscript.mid UpdateTranscript.UpdateTranscript.mid GetTranscriptChallenge.GetTranscriptChallenge.mid Modexp.Modexp.mid. wp. sp.
+inline InitializeTranscript.mid UpdateTranscript.UpdateTranscript.mid GetTranscriptChallenge.GetTranscriptChallenge.mid Modexp.Modexp.mid. wp.
 call{1} initializeTranscript_low_pspec_revert.
-skip. progress.
+skip. simplify. progress.
 
 call (unitializeTranscript_low_equiv_mid mlp 0 0 
 mod_public_input 
@@ -1413,33 +1545,7 @@ mod_lookup_t_poly_opening_at_z_omega
 mod_linearisation_poly_opening_at_z 
 mod_opening_proof_at_z.`1 mod_opening_proof_at_z.`2 
 mod_opening_proof_at_z_omega.`1 mod_opening_proof_at_z_omega.`2).
-skip. progress.
-
-
-
-
-
-
-(* rewrite /mlp /loadProof_memory_footprint
-/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
-/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
-/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
-/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
-/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
-/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
-/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
-/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
-/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
-/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
-/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
-/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
-/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
-/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
-/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
-/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
-/TRANSCRIPT_STATE_0_SLOT 
-/TRANSCRIPT_STATE_1_SLOT; progress.
-do 45! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
+skip. progress; case H2; progress.
 
 rewrite /mlp /loadProof_memory_footprint
 /PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
@@ -1481,155 +1587,6 @@ rewrite /mlp /loadProof_memory_footprint
 /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
 /TRANSCRIPT_STATE_0_SLOT 
 /TRANSCRIPT_STATE_1_SLOT; progress.
-do 44! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
-
-
 do 45! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
-do 44! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
-
-rewrite /mlp /loadProof_memory_footprint. progress.
-rewrite load_store_diff.
-
-
-
-/VK_GATE_SETUP_4_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_3_X_SLOT
-/VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_1_Y_SLOT /VK_GATE_SETUP_1_X_SLOT
-/VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_7_Y_SLOT /VK_GATE_SETUP_7_X_SLOT
-/VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_5_X_SLOT
-/VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_0_X_SLOT
-/VK_PERMUTATION_3_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_2_X_SLOT
-/VK_PERMUTATION_1_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_0_X_SLOT
-/VK_LOOKUP_TABLE_3_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT
-/VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT
-/VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT
-/VK_RECURSIVE_FLAG_SLOT /TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT.
-
-rewrite load_store_same.
-
-(exists (s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21: uint256), 
-  Primops.memory{1} = 
-  initializeTranscript_memory_footprint m
-  (W256.of_int res{2}.`6) (W256.of_int res{2}.`2) (W256.of_int res{2}.`4) (W256.of_int res{2}.`3)
-  (W256.of_int res{2}.`5) (W256.of_int res{2}.`1) (W256.of_int res{2}.`7) (W256.of_int res{2}.`8)
-  (W256.of_int res{2}.`9) (W256.of_int res{2}.`10)
-  s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21)
-/\
-0 <= res{2}.`1 < 2^253 /\ 0 <= res{2}.`2 < 2^253 /\
-0 <= res{2}.`3 < 2^253 /\ 0 <= res{2}.`4 < 2^253 /\
-0 <= res{2}.`5 < 2^253 /\ 0 <= res{2}.`6 < 2^253 /\
-0 <= res{2}.`7 < 2^253 /\ 0 <= res{2}.`8 < Constants.R /\
-0 <= res{2}.`9 < 2^253 /\ 0 <= res{2}.`10 < 2^253
-
-op initializeTranscript_memory_footprint (m: mem)
-(sEta sBeta sGamma sBetaLookup sGammaLookup sAlpha sZ sZInDomainSize sV sU : uint256)   
-(s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 : uint256) : mem =
-
-lemma unitializeTranscript_low_equiv_mid (m : mem) (
-      proofOpeningProofAtZOmegaXG proofOpeningProofAtZOmegaYG : int
-) :
-equiv [InitializeTranscript.low ~ InitializeTranscript.mid :
-arg{2} = (
-initialS0G, initialS1G,
-publicInputG,
-proofStatePolys0XG, proofStatePolys0YG,
-proofStatePolys1XG, proofStatePolys1YG,
-proofStatePolys2XG, proofStatePolys2YG,
-proofStatePolys3XG, proofStatePolys3YG,
-proofLookupSPolyXG, proofLookupSPolyYG,
-proofCopyPermutationGrandProductXG, proofCopyPermutationGrandProductYG,
-proofLookupGrandProductXG, proofLookupGrandProductYG,
-proofQuotientPolyParts0XG, proofQuotientPolyParts0YG,
-proofQuotientPolyParts1XG, proofQuotientPolyParts1YG,
-proofQuotientPolyParts2XG, proofQuotientPolyParts2YG,
-proofQuotientPolyParts3XG, proofQuotientPolyParts3YG,
-proofQuotientPolyOpeningAtZG,
-proofStatePolys0OpeningAtZG, 
-proofStatePolys1OpeningAtZG,
-proofStatePolys2OpeningAtZG, 
-proofStatePolys3OpeningAtZG,
-proofStatePolys3OpeningAtZOmegaG,
-proofGateSelectors0OpeningAtZG,
-proofCopyPermutationPolys0OpeningAtZG, 
-proofCopyPermutationPolys1OpeningAtZG, 
-proofCopyPermutationPolys2OpeningAtZG,
-proofCopyPermutationGrandProductOpeningAtZOmegaG,
-proofLookupTPolyOpeningAtZG,
-proofLookupSelectorPolyOpeningAtZG,
-proofLookupTableTypePolyOpeningAtZG,
-proofLookupSPolyOpeningAtZOmegaG,
-proofLookupGrandProductOpeningAtZOmegaG,
-proofLookupTPolyOpeningAtZOmegaG,
-proofLinearisationPolyOpeningAtZG,
-proofOpeningProofAtZXG, proofOpeningProofAtZYG,
-proofOpeningProofAtZOmegaXG, proofOpeningProofAtZOmegaYG) /\
-to_uint (mload m TRANSCRIPT_STATE_0_SLOT) = initialS0{2} /\
-to_uint (mload m TRANSCRIPT_STATE_1_SLOT) = initialS1{2} /\
-to_uint (mload m PROOF_PUBLIC_INPUT) = publicInputG /\
-to_uint (mload m PROOF_STATE_POLYS_0_X_SLOT) = proofStatePolys0XG /\
-to_uint (mload m PROOF_STATE_POLYS_0_Y_SLOT) = proofStatePolys0YG /\
-to_uint (mload m PROOF_STATE_POLYS_1_X_SLOT) = proofStatePolys1XG /\
-to_uint (mload m PROOF_STATE_POLYS_1_Y_SLOT) = proofStatePolys1YG /\
-to_uint (mload m PROOF_STATE_POLYS_2_X_SLOT) = proofStatePolys2XG /\
-to_uint (mload m PROOF_STATE_POLYS_2_Y_SLOT) = proofStatePolys2YG /\
-to_uint (mload m PROOF_STATE_POLYS_3_X_SLOT) = proofStatePolys3XG /\
-to_uint (mload m PROOF_STATE_POLYS_3_Y_SLOT) = proofStatePolys3YG /\
-to_uint (mload m PROOF_LOOKUP_S_POLY_X_SLOT) = proofLookupSPolyXG /\
-to_uint (mload m PROOF_LOOKUP_S_POLY_Y_SLOT) = proofLookupSPolyYG /\
-to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = proofCopyPermutationGrandProductXG /\
-to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = proofCopyPermutationGrandProductYG /\
-to_uint (mload m PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = proofLookupGrandProductXG /\
-to_uint (mload m PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = proofLookupGrandProductYG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = proofQuotientPolyParts0XG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = proofQuotientPolyParts0YG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = proofQuotientPolyParts1XG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = proofQuotientPolyParts1YG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = proofQuotientPolyParts2XG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = proofQuotientPolyParts2YG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = proofQuotientPolyParts3XG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = proofQuotientPolyParts3YG /\
-to_uint (mload m PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = proofQuotientPolyOpeningAtZG /\
-to_uint (mload m PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = proofStatePolys0OpeningAtZG /\
-to_uint (mload m PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = proofStatePolys1OpeningAtZG /\
-to_uint (mload m PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = proofStatePolys2OpeningAtZG /\
-to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) =  proofStatePolys3OpeningAtZG /\
-to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) = proofStatePolys3OpeningAtZOmegaG /\
-to_uint (mload m PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = proofGateSelectors0OpeningAtZG /\
-to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys0OpeningAtZG /\
-to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys1OpeningAtZG /\
-to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys2OpeningAtZG /\
-to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofCopyPermutationGrandProductOpeningAtZOmegaG /\
-to_uint (mload m PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = proofLookupTPolyOpeningAtZG /\
-to_uint (mload m PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = proofLookupSelectorPolyOpeningAtZG /\
-to_uint (mload m PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = proofLookupTableTypePolyOpeningAtZG /\
-to_uint (mload m PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookupSPolyOpeningAtZOmegaG /\
-to_uint (mload m PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLookupGrandProductOpeningAtZOmegaG /\
-to_uint (mload m PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookupTPolyOpeningAtZOmegaG /\
-to_uint (mload m PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = proofLinearisationPolyOpeningAtZG /\
-to_uint (mload m PROOF_OPENING_PROOF_AT_Z_X_SLOT) = proofOpeningProofAtZXG /\
-to_uint (mload m PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = proofOpeningProofAtZYG /\
-to_uint (mload m PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = proofOpeningProofAtZOmegaXG /\
-to_uint (mload m PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = proofOpeningProofAtZOmegaYG /\
-!Primops.reverted{1} /\
-Primops.memory{1} = m
-==>
-!Primops.reverted{1} /\
-(exists (s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21: uint256), 
-  Primops.memory{1} = 
-  initializeTranscript_memory_footprint m
-  (W256.of_int res{2}.`6) (W256.of_int res{2}.`2) (W256.of_int res{2}.`4) (W256.of_int res{2}.`3)
-  (W256.of_int res{2}.`5) (W256.of_int res{2}.`1) (W256.of_int res{2}.`7) (W256.of_int res{2}.`8)
-  (W256.of_int res{2}.`9) (W256.of_int res{2}.`10)
-  s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21)
-/\
-0 <= res{2}.`1 < 2^253 /\ 0 <= res{2}.`2 < 2^253 /\
-0 <= res{2}.`3 < 2^253 /\ 0 <= res{2}.`4 < 2^253 /\
-0 <= res{2}.`5 < 2^253 /\ 0 <= res{2}.`6 < 2^253 /\
-0 <= res{2}.`7 < 2^253 /\ 0 <= res{2}.`8 < Constants.R /\
-0 <= res{2}.`9 < 2^253 /\ 0 <= res{2}.`10 < 2^253
-].
-
-
-op initializeTranscript_memory_footprint (m: mem)
-(sEta sBeta sGamma sBetaLookup sGammaLookup sAlpha sZ sZInDomainSize sV sU : uint256)   
-(s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 : uint256) : mem =
-*)
+right. progress.
+exists s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21. reflexivity.
