@@ -3469,7 +3469,8 @@ lemma verifyQuotientEvaluation_mid_equiv_high_encapsulated (
       res{1}.`9 = FieldR.asint res{2}.`9 /\
       res{1}.`10 = FieldR.asint res{2}.`10 /\
       res{1}.`11 = FieldR.asint res{2}.`11 /\
-      res{1}.`12 = FieldR.asint res{2}.`12
+      res{1}.`12 = FieldR.asint res{2}.`12 /\
+      res{1}.`13 = FieldR.asint res{2}.`13
     )
   )
   ].
@@ -3701,7 +3702,9 @@ res{1}.`1 = res{2}.`1 /\
   res{1}.`9 = res{2}.`9 /\
   res{1}.`10 = res{2}.`10 /\
   res{1}.`11 = res{2}.`11 /\
-    res{1}.`12 = res{2}.`12)].
+    res{1}.`12 = res{2}.`12 /\
+    res{1}.`13 = res{2}.`13)
+].
 proof.
   proc.
   seq 7 7 : (#pre /\ ={statePowerOfAlpha2, statePowerOfAlpha3, statePowerOfAlpha4, statePowerOfAlpha5, statePowerOfAlpha6, statePowerOfAlpha7, statePowerOfAlpha8}).
@@ -3785,7 +3788,8 @@ res{1}.`1 = res{2}.`1 /\
   res{1}.`9 = res{2}.`9 /\
   res{1}.`10 = res{2}.`10 /\
   res{1}.`11 = res{2}.`11 /\
-    res{1}.`12 = res{2}.`12)].
+    res{1}.`12 = res{2}.`12 /\
+    res{1}.`13 = res{2}.`13)].
 proof.
   proc.
   seq 8 0 : (#pre /\ statePowerOfAlpha2{1} = stateAlphaG ^ 2 /\ statePowerOfAlpha3{1} = stateAlphaG ^ 3
@@ -3864,7 +3868,8 @@ arg{2} =
       res{1}.`9 = FieldR.asint res{2}.`9 /\
       res{1}.`10 = FieldR.asint res{2}.`10 /\
       res{1}.`11 = FieldR.asint res{2}.`11 /\
-      res{1}.`12 = FieldR.asint res{2}.`12
+      res{1}.`12 = FieldR.asint res{2}.`12 /\
+      res{1}.`13 = FieldR.asint res{2}.`13
     )
   )].
 proof.
@@ -3905,7 +3910,8 @@ arg{2} =
       res{1}.`9 = FieldR.asint res{2}.`9 /\
       res{1}.`10 = FieldR.asint res{2}.`10 /\
       res{1}.`11 = FieldR.asint res{2}.`11 /\
-      res{1}.`12 = FieldR.asint res{2}.`12
+      res{1}.`12 = FieldR.asint res{2}.`12 /\
+      res{1}.`13 = FieldR.asint res{2}.`13
     )
   ))
   (={arg} /\
@@ -3933,7 +3939,8 @@ res{1}.`1 = res{2}.`1 /\
   res{1}.`9 = res{2}.`9 /\
   res{1}.`10 = res{2}.`10 /\
   res{1}.`11 = res{2}.`11 /\
-    res{1}.`12 = res{2}.`12)).
+    res{1}.`12 = res{2}.`12 /\
+    res{1}.`13 = res{2}.`13)).
     by smt(). by smt(). exact verifyQuotientEvaluation_mid_equiv_high_encapsulated.
   transitivity VerifyQuotientEvaluation.high'
     (={arg} /\
@@ -3961,7 +3968,8 @@ res{1}.`1 = res{2}.`1 /\
   res{1}.`9 = res{2}.`9 /\
   res{1}.`10 = res{2}.`10 /\
   res{1}.`11 = res{2}.`11 /\
-    res{1}.`12 = res{2}.`12))
+    res{1}.`12 = res{2}.`12 /\
+    res{1}.`13 = res{2}.`13))
   (={arg} /\
 arg{1} =
   (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
@@ -3987,7 +3995,8 @@ res{1}.`1 = res{2}.`1 /\
   res{1}.`9 = res{2}.`9 /\
   res{1}.`10 = res{2}.`10 /\
   res{1}.`11 = res{2}.`11 /\
-    res{1}.`12 = res{2}.`12)).
+    res{1}.`12 = res{2}.`12 /\
+    res{1}.`13 = res{2}.`13)).
     by smt(). by smt(). exact verifyQuotientEvaluation_high_encapsulated_equiv_high'.
     exact verifyQuotientEvaluation_high'_equiv_high.
 qed. 

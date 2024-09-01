@@ -5,9 +5,14 @@ require import Field.
 require import FinalPairing.
 require import LoadProof.
 require import LoadVerificationKey.
+require import PointAddIntoDest.
+require import PointMulIntoDest.
+require import PointMulAndAddIntoDest.
 require import PrepareAggregatedCommitment.
 require import PrepareQueries.
 require import UInt256.
+require import UpdateAggregationChallenge.
+require import UpdateAggregationChallenge105.
 require import Utils.
 require import Verifier.
 require import VerifyQuotientEvaluation.
@@ -331,9 +336,9 @@ module Verify = {
 
     (query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated) <@ PrepareQueries.high(state_z_in_domain, _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, vk_lookup_table_0, vk_lookup_table_1, vk_lookup_table_2, vk_lookup_table_3, state_eta, vk_gate_setup_0, vk_gate_setup_1, vk_gate_setup_2, vk_gate_setup_3, vk_gate_setup_4, vk_gate_setup_5, vk_gate_setup_6, vk_gate_setup_7, _state_poly_3_opening_at_z_omega, state_v, state_z, _gate_selector_0_opening_at_z, state_alpha, alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8, state_beta, state_gamma, vk_gate_selectors_1, vk_permutation_3, _copy_permutation_grand_product_opening_at_z_omega, l0_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _lookup_grand_product_opening_at_z_omega, z_minus_last_omega, _lookup_t_poly_opening_at_z_omega, state_beta_lookup, _lookup_t_poly_opening_at_z, beta_gamma_plus_gamma, _lookup_table_type_poly_opening_at_z, _lookup_selector_poly_opening_at_z, state_gamma_lookup, beta_plus_one, ln_minus_one_at_z);
 
-    (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot) <@ PrepareAggregatedCommitment.high_encapsulated(query_at_z_0, _quotient_poly_opening_at_z, query_at_z_1, state_v, _linearisation_poly_opening_at_z, _state_poly_0, _state_poly_0_opening_at_z, _state_poly_1, _state_poly_1_opening_at_z, _state_poly_2, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, vk_gate_selectors_0, _gate_selector_0_opening_at_z, vk_permutation_0, _copy_permutation_poly_0_opening_at_z, vk_permutation_1, _copy_permutation_poly_1_opening_at_z, vk_permutation_2, _copy_permutation_poly_2_opening_at_z, _lookup_t_poly_opening_at_z, vk_lookup_selector, _lookup_selector_poly_opening_at_z, vk_lookup_table_type, _lookup_table_type_poly_opening_at_z, copy_permutation_first_aggregated_commitment_coeff, state_u, _copy_permutation_grand_product, _copy_permutation_grand_product_opening_at_z_omega, _state_poly_3, _state_poly_3_opening_at_z_omega, _lookup_s_poly, _lookup_s_poly_opening_at_z_omega, lookupSFirstAggregatedCommitment, _lookup_grand_product, _lookup_grand_product_opening_at_z_omega, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated, _lookup_t_poly_opening_at_z_omega);
+    (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot) <@ PrepareAggregatedCommitment.high(query_at_z_0, _quotient_poly_opening_at_z, query_at_z_1, state_v, _linearisation_poly_opening_at_z, _state_poly_0, _state_poly_0_opening_at_z, _state_poly_1, _state_poly_1_opening_at_z, _state_poly_2, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, vk_gate_selectors_0, _gate_selector_0_opening_at_z, vk_permutation_0, _copy_permutation_poly_0_opening_at_z, vk_permutation_1, _copy_permutation_poly_1_opening_at_z, vk_permutation_2, _copy_permutation_poly_2_opening_at_z, _lookup_t_poly_opening_at_z, vk_lookup_selector, _lookup_selector_poly_opening_at_z, vk_lookup_table_type, _lookup_table_type_poly_opening_at_z, copy_permutation_first_aggregated_commitment_coeff, state_u, _copy_permutation_grand_product, _copy_permutation_grand_product_opening_at_z_omega, _state_poly_3, _state_poly_3_opening_at_z_omega, _lookup_s_poly, _lookup_s_poly_opening_at_z_omega, lookupSFirstAggregatedCommitment, _lookup_grand_product, _lookup_grand_product_opening_at_z_omega, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated, _lookup_t_poly_opening_at_z_omega);
 
-  final_pairing_bool <@ FinalPairing.high(state_u, state_z, pairingPairWithGeneratorSlot, pairingBufferPointSlot, _opening_proof_at_z, _opening_proof_at_z_omega, vk_recursive_flag, recursive_part_p1, recursive_part_p2);
+  final_pairing_bool <@ FinalPairing.high(state_u, state_z, pairingPairWithGeneratorSlot, pairingBufferPointSlot, _opening_proof_at_z, _opening_proof_at_z_omega, vk_recursive_flag, _recursive_part_p1, _recursive_part_p2);
   failed <- failed \/ !final_pairing_bool;
    
   return !failed;
@@ -654,6 +659,52 @@ lemma verify_mid_equiv_high_encapsulated:
     proof.
       proc.
       simplify.
+      seq 42 2: (
+        #pre /\
+        !failed{1} /\ !failed{2} /\
+        !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
+        (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
+        (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
+        (vk_gate_setup_2X{1}, vk_gate_setup_2Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_2) /\
+        (vk_gate_setup_3X{1}, vk_gate_setup_3Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_3) /\
+        (vk_gate_setup_4X{1}, vk_gate_setup_4Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_4) /\
+        (vk_gate_setup_5X{1}, vk_gate_setup_5Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_5) /\
+        (vk_gate_setup_6X{1}, vk_gate_setup_6Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_6) /\
+        (vk_gate_setup_7X{1}, vk_gate_setup_7Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_7) /\
+        (vk_gate_selectors_0X{1}, vk_gate_selectors_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_0) /\
+        (vk_gate_selectors_1X{1}, vk_gate_selectors_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_1) /\
+        (vk_permutation_0X{1}, vk_permutation_0Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_0) /\
+        (vk_permutation_1X{1}, vk_permutation_1Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_1) /\
+        (vk_permutation_2X{1}, vk_permutation_2Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_2) /\
+        (vk_permutation_3X{1}, vk_permutation_3Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_3) /\
+        (vk_lookup_table_0X{1}, vk_lookup_table_0Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_0) /\
+        (vk_lookup_table_1X{1}, vk_lookup_table_1Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_1) /\
+        (vk_lookup_table_2X{1}, vk_lookup_table_2Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_2) /\
+        (vk_lookup_table_3X{1}, vk_lookup_table_3Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_3) /\
+        (vk_lookup_selector_X{1}, vk_lookup_selector_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_selector) /\
+        (vk_lookup_table_type_X{1}, vk_lookup_table_type_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_type)
+      ).
+      wp. skip. progress.
+      rewrite vk_gate_setup_0_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_1_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_2_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_3_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_4_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_5_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_6_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_setup_7_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_selectors_0_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_gate_selectors_1_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_permutation_0_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_permutation_1_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_permutation_2_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_permutation_3_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_lookup_table_0_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_lookup_table_1_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_lookup_table_2_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_lookup_table_3_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_lookup_selector_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
+      rewrite vk_lookup_table_type_F /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK -Constants.q_eq_fieldq_p /Constants.Q. rewrite pmod_small. by progress. rewrite pmod_small. by progress. by progress.
       sp.
       seq 3 3: (
         (failed{1} /\ failed{2}) \/
@@ -691,12 +742,35 @@ lemma verify_mid_equiv_high_encapsulated:
         _opening_proof_at_z{1} = F_to_int_point(aspoint_G1 _opening_proof_at_z{2}) /\
         _opening_proof_at_z_omega{1} = F_to_int_point(aspoint_G1 _opening_proof_at_z_omega{2}) /\
         _recursive_part_p1{1} = (omap F_to_int_point (omap aspoint_G1 _recursive_part_p1{2})) /\
-        _recursive_part_p2{1} = (omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2}))
+        _recursive_part_p2{1} = (omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2})) /\
+        !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
+        (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
+        (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
+        (vk_gate_setup_2X{1}, vk_gate_setup_2Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_2) /\
+        (vk_gate_setup_3X{1}, vk_gate_setup_3Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_3) /\
+        (vk_gate_setup_4X{1}, vk_gate_setup_4Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_4) /\
+        (vk_gate_setup_5X{1}, vk_gate_setup_5Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_5) /\
+        (vk_gate_setup_6X{1}, vk_gate_setup_6Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_6) /\
+        (vk_gate_setup_7X{1}, vk_gate_setup_7Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_7) /\
+        (vk_gate_selectors_0X{1}, vk_gate_selectors_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_0) /\
+        (vk_gate_selectors_1X{1}, vk_gate_selectors_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_1) /\
+        (vk_permutation_0X{1}, vk_permutation_0Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_0) /\
+        (vk_permutation_1X{1}, vk_permutation_1Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_1) /\
+        (vk_permutation_2X{1}, vk_permutation_2Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_2) /\
+        (vk_permutation_3X{1}, vk_permutation_3Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_3) /\
+        (vk_lookup_table_0X{1}, vk_lookup_table_0Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_0) /\
+        (vk_lookup_table_1X{1}, vk_lookup_table_1Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_1) /\
+        (vk_lookup_table_2X{1}, vk_lookup_table_2Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_2) /\
+        (vk_lookup_table_3X{1}, vk_lookup_table_3Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_3) /\
+        (vk_lookup_selector_X{1}, vk_lookup_selector_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_selector) /\
+        (vk_lookup_table_type_X{1}, vk_lookup_table_type_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_type)
       )).
       wp.
       call (loadProof_mid_equiv_high false). skip.
       progress.
-      case H. by progress. by progress.
+      rewrite H1 H2. by progress.
+      rewrite H1. by progress.
+      case H23. by progress. progress. right. by progress.
 
       seq 1 1: (
         (failed{1} /\ failed{2}) \/ (
@@ -725,6 +799,7 @@ lemma verify_mid_equiv_high_encapsulated:
           _copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint _copy_permutation_grand_product_opening_at_z_omega{2} /\
           _lookup_s_poly_opening_at_z_omega{1} = FieldR.asint _lookup_s_poly_opening_at_z_omega{2} /\
           _lookup_grand_product_opening_at_z_omega{1} = FieldR.asint _lookup_grand_product_opening_at_z_omega{2} /\
+          _lookup_t_poly_opening_at_z{1} = FieldR.asint _lookup_t_poly_opening_at_z{2} /\
           _lookup_t_poly_opening_at_z_omega{1} = FieldR.asint _lookup_t_poly_opening_at_z_omega{2} /\
           _lookup_selector_poly_opening_at_z{1} = FieldR.asint _lookup_selector_poly_opening_at_z{2} /\
            _lookup_table_type_poly_opening_at_z{1} = FieldR.asint _lookup_table_type_poly_opening_at_z{2} /\
@@ -743,7 +818,28 @@ lemma verify_mid_equiv_high_encapsulated:
           state_z{1} = FieldR.asint state_z{2} /\
           state_z_in_domain{1} = FieldR.asint state_z_in_domain{2} /\
           state_v{1} = FieldR.asint state_v{2} /\
-          state_u{1} = FieldR.asint state_u{2}
+          state_u{1} = FieldR.asint state_u{2} /\
+        !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
+        (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
+        (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
+        (vk_gate_setup_2X{1}, vk_gate_setup_2Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_2) /\
+        (vk_gate_setup_3X{1}, vk_gate_setup_3Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_3) /\
+        (vk_gate_setup_4X{1}, vk_gate_setup_4Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_4) /\
+        (vk_gate_setup_5X{1}, vk_gate_setup_5Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_5) /\
+        (vk_gate_setup_6X{1}, vk_gate_setup_6Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_6) /\
+        (vk_gate_setup_7X{1}, vk_gate_setup_7Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_7) /\
+        (vk_gate_selectors_0X{1}, vk_gate_selectors_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_0) /\
+        (vk_gate_selectors_1X{1}, vk_gate_selectors_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_1) /\
+        (vk_permutation_0X{1}, vk_permutation_0Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_0) /\
+        (vk_permutation_1X{1}, vk_permutation_1Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_1) /\
+        (vk_permutation_2X{1}, vk_permutation_2Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_2) /\
+        (vk_permutation_3X{1}, vk_permutation_3Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_3) /\
+        (vk_lookup_table_0X{1}, vk_lookup_table_0Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_0) /\
+        (vk_lookup_table_1X{1}, vk_lookup_table_1Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_1) /\
+        (vk_lookup_table_2X{1}, vk_lookup_table_2Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_2) /\
+        (vk_lookup_table_3X{1}, vk_lookup_table_3Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_3) /\
+        (vk_lookup_selector_X{1}, vk_lookup_selector_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_selector) /\
+        (vk_lookup_table_type_X{1}, vk_lookup_table_type_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_type)
         )
       ).
       case (failed{1}).
@@ -831,6 +927,7 @@ lemma verify_mid_equiv_high_encapsulated:
           _copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint _copy_permutation_grand_product_opening_at_z_omega{2} /\
           _lookup_s_poly_opening_at_z_omega{1} = FieldR.asint _lookup_s_poly_opening_at_z_omega{2} /\
           _lookup_grand_product_opening_at_z_omega{1} = FieldR.asint _lookup_grand_product_opening_at_z_omega{2} /\
+          _lookup_t_poly_opening_at_z{1} = FieldR.asint _lookup_t_poly_opening_at_z{2} /\
           _lookup_t_poly_opening_at_z_omega{1} = FieldR.asint _lookup_t_poly_opening_at_z_omega{2} /\
           _lookup_selector_poly_opening_at_z{1} = FieldR.asint _lookup_selector_poly_opening_at_z{2} /\
            _lookup_table_type_poly_opening_at_z{1} = FieldR.asint _lookup_table_type_poly_opening_at_z{2} /\
@@ -861,7 +958,28 @@ lemma verify_mid_equiv_high_encapsulated:
           ln_minus_one_at_z{1} = FieldR.asint ln_minus_one_at_z{2} /\
           beta_plus_one{1} = FieldR.asint beta_plus_one{2} /\
           beta_gamma_plus_gamma{1} = FieldR.asint beta_gamma_plus_gamma{2} /\
-          z_minus_last_omega{1} = FieldR.asint z_minus_last_omega{2}
+          z_minus_last_omega{1} = FieldR.asint z_minus_last_omega{2} /\
+        !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
+        (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
+        (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
+        (vk_gate_setup_2X{1}, vk_gate_setup_2Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_2) /\
+        (vk_gate_setup_3X{1}, vk_gate_setup_3Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_3) /\
+        (vk_gate_setup_4X{1}, vk_gate_setup_4Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_4) /\
+        (vk_gate_setup_5X{1}, vk_gate_setup_5Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_5) /\
+        (vk_gate_setup_6X{1}, vk_gate_setup_6Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_6) /\
+        (vk_gate_setup_7X{1}, vk_gate_setup_7Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_7) /\
+        (vk_gate_selectors_0X{1}, vk_gate_selectors_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_0) /\
+        (vk_gate_selectors_1X{1}, vk_gate_selectors_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_1) /\
+        (vk_permutation_0X{1}, vk_permutation_0Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_0) /\
+        (vk_permutation_1X{1}, vk_permutation_1Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_1) /\
+        (vk_permutation_2X{1}, vk_permutation_2Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_2) /\
+        (vk_permutation_3X{1}, vk_permutation_3Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_3) /\
+        (vk_lookup_table_0X{1}, vk_lookup_table_0Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_0) /\
+        (vk_lookup_table_1X{1}, vk_lookup_table_1Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_1) /\
+        (vk_lookup_table_2X{1}, vk_lookup_table_2Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_2) /\
+        (vk_lookup_table_3X{1}, vk_lookup_table_3Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_3) /\
+        (vk_lookup_selector_X{1}, vk_lookup_selector_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_selector) /\
+        (vk_lookup_table_type_X{1}, vk_lookup_table_type_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_type)
         )
       ).
       case (failed{1}).
@@ -903,18 +1021,422 @@ lemma verify_mid_equiv_high_encapsulated:
       by case H; progress.
       by case H; progress.
       by case H; progress.
-      case (result_L.`1 = None).
+      rewrite H0. simplify.
+      case H2.
       progress.
-      left. progress. smt (). smt ().
+      rewrite -H1 H2. by progress.
+      rewrite -H1. progress.
+      case (result_L.`1). by progress.
       progress.
-      rewrite -H1.
-      case (result_L.`1). by progress. progress.
-      case x. progress. rewrite H0. case H. by progress. progress.
-      
-      progress. right.
+      case x; first last. by progress.
       progress.
-      rewrite H0. progress. 
-      
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
 
+      seq 3 1: (
+        (failed{1} /\ failed{2}) \/ (
+          !failed{1} /\  !failed{2} /\
+          _public_input{1} = FieldR.asint _public_input{2} /\
+          _state_poly_0{1} = F_to_int_point (aspoint_G1 _state_poly_0{2}) /\
+          _state_poly_1{1} = F_to_int_point (aspoint_G1 _state_poly_1{2}) /\
+           _state_poly_2{1} = F_to_int_point (aspoint_G1 _state_poly_2{2}) /\
+          _state_poly_3{1} = F_to_int_point (aspoint_G1 _state_poly_3{2}) /\
+          _copy_permutation_grand_product{1} = F_to_int_point (aspoint_G1 _copy_permutation_grand_product{2}) /\
+          _lookup_s_poly{1} = F_to_int_point (aspoint_G1 _lookup_s_poly{2}) /\
+          _lookup_grand_product{1} = F_to_int_point (aspoint_G1 _lookup_grand_product{2}) /\
+          _quotient_poly_part_0{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_0{2}) /\
+          _quotient_poly_part_1{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_1{2}) /\
+          _quotient_poly_part_2{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_2{2}) /\
+          _quotient_poly_part_3{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_3{2}) /\
+          _state_poly_0_opening_at_z{1} = FieldR.asint _state_poly_0_opening_at_z{2} /\
+          _state_poly_1_opening_at_z{1} = FieldR.asint _state_poly_1_opening_at_z{2} /\
+          _state_poly_2_opening_at_z{1} = FieldR.asint _state_poly_2_opening_at_z{2} /\
+          _state_poly_3_opening_at_z{1} = FieldR.asint _state_poly_3_opening_at_z{2} /\
+          _state_poly_3_opening_at_z_omega{1} = FieldR.asint _state_poly_3_opening_at_z_omega{2} /\
+          _gate_selector_0_opening_at_z{1} = FieldR.asint _gate_selector_0_opening_at_z{2} /\
+          _copy_permutation_poly_0_opening_at_z{1} = FieldR.asint _copy_permutation_poly_0_opening_at_z{2} /\
+          _copy_permutation_poly_1_opening_at_z{1} = FieldR.asint _copy_permutation_poly_1_opening_at_z{2} /\
+          _copy_permutation_poly_2_opening_at_z{1} = FieldR.asint _copy_permutation_poly_2_opening_at_z{2} /\
+          _copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint _copy_permutation_grand_product_opening_at_z_omega{2} /\
+          _lookup_s_poly_opening_at_z_omega{1} = FieldR.asint _lookup_s_poly_opening_at_z_omega{2} /\
+          _lookup_grand_product_opening_at_z_omega{1} = FieldR.asint _lookup_grand_product_opening_at_z_omega{2} /\
+          _lookup_t_poly_opening_at_z{1} = FieldR.asint _lookup_t_poly_opening_at_z{2} /\
+          _lookup_t_poly_opening_at_z_omega{1} = FieldR.asint _lookup_t_poly_opening_at_z_omega{2} /\
+          _lookup_selector_poly_opening_at_z{1} = FieldR.asint _lookup_selector_poly_opening_at_z{2} /\
+           _lookup_table_type_poly_opening_at_z{1} = FieldR.asint _lookup_table_type_poly_opening_at_z{2} /\
+          _quotient_poly_opening_at_z{1} = FieldR.asint _quotient_poly_opening_at_z{2} /\
+          _linearisation_poly_opening_at_z{1} = FieldR.asint _linearisation_poly_opening_at_z{2} /\
+          _opening_proof_at_z{1} = F_to_int_point (aspoint_G1 _opening_proof_at_z{2}) /\
+          _opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 _opening_proof_at_z_omega{2}) /\
+          _recursive_part_p1{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p1{2}) /\
+          _recursive_part_p2{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2}) /\
+          state_alpha{1} = FieldR.asint state_alpha{2} /\
+          state_beta{1} = FieldR.asint state_beta{2} /\
+          state_beta_lookup{1} = FieldR.asint state_beta_lookup{2} /\
+          state_gamma{1} = FieldR.asint state_gamma{2} /\
+          state_gamma_lookup{1} = FieldR.asint state_gamma_lookup{2} /\
+          state_eta{1} = FieldR.asint state_eta{2} /\
+          state_z{1} = FieldR.asint state_z{2} /\
+          state_z_in_domain{1} = FieldR.asint state_z_in_domain{2} /\
+          state_v{1} = FieldR.asint state_v{2} /\
+          state_u{1} = FieldR.asint state_u{2} /\
+          alpha2{1} = FieldR.asint alpha2{2} /\
+          alpha3{1} = FieldR.asint alpha3{2} /\
+          alpha4{1} = FieldR.asint alpha4{2} /\
+          alpha5{1} = FieldR.asint alpha5{2} /\
+          alpha6{1} = FieldR.asint alpha6{2} /\
+          alpha7{1} = FieldR.asint alpha7{2} /\
+          alpha8{1} = FieldR.asint alpha8{2} /\
+          l0_at_z{1} = FieldR.asint l0_at_z{2} /\
+          ln_minus_one_at_z{1} = FieldR.asint ln_minus_one_at_z{2} /\
+          beta_plus_one{1} = FieldR.asint beta_plus_one{2} /\
+          beta_gamma_plus_gamma{1} = FieldR.asint beta_gamma_plus_gamma{2} /\
+          z_minus_last_omega{1} = FieldR.asint z_minus_last_omega{2} /\
+          query_at_z_0{1} = F_to_int_point(aspoint_G1 query_at_z_0{2}) /\
+          query_at_z_1{1} = F_to_int_point(aspoint_G1 query_at_z_1{2}) /\
+          copy_permutation_first_aggregated_commitment_coeff{1} = FieldR.asint copy_permutation_first_aggregated_commitment_coeff{2} /\
+          lookupSFirstAggregatedCommitment{1} = FieldR.asint lookupSFirstAggregatedCommitment{2} /\
+          lookupGrandProductFirstAggregatedCoefficient{1} = FieldR.asint lookupGrandProductFirstAggregatedCoefficient{2} /\
+          query_t_poly_aggregated{1} = F_to_int_point(aspoint_G1 query_t_poly_aggregated{2}) /\
+        !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
+        (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
+        (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
+        (vk_gate_setup_2X{1}, vk_gate_setup_2Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_2) /\
+        (vk_gate_setup_3X{1}, vk_gate_setup_3Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_3) /\
+        (vk_gate_setup_4X{1}, vk_gate_setup_4Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_4) /\
+        (vk_gate_setup_5X{1}, vk_gate_setup_5Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_5) /\
+        (vk_gate_setup_6X{1}, vk_gate_setup_6Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_6) /\
+        (vk_gate_setup_7X{1}, vk_gate_setup_7Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_7) /\
+        (vk_gate_selectors_0X{1}, vk_gate_selectors_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_0) /\
+        (vk_gate_selectors_1X{1}, vk_gate_selectors_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_1) /\
+        (vk_permutation_0X{1}, vk_permutation_0Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_0) /\
+        (vk_permutation_1X{1}, vk_permutation_1Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_1) /\
+        (vk_permutation_2X{1}, vk_permutation_2Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_2) /\
+        (vk_permutation_3X{1}, vk_permutation_3Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_3) /\
+        (vk_lookup_table_0X{1}, vk_lookup_table_0Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_0) /\
+        (vk_lookup_table_1X{1}, vk_lookup_table_1Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_1) /\
+        (vk_lookup_table_2X{1}, vk_lookup_table_2Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_2) /\
+        (vk_lookup_table_3X{1}, vk_lookup_table_3Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_3) /\
+        (vk_lookup_selector_X{1}, vk_lookup_selector_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_selector) /\
+        (vk_lookup_table_type_X{1}, vk_lookup_table_type_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_type)
+        )
+      ).
+      wp.
+      case (failed{1}).
+      conseq (_: (failed{1} /\ failed{2}) ==> (failed{1} /\ failed{2})).
+      progress. case H. by progress. by progress.
+      progress. left. rewrite H1 H2. by progress.
+      inline PrepareQueries.high. wp.
+      inline PrepareQueries.mid. sp.
+      (* this becomes incredibly slow if not split up like this *)
+      seq 11 0: (failed{1} /\ failed{2}). inline*. wp. skip. by progress.
+      seq 3 0: (failed{1} /\ failed{2}). inline*. wp. skip. by progress.
+      seq 3 0: (failed{1} /\ failed{2}). inline*. wp. skip. by progress.
+      seq 3 0: (failed{1} /\ failed{2}). inline*. wp. skip. by progress.
+      seq 3 0: (failed{1} /\ failed{2}). inline*. wp. skip. by progress.
+      inline*. wp. skip. by progress.
 
+      call prepareQueries_mid_equiv_high.
+      skip. progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      right. by case H; progress.
+
+      seq 3 1: (
+        (failed{1} /\ failed{2}) \/ (
+          !failed{1} /\  !failed{2} /\
+          _public_input{1} = FieldR.asint _public_input{2} /\
+          _state_poly_0{1} = F_to_int_point (aspoint_G1 _state_poly_0{2}) /\
+          _state_poly_1{1} = F_to_int_point (aspoint_G1 _state_poly_1{2}) /\
+           _state_poly_2{1} = F_to_int_point (aspoint_G1 _state_poly_2{2}) /\
+          _state_poly_3{1} = F_to_int_point (aspoint_G1 _state_poly_3{2}) /\
+          _copy_permutation_grand_product{1} = F_to_int_point (aspoint_G1 _copy_permutation_grand_product{2}) /\
+          _lookup_s_poly{1} = F_to_int_point (aspoint_G1 _lookup_s_poly{2}) /\
+          _lookup_grand_product{1} = F_to_int_point (aspoint_G1 _lookup_grand_product{2}) /\
+          _quotient_poly_part_0{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_0{2}) /\
+          _quotient_poly_part_1{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_1{2}) /\
+          _quotient_poly_part_2{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_2{2}) /\
+          _quotient_poly_part_3{1} = F_to_int_point (aspoint_G1 _quotient_poly_part_3{2}) /\
+          _state_poly_0_opening_at_z{1} = FieldR.asint _state_poly_0_opening_at_z{2} /\
+          _state_poly_1_opening_at_z{1} = FieldR.asint _state_poly_1_opening_at_z{2} /\
+          _state_poly_2_opening_at_z{1} = FieldR.asint _state_poly_2_opening_at_z{2} /\
+          _state_poly_3_opening_at_z{1} = FieldR.asint _state_poly_3_opening_at_z{2} /\
+          _state_poly_3_opening_at_z_omega{1} = FieldR.asint _state_poly_3_opening_at_z_omega{2} /\
+          _gate_selector_0_opening_at_z{1} = FieldR.asint _gate_selector_0_opening_at_z{2} /\
+          _copy_permutation_poly_0_opening_at_z{1} = FieldR.asint _copy_permutation_poly_0_opening_at_z{2} /\
+          _copy_permutation_poly_1_opening_at_z{1} = FieldR.asint _copy_permutation_poly_1_opening_at_z{2} /\
+          _copy_permutation_poly_2_opening_at_z{1} = FieldR.asint _copy_permutation_poly_2_opening_at_z{2} /\
+          _copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint _copy_permutation_grand_product_opening_at_z_omega{2} /\
+          _lookup_s_poly_opening_at_z_omega{1} = FieldR.asint _lookup_s_poly_opening_at_z_omega{2} /\
+          _lookup_grand_product_opening_at_z_omega{1} = FieldR.asint _lookup_grand_product_opening_at_z_omega{2} /\
+          _lookup_t_poly_opening_at_z{1} = FieldR.asint _lookup_t_poly_opening_at_z{2} /\
+          _lookup_t_poly_opening_at_z_omega{1} = FieldR.asint _lookup_t_poly_opening_at_z_omega{2} /\
+          _lookup_selector_poly_opening_at_z{1} = FieldR.asint _lookup_selector_poly_opening_at_z{2} /\
+           _lookup_table_type_poly_opening_at_z{1} = FieldR.asint _lookup_table_type_poly_opening_at_z{2} /\
+          _quotient_poly_opening_at_z{1} = FieldR.asint _quotient_poly_opening_at_z{2} /\
+          _linearisation_poly_opening_at_z{1} = FieldR.asint _linearisation_poly_opening_at_z{2} /\
+          _opening_proof_at_z{1} = F_to_int_point (aspoint_G1 _opening_proof_at_z{2}) /\
+          _opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 _opening_proof_at_z_omega{2}) /\
+          _recursive_part_p1{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p1{2}) /\
+          _recursive_part_p2{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2}) /\
+          state_alpha{1} = FieldR.asint state_alpha{2} /\
+          state_beta{1} = FieldR.asint state_beta{2} /\
+          state_beta_lookup{1} = FieldR.asint state_beta_lookup{2} /\
+          state_gamma{1} = FieldR.asint state_gamma{2} /\
+          state_gamma_lookup{1} = FieldR.asint state_gamma_lookup{2} /\
+          state_eta{1} = FieldR.asint state_eta{2} /\
+          state_z{1} = FieldR.asint state_z{2} /\
+          state_z_in_domain{1} = FieldR.asint state_z_in_domain{2} /\
+          state_v{1} = FieldR.asint state_v{2} /\
+          state_u{1} = FieldR.asint state_u{2} /\
+          alpha2{1} = FieldR.asint alpha2{2} /\
+          alpha3{1} = FieldR.asint alpha3{2} /\
+          alpha4{1} = FieldR.asint alpha4{2} /\
+          alpha5{1} = FieldR.asint alpha5{2} /\
+          alpha6{1} = FieldR.asint alpha6{2} /\
+          alpha7{1} = FieldR.asint alpha7{2} /\
+          alpha8{1} = FieldR.asint alpha8{2} /\
+          l0_at_z{1} = FieldR.asint l0_at_z{2} /\
+          ln_minus_one_at_z{1} = FieldR.asint ln_minus_one_at_z{2} /\
+          beta_plus_one{1} = FieldR.asint beta_plus_one{2} /\
+          beta_gamma_plus_gamma{1} = FieldR.asint beta_gamma_plus_gamma{2} /\
+          z_minus_last_omega{1} = FieldR.asint z_minus_last_omega{2} /\
+          query_at_z_0{1} = F_to_int_point(aspoint_G1 query_at_z_0{2}) /\
+          query_at_z_1{1} = F_to_int_point(aspoint_G1 query_at_z_1{2}) /\
+          copy_permutation_first_aggregated_commitment_coeff{1} = FieldR.asint copy_permutation_first_aggregated_commitment_coeff{2} /\
+          lookupSFirstAggregatedCommitment{1} = FieldR.asint lookupSFirstAggregatedCommitment{2} /\
+          lookupGrandProductFirstAggregatedCoefficient{1} = FieldR.asint lookupGrandProductFirstAggregatedCoefficient{2} /\
+          query_t_poly_aggregated{1} = F_to_int_point(aspoint_G1 query_t_poly_aggregated{2}) /\
+        !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
+        (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
+        (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
+        (vk_gate_setup_2X{1}, vk_gate_setup_2Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_2) /\
+        (vk_gate_setup_3X{1}, vk_gate_setup_3Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_3) /\
+        (vk_gate_setup_4X{1}, vk_gate_setup_4Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_4) /\
+        (vk_gate_setup_5X{1}, vk_gate_setup_5Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_5) /\
+        (vk_gate_setup_6X{1}, vk_gate_setup_6Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_6) /\
+        (vk_gate_setup_7X{1}, vk_gate_setup_7Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_7) /\
+        (vk_gate_selectors_0X{1}, vk_gate_selectors_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_0) /\
+        (vk_gate_selectors_1X{1}, vk_gate_selectors_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_selectors_1) /\
+        (vk_permutation_0X{1}, vk_permutation_0Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_0) /\
+        (vk_permutation_1X{1}, vk_permutation_1Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_1) /\
+        (vk_permutation_2X{1}, vk_permutation_2Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_2) /\
+        (vk_permutation_3X{1}, vk_permutation_3Y{1}) = F_to_int_point (aspoint_G1 vk_permutation_3) /\
+        (vk_lookup_table_0X{1}, vk_lookup_table_0Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_0) /\
+        (vk_lookup_table_1X{1}, vk_lookup_table_1Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_1) /\
+        (vk_lookup_table_2X{1}, vk_lookup_table_2Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_2) /\
+        (vk_lookup_table_3X{1}, vk_lookup_table_3Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_3) /\
+        (vk_lookup_selector_X{1}, vk_lookup_selector_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_selector) /\
+        (vk_lookup_table_type_X{1}, vk_lookup_table_type_Y{1}) = F_to_int_point (aspoint_G1 vk_lookup_table_type) /\
+        aggregatedAtZSlot{1} = F_to_int_point (aspoint_G1 aggregatedAtZSlot{2}) /\
+        aggregatedOpeningAtZSlot{1} = FieldR.asint aggregatedOpeningAtZSlot{2} /\
+        aggregatedAtZOmegaSlot{1} = F_to_int_point (aspoint_G1 aggregatedAtZOmegaSlot{2}) /\
+        aggregatedOpeningAtZOmega{1} = FieldR.asint aggregatedOpeningAtZOmega{2} /\
+        pairingPairWithGeneratorSlot{1} = F_to_int_point (aspoint_G1 pairingPairWithGeneratorSlot{2}) /\
+        pairingBufferPointSlot{1} = F_to_int_point (aspoint_G1 pairingBufferPointSlot{2})
+        )
+      ).
+      case (failed{1}).
+      conseq (_: (failed{1} /\ failed{2}) ==> (failed{1} /\ failed{2})).
+      progress. by case H; progress.
+      progress. case H. move => [H_fail1 H_fail2]. left. by progress.
+      by progress.
+      wp.
+      conseq (_: (failed{1} /\ failed{2}) ==> (failed{1} /\ failed{2})). progress. left. assumption.
+      kill{1} 1. inline PrepareAggregatedCommitment.mid. sp.
+        conseq (_ : true ==> true).
+        inline PointAddIntoDest.mid. sp.
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline PointMulIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge_105.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge_105.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge_105.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        inline (1) UpdateAggregationChallenge_105.mid. sp. conseq (_ : true ==> true).
+          inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
+        skip. by trivial.
+      inline *. wp. skip. by progress.
+
+      wp.
+      call prepareAggregatedCommitment_mid_equiv_high.
+      skip. progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      right. by case H; progress.
+
+      case (failed{1}).
+      conseq (_ : (failed{1} /\ failed{2}) ==> (failed{1} /\ failed{2})). progress.
+      case H. by progress. by progress.
+      progress. case H. progress. rewrite H1 H2. by progress.
+      by progress.
+      inline FinalPairing.high. wp.
+      conseq (_ : (failed{1} /\ failed{2}) ==> (failed{1} /\ failed{2})). progress.
+      left. assumption.
+      left. assumption.
+      left. assumption.
+      left. assumption.
+      inline*. wp. skip. by progress.
+
+      wp. call finalPairing_mid_equiv_high. skip. progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      case H. by progress. progress. rewrite H2 H3. by progress.
+      case H. by progress. progress.
+      by case H; progress.
       qed.
