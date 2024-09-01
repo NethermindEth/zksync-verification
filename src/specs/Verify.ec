@@ -1847,6 +1847,8 @@ alpha_r = state_alpha{2} /\
    to_uint (mload mit STATE_GAMMA_LOOKUP_SLOT) = state_gamma_lookup{2} /\
    to_uint (mload mit STATE_Z_SLOT) = state_z{2} /\
    to_uint (mload mit STATE_Z_IN_DOMAIN_SIZE) = state_z_in_domain{2} /\
+   to_uint (mload mit STATE_V_SLOT) = state_v{2} /\
+   to_uint (mload mit STATE_U_SLOT) = state_u{2} /\
    0 <= state_alpha{2} < 2^253 /\ 
    0 <= state_beta{2} < 2^253 /\ 
    0 <= state_beta_lookup{2} < 2^253 /\ 
@@ -7261,6 +7263,16 @@ rewrite load_store_diff; [by simplify | by simplify |].
 rewrite load_store8_diff_32; [by simplify | by simplify |].
 rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
 
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
 seq 1 2:(
   alpha_r = state_alpha{2} /\
   beta_r = state_beta{2} /\
@@ -7403,6 +7415,15 @@ seq 1 2:(
    to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
    to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
    to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
+   to_uint (mload mit STATE_ALPHA_SLOT) = state_alpha{2} /\
+   to_uint (mload mit STATE_BETA_SLOT) = state_beta{2} /\
+   to_uint (mload mit STATE_BETA_LOOKUP_SLOT) = state_beta_lookup{2} /\
+   to_uint (mload mit STATE_GAMMA_SLOT) = state_gamma{2} /\
+   to_uint (mload mit STATE_GAMMA_LOOKUP_SLOT) = state_gamma_lookup{2} /\
+   to_uint (mload mit STATE_Z_SLOT) = state_z{2} /\
+   to_uint (mload mit STATE_Z_IN_DOMAIN_SIZE) = state_z_in_domain{2} /\
+   to_uint (mload mit STATE_V_SLOT) = state_v{2} /\
+   to_uint (mload mit STATE_U_SLOT) = state_u{2} /\
   0 <= state_alpha{2} < 2^253 /\ 
   0 <= state_beta{2} < 2^253 /\ 
   0 <= state_beta_lookup{2} < 2^253 /\ 
@@ -7467,9 +7488,3660 @@ mod_copy_permutation_grand_product_opening_at_z_omega
 z_in_domain_r
 mod_quotient_poly_opening_at_z).
 skip. progress; case H0; progress.
-case H24. progress. left. case H24. progress. 
-rewrite H98. by simplify.
-progress. rewrite H98. by simplify.
-progress. right. progress. rewrite H99. by simplify.
+case H24. progress. left. case H24. progress.
+rewrite H100. by simplify.
+progress. rewrite H100. by simplify.
+progress. right. progress. rewrite H101. by simplify.
 exists v1 v2 v3 v4 v5 v6 v7 v8. reflexivity.
 
+exists* alpha2{2}, alpha3{2}, alpha4{2}, alpha5{2}, alpha6{2}, alpha7{2}, alpha8{2}, l0_at_z{2}, ln_minus_one_at_z{2}, beta_plus_one{2}, beta_gamma_plus_gamma{2}, z_minus_last_omega{2}.
+elim*=> alpha2_r  alpha3_r  alpha4_r  alpha5_r  alpha6_r  alpha7_r  alpha8_r  l0_at_z_r  ln_minus_one_at_z_r  beta_plus_one_r  beta_gamma_plus_gamma_r  z_minus_last_omega_r.
+progress. 
+pose mvqe := 
+verifyQuotientEvaluation_memory_footprint mit ((of_int alpha2_r))%W256
+     ((of_int alpha3_r))%W256 ((of_int alpha4_r))%W256
+     ((of_int alpha5_r))%W256 ((of_int alpha6_r))%W256
+     ((of_int alpha7_r))%W256 ((of_int alpha8_r))%W256
+     ((of_int l0_at_z_r))%W256 ((of_int ln_minus_one_at_z_r))%W256
+     ((of_int beta_plus_one_r))%W256
+     ((of_int beta_gamma_plus_gamma_r))%W256
+     ((of_int z_minus_last_omega_r))%W256 v1 v2 v3 v4 v5 v6 v7 v8.
+
+seq 0 0:(
+  alpha2_r = alpha2{2} /\
+   alpha3_r = alpha3{2} /\
+   alpha4_r = alpha4{2} /\
+   alpha5_r = alpha5{2} /\
+   alpha6_r = alpha6{2} /\
+   alpha7_r = alpha7{2} /\
+   alpha8_r = alpha8{2} /\
+   l0_at_z_r = l0_at_z{2} /\
+   ln_minus_one_at_z_r = ln_minus_one_at_z{2} /\
+   beta_plus_one_r = beta_plus_one{2} /\
+   beta_gamma_plus_gamma_r = beta_gamma_plus_gamma{2} /\
+   z_minus_last_omega_r = z_minus_last_omega{2} /\
+  alpha_r = state_alpha{2} /\
+  beta_r = state_beta{2} /\
+  beta_lookup_r = state_beta_lookup{2} /\
+  gamma_r = state_gamma{2} /\
+  gamma_lookup_r = state_gamma_lookup{2} /\
+  eta_r = state_eta{2} /\
+  z_r = state_z{2} /\
+  z_in_domain_r = state_z_in_domain{2} /\
+  v_r = state_v{2} /\
+  u_r = state_u{2} /\
+  rf = vk_recursive_flag{2} /\
+  vk_recursive_flag{2} = false /\
+  mod_public_input = _public_input{2} /\
+  mod_state_poly_0 = _state_poly_0{2} /\
+  mod_state_poly_1 = _state_poly_1{2} /\
+  mod_state_poly_2 = _state_poly_2{2} /\
+  mod_state_poly_3 = _state_poly_3{2} /\
+  mod_copy_permutation_grand_product = _copy_permutation_grand_product{2} /\
+  mod_lookup_s_poly = _lookup_s_poly{2} /\
+  mod_lookup_grand_product = _lookup_grand_product{2} /\
+  mod_quotient_poly_part_0 = _quotient_poly_part_0{2} /\
+  mod_quotient_poly_part_1 = _quotient_poly_part_1{2} /\
+  mod_quotient_poly_part_2 = _quotient_poly_part_2{2} /\
+  mod_quotient_poly_part_3 = _quotient_poly_part_3{2} /\
+  mod_state_poly_0_opening_at_z = _state_poly_0_opening_at_z{2} /\
+  mod_state_poly_1_opening_at_z = _state_poly_1_opening_at_z{2} /\
+  mod_state_poly_2_opening_at_z = _state_poly_2_opening_at_z{2} /\
+  mod_state_poly_3_opening_at_z = _state_poly_3_opening_at_z{2} /\
+  mod_state_poly_3_opening_at_z_omega = _state_poly_3_opening_at_z_omega{2} /\
+  mod_gate_selector_0_opening_at_z = _gate_selector_0_opening_at_z{2} /\
+  mod_copy_permutation_poly_0_opening_at_z =
+  _copy_permutation_poly_0_opening_at_z{2} /\
+  mod_copy_permutation_poly_1_opening_at_z =
+  _copy_permutation_poly_1_opening_at_z{2} /\
+  mod_copy_permutation_poly_2_opening_at_z =
+  _copy_permutation_poly_2_opening_at_z{2} /\
+  mod_copy_permutation_grand_product_opening_at_z_omega =
+  _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  mod_lookup_s_poly_opening_at_z_omega = _lookup_s_poly_opening_at_z_omega{2} /\
+  mod_lookup_grand_product_opening_at_z_omega =
+  _lookup_grand_product_opening_at_z_omega{2} /\
+  mod_lookup_t_poly_opening_at_z = _lookup_t_poly_opening_at_z{2} /\
+  mod_lookup_t_poly_opening_at_z_omega = _lookup_t_poly_opening_at_z_omega{2} /\
+  mod_lookup_selector_poly_opening_at_z =
+  _lookup_selector_poly_opening_at_z{2} /\
+  mod_lookup_table_type_poly_opening_at_z =
+  _lookup_table_type_poly_opening_at_z{2} /\
+  mod_quotient_poly_opening_at_z = _quotient_poly_opening_at_z{2} /\
+  mod_linearisation_poly_opening_at_z = _linearisation_poly_opening_at_z{2} /\
+  mod_opening_proof_at_z = _opening_proof_at_z{2} /\
+  mod_opening_proof_at_z_omega = _opening_proof_at_z_omega{2} /\
+  mod_recursive_part_p1 = _recursive_part_p1{2} /\
+  mod_recursive_part_p2 = _recursive_part_p2{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_0_Y_SLOT) = vk_gate_setup_0Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_1_X_SLOT) = vk_gate_setup_1X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_1_Y_SLOT) = vk_gate_setup_1Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_2_X_SLOT) = vk_gate_setup_2X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_2_Y_SLOT) = vk_gate_setup_2Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_3_X_SLOT) = vk_gate_setup_3X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_3_Y_SLOT) = vk_gate_setup_3Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_4_X_SLOT) = vk_gate_setup_4X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_4_Y_SLOT) = vk_gate_setup_4Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_5_X_SLOT) = vk_gate_setup_5X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_5_Y_SLOT) = vk_gate_setup_5Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_6_X_SLOT) = vk_gate_setup_6X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_6_Y_SLOT) = vk_gate_setup_6Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_7_X_SLOT) = vk_gate_setup_7X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_7_Y_SLOT) = vk_gate_setup_7Y{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_1_X_SLOT) = vk_gate_selectors_1X{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_1_Y_SLOT) = vk_gate_selectors_1Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_3_X_SLOT) = vk_permutation_3X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_0_X_SLOT) = vk_lookup_table_0X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_0_Y_SLOT) = vk_lookup_table_0Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_1_X_SLOT) = vk_lookup_table_1X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_1_Y_SLOT) = vk_lookup_table_1Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_2_X_SLOT) = vk_lookup_table_2X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_2_Y_SLOT) = vk_lookup_table_2Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_3_X_SLOT) = vk_lookup_table_3X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_3_Y_SLOT) = vk_lookup_table_3Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_X_SLOT) = vk_lookup_table_type_X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_Y_SLOT) = vk_lookup_table_type_Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_Y_SLOT) = vk_lookup_table_type_Y{2} /\
+  mload mvqe VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
+  ((Primops.reverted{1} /\ failed{2}) \/
+  (!Primops.reverted{1} /\
+   !failed{2} /\
+   to_uint (mload mvqe PROOF_PUBLIC_INPUT) = _public_input{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+   to_uint (mload mvqe PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+   to_uint (mload mvqe PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) =
+   _copy_permutation_grand_product{2}.`1 /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) =
+   _copy_permutation_grand_product{2}.`2 /\
+   to_uint (mload mvqe PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) =
+   _lookup_grand_product{2}.`1 /\
+   to_uint (mload mvqe PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) =
+   _lookup_grand_product{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) =
+   _quotient_poly_part_0{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) =
+   _quotient_poly_part_0{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) =
+   _quotient_poly_part_1{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) =
+   _quotient_poly_part_1{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) =
+   _quotient_poly_part_2{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) =
+   _quotient_poly_part_2{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) =
+   _quotient_poly_part_3{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) =
+   _quotient_poly_part_3{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) =
+   _quotient_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) =
+   _state_poly_0_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) =
+   _state_poly_1_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) =
+   _state_poly_2_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) =
+   _state_poly_3_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) =
+   _state_poly_3_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) =
+   _gate_selector_0_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_0_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_1_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_2_opening_at_z{2} /\
+   to_uint
+     (mload mvqe PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
+   _copy_permutation_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_t_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_selector_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_table_type_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_s_poly_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_t_poly_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) =
+   _linearisation_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_X_SLOT) =
+   _opening_proof_at_z{2}.`1 /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_Y_SLOT) =
+   _opening_proof_at_z{2}.`2 /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) =
+   _opening_proof_at_z_omega{2}.`1 /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
+   to_uint (mload mvqe STATE_ALPHA_SLOT) = state_alpha{2} /\
+   to_uint (mload mvqe STATE_BETA_SLOT) = state_beta{2} /\
+   to_uint (mload mvqe STATE_BETA_LOOKUP_SLOT) = state_beta_lookup{2} /\
+   to_uint (mload mvqe STATE_GAMMA_SLOT) = state_gamma{2} /\
+   to_uint (mload mvqe STATE_GAMMA_LOOKUP_SLOT) = state_gamma_lookup{2} /\
+   to_uint (mload mvqe STATE_Z_SLOT) = state_z{2} /\
+   to_uint (mload mvqe STATE_Z_IN_DOMAIN_SIZE) = state_z_in_domain{2} /\
+   to_uint (mload mvqe STATE_V_SLOT) = state_v{2} /\
+   to_uint (mload mvqe STATE_U_SLOT) = state_u{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_2_SLOT) = alpha2{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_3_SLOT) = alpha3{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_4_SLOT) = alpha4{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_5_SLOT) = alpha5{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_6_SLOT) = alpha6{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_7_SLOT) = alpha7{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_8_SLOT) = alpha8{2} /\
+   to_uint (mload mvqe STATE_L_0_AT_Z_SLOT) = l0_at_z{2} /\
+   to_uint (mload mvqe STATE_L_N_MINUS_ONE_AT_Z_SLOT) = ln_minus_one_at_z{2} /\
+   to_uint (mload mvqe STATE_BETA_PLUS_ONE_SLOT) = beta_plus_one{2} /\
+   to_uint (mload mvqe STATE_BETA_GAMMA_PLUS_GAMMA_SLOT) = beta_gamma_plus_gamma{2} /\
+   to_uint (mload mvqe STATE_Z_MINUS_LAST_OMEGA_SLOT) = z_minus_last_omega{2} /\
+  0 <= state_alpha{2} < 2^253 /\ 
+  0 <= state_beta{2} < 2^253 /\ 
+  0 <= state_beta_lookup{2} < 2^253 /\ 
+  0 <= state_gamma{2} < 2^253 /\
+  0 <= state_gamma_lookup{2} < 2^253 /\ 
+  0 <= state_eta{2} < 2^253 /\ 
+  0 <= state_z{2} < 2^253 /\ 
+  0 <= state_z_in_domain{2} < Constants.R /\
+  0 <= state_v{2} < 2^253 /\ 0 <= state_u{2} < 2^253 /\
+  0 <= alpha2{2} < Constants.R /\
+  0 <= alpha3{2} < Constants.R /\
+  0 <= alpha4{2} < Constants.R /\
+  0 <= alpha5{2} < Constants.R /\
+  0 <= alpha6{2} < Constants.R /\
+  0 <= alpha7{2} < Constants.R /\
+  0 <= alpha8{2} < Constants.R /\
+  0 <= l0_at_z{2} < Constants.R /\
+  0 <= ln_minus_one_at_z{2} < Constants.R /\
+  0 <= beta_plus_one{2} < Constants.R /\
+  0 <= beta_gamma_plus_gamma{2} < Constants.R /\
+  0 <= z_minus_last_omega{2} < Constants.R /\
+  Primops.memory{1} = mvqe
+))
+).
+skip. progress.
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). reflexivity.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). rewrite H. reflexivity.
+
+case H0; progress. left. progress. right. progress.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 35! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 34! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 33! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 32! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 31! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 30! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 29! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 22! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 15! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 14! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 13! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 6! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+
+seq 1 2: (
+  alpha2_r = alpha2{2} /\
+  alpha3_r = alpha3{2} /\
+  alpha4_r = alpha4{2} /\
+  alpha5_r = alpha5{2} /\
+  alpha6_r = alpha6{2} /\
+  alpha7_r = alpha7{2} /\
+  alpha8_r = alpha8{2} /\
+  l0_at_z_r = l0_at_z{2} /\
+  ln_minus_one_at_z_r = ln_minus_one_at_z{2} /\
+  beta_plus_one_r = beta_plus_one{2} /\
+  beta_gamma_plus_gamma_r = beta_gamma_plus_gamma{2} /\
+  z_minus_last_omega_r = z_minus_last_omega{2} /\
+  alpha_r = state_alpha{2} /\
+  beta_r = state_beta{2} /\
+  beta_lookup_r = state_beta_lookup{2} /\
+  gamma_r = state_gamma{2} /\
+  gamma_lookup_r = state_gamma_lookup{2} /\
+  eta_r = state_eta{2} /\
+  z_r = state_z{2} /\
+  z_in_domain_r = state_z_in_domain{2} /\
+  v_r = state_v{2} /\
+  u_r = state_u{2} /\
+  rf = vk_recursive_flag{2} /\
+  vk_recursive_flag{2} = false /\
+  mod_public_input = _public_input{2} /\
+  mod_state_poly_0 = _state_poly_0{2} /\
+  mod_state_poly_1 = _state_poly_1{2} /\
+  mod_state_poly_2 = _state_poly_2{2} /\
+  mod_state_poly_3 = _state_poly_3{2} /\
+  mod_copy_permutation_grand_product = _copy_permutation_grand_product{2} /\
+  mod_lookup_s_poly = _lookup_s_poly{2} /\
+  mod_lookup_grand_product = _lookup_grand_product{2} /\
+  mod_quotient_poly_part_0 = _quotient_poly_part_0{2} /\
+  mod_quotient_poly_part_1 = _quotient_poly_part_1{2} /\
+  mod_quotient_poly_part_2 = _quotient_poly_part_2{2} /\
+  mod_quotient_poly_part_3 = _quotient_poly_part_3{2} /\
+  mod_state_poly_0_opening_at_z = _state_poly_0_opening_at_z{2} /\
+  mod_state_poly_1_opening_at_z = _state_poly_1_opening_at_z{2} /\
+  mod_state_poly_2_opening_at_z = _state_poly_2_opening_at_z{2} /\
+  mod_state_poly_3_opening_at_z = _state_poly_3_opening_at_z{2} /\
+  mod_state_poly_3_opening_at_z_omega = _state_poly_3_opening_at_z_omega{2} /\
+  mod_gate_selector_0_opening_at_z = _gate_selector_0_opening_at_z{2} /\
+  mod_copy_permutation_poly_0_opening_at_z =
+  _copy_permutation_poly_0_opening_at_z{2} /\
+  mod_copy_permutation_poly_1_opening_at_z =
+  _copy_permutation_poly_1_opening_at_z{2} /\
+  mod_copy_permutation_poly_2_opening_at_z =
+  _copy_permutation_poly_2_opening_at_z{2} /\
+  mod_copy_permutation_grand_product_opening_at_z_omega =
+  _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  mod_lookup_s_poly_opening_at_z_omega = _lookup_s_poly_opening_at_z_omega{2} /\
+  mod_lookup_grand_product_opening_at_z_omega =
+  _lookup_grand_product_opening_at_z_omega{2} /\
+  mod_lookup_t_poly_opening_at_z = _lookup_t_poly_opening_at_z{2} /\
+  mod_lookup_t_poly_opening_at_z_omega = _lookup_t_poly_opening_at_z_omega{2} /\
+  mod_lookup_selector_poly_opening_at_z =
+  _lookup_selector_poly_opening_at_z{2} /\
+  mod_lookup_table_type_poly_opening_at_z =
+  _lookup_table_type_poly_opening_at_z{2} /\
+  mod_quotient_poly_opening_at_z = _quotient_poly_opening_at_z{2} /\
+  mod_linearisation_poly_opening_at_z = _linearisation_poly_opening_at_z{2} /\
+  mod_opening_proof_at_z = _opening_proof_at_z{2} /\
+  mod_opening_proof_at_z_omega = _opening_proof_at_z_omega{2} /\
+  mod_recursive_part_p1 = _recursive_part_p1{2} /\
+  mod_recursive_part_p2 = _recursive_part_p2{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_0_Y_SLOT) = vk_gate_setup_0Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_1_X_SLOT) = vk_gate_setup_1X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_1_Y_SLOT) = vk_gate_setup_1Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_2_X_SLOT) = vk_gate_setup_2X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_2_Y_SLOT) = vk_gate_setup_2Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_3_X_SLOT) = vk_gate_setup_3X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_3_Y_SLOT) = vk_gate_setup_3Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_4_X_SLOT) = vk_gate_setup_4X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_4_Y_SLOT) = vk_gate_setup_4Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_5_X_SLOT) = vk_gate_setup_5X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_5_Y_SLOT) = vk_gate_setup_5Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_6_X_SLOT) = vk_gate_setup_6X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_6_Y_SLOT) = vk_gate_setup_6Y{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_7_X_SLOT) = vk_gate_setup_7X{2} /\
+  to_uint (mload mvqe VK_GATE_SETUP_7_Y_SLOT) = vk_gate_setup_7Y{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_1_X_SLOT) = vk_gate_selectors_1X{2} /\
+  to_uint (mload mvqe VK_GATE_SELECTORS_1_Y_SLOT) = vk_gate_selectors_1Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_3_X_SLOT) = vk_permutation_3X{2} /\
+  to_uint (mload mvqe VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_0_X_SLOT) = vk_lookup_table_0X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_0_Y_SLOT) = vk_lookup_table_0Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_1_X_SLOT) = vk_lookup_table_1X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_1_Y_SLOT) = vk_lookup_table_1Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_2_X_SLOT) = vk_lookup_table_2X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_2_Y_SLOT) = vk_lookup_table_2Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_3_X_SLOT) = vk_lookup_table_3X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_3_Y_SLOT) = vk_lookup_table_3Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_X_SLOT) =
+  vk_lookup_table_type_X{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
+  vk_lookup_table_type_Y{2} /\
+  to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
+  vk_lookup_table_type_Y{2} /\
+  mload mvqe VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
+  ((Primops.reverted{1} /\ failed{2}) \/
+  (!Primops.reverted{1} /\
+   !failed{2} /\
+   to_uint (mload mvqe PROOF_PUBLIC_INPUT) = _public_input{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+   to_uint (mload mvqe PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+   to_uint (mload mvqe PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) =
+   _copy_permutation_grand_product{2}.`1 /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) =
+   _copy_permutation_grand_product{2}.`2 /\
+   to_uint (mload mvqe PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) =
+   _lookup_grand_product{2}.`1 /\
+   to_uint (mload mvqe PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) =
+   _lookup_grand_product{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) =
+   _quotient_poly_part_0{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) =
+   _quotient_poly_part_0{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) =
+   _quotient_poly_part_1{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) =
+   _quotient_poly_part_1{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) =
+   _quotient_poly_part_2{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) =
+   _quotient_poly_part_2{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) =
+   _quotient_poly_part_3{2}.`1 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) =
+   _quotient_poly_part_3{2}.`2 /\
+   to_uint (mload mvqe PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) =
+   _quotient_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) =
+   _state_poly_0_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) =
+   _state_poly_1_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) =
+   _state_poly_2_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) =
+   _state_poly_3_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) =
+   _state_poly_3_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) =
+   _gate_selector_0_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_0_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_1_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_2_opening_at_z{2} /\
+   to_uint
+     (mload mvqe PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
+   _copy_permutation_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_t_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_selector_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_table_type_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_s_poly_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_t_poly_opening_at_z_omega{2} /\
+   to_uint (mload mvqe PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) =
+   _linearisation_poly_opening_at_z{2} /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_X_SLOT) =
+   _opening_proof_at_z{2}.`1 /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_Y_SLOT) =
+   _opening_proof_at_z{2}.`2 /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) =
+   _opening_proof_at_z_omega{2}.`1 /\
+   to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
+   to_uint (mload mvqe STATE_ALPHA_SLOT) = state_alpha{2} /\
+   to_uint (mload mvqe STATE_BETA_SLOT) = state_beta{2} /\
+   to_uint (mload mvqe STATE_BETA_LOOKUP_SLOT) = state_beta_lookup{2} /\
+   to_uint (mload mvqe STATE_GAMMA_SLOT) = state_gamma{2} /\
+   to_uint (mload mvqe STATE_GAMMA_LOOKUP_SLOT) = state_gamma_lookup{2} /\
+   to_uint (mload mvqe STATE_Z_SLOT) = state_z{2} /\
+   to_uint (mload mvqe STATE_Z_IN_DOMAIN_SIZE) = state_z_in_domain{2} /\
+   to_uint (mload mvqe STATE_V_SLOT) = state_v{2} /\
+   to_uint (mload mvqe STATE_U_SLOT) = state_u{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_2_SLOT) = alpha2{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_3_SLOT) = alpha3{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_4_SLOT) = alpha4{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_5_SLOT) = alpha5{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_6_SLOT) = alpha6{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_7_SLOT) = alpha7{2} /\
+   to_uint (mload mvqe STATE_POWER_OF_ALPHA_8_SLOT) = alpha8{2} /\
+   to_uint (mload mvqe STATE_L_0_AT_Z_SLOT) = l0_at_z{2} /\
+   to_uint (mload mvqe STATE_L_N_MINUS_ONE_AT_Z_SLOT) = ln_minus_one_at_z{2} /\
+   to_uint (mload mvqe STATE_BETA_PLUS_ONE_SLOT) = beta_plus_one{2} /\
+   to_uint (mload mvqe STATE_BETA_GAMMA_PLUS_GAMMA_SLOT) = beta_gamma_plus_gamma{2} /\
+   to_uint (mload mvqe STATE_Z_MINUS_LAST_OMEGA_SLOT) = z_minus_last_omega{2} /\
+   (0 <= state_alpha{2} && state_alpha{2} < 2 ^ 253) /\
+   (0 <= state_beta{2} && state_beta{2} < 2 ^ 253) /\
+   (0 <= state_beta_lookup{2} && state_beta_lookup{2} < 2 ^ 253) /\
+   (0 <= state_gamma{2} && state_gamma{2} < 2 ^ 253) /\
+   (0 <= state_gamma_lookup{2} && state_gamma_lookup{2} < 2 ^ 253) /\
+   (0 <= state_eta{2} && state_eta{2} < 2 ^ 253) /\
+   (0 <= state_z{2} && state_z{2} < 2 ^ 253) /\
+   (0 <= state_z_in_domain{2} && state_z_in_domain{2} < Constants.R) /\
+   (0 <= state_v{2} && state_v{2} < 2 ^ 253) /\
+   (0 <= state_u{2} && state_u{2} < 2 ^ 253) /\
+   (0 <= alpha2{2} && alpha2{2} < Constants.R) /\
+   (0 <= alpha3{2} && alpha3{2} < Constants.R) /\
+   (0 <= alpha4{2} && alpha4{2} < Constants.R) /\
+   (0 <= alpha5{2} && alpha5{2} < Constants.R) /\
+   (0 <= alpha6{2} && alpha6{2} < Constants.R) /\
+   (0 <= alpha7{2} && alpha7{2} < Constants.R) /\
+   (0 <= alpha8{2} && alpha8{2} < Constants.R) /\
+   (0 <= l0_at_z{2} && l0_at_z{2} < Constants.R) /\
+   (0 <= ln_minus_one_at_z{2} && ln_minus_one_at_z{2} < Constants.R) /\
+   (0 <= beta_plus_one{2} && beta_plus_one{2} < Constants.R) /\
+   (0 <= beta_gamma_plus_gamma{2} && beta_gamma_plus_gamma{2} < Constants.R) /\
+   (0 <= z_minus_last_omega{2} && z_minus_last_omega{2} < Constants.R) /\
+   0 <= query_at_z_0{2}.`1 < Constants.Q /\ 0 <= query_at_z_0{2}.`2 < Constants.Q /\
+   0 <= query_at_z_1{2}.`1 < Constants.Q /\ 0 <= query_at_z_1{2}.`2 < Constants.Q /\
+   0 <= query_t_poly_aggregated{2}.`1 < Constants.Q /\ 0 <= query_t_poly_aggregated{2}.`2 < Constants.Q /\
+   0 <= copy_permutation_first_aggregated_commitment_coeff{2} < Constants.Q /\
+   0 <= lookup_s_first_aggregated_commitment{2} < Constants.Q /\
+   0 <= lookup_grand_product_first_aggregated_coefficient{2} < Constants.Q /\
+   exists p1 p2 p3 p4 p5 p6, Primops.memory{1} = 
+   prepareQueries_memory_footprint mvqe
+   p1 p2 p3 p4 p5 p6
+   query_at_z_0{2} query_at_z_1{2} query_t_poly_aggregated{2} copy_permutation_first_aggregated_commitment_coeff{2}
+   lookup_s_first_aggregated_commitment{2} lookup_grand_product_first_aggregated_coefficient{2}
+))
+).
+exists* Primops.reverted{1}. elim*=> reverted.
+case reverted. progress.
+conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
+progress. case H0. by progress. by progress.
+progress. left. by progress.
+(* inlining TAKES TO LONG *)
+(* wp.
+call{1} verifyQuotientEvaluation_low_pspec_revert.
+skip. simplify. progress.
+left. progress. *) admit.
+progress. wp.
+have IS: forall (a b: int), a = b => b = a. by smt(). 
+
+call (prepareQueries_low_equiv_mid mvqe). 
+skip. progress; case H0; progress. 
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. admit. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit.
+
+
+to_uint (mload mvqe VK_PERMUTATION_3_X_SLOT) < Constants.Q
+
+
+
+  Goal #2
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_PERMUTATION_3_Y_SLOT) < Constants.Q
+
+
+  Goal #3
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_0_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #4
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_0_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #5
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_1_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #6
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_1_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #7
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_2_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #8
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_2_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #9
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_3_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #10
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_3_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #11
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_4_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #12
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_4_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #13
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_5_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #14
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_5_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #15
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_6_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #16
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_6_Y_SLOT) < Field.FieldQ.p
+
+
+  Goal #17
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_7_X_SLOT) < Field.FieldQ.p
+
+
+  Goal #18
+  ------------------------------------------------------------------------
+  to_uint (mload mvqe VK_GATE_SETUP_7_Y_SLOT) < Field.FieldQ.p
+
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
+
+
+to_uint (mload mvqe PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) =
+_quotient_poly_part_0{2}.`1
