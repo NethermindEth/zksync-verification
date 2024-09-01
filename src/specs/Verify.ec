@@ -864,5 +864,57 @@ lemma verify_mid_equiv_high_encapsulated:
           z_minus_last_omega{1} = FieldR.asint z_minus_last_omega{2}
         )
       ).
-      call (verifyQuotientEvaluation_mid_equiv_high ).
+      case (failed{1}).
+      conseq(_ : (failed{1} /\ failed{2}) ==> (failed{1} /\ failed{2})).
+      progress. by case H; progress.
+      progress. left. rewrite H1 H2. by progress.
+      wp. inline*. wp. skip. progress.
+      left. assumption.
+      left. assumption.
+      left. assumption.
+      left. assumption.
+      left. assumption.
+
+      exists* state_alpha{2}, state_beta{2}, state_beta_lookup{2}, state_gamma{2}, state_gamma_lookup{2}, state_z{2}, _public_input{2}, _copy_permutation_poly_0_opening_at_z{2}, _copy_permutation_poly_1_opening_at_z{2}, _copy_permutation_poly_2_opening_at_z{2}, _state_poly_0_opening_at_z{2}, _state_poly_1_opening_at_z{2}, _state_poly_2_opening_at_z{2}, _state_poly_3_opening_at_z{2}, _lookup_s_poly_opening_at_z_omega{2}, _lookup_grand_product_opening_at_z_omega{2}, _gate_selector_0_opening_at_z{2}, _linearisation_poly_opening_at_z{2}, _copy_permutation_grand_product_opening_at_z_omega{2}, state_z_in_domain{2}, _quotient_poly_opening_at_z{2}.
+      elim*=> state_alpha_r state_beta_r state_beta_lookup_r state_gamma_r state_gamma_lookup_r state_z_r _public_input_r _copy_permutation_poly_0_opening_at_z_r _copy_permutation_poly_1_opening_at_z_r _copy_permutation_poly_2_opening_at_z_r _state_poly_0_opening_at_z_r _state_poly_1_opening_at_z_r _state_poly_2_opening_at_z_r _state_poly_3_opening_at_z_r _lookup_s_poly_opening_at_z_omega_r _lookup_grand_product_opening_at_z_omega_r _gate_selector_0_opening_at_z_r _linearisation_poly_opening_at_z_r _copy_permutation_grand_product_opening_at_z_omega_r state_z_in_domain_r _quotient_poly_opening_at_z_r.
+      wp.
+      call (verifyQuotientEvaluation_mid_equiv_high 
+        state_alpha_r state_beta_r state_beta_lookup_r state_gamma_r state_gamma_lookup_r state_z_r _public_input_r _copy_permutation_poly_0_opening_at_z_r _copy_permutation_poly_1_opening_at_z_r _copy_permutation_poly_2_opening_at_z_r _state_poly_0_opening_at_z_r _state_poly_1_opening_at_z_r _state_poly_2_opening_at_z_r _state_poly_3_opening_at_z_r _lookup_s_poly_opening_at_z_omega_r _lookup_grand_product_opening_at_z_omega_r _gate_selector_0_opening_at_z_r _linearisation_poly_opening_at_z_r _copy_permutation_grand_product_opening_at_z_omega_r state_z_in_domain_r _quotient_poly_opening_at_z_r
+      ).
+      skip. progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      case (result_L.`1 = None).
+      progress.
+      left. progress. smt (). smt ().
+      progress.
+      rewrite -H1.
+      case (result_L.`1). by progress. progress.
+      case x. progress. rewrite H0. case H. by progress. progress.
+      
+      progress. right.
+      progress.
+      rewrite H0. progress. 
+      
+
+
       qed.
