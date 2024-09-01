@@ -805,48 +805,73 @@ arg{2} =
    statePowerOfAlpha7G, statePowerOfAlpha8G, proofLookupSPolyOpeningAtZOmegaG,
    proofLookupGrandProductOpeningAtZOmegaG, stateZG, stateL0AtZG, stateLnMinusOneAtZG)
 ==>
-  FieldR.inF res{1}.`1 = res{2}.`1 /\
-  FieldR.inF res{1}.`2 = res{2}.`2 /\
-  FieldR.inF res{1}.`3 = res{2}.`3 /\
-  FieldR.inF res{1}.`4 = res{2}.`4
+  res{1}.`1 = FieldR.asint res{2}.`1 /\
+  res{1}.`2 = FieldR.asint res{2}.`2 /\
+  res{1}.`3 = FieldR.asint res{2}.`3 /\
+  res{1}.`4 = FieldR.asint res{2}.`4
 ].
 proof. 
 proc. 
-seq 1 0 : (#pre /\ FieldR.inF betaPlusOne{1} = stateBetaLookupG + FieldR.one).
+seq 1 0 : (#pre /\ betaPlusOne{1} = FieldR.asint (stateBetaLookupG + FieldR.one)).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.asintK. by reflexivity. 
-seq 1 0 : (#pre /\ FieldR.inF betaGamma{1} = stateGammaLookupG * (stateBetaLookupG + FieldR.one)).
+rewrite Constants.r_eq_fieldr_p. rewrite FieldR.addE. smt (@FieldR).
+seq 1 0 : (#pre /\ betaGamma{1} = FieldR.asint (stateGammaLookupG * (stateBetaLookupG + FieldR.one))).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK H. by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF f{1} = proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)).
+rewrite Constants.r_eq_fieldr_p. smt (@FieldR).
+seq 1 0 : (#pre /\ f{1} = FieldR.asint (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one))).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFM FieldR.asintK FieldR.asintK H0. by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF a6c'{1} = statePowerOfAlpha6G * (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)) * proofLookupGrandProductOpeningAtZOmegaG).
+rewrite Constants.r_eq_fieldr_p. rewrite FieldR.addE. rewrite FieldR.mulE. rewrite FieldR.mulE. smt (@FieldR @IntDiv).
+seq 1 0 : (#pre /\ a6c'{1} = FieldR.asint (statePowerOfAlpha6G * (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)) * proofLookupGrandProductOpeningAtZOmegaG)).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK FieldR.inFM FieldR.asintK H1. by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF lastOmega{1} = Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1)).
+rewrite Constants.r_eq_fieldr_p. smt (@FieldR @IntDiv).
+seq 1 0 : (#pre /\ lastOmega{1} = FieldR.asint (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1))).
 inline*. wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE. simplify.
-have -> : 67108863 = Constants.DOMAIN_SIZE - 1 by rewrite /Constants.DOMAIN_SIZE; by reflexivity.
-rewrite -/Constants.OMEGAFr /(^). by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF zMinusLastOmega{1} = stateZG - Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1)).
+rewrite Constants.r_eq_fieldr_p. smt (@FieldR @IntDiv @Constants).
+seq 1 0 : (#pre /\ zMinusLastOmega{1} = FieldR.asint (stateZG - Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1))).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.asintK FieldR.inFN H3. by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF a6c{1} = (statePowerOfAlpha6G * (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)) * proofLookupGrandProductOpeningAtZOmegaG) * (stateZG - Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1))).
+rewrite Constants.r_eq_fieldr_p. smt (@FieldR @IntDiv @Constants).
+seq 1 0 : (#pre /\ a6c{1} = FieldR.asint ((statePowerOfAlpha6G * (proofLookupSPolyOpeningAtZOmegaG * stateBetaLookupG + stateGammaLookupG * (stateBetaLookupG + FieldR.one)) * proofLookupGrandProductOpeningAtZOmegaG) * (stateZG - Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1)))).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM H2 H4.  by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF a7c{1} = statePowerOfAlpha7G * stateL0AtZG).
+rewrite Constants.r_eq_fieldr_p. smt (@FieldR @IntDiv @Constants).
+seq 1 0 : (#pre /\ a7c{1} = FieldR.asint (statePowerOfAlpha7G * stateL0AtZG)).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.asintK FieldR.asintK. by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF betaGammaPowered{1} = stateGammaLookupG^(Constants.DOMAIN_SIZE - 1) * (stateBetaLookupG + FieldR.one)^(Constants.DOMAIN_SIZE - 1)).
+rewrite Constants.r_eq_fieldr_p. smt (@FieldR @IntDiv).
+seq 1 0 : (#pre /\ betaGammaPowered{1} = FieldR.asint (stateGammaLookupG^(Constants.DOMAIN_SIZE - 1) * (stateBetaLookupG + FieldR.one)^(Constants.DOMAIN_SIZE - 1))).
 inline*. wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE. simplify.
-have -> : 67108863 = Constants.DOMAIN_SIZE - 1 by rewrite /Constants.DOMAIN_SIZE; by reflexivity.
-rewrite H0 /(^). by smt (@FieldR).
-seq 1 0 : (#pre /\ FieldR.inF a8c{1} = statePowerOfAlpha8G * stateLnMinusOneAtZG * stateGammaLookupG^(Constants.DOMAIN_SIZE - 1) * (stateBetaLookupG + FieldR.one)^(Constants.DOMAIN_SIZE - 1)).
+rewrite Constants.r_eq_fieldr_p. do rewrite Field.RexpE.
+rewrite -FieldR.inFK.
+rewrite FieldR.inF_exp.
+have ->: 0 <= Constants.DOMAIN_SIZE - 1 by rewrite /Constants.DOMAIN_SIZE; progress.
+simplify. smt (@FieldR @IntDiv).
+seq 1 0 : (#pre /\ a8c{1} = FieldR.asint (statePowerOfAlpha8G * stateLnMinusOneAtZG * stateGammaLookupG^(Constants.DOMAIN_SIZE - 1) * (stateBetaLookupG + FieldR.one)^(Constants.DOMAIN_SIZE - 1))).
 wp. skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFM FieldR.inFM FieldR.asintK FieldR.asintK H7. by smt(@FieldR).
-skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFN FieldR.inFN H5 H6 H8.
-by  smt (@FieldR). 
-qed. 
+rewrite Constants.r_eq_fieldr_p.
+pose x := Field.(^) _ _.
+pose x1 := Field.(^) _ _.
+
+rewrite FieldR.mulE.
+rewrite FieldR.mulE.
+rewrite -modzMml.
+rewrite -(modzMm (FieldR.asint (statePowerOfAlpha8{2} * stateLnMinusOneAtZ{2} * x)) (FieldR.asint x1)).
+rewrite -(modzMm (FieldR.asint x) (FieldR.asint x1)).
+rewrite -(modzMm (FieldR.asint statePowerOfAlpha8{2}) (FieldR.asint stateLnMinusOneAtZ{2})).
+pose z1 := (FieldR.asint statePowerOfAlpha8{2}) %% FieldR.p.
+pose z2 := (FieldR.asint stateLnMinusOneAtZ{2}) %% FieldR.p.
+pose z3 := (z1 * z2) %% FieldR.p.
+pose z4 := (FieldR.asint x) %% FieldR.p.
+pose z5 := (FieldR.asint x1) %% FieldR.p.
+pose z6 := (z4 * z5) %% FieldR.p.
+pose z7 := (z3 * z6) %% FieldR.p.
+rewrite -(modzMmr _ z5).
+rewrite FieldR.mulE.
+pose z8 := z5 %% FieldR.p.
+rewrite -(modzMmr _ (FieldR.asint x)).
+rewrite -/z4.
+rewrite FieldR.mulE.
+rewrite -(modzMm (FieldR.asint statePowerOfAlpha8{2})).
+rewrite -/z1.
+rewrite -/z2.
+smt (@IntDiv @FieldR @Constants).
+skip. progress.
+smt (@IntDiv @FieldR @Constants).
+qed.
