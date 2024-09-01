@@ -851,7 +851,6 @@ pose x1 := Field.(^) _ _.
 
 rewrite FieldR.mulE.
 rewrite FieldR.mulE.
-print FieldR.
 rewrite -modzMml.
 rewrite -(modzMm (FieldR.asint (statePowerOfAlpha8{2} * stateLnMinusOneAtZ{2} * x)) (FieldR.asint x1)).
 rewrite -(modzMm (FieldR.asint x) (FieldR.asint x1)).

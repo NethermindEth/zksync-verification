@@ -353,7 +353,6 @@ proof.
   rewrite -H1. by reflexivity.
   if. progress.
   rewrite H0 -FieldR.inFK.
-  search FieldR.asint.
   rewrite -FieldR.zeroE.
   congr.
   wp. skip. progress. 
