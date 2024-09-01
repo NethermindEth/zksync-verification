@@ -16,6 +16,7 @@ require import VerifyQuotientEvaluation.
 require import YulPrimops.
 require import PurePrimops.
 require import Utils.
+require import VerifierConsts.
 
 lemma initializeTranscript_low_pspec_revert:
 phoare [ InitializeTranscript.low : Primops.reverted ==> Primops.reverted ] = 1%r.
@@ -23,6 +24,95 @@ proof. admit. qed.
 
 lemma verifyQuotientEvaluation_low_pspec_revert:
 phoare [ VerifyQuotientEvaluation.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+proof. admit. qed.
+
+import MemoryMap PurePrimops.
+
+lemma verifyQuotientEvaluation_low_equiv_mid (m : MemoryMap.mem) (
+      stateAlphaG
+      stateBetaG
+      stateBetaLookupG
+      stateGammaG
+      stateGammaLookupG
+      stateZG
+      proofPublicInputG
+      proofCopyPermutationPolys0OpeningAtZG
+      proofCopyPermutationPolys1OpeningAtZG
+      proofCopyPermutationPolys2OpeningAtZG
+      proofStatePolys0OpeningAtZG
+      proofStatePolys1OpeningAtZG
+      proofStatePolys2OpeningAtZG
+      proofStatePolys3OpeningAtZG
+      proofLookupSPolyOpeningAtZOmegaG
+      proofLookupGrandProductOpeningAtZOmegaG
+      proofGateSelectors0OpeningAtZG
+      proofLinearisationPolyOpeningAtZG
+      proofCopyPermutationGrandProductOpeningAtZOmegaG
+      stateZInDomainSizeG
+      proofQuotientPolyOpeningAtZG
+) :
+equiv [VerifyQuotientEvaluation.low ~ VerifyQuotientEvaluation.mid :
+arg{2} =
+  (stateAlphaG, stateBetaG, stateBetaLookupG, stateGammaG, stateGammaLookupG, stateZG,
+   proofPublicInputG, proofCopyPermutationPolys0OpeningAtZG,
+   proofCopyPermutationPolys1OpeningAtZG, proofCopyPermutationPolys2OpeningAtZG,
+   proofStatePolys0OpeningAtZG, proofStatePolys1OpeningAtZG,
+   proofStatePolys2OpeningAtZG, proofStatePolys3OpeningAtZG,
+   proofLookupSPolyOpeningAtZOmegaG, proofLookupGrandProductOpeningAtZOmegaG,
+   proofGateSelectors0OpeningAtZG, proofLinearisationPolyOpeningAtZG,
+   proofCopyPermutationGrandProductOpeningAtZOmegaG, stateZInDomainSizeG,
+   proofQuotientPolyOpeningAtZG) /\
+Primops.memory{1} = m /\
+!Primops.reverted{1} /\  
+W256.to_uint (mload m STATE_ALPHA_SLOT) = stateAlphaG /\
+W256.to_uint (mload m STATE_BETA_SLOT) = stateBetaG /\
+W256.to_uint (mload m STATE_BETA_LOOKUP_SLOT) = stateBetaLookupG /\
+W256.to_uint (mload m STATE_GAMMA_SLOT) = stateGammaG /\
+W256.to_uint (mload m STATE_GAMMA_LOOKUP_SLOT) = stateGammaLookupG /\
+W256.to_uint (mload m STATE_Z_SLOT) = stateZG /\
+W256.to_uint (mload m PROOF_PUBLIC_INPUT) = proofPublicInputG /\
+W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys0OpeningAtZG /\
+W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys1OpeningAtZG /\
+W256.to_uint (mload m PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = proofCopyPermutationPolys2OpeningAtZG /\
+W256.to_uint (mload m PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = proofStatePolys0OpeningAtZG /\
+W256.to_uint (mload m PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = proofStatePolys1OpeningAtZG /\
+W256.to_uint (mload m PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = proofStatePolys2OpeningAtZG /\
+W256.to_uint (mload m PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = proofStatePolys3OpeningAtZG /\
+W256.to_uint (mload m PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = proofLookupSPolyOpeningAtZOmegaG /\
+W256.to_uint (mload m PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofLookupGrandProductOpeningAtZOmegaG /\
+W256.to_uint (mload m PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = proofGateSelectors0OpeningAtZG /\
+W256.to_uint (mload m PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = proofLinearisationPolyOpeningAtZG /\
+W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = proofCopyPermutationGrandProductOpeningAtZOmegaG /\
+W256.to_uint (mload m STATE_Z_IN_DOMAIN_SIZE) = stateZInDomainSizeG /\
+W256.to_uint (mload m PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = proofQuotientPolyOpeningAtZG
+==>
+((((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R = 0 /\ res{2}.`1 = None /\ Primops.reverted{1})
+    \/
+   (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\ res{2}.`1 = Some false /\ Primops.reverted{1}))
+\/
+(!Primops.reverted{1} /\
+  ((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\
+  exists (v1 v2 v3 v4 v5 v6 v7 v8 : uint256),
+  Primops.memory{1} = verifyQuotientEvaluation_memory_footprint m 
+  (W256.of_int res{2}.`2) (W256.of_int res{2}.`3) (W256.of_int res{2}.`4) (W256.of_int res{2}.`5) 
+  (W256.of_int res{2}.`6) (W256.of_int res{2}.`7) (W256.of_int res{2}.`8)
+  (W256.of_int res{2}.`9) (W256.of_int res{2}.`10)
+  (W256.of_int res{2}.`11) (W256.of_int res{2}.`12) (W256.of_int res{2}.`13)
+  v1 v2 v3 v4 v5 v6 v7 v8 /\
+  res{2}.`1 = Some true /\
+  0 <= res{2}.`2 < Constants.R /\
+  0 <= res{2}.`3 < Constants.R /\
+  0 <= res{2}.`4 < Constants.R /\
+  0 <= res{2}.`5 < Constants.R /\
+  0 <= res{2}.`6 < Constants.R /\
+  0 <= res{2}.`7 < Constants.R /\
+  0 <= res{2}.`8 < Constants.R /\
+  0 <= res{2}.`9 < Constants.R /\
+  0 <= res{2}.`10 < Constants.R /\
+  0 <= res{2}.`11 < Constants.R /\
+  0 <= res{2}.`12 < Constants.R /\
+  0 <= res{2}.`13 < Constants.R)
+].
 proof. admit. qed.
 
 import MemoryMap VerifierConsts.
@@ -1661,135 +1751,95 @@ alpha_r = state_alpha{2} /\
   mod_opening_proof_at_z_omega = _opening_proof_at_z_omega{2} /\
   mod_recursive_part_p1 = _recursive_part_p1{2} /\
   mod_recursive_part_p2 = _recursive_part_p2{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_0_Y_SLOT) = vk_gate_setup_0Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_1_X_SLOT) = vk_gate_setup_1X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_1_Y_SLOT) = vk_gate_setup_1Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_2_X_SLOT) = vk_gate_setup_2X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_2_Y_SLOT) = vk_gate_setup_2Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_3_X_SLOT) = vk_gate_setup_3X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_3_Y_SLOT) = vk_gate_setup_3Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_4_X_SLOT) = vk_gate_setup_4X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_4_Y_SLOT) = vk_gate_setup_4Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_5_X_SLOT) = vk_gate_setup_5X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_5_Y_SLOT) = vk_gate_setup_5Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_6_X_SLOT) = vk_gate_setup_6X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_6_Y_SLOT) = vk_gate_setup_6Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_7_X_SLOT) = vk_gate_setup_7X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_7_Y_SLOT) = vk_gate_setup_7Y{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_1_X_SLOT) = vk_gate_selectors_1X{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_1_Y_SLOT) = vk_gate_selectors_1Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_3_X_SLOT) = vk_permutation_3X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_0_X_SLOT) = vk_lookup_table_0X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_0_Y_SLOT) = vk_lookup_table_0Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_1_X_SLOT) = vk_lookup_table_1X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_1_Y_SLOT) = vk_lookup_table_1Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_2_X_SLOT) = vk_lookup_table_2X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_2_Y_SLOT) = vk_lookup_table_2Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_3_X_SLOT) = vk_lookup_table_3X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_3_Y_SLOT) = vk_lookup_table_3Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_TYPE_X_SLOT) =
-  vk_lookup_table_type_X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
-  vk_lookup_table_type_Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
-  vk_lookup_table_type_Y{2} /\
-  mload mlvk VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
-  to_uint (mload mlvk TRANSCRIPT_STATE_0_SLOT) = 0 /\
-  to_uint (mload mlvk TRANSCRIPT_STATE_1_SLOT) = 0 /\
+  to_uint (mload mit VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_0_Y_SLOT) = vk_gate_setup_0Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_1_X_SLOT) = vk_gate_setup_1X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_1_Y_SLOT) = vk_gate_setup_1Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_2_X_SLOT) = vk_gate_setup_2X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_2_Y_SLOT) = vk_gate_setup_2Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_3_X_SLOT) = vk_gate_setup_3X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_3_Y_SLOT) = vk_gate_setup_3Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_4_X_SLOT) = vk_gate_setup_4X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_4_Y_SLOT) = vk_gate_setup_4Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_5_X_SLOT) = vk_gate_setup_5X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_5_Y_SLOT) = vk_gate_setup_5Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_6_X_SLOT) = vk_gate_setup_6X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_6_Y_SLOT) = vk_gate_setup_6Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_7_X_SLOT) = vk_gate_setup_7X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_7_Y_SLOT) = vk_gate_setup_7Y{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_1_X_SLOT) = vk_gate_selectors_1X{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_1_Y_SLOT) = vk_gate_selectors_1Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
+  to_uint (mload mit VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
+  to_uint (mload mit VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
+  to_uint (mload mit VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_3_X_SLOT) = vk_permutation_3X{2} /\
+  to_uint (mload mit VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_0_X_SLOT) = vk_lookup_table_0X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_0_Y_SLOT) = vk_lookup_table_0Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_1_X_SLOT) = vk_lookup_table_1X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_1_Y_SLOT) = vk_lookup_table_1Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_2_X_SLOT) = vk_lookup_table_2X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_2_Y_SLOT) = vk_lookup_table_2Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_3_X_SLOT) = vk_lookup_table_3X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_3_Y_SLOT) = vk_lookup_table_3Y{2} /\
+  to_uint (mload mit VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
+  to_uint (mload mit VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_TYPE_X_SLOT) = vk_lookup_table_type_X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_TYPE_Y_SLOT) = vk_lookup_table_type_Y{2} /\
+  mload mit VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
   (Primops.reverted{1} /\ failed{2} \/
   (!Primops.reverted{1} /\
    !failed{2} /\
    to_uint (mload mit PROOF_PUBLIC_INPUT) = _public_input{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
-   to_uint (mload mlp PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
-   to_uint (mload mlp PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) =
-   _copy_permutation_grand_product{2}.`1 /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) =
-   _copy_permutation_grand_product{2}.`2 /\
-   to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) =
-   _lookup_grand_product{2}.`1 /\
-   to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) =
-   _lookup_grand_product{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) =
-   _quotient_poly_part_0{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) =
-   _quotient_poly_part_0{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) =
-   _quotient_poly_part_1{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) =
-   _quotient_poly_part_1{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) =
-   _quotient_poly_part_2{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) =
-   _quotient_poly_part_2{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) =
-   _quotient_poly_part_3{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) =
-   _quotient_poly_part_3{2}.`2 /\
-   to_uint (mload mit PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) =
-   _quotient_poly_opening_at_z{2} /\
-   to_uint (mload mit PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) =
-   _state_poly_0_opening_at_z{2} /\
-   to_uint (mload mit PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) =
-   _state_poly_1_opening_at_z{2} /\
-   to_uint (mload mit PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) =
-   _state_poly_2_opening_at_z{2} /\
-   to_uint (mload mit PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) =
-   _state_poly_3_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) =
-   _state_poly_3_opening_at_z_omega{2} /\
-   to_uint (mload mit PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) =
-   _gate_selector_0_opening_at_z{2} /\
-   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) =
-   _copy_permutation_poly_0_opening_at_z{2} /\
-   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) =
-   _copy_permutation_poly_1_opening_at_z{2} /\
-   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) =
-   _copy_permutation_poly_2_opening_at_z{2} /\
-   to_uint
-     (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
-   _copy_permutation_grand_product_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) =
-   _lookup_t_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) =
-   _lookup_selector_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) =
-   _lookup_table_type_poly_opening_at_z{2} /\
-   to_uint (mload mit PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) =
-   _lookup_s_poly_opening_at_z_omega{2} /\
-   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
-   _lookup_grand_product_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) =
-   _lookup_t_poly_opening_at_z_omega{2} /\
-   to_uint (mload mit PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) =
-   _linearisation_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_X_SLOT) =
-   _opening_proof_at_z{2}.`1 /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_Y_SLOT) =
-   _opening_proof_at_z{2}.`2 /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) =
-   _opening_proof_at_z_omega{2}.`1 /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+   to_uint (mload mit PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+   to_uint (mload mit PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = _copy_permutation_grand_product{2}.`1 /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = _copy_permutation_grand_product{2}.`2 /\
+   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = _lookup_grand_product{2}.`1 /\
+   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = _lookup_grand_product{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = _quotient_poly_part_0{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = _quotient_poly_part_0{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = _quotient_poly_part_1{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = _quotient_poly_part_1{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = _quotient_poly_part_2{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = _quotient_poly_part_2{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = _quotient_poly_part_3{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = _quotient_poly_part_3{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = _quotient_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = _state_poly_0_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = _state_poly_1_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = _state_poly_2_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = _state_poly_3_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) =  _state_poly_3_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = _gate_selector_0_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = _copy_permutation_poly_0_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = _copy_permutation_poly_1_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = _copy_permutation_poly_2_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _copy_permutation_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = _lookup_t_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = _lookup_selector_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = _lookup_table_type_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_s_poly_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _lookup_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_t_poly_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = _linearisation_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_X_SLOT) = _opening_proof_at_z{2}.`1 /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
    to_uint (mload mit STATE_ALPHA_SLOT) = state_alpha{2} /\
    to_uint (mload mit STATE_BETA_SLOT) = state_beta{2} /\
    to_uint (mload mit STATE_BETA_LOOKUP_SLOT) = state_beta_lookup{2} /\
@@ -1799,18 +1849,18 @@ alpha_r = state_alpha{2} /\
    to_uint (mload mit STATE_Z_IN_DOMAIN_SIZE) = state_z_in_domain{2} /\
    0 <= state_alpha{2} < 2^253 /\ 
    0 <= state_beta{2} < 2^253 /\ 
-  0 <= state_beta_lookup{2} < 2^253 /\ 
-  0 <= state_gamma{2} < 2^253 /\
-  0 <= state_gamma_lookup{2} < 2^253 /\ 
-  0 <= state_eta{2} < 2^253 /\ 
-  0 <= state_z{2} < 2^253 /\ 
-  0 <= state_z_in_domain{2} < Constants.R /\
-  0 <= state_v{2} < 2^253 /\ 0 <= state_u{2} < 2^253 /\
+   0 <= state_beta_lookup{2} < 2^253 /\ 
+   0 <= state_gamma{2} < 2^253 /\
+   0 <= state_gamma_lookup{2} < 2^253 /\ 
+   0 <= state_eta{2} < 2^253 /\ 
+   0 <= state_z{2} < 2^253 /\ 
+   0 <= state_z_in_domain{2} < Constants.R /\
+   0 <= state_v{2} < 2^253 /\ 0 <= state_u{2} < 2^253 /\
    Primops.memory{1} = mit))
 ).
 skip. progress.
-case H2. progress. left. progress. progress. right. progress.
-rewrite /mit /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
 /PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
 /PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
 /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
@@ -1826,12 +1876,5390 @@ rewrite /mit /initializeTranscript_memory_footprint /getTranscriptChallenge_memo
 /PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
 /PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
 /PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
-/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /STATE_U_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT. progress.
-do 2! (rewrite load_store_diff; try by simplify).
-rewrite load_store8_diff_32; try by simplify.
-do 2! (rewrite load_store_diff; try by simplify).
-rewrite load_store8_diff_32; try by simplify.
-rewrite load_store_diff; try by simplify.
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+reflexivity.
+
+rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT; simplify.
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 45! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite H. reflexivity.
+
+case H2. progress. left. auto. progress. right. progress; 
+rewrite /mit /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT; simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+assumption.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 9! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 7! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+do 2! (rewrite load_store_diff; [by simplify | by simplify |]).
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_diff; [by simplify | by simplify |].
+rewrite load_store8_diff_32; [by simplify | by simplify |].
+rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
 
 seq 1 2:(
   alpha_r = state_alpha{2} /\
@@ -1886,135 +7314,95 @@ seq 1 2:(
   mod_opening_proof_at_z_omega = _opening_proof_at_z_omega{2} /\
   mod_recursive_part_p1 = _recursive_part_p1{2} /\
   mod_recursive_part_p2 = _recursive_part_p2{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_0_Y_SLOT) = vk_gate_setup_0Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_1_X_SLOT) = vk_gate_setup_1X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_1_Y_SLOT) = vk_gate_setup_1Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_2_X_SLOT) = vk_gate_setup_2X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_2_Y_SLOT) = vk_gate_setup_2Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_3_X_SLOT) = vk_gate_setup_3X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_3_Y_SLOT) = vk_gate_setup_3Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_4_X_SLOT) = vk_gate_setup_4X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_4_Y_SLOT) = vk_gate_setup_4Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_5_X_SLOT) = vk_gate_setup_5X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_5_Y_SLOT) = vk_gate_setup_5Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_6_X_SLOT) = vk_gate_setup_6X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_6_Y_SLOT) = vk_gate_setup_6Y{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_7_X_SLOT) = vk_gate_setup_7X{2} /\
-  to_uint (mload mlvk VK_GATE_SETUP_7_Y_SLOT) = vk_gate_setup_7Y{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_1_X_SLOT) = vk_gate_selectors_1X{2} /\
-  to_uint (mload mlvk VK_GATE_SELECTORS_1_Y_SLOT) = vk_gate_selectors_1Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_3_X_SLOT) = vk_permutation_3X{2} /\
-  to_uint (mload mlvk VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_0_X_SLOT) = vk_lookup_table_0X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_0_Y_SLOT) = vk_lookup_table_0Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_1_X_SLOT) = vk_lookup_table_1X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_1_Y_SLOT) = vk_lookup_table_1Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_2_X_SLOT) = vk_lookup_table_2X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_2_Y_SLOT) = vk_lookup_table_2Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_3_X_SLOT) = vk_lookup_table_3X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_3_Y_SLOT) = vk_lookup_table_3Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_TYPE_X_SLOT) =
-  vk_lookup_table_type_X{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
-  vk_lookup_table_type_Y{2} /\
-  to_uint (mload mlvk VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
-  vk_lookup_table_type_Y{2} /\
-  mload mlvk VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
-  to_uint (mload mlvk TRANSCRIPT_STATE_0_SLOT) = 0 /\
-  to_uint (mload mlvk TRANSCRIPT_STATE_1_SLOT) = 0 /\
+  to_uint (mload mit VK_GATE_SETUP_0_X_SLOT) = vk_gate_setup_0X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_0_Y_SLOT) = vk_gate_setup_0Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_1_X_SLOT) = vk_gate_setup_1X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_1_Y_SLOT) = vk_gate_setup_1Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_2_X_SLOT) = vk_gate_setup_2X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_2_Y_SLOT) = vk_gate_setup_2Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_3_X_SLOT) = vk_gate_setup_3X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_3_Y_SLOT) = vk_gate_setup_3Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_4_X_SLOT) = vk_gate_setup_4X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_4_Y_SLOT) = vk_gate_setup_4Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_5_X_SLOT) = vk_gate_setup_5X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_5_Y_SLOT) = vk_gate_setup_5Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_6_X_SLOT) = vk_gate_setup_6X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_6_Y_SLOT) = vk_gate_setup_6Y{2} /\
+  to_uint (mload mit VK_GATE_SETUP_7_X_SLOT) = vk_gate_setup_7X{2} /\
+  to_uint (mload mit VK_GATE_SETUP_7_Y_SLOT) = vk_gate_setup_7Y{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_1_X_SLOT) = vk_gate_selectors_1X{2} /\
+  to_uint (mload mit VK_GATE_SELECTORS_1_Y_SLOT) = vk_gate_selectors_1Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
+  to_uint (mload mit VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
+  to_uint (mload mit VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
+  to_uint (mload mit VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
+  to_uint (mload mit VK_PERMUTATION_3_X_SLOT) = vk_permutation_3X{2} /\
+  to_uint (mload mit VK_PERMUTATION_3_Y_SLOT) = vk_permutation_3Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_0_X_SLOT) = vk_lookup_table_0X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_0_Y_SLOT) = vk_lookup_table_0Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_1_X_SLOT) = vk_lookup_table_1X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_1_Y_SLOT) = vk_lookup_table_1Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_2_X_SLOT) = vk_lookup_table_2X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_2_Y_SLOT) = vk_lookup_table_2Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_3_X_SLOT) = vk_lookup_table_3X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_3_Y_SLOT) = vk_lookup_table_3Y{2} /\
+  to_uint (mload mit VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
+  to_uint (mload mit VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_TYPE_X_SLOT) = vk_lookup_table_type_X{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_TYPE_Y_SLOT) = vk_lookup_table_type_Y{2} /\
+  to_uint (mload mit VK_LOOKUP_TABLE_TYPE_Y_SLOT) = vk_lookup_table_type_Y{2} /\
+  mload mit VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
   (Primops.reverted{1} /\ failed{2} \/
   (!Primops.reverted{1} /\ !failed{2} /\
-   to_uint (mload mlp PROOF_PUBLIC_INPUT) = _public_input{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
-   to_uint (mload mlp PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
-   to_uint (mload mlp PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) =
-   _copy_permutation_grand_product{2}.`1 /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) =
-   _copy_permutation_grand_product{2}.`2 /\
-   to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) =
-   _lookup_grand_product{2}.`1 /\
-   to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) =
-   _lookup_grand_product{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) =
-   _quotient_poly_part_0{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) =
-   _quotient_poly_part_0{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) =
-   _quotient_poly_part_1{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) =
-   _quotient_poly_part_1{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) =
-   _quotient_poly_part_2{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) =
-   _quotient_poly_part_2{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) =
-   _quotient_poly_part_3{2}.`1 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) =
-   _quotient_poly_part_3{2}.`2 /\
-   to_uint (mload mlp PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) =
-   _quotient_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) =
-   _state_poly_0_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) =
-   _state_poly_1_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) =
-   _state_poly_2_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) =
-   _state_poly_3_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) =
-   _state_poly_3_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) =
-   _gate_selector_0_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) =
-   _copy_permutation_poly_0_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) =
-   _copy_permutation_poly_1_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) =
-   _copy_permutation_poly_2_opening_at_z{2} /\
-   to_uint
-     (mload mlp PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
-   _copy_permutation_grand_product_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) =
-   _lookup_t_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) =
-   _lookup_selector_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) =
-   _lookup_table_type_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) =
-   _lookup_s_poly_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
-   _lookup_grand_product_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) =
-   _lookup_t_poly_opening_at_z_omega{2} /\
-   to_uint (mload mlp PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) =
-   _linearisation_poly_opening_at_z{2} /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_X_SLOT) =
-   _opening_proof_at_z{2}.`1 /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_Y_SLOT) =
-   _opening_proof_at_z{2}.`2 /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) =
-   _opening_proof_at_z_omega{2}.`1 /\
-   to_uint (mload mlp PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) =
-   _opening_proof_at_z_omega{2}.`2 /\
+   to_uint (mload mit PROOF_PUBLIC_INPUT) = _public_input{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+   to_uint (mload mit PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+   to_uint (mload mit PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) = _copy_permutation_grand_product{2}.`1 /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) = _copy_permutation_grand_product{2}.`2 /\
+   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) = _lookup_grand_product{2}.`1 /\
+   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) = _lookup_grand_product{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT) = _quotient_poly_part_0{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT) = _quotient_poly_part_0{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT) = _quotient_poly_part_1{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT) = _quotient_poly_part_1{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT) = _quotient_poly_part_2{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT) = _quotient_poly_part_2{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT) = _quotient_poly_part_3{2}.`1 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT) = _quotient_poly_part_3{2}.`2 /\
+   to_uint (mload mit PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = _quotient_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) = _state_poly_0_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) = _state_poly_1_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) = _state_poly_2_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) = _state_poly_3_opening_at_z{2} /\
+   to_uint (mload mit PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) = _state_poly_3_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) = _gate_selector_0_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) = _copy_permutation_poly_0_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) = _copy_permutation_poly_1_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) = _copy_permutation_poly_2_opening_at_z{2} /\
+   to_uint (mload mit PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _copy_permutation_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) = _lookup_t_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) = _lookup_selector_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) = _lookup_table_type_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_s_poly_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) = _lookup_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) = _lookup_t_poly_opening_at_z_omega{2} /\
+   to_uint (mload mit PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) = _linearisation_poly_opening_at_z{2} /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_X_SLOT) = _opening_proof_at_z{2}.`1 /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_Y_SLOT) = _opening_proof_at_z{2}.`2 /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) = _opening_proof_at_z_omega{2}.`1 /\
+   to_uint (mload mit PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
   0 <= state_alpha{2} < 2^253 /\ 
   0 <= state_beta{2} < 2^253 /\ 
   0 <= state_beta_lookup{2} < 2^253 /\ 
@@ -2036,6 +7424,7 @@ seq 1 2:(
   0 <= beta_plus_one{2} < Constants.R /\
   0 <= beta_gamma_plus_gamma{2} < Constants.R /\
   0 <= z_minus_last_omega{2} < Constants.R /\
+  verify_quotient_evaluation_opt{2} = Some true /\
   exists (v1 v2 v3 v4 v5 v6 v7 v8 : uint256),
   Primops.memory{1} = verifyQuotientEvaluation_memory_footprint mit
   (W256.of_int alpha2{2}) (W256.of_int alpha3{2}) (W256.of_int alpha4{2}) (W256.of_int alpha5{2}) 
@@ -2048,7 +7437,7 @@ seq 1 2:(
 exists* Primops.reverted{1}. elim*=> reverted.
 case reverted. progress.
 conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
-progress. case H2. by progress. by progress.
+progress. case H0. by progress. by progress.
 progress. left. by progress.
 inline VerifyQuotientEvaluation.mid EvaluateLagrangePolyOutOfDomain.EvaluateLagrangePolyOutOfDomain.mid PermutationQuotientContribution.PermutationQuotientContribution.mid LookupQuotientContribution.LookupQuotientContribution.mid Modexp.Modexp.mid.
 wp.
@@ -2077,4 +7466,10 @@ mod_linearisation_poly_opening_at_z
 mod_copy_permutation_grand_product_opening_at_z_omega
 z_in_domain_r
 mod_quotient_poly_opening_at_z).
-skip. progress; case H2; progress.
+skip. progress; case H0; progress.
+case H24. progress. left. case H24. progress. 
+rewrite H98. by simplify.
+progress. rewrite H98. by simplify.
+progress. right. progress. rewrite H99. by simplify.
+exists v1 v2 v3 v4 v5 v6 v7 v8. reflexivity.
+
