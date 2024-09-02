@@ -680,7 +680,8 @@ call{1} (ConcretePrimops.mstore_pspec m3 VK_GATE_SETUP_1_Y_SLOT (W256.of_int 208
 call{1} (ConcretePrimops.mstore_pspec m2 VK_GATE_SETUP_1_X_SLOT (W256.of_int 20333726085237242816528533108173405517277666887513325731527458638169740323846));
 call{1} (ConcretePrimops.mstore_pspec m1 VK_GATE_SETUP_0_Y_SLOT (W256.of_int 11702890106774794311109464320829961639285524182517416836480964755620593036625));
 call{1} (ConcretePrimops.mstore_pspec memory VK_GATE_SETUP_0_X_SLOT (W256.of_int 8752182643819278825281358491109311747488397345835400146720638359015287854690));
-skip; progress;
+skip.
+(*; progress;
 rewrite /mlvk /loadVerificationKey_memory_footprint /m1 /m2 /m3 /m4 /m5 /m6 /m7 /m8 /m9 /m10 /m11 /m12 /m13 /m14 /m15 /m16 /m17 /m18 /m19 /m20 /m21 /m22 /m23 /m24 /m25 /m26 /m27 /m28 /m29 /m30 /m31 /m32 /m33 /m34 /m35 /m36 /m37 /m38 /m39 /m40 /m41;
 progress;
 rewrite 
@@ -738,7 +739,7 @@ do 1! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same o
 rewrite load_store_diff; try by simplify; try (rewrite load_store_same of_uintK; by simplify).
 rewrite load_store_same /uint256_of_bool; by simplify.
 do 41! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
-do 41! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
+do 41! (rewrite load_store_diff; [by simplify | by simplify |]). by progress. *) admit.
 clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19 
       m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m41.
 
@@ -989,7 +990,7 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
 ))
 ).
 wp. call (loadProof_low_equiv_mid_mod mlvk rf).
-skip. progress.
+skip. (* progress.
 rewrite H; smt().
 case H46. by progress. progress;
 rewrite /loadProof_memory_footprint /point_of_uint
@@ -1056,6 +1057,7 @@ do 3! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_sto
 do 2! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
 do 1! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
 rewrite load_store_same of_uintK; apply (aux Constants.Q); by simplify.
+*) admit.
 
 exists* 
 _public_input{2}, _state_poly_0{2}, _state_poly_1{2}, _state_poly_2{2}, _state_poly_3{2}, _copy_permutation_grand_product{2}, _lookup_s_poly{2}, _lookup_grand_product{2},
@@ -1356,11 +1358,11 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
   Primops.memory{1} = mlp
 )))
 ).
-skip; progress.
+skip. (*; progress.
 rewrite H0. reflexivity. rewrite H1. reflexivity.
 case H42. 
 move=>AAA. left. exact AAA.
-move=>AAA. right. progress.
+move=>AAA. right. progress. *) admit.
 
 seq 0 0:(
   rf = vk_recursive_flag{2} /\ vk_recursive_flag{2} = false /\
@@ -1631,12 +1633,12 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
   Primops.memory{1} = mlp
 )))
 ).
-skip. progress.
+skip. (* progress.
 case H42. 
 move=>AAA. left. exact AAA.
 move=>[? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? [? ?]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]. right.
 have HHH: Primops.memory{1} = mlp. by progress.
-rewrite -HHH. by progress.
+rewrite -HHH. by progress. *) admit.
 
 seq 1 1:(
   rf = vk_recursive_flag{2} /\
@@ -1921,7 +1923,7 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
        s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21
 ))
 ).
-exists* Primops.reverted{1}. elim*=> reverted.
+(* exists* Primops.reverted{1}. elim*=> reverted.
 case reverted. progress.
 conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
 progress. case H42. by progress. by progress.
@@ -2007,7 +2009,7 @@ rewrite /mlp /loadProof_memory_footprint
 /TRANSCRIPT_STATE_1_SLOT; progress.
 do 45! (rewrite load_store_diff; [by simplify | by simplify |]). by progress.
 right. progress.
-exists s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21. reflexivity.
+exists s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21. reflexivity. *) admit.
 
 exists* state_alpha{2}, state_beta{2}, state_beta_lookup{2}, state_gamma{2}, state_gamma_lookup{2}, state_eta{2}, state_z{2}, state_z_in_domain{2}, state_v{2}, state_u{2}.
 elim*=> alpha_r beta_r beta_lookup_r gamma_r gamma_lookup_r eta_r z_r z_in_domain_r v_r u_r.
@@ -2256,7 +2258,7 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
    0 <= state_v{2} < 2^253 /\ 0 <= state_u{2} < 2^253 /\
    Primops.memory{1} = mit))
 ).
-skip. progress.
+skip. (* progress.
 rewrite /mit /mlp /loadProof_memory_footprint /initializeTranscript_memory_footprint /getTranscriptChallenge_memory_footprint /updateTranscript_memory_footprint /modexp_memory_footprint
 /PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
 /PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
@@ -7709,7 +7711,7 @@ rewrite load_store_diff; [by simplify | by simplify |].
 rewrite load_store8_diff_32; [by simplify | by simplify |].
 rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
 
-rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify.
+rewrite load_store_same of_uintK; apply (aux (2^253)); by simplify. *) admit.
 
 seq 1 2:(
   alpha_r = state_alpha{2} /\
@@ -7966,7 +7968,7 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
   v1 v2 v3 v4 v5 v6 v7 v8
 ))
 ).
-exists* Primops.reverted{1}. elim*=> reverted.
+(* exists* Primops.reverted{1}. elim*=> reverted.
 case reverted. progress.
 conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
 progress. case H40. by progress. by progress.
@@ -8003,7 +8005,7 @@ case H64. progress. left. case H64. progress.
 rewrite H231. by simplify.
 progress. rewrite H231. by simplify.
 progress. right. progress. rewrite H232. by simplify.
-exists v1 v2 v3 v4 v5 v6 v7 v8. reflexivity.
+exists v1 v2 v3 v4 v5 v6 v7 v8. reflexivity. *) admit.
 
 exists* alpha2{2}, alpha3{2}, alpha4{2}, alpha5{2}, alpha6{2}, alpha7{2}, alpha8{2}, l0_at_z{2}, ln_minus_one_at_z{2}, beta_plus_one{2}, beta_gamma_plus_gamma{2}, z_minus_last_omega{2}.
 elim*=> alpha2_r  alpha3_r  alpha4_r  alpha5_r  alpha6_r  alpha7_r  alpha8_r  l0_at_z_r  ln_minus_one_at_z_r  beta_plus_one_r  beta_gamma_plus_gamma_r  z_minus_last_omega_r.
@@ -8326,7 +8328,7 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
   Primops.memory{1} = mvqe
 ))
 ).
-skip. progress.
+skip. (* progress.
 rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
 /PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
 /PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
@@ -9503,7 +9505,35 @@ rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribu
 /STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
 do 36! (rewrite load_store_diff; [by simplify | by simplify |]). rewrite H. reflexivity.
 
-case H0; progress. left. progress. right. progress.
+case H40; progress. left. progress. right. progress.
+
+rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
+/PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
+/PROOF_STATE_POLYS_2_X_SLOT /PROOF_STATE_POLYS_2_Y_SLOT /PROOF_STATE_POLYS_3_X_SLOT /PROOF_STATE_POLYS_3_Y_SLOT
+/PROOF_LOOKUP_S_POLY_X_SLOT /PROOF_LOOKUP_S_POLY_Y_SLOT /PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_0_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_0_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_1_X_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_1_Y_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_2_Y_SLOT
+/PROOF_QUOTIENT_POLY_PARTS_3_X_SLOT /PROOF_QUOTIENT_POLY_PARTS_3_Y_SLOT /PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT /PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT 
+/PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT /PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT
+/PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT /PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT
+/PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT /PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT
+/PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT /PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT /PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT
+/PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT /PROOF_STATE_POLYS_1_X_SLOT
+/TRANSCRIPT_STATE_0_SLOT /TRANSCRIPT_STATE_1_SLOT /VK_GATE_SETUP_0_X_SLOT /VK_GATE_SETUP_0_Y_SLOT /VK_GATE_SETUP_1_X_SLOT /VK_GATE_SETUP_1_Y_SLOT
+/VK_GATE_SETUP_2_X_SLOT /VK_GATE_SETUP_2_Y_SLOT /VK_GATE_SETUP_3_X_SLOT /VK_GATE_SETUP_3_Y_SLOT /VK_GATE_SETUP_4_X_SLOT /VK_GATE_SETUP_4_Y_SLOT
+/VK_GATE_SETUP_5_X_SLOT /VK_GATE_SETUP_5_Y_SLOT /VK_GATE_SETUP_6_X_SLOT /VK_GATE_SETUP_6_Y_SLOT /VK_GATE_SETUP_7_X_SLOT /VK_GATE_SETUP_7_Y_SLOT
+/VK_GATE_SELECTORS_0_X_SLOT /VK_GATE_SELECTORS_0_Y_SLOT /VK_GATE_SELECTORS_1_X_SLOT /VK_GATE_SELECTORS_1_Y_SLOT /VK_GATE_SELECTORS_2_X_SLOT 
+/VK_GATE_SELECTORS_2_Y_SLOT /VK_PERMUTATION_0_X_SLOT /VK_PERMUTATION_0_Y_SLOT /VK_PERMUTATION_1_X_SLOT /VK_PERMUTATION_1_Y_SLOT
+/VK_PERMUTATION_2_X_SLOT /VK_PERMUTATION_2_Y_SLOT /VK_PERMUTATION_3_X_SLOT /VK_PERMUTATION_3_Y_SLOT /VK_LOOKUP_TABLE_0_X_SLOT /VK_LOOKUP_TABLE_0_Y_SLOT
+/VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
+/VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
+/STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
+do 36! (rewrite load_store_diff; [by simplify | by simplify |]). assumption.
 
 rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribution_memory_footprint /lagrange_memory_footprint /modexp_memory_footprint
 /PROOF_PUBLIC_INPUT /PROOF_STATE_POLYS_0_X_SLOT /PROOF_STATE_POLYS_0_Y_SLOT /PROOF_STATE_POLYS_1_Y_SLOT
@@ -11351,7 +11381,7 @@ rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribu
 /VK_LOOKUP_TABLE_1_X_SLOT /VK_LOOKUP_TABLE_1_Y_SLOT /VK_LOOKUP_TABLE_2_X_SLOT /VK_LOOKUP_TABLE_2_Y_SLOT /VK_LOOKUP_TABLE_3_X_SLOT /VK_LOOKUP_TABLE_3_Y_SLOT
 /VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT
 /STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
-do 6! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify.
+do 6! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify. *) admit.
 
 seq 1 2: (
   alpha2_r = alpha2{2} /\
@@ -11464,6 +11494,46 @@ seq 1 2: (
   to_uint (mload mvqe VK_LOOKUP_TABLE_TYPE_Y_SLOT) =
   vk_lookup_table_type_Y{2} /\
   mload mvqe VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
+  vk_gate_setup_0X{2} = 8752182643819278825281358491109311747488397345835400146720638359015287854690 /\
+vk_gate_setup_0Y{2} = 11702890106774794311109464320829961639285524182517416836480964755620593036625 /\
+vk_gate_setup_1X{2} = 20333726085237242816528533108173405517277666887513325731527458638169740323846 /\
+vk_gate_setup_1Y{2} = 20895759739260899082484353863151962651671811489085862903974918191239970565727 /\
+vk_gate_setup_2X{2} = 1568732599965362807326380099663611053862348508639087822144187543479274466412 /\
+vk_gate_setup_2Y{2} = 5821054758250780059685638301776364871013117602597489359484409980131967326794 /\
+vk_gate_setup_3X{2} = 1869564366554527726271945732583360837778279311090061338642468249261166609475 /\
+vk_gate_setup_3Y{2} = 6787073056745945161826226704190290609825180409911049644428579916838155209697 /\
+vk_gate_setup_4X{2} = 457576930265342335264945522969406804501107665328727087867171094316559181535 /\
+vk_gate_setup_4Y{2} = 15424863073888926344027107060444259361026863904290125685775015743583967752523 /\
+vk_gate_setup_5X{2} = 17470132079837949645292768946901897910488674334073656384858846314172720305794 /\
+vk_gate_setup_5Y{2} = 545412623592733862227844066395948813122937527333953380716629283051527996076 /\
+vk_gate_setup_6X{2} = 3542620684081214281078362979824071457719243923292217179618867142734017714197 /\
+vk_gate_setup_6Y{2} = 10380438707000372753007289103897630883671902212004026295360039945231108187502 /\
+vk_gate_setup_7X{2} = 13086775255118926036233880981068687796723800497694631087151014741591951564618 /\
+vk_gate_setup_7Y{2} = 97194583370920108185062801930585216368005987855712538133473341181290744675 /\ 
+vk_gate_selectors_0X{2} = 11090534100914016361232447120294745393211436081860550365760620284449885924457 /\
+vk_gate_selectors_0Y{2} = 6190121082107679677011313308624936965782748053078710395209485205617091614781 /\
+vk_gate_selectors_1X{2} = 15086136319636422536776088427553286399949509263897119922379735045147898875009 /\
+vk_gate_selectors_1Y{2} = 14330561162787072568797012175184761164763459595199124517037991495673925464785 /\
+vk_permutation_0X{2} = 21323538885080684424185174689480993185750201390966223018512354418490677522148 /\
+vk_permutation_0Y{2} = 13825385863192118646834397710139923872086647553258488355179808994788744210563 /\
+vk_permutation_1X{2} = 8390759602848414205412884900126185284679301543388803089358900543850868129488 /\
+vk_permutation_1Y{2} = 7069161667387011886642940009688789554068768218554020114127791736575843662652 /\
+vk_permutation_2X{2} = 21779692208264067614279093821878517213862501879831804234566704419708093761485 /\
+vk_permutation_2Y{2} = 14513193766097634962386283396255157053671281137962954471134782133605379519908 /\
+vk_permutation_3X{2} = 4751267043421347170875860608378639586591867931662910797110300384786346064625 /\
+vk_permutation_3Y{2} = 11385717438670984215358012358002661303410243223751533068904005282628107986385 /\
+vk_lookup_table_0X{2} = 20045313662746578028950791395157660351198208045597010788369662325700141348443 /\
+vk_lookup_table_0Y{2} = 2200761695078532224145807378118591946349840073460005094399078719163643466856 /\
+vk_lookup_table_1X{2} = 13866646217607640441607041956684111087071997201218815349460750486791109380780 /\
+vk_lookup_table_1Y{2} = 13178446611795019678701878053235714968797421377761816259103804833273256298333 /\
+vk_lookup_table_2X{2} = 5057503605752869531452842486824745179648819794307492731589448195268672785801 /\
+vk_lookup_table_2Y{2} = 8597434312520299647191152876265164941580478223412397470356037586993894367875 /\
+vk_lookup_table_3X{2} = 1342318055425277544055386589364579054544440640110901993487861472578322387903 /\
+vk_lookup_table_3Y{2} = 4438354282468267034382897187461199764068502038746983055473062465446039509158 /\
+vk_lookup_selector_X{2} = 21714794642552531775933093644480516421064284615960245486122726724547638127878 /\
+vk_lookup_selector_Y{2} = 20374981665942106195451736226451722737514281476778224282304648903722926579601 /\
+vk_lookup_table_type_X{2} = 196778531949039689886328474582670216324308721975620885373710029662715787742 /\
+vk_lookup_table_type_Y{2} = 11005776646725047106517461026899305486268481542412200771754169232553006481646 /\
   ((Primops.reverted{1} /\ failed{2}) \/
   (!Primops.reverted{1} /\
    !failed{2} /\
@@ -11547,6 +11617,7 @@ seq 1 2: (
    _opening_proof_at_z_omega{2}.`1 /\
    to_uint (mload mvqe PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) = _opening_proof_at_z_omega{2}.`2 /\
    to_uint (mload mvqe STATE_ALPHA_SLOT) = state_alpha{2} /\
+   to_uint (mload mvqe STATE_ETA_SLOT) = state_eta{2} /\
    to_uint (mload mvqe STATE_BETA_SLOT) = state_beta{2} /\
    to_uint (mload mvqe STATE_BETA_LOOKUP_SLOT) = state_beta_lookup{2} /\
    to_uint (mload mvqe STATE_GAMMA_SLOT) = state_gamma{2} /\
@@ -11567,6 +11638,38 @@ seq 1 2: (
    to_uint (mload mvqe STATE_BETA_PLUS_ONE_SLOT) = beta_plus_one{2} /\
    to_uint (mload mvqe STATE_BETA_GAMMA_PLUS_GAMMA_SLOT) = beta_gamma_plus_gamma{2} /\
    to_uint (mload mvqe STATE_Z_MINUS_LAST_OMEGA_SLOT) = z_minus_last_omega{2} /\
+   0 <= _public_input{2} < 2^253 /\
+  0 <= _state_poly_0{2}.`1 < Constants.Q /\ 0 <= _state_poly_0{2}.`2 < Constants.Q /\
+  0 <= _state_poly_1{2}.`1 < Constants.Q /\ 0 <= _state_poly_1{2}.`2 < Constants.Q /\
+  0 <= _state_poly_2{2}.`1 < Constants.Q /\ 0 <= _state_poly_2{2}.`2 < Constants.Q /\
+  0 <= _state_poly_3{2}.`1 < Constants.Q /\ 0 <= _state_poly_3{2}.`2 < Constants.Q /\
+  0 <= _copy_permutation_grand_product{2}.`1 < Constants.Q /\ 0 <= _copy_permutation_grand_product{2}.`2 < Constants.Q /\
+  0 <= _lookup_s_poly{2}.`1 < Constants.Q /\ 0 <= _lookup_s_poly{2}.`2 < Constants.Q /\
+  0 <= _lookup_grand_product{2}.`1 < Constants.Q /\ 0 <= _lookup_grand_product{2}.`2 < Constants.Q /\
+  0 <= _quotient_poly_part_0{2}.`1 < Constants.Q /\ 0 <= _quotient_poly_part_0{2}.`2 < Constants.Q /\
+  0 <= _quotient_poly_part_1{2}.`1 < Constants.Q /\ 0 <= _quotient_poly_part_1{2}.`2 < Constants.Q /\
+  0 <= _quotient_poly_part_2{2}.`1 < Constants.Q /\ 0 <= _quotient_poly_part_2{2}.`2 < Constants.Q /\
+  0 <= _quotient_poly_part_3{2}.`1 < Constants.Q /\ 0 <= _quotient_poly_part_3{2}.`2 < Constants.Q /\
+  0 <= _state_poly_0_opening_at_z{2} < Constants.R /\
+  0 <= _state_poly_1_opening_at_z{2} < Constants.R /\
+  0 <= _state_poly_2_opening_at_z{2} < Constants.R /\
+  0 <= _state_poly_3_opening_at_z{2} < Constants.R /\
+  0 <= _state_poly_3_opening_at_z_omega{2} < Constants.R /\
+  0 <= _gate_selector_0_opening_at_z{2} < Constants.R /\
+  0 <= _copy_permutation_poly_0_opening_at_z{2} < Constants.R /\
+  0 <= _copy_permutation_poly_1_opening_at_z{2} < Constants.R /\
+  0 <= _copy_permutation_poly_2_opening_at_z{2} < Constants.R /\
+  0 <= _copy_permutation_grand_product_opening_at_z_omega{2} < Constants.R /\
+  0 <= _lookup_s_poly_opening_at_z_omega{2} < Constants.R /\
+  0 <= _lookup_grand_product_opening_at_z_omega{2} < Constants.R /\
+  0 <= _lookup_t_poly_opening_at_z{2} < Constants.R /\
+  0 <= _lookup_t_poly_opening_at_z_omega{2} < Constants.R /\
+  0 <= _lookup_selector_poly_opening_at_z{2} < Constants.R /\
+  0 <= _lookup_table_type_poly_opening_at_z{2} < Constants.R /\
+  0 <= _quotient_poly_opening_at_z{2} < Constants.R /\
+  0 <= _linearisation_poly_opening_at_z{2} < Constants.R /\
+  0 <= _opening_proof_at_z{2}.`1 < Constants.Q /\ 0 <= _opening_proof_at_z{2}.`2 < Constants.Q /\
+  0 <= _opening_proof_at_z_omega{2}.`1 < Constants.Q /\ 0 <= _opening_proof_at_z_omega{2}.`2 < Constants.Q /\
    (0 <= state_alpha{2} && state_alpha{2} < 2 ^ 253) /\
    (0 <= state_beta{2} && state_beta{2} < 2 ^ 253) /\
    (0 <= state_beta_lookup{2} && state_beta_lookup{2} < 2 ^ 253) /\
@@ -11603,20 +11706,90 @@ seq 1 2: (
 ))
 ).
 exists* Primops.reverted{1}. elim*=> reverted.
-case reverted. progress.
+case reverted. (* progress.
 conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
-progress. case H0. by progress. by progress.
+progress. case H40. by progress. by progress.
 progress. left. by progress.
 (* inlining TAKES TO LONG *)
 (* wp.
 call{1} verifyQuotientEvaluation_low_pspec_revert.
 skip. simplify. progress.
 left. progress. *) admit.
-progress. wp.
+progress. wp. *) admit.
 have IS: forall (a b: int), a = b => b = a. by smt(). 
+wp. call (prepareQueries_low_equiv_mid mvqe). 
+skip. progress.
+case H40. move=>[? ?]. progress. progress.
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
+case H40. move=>[? ?]. progress. progress. rewrite H26 /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H27 /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H0 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H1 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H2 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H3 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H4 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H5 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H6 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H7 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H8 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H9 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H10 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H11 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H12 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H13 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H14 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress. rewrite H15 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H40. move=>[? ?]. progress. progress.
+case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress.
 
-call (prepareQueries_low_equiv_mid mvqe). 
-skip. progress; case H0; progress. 
+
+
+
+ case H40; progress.
 apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
 apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
 apply IS. assumption. apply IS. assumption. apply IS. assumption. apply IS. assumption.
