@@ -11383,7 +11383,7 @@ rewrite /mvqe /verifyQuotientEvaluation_memory_footprint /lookupQuotientContribu
 /STATE_U_SLOT /STATE_V_SLOT /TRANSCRIPT_CHALLENGE_SLOT /TRANSCRIPT_DST_BYTE_SLOT /STATE_Z_IN_DOMAIN_SIZE /STATE_Z_SLOT /STATE_ALPHA_SLOT /STATE_GAMMA_LOOKUP_SLOT /STATE_BETA_LOOKUP_SLOT /STATE_GAMMA_SLOT /STATE_BETA_SLOT /STATE_ETA_SLOT /VK_RECURSIVE_FLAG_SLOT /STATE_POWER_OF_ALPHA_2_SLOT /STATE_POWER_OF_ALPHA_3_SLOT /STATE_POWER_OF_ALPHA_4_SLOT /STATE_POWER_OF_ALPHA_5_SLOT /STATE_POWER_OF_ALPHA_6_SLOT /STATE_POWER_OF_ALPHA_7_SLOT /STATE_POWER_OF_ALPHA_8_SLOT /STATE_L_0_AT_Z_SLOT /STATE_L_N_MINUS_ONE_AT_Z_SLOT /STATE_BETA_PLUS_ONE_SLOT /STATE_BETA_GAMMA_PLUS_GAMMA_SLOT /STATE_Z_MINUS_LAST_OMEGA_SLOT; progress.
 do 6! (rewrite load_store_diff; [by simplify | by simplify |]); rewrite load_store_same of_uintK; apply (aux Constants.R); by simplify. *) admit.
 
-seq 1 2: (
+seq 1 3: (
   alpha2_r = alpha2{2} /\
   alpha3_r = alpha3{2} /\
   alpha4_r = alpha4{2} /\
@@ -11534,9 +11534,8 @@ vk_lookup_selector_X{2} = 217147946425525317759330936444805164210642846159602454
 vk_lookup_selector_Y{2} = 20374981665942106195451736226451722737514281476778224282304648903722926579601 /\
 vk_lookup_table_type_X{2} = 196778531949039689886328474582670216324308721975620885373710029662715787742 /\
 vk_lookup_table_type_Y{2} = 11005776646725047106517461026899305486268481542412200771754169232553006481646 /\
-  ((Primops.reverted{1} /\ failed{2}) \/
-  (!Primops.reverted{1} /\
-   !failed{2} /\
+  ((Primops.reverted{1} /\ failed{2} /\ prepare_queries_opt{2} = None) \/
+  ((!Primops.reverted{1} /\ !failed{2} /\
    to_uint (mload mvqe PROOF_PUBLIC_INPUT) = _public_input{2} /\
    to_uint (mload mvqe PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
    to_uint (mload mvqe PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
@@ -11695,14 +11694,15 @@ vk_lookup_table_type_Y{2} = 1100577664672504710651746102689930548626848154241220
    0 <= query_at_z_0{2}.`1 < Constants.Q /\ 0 <= query_at_z_0{2}.`2 < Constants.Q /\
    0 <= query_at_z_1{2}.`1 < Constants.Q /\ 0 <= query_at_z_1{2}.`2 < Constants.Q /\
    0 <= query_t_poly_aggregated{2}.`1 < Constants.Q /\ 0 <= query_t_poly_aggregated{2}.`2 < Constants.Q /\
-   0 <= copy_permutation_first_aggregated_commitment_coeff{2} < Constants.Q /\
-   0 <= lookup_s_first_aggregated_commitment{2} < Constants.Q /\
-   0 <= lookup_grand_product_first_aggregated_coefficient{2} < Constants.Q /\
+   0 <= copy_permutation_first_aggregated_commitment_coeff{2} < Constants.R /\
+   0 <= lookup_s_first_aggregated_commitment{2} < Constants.R /\
+   0 <= lookup_grand_product_first_aggregated_coefficient{2} < Constants.R /\
+   prepare_queries_opt{2} = Some (query_at_z_0{2}, query_at_z_1{2}, copy_permutation_first_aggregated_commitment_coeff{2}, lookup_s_first_aggregated_commitment{2}, lookup_grand_product_first_aggregated_coefficient{2}, query_t_poly_aggregated{2}) /\
    exists p1 p2 p3 p4 p5 p6, Primops.memory{1} = 
    prepareQueries_memory_footprint mvqe
    p1 p2 p3 p4 p5 p6
    query_at_z_0{2} query_at_z_1{2} query_t_poly_aggregated{2} copy_permutation_first_aggregated_commitment_coeff{2}
-   lookup_s_first_aggregated_commitment{2} lookup_grand_product_first_aggregated_coefficient{2}
+   lookup_s_first_aggregated_commitment{2} lookup_grand_product_first_aggregated_coefficient{2})
 ))
 ).
 exists* Primops.reverted{1}. elim*=> reverted.
@@ -11717,76 +11717,343 @@ skip. simplify. progress.
 left. progress. *) admit.
 progress. wp. *) admit.
 have IS: forall (a b: int), a = b => b = a. by smt(). 
-wp. call (prepareQueries_low_equiv_mid mvqe). 
-skip. progress.
-case H40. move=>[? ?]. progress. progress.
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. apply IS. assumption. 
-case H40. move=>[? ?]. progress. progress. rewrite H26 /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H27 /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H0 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H1 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H2 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H3 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H4 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H5 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H6 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H7 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H8 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H9 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H10 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H11 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H12 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H13 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H14 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress. rewrite H15 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
-case H40. move=>[? ?]. progress. progress.
-case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress.
+wp. progress. call (prepareQueries_low_equiv_mid mvqe). 
+skip. progress. (* 138 *) 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. 
+admit. 
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. apply IS. assumption.  *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H26 /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H27 /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H0 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H1 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H2 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H3 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H4 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H5 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H6 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H7 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H8 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H9 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H10 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H11 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H12 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H13 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H14 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite H15 -Constants.q_eq_fieldq_p /Constants.Q. by simplify. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. *)
+(* case H40. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by progress. *)
+(* rewrite H28. by progress. rewrite H28 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H29. by progress. rewrite H29 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H30. by progress. rewrite H30 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H31. by progress. rewrite H31 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H32. by progress. rewrite H32 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H33. by progress. rewrite H33 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H34. by progress. rewrite H34 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H35. by progress. rewrite H35 -Constants.q_eq_fieldq_p /Constants.Q. by progress. *)
+(* rewrite H18. by progress. rewrite H18 /Constants.Q. by progress. *)
+(* rewrite H19. by progress. rewrite H19 /Constants.Q. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. apply (lt_trans _ (2^253) _). by progress. rewrite /Constants.R. by simplify. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. apply (lt_trans _ (2^253) _). by progress. rewrite /Constants.R. by simplify. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. apply (lt_trans _ (2^253) _). case H40. move=>[? ?]. progress. progress. rewrite /Constants.R. by simplify. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. progress. apply (lt_trans _ (2^253) _). by progress. rewrite /Constants.R. by simplify. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
+(* case H40. move=>[? ?]. progress. by progress. *)
 
+case H178. progress. progress. (* right. progress. *)
 
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+admit. admit.
+
+rewrite Constants.q_eq_fieldq_p. by simplify.
+rewrite Constants.q_eq_fieldq_p. by simplify.
+rewrite Constants.q_eq_fieldq_p. by simplify.
+rewrite Constants.q_eq_fieldq_p. by simplify.
+rewrite Constants.q_eq_fieldq_p. by simplify.
+rewrite Constants.q_eq_fieldq_p. by simplify.
+rewrite Constants.r_eq_fieldr_p. by simplify.
+rewrite Constants.r_eq_fieldr_p. by simplify.
+rewrite Constants.r_eq_fieldr_p. by simplify.
+exists x0 x32 x64 x96 buffer_x buffer_y. reflexivity.
+
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by progress.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
+case H40. move=>[? ?]. progress. by simplify.
 
 
  case H40; progress.
