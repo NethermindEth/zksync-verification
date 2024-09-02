@@ -648,44 +648,79 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       (Primops.reverted{1} /\ res{2} = None) \/
       (
         !Primops.reverted{1} /\
-        exists r, res{2} = Some r /\
+        exists (r: (uint256 * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * uint256 * (uint256*uint256) * (uint256*uint256) * (uint256*uint256) option * (uint256*uint256) option)), res{2} = Some (
+          (W256.to_uint r.`1),
+          (point_to_uint r.`2),
+          (point_to_uint r.`3),
+          (point_to_uint r.`4),
+          (point_to_uint r.`5),
+          (point_to_uint r.`6),
+          (point_to_uint r.`7),
+          (point_to_uint r.`8),
+          (point_to_uint r.`9),
+          (point_to_uint r.`10),
+          (point_to_uint r.`11),
+          (point_to_uint r.`12),
+          (W256.to_uint r.`13),
+          (W256.to_uint r.`14),
+          (W256.to_uint r.`15),
+          (W256.to_uint r.`16),
+          (W256.to_uint r.`17),
+          (W256.to_uint r.`18),
+          (W256.to_uint r.`19),
+          (W256.to_uint r.`20),
+          (W256.to_uint r.`21),
+          (W256.to_uint r.`22),
+          (W256.to_uint r.`23),
+          (W256.to_uint r.`24),
+          (W256.to_uint r.`25),
+          (W256.to_uint r.`26),
+          (W256.to_uint r.`27),
+          (W256.to_uint r.`28),
+          (W256.to_uint r.`29),
+          (W256.to_uint r.`30),
+          (point_to_uint r.`31),
+          (point_to_uint r.`32),
+          (omap point_to_uint r.`33),
+          (omap point_to_uint r.`34)
+        ) /\
         Primops.memory{1} = loadProof_memory_footprint
           mem_0
           recursive
-          (W256.of_int r.`1)
-          (point_of_uint r.`2)
-          (point_of_uint r.`3)
-          (point_of_uint r.`4)
-          (point_of_uint r.`5)
-          (point_of_uint r.`6)
-          (point_of_uint r.`7)
-          (point_of_uint r.`8)
-          (point_of_uint r.`9)
-          (point_of_uint r.`10)
-          (point_of_uint r.`11)
-          (point_of_uint r.`12)
-          (W256.of_int r.`13)
-          (W256.of_int r.`14)
-          (W256.of_int r.`15)
-          (W256.of_int r.`16)
-          (W256.of_int r.`17)
-          (W256.of_int r.`18)
-          (W256.of_int r.`19)
-          (W256.of_int r.`20)
-          (W256.of_int r.`21)
-          (W256.of_int r.`22)
-          (W256.of_int r.`23)
-          (W256.of_int r.`24)
-          (W256.of_int r.`25)
-          (W256.of_int r.`26)
-          (W256.of_int r.`27)
-          (W256.of_int r.`28)
-          (W256.of_int r.`29)
-          (W256.of_int r.`30)
-          (point_of_uint r.`31)
-          (point_of_uint r.`32)
-          (point_of_uint (odflt (0,0) r.`33))
-          (point_of_uint (odflt (0,0) r.`34))
+          r.`1
+          r.`2
+          r.`3
+          r.`4
+          r.`5
+          r.`6
+          r.`7
+          r.`8
+          r.`9
+          r.`10
+          r.`11
+          r.`12
+          r.`13
+          r.`14
+          r.`15
+          r.`16
+          r.`17
+          r.`18
+          r.`19
+          r.`20
+          r.`21
+          r.`22
+          r.`23
+          r.`24
+          r.`25
+          r.`26
+          r.`27
+          r.`28
+          r.`29
+          r.`30
+          r.`31
+          r.`32
+          (odflt (W256.zero, W256.zero) r.`33)
+          (odflt (W256.zero, W256.zero) r.`34)
       )    
     ].
     proof.
@@ -2501,48 +2536,112 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       rcondf{1} 1. progress. skip. progress. rewrite /bool_of_uint256 /iszero /uint256_of_bool. progress. smt (@W256).
       wp. skip. progress.
       exists (
-        W256.to_uint PurePrimops.load_calldata_public_input %% 2^253,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_0,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_1,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_2,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_3,
-        point_to_uint_mod_q PurePrimops.load_calldata_copy_permutation_grand_product,
-        point_to_uint_mod_q PurePrimops.load_calldata_lookup_s_poly,
-        point_to_uint_mod_q PurePrimops.load_calldata_lookup_grand_product,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_0,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_1,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_2,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_3,
-        W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z %% Constants.R,
-        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z,
-        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z_omega,
-        Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p1),
-        Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p2)
-      ). progress.
+        PurePrimops.load_calldata_public_input %% (W256.of_int (2^253)),
+        (PurePrimops.load_calldata_state_poly_0.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_0.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_state_poly_1.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_1.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_state_poly_2.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_2.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_state_poly_3.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_3.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_copy_permutation_grand_product.`1 %% Q_MOD, PurePrimops.load_calldata_copy_permutation_grand_product.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_lookup_s_poly.`1 %% Q_MOD, PurePrimops.load_calldata_lookup_s_poly.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_lookup_grand_product.`1 %% Q_MOD, PurePrimops.load_calldata_lookup_grand_product.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_0.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_0.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_1.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_1.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_2.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_2.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_3.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_3.`2 %% Q_MOD),
+        PurePrimops.load_calldata_state_poly_0_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_1_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_2_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_3_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_3_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_gate_selector_0_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_t_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_selector_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_quotient_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_linearisation_poly_opening_at_z %% R_MOD,
+        (PurePrimops.load_calldata_opening_proof_at_z.`1 %% Q_MOD, PurePrimops.load_calldata_opening_proof_at_z.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_opening_proof_at_z_omega.`1 %% Q_MOD, PurePrimops.load_calldata_opening_proof_at_z_omega.`2 %% Q_MOD),
+        Some(PurePrimops.load_calldata_recursive_part_p1.`1 %% Q_MOD, PurePrimops.load_calldata_recursive_part_p1.`2 %% Q_MOD),
+        Some(PurePrimops.load_calldata_recursive_part_p2.`1 %% Q_MOD, PurePrimops.load_calldata_recursive_part_p2.`2 %% Q_MOD)
+      ).
+      have H_point_to_uint: forall (p: uint256*uint256), (
+        (point_to_uint p).`1 %% Constants.Q,
+        (point_to_uint p).`2 %% Constants.Q) =
+        point_to_uint
+          (p.`1 %% Q_MOD,
+           p.`2 %% Q_MOD).
+        progress.
+        rewrite /point_to_uint Constants.Q_int. progress.
+        rewrite uint256_cast_mod. rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). by progress.
+        rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0.
+        apply (int_lt_lt_trans _ Constants.Q). rewrite /Constants.Q. exact ltz_pmod. rewrite /Constants.Q. by trivial. reflexivity.
+        rewrite uint256_cast_mod. rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). by progress.
+        rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0.
+        apply (int_lt_lt_trans _ Constants.Q). rewrite /Constants.Q. exact ltz_pmod. rewrite /Constants.Q. by trivial. reflexivity.
+      have H_mod_r: forall (x: uint256), to_uint x %% Constants.R = to_uint (x %% R_MOD).
+        progress.
+        rewrite uint256_cast_mod. rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0.
+        apply (int_lt_lt_trans _ Constants.R). rewrite /Constants.R. exact ltz_pmod. rewrite /Constants.R. by trivial. rewrite Constants.R_int. reflexivity.
+      progress.
+      rewrite uint256_cast_mod. rewrite W256.of_uintK. rewrite W256.of_uintK.
+      rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0. apply (int_lt_lt_trans _ (2^253)). exact ltz_pmod. by trivial. by progress.
+      exact H_point_to_uint.      
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.      
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
       rewrite /loadProof_memory_footprint. progress.
       rewrite H2. progress.
       pose mem_1 := store mem_0 _ _.
-      pose mem_1' := store mem_0 _ _.
-      have ->: mem_1' = mem_1. rewrite /mem_1 /mem_1'. rewrite uint256_cast_mod W256.of_uintK. by progress.
-      do 15! have ->: forall (x), W256.of_int ((point_to_uint x).`1 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`1 by progress.
-      do 15! have ->: forall (x), W256.of_int ((point_to_uint x).`2 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`2 by progress.
+      do 15! (have ->: forall x, W256.of_int ((point_to_uint x).`1 %% Constants.Q) = x.`1 %% Q_MOD by
+        progress;
+        rewrite /point_to_uint Constants.Q_int; simplify; rewrite uint256_cast_mod; reflexivity).
+      do 15! (have ->: forall x, W256.of_int ((point_to_uint x).`2 %% Constants.Q) = x.`2 %% Q_MOD by
+        progress;
+        rewrite /point_to_uint Constants.Q_int; simplify; rewrite uint256_cast_mod; reflexivity).
+      do 18! (have ->: forall x, (W256.of_int (W256.to_uint x %% Constants.R)) = x %% R_MOD by
+        progress;
+        rewrite Constants.R_int; simplify; rewrite uint256_cast_mod; reflexivity).
       reflexivity.
 
 
@@ -2570,49 +2669,111 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       rcondt{2} 1. by progress.
       rcondf{1} 1. progress. skip. progress. rewrite H3 /uint256_of_bool /iszero /bool_of_uint256. progress. smt (@W256).
       wp. skip. progress.
-      exists (
-        W256.to_uint PurePrimops.load_calldata_public_input %% 2^253,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_0,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_1,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_2,
-        point_to_uint_mod_q PurePrimops.load_calldata_state_poly_3,
-        point_to_uint_mod_q PurePrimops.load_calldata_copy_permutation_grand_product,
-        point_to_uint_mod_q PurePrimops.load_calldata_lookup_s_poly,
-        point_to_uint_mod_q PurePrimops.load_calldata_lookup_grand_product,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_0,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_1,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_2,
-        point_to_uint_mod_q PurePrimops.load_calldata_quotient_poly_part_3,
-        W256.to_uint PurePrimops.load_calldata_state_poly_0_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_1_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_2_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_state_poly_3_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_gate_selector_0_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_selector_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_quotient_poly_opening_at_z %% Constants.R,
-        W256.to_uint PurePrimops.load_calldata_linearisation_poly_opening_at_z %% Constants.R,
-        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z,
-        point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z_omega,
+            exists (
+        PurePrimops.load_calldata_public_input %% (W256.of_int (2^253)),
+        (PurePrimops.load_calldata_state_poly_0.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_0.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_state_poly_1.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_1.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_state_poly_2.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_2.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_state_poly_3.`1 %% Q_MOD, PurePrimops.load_calldata_state_poly_3.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_copy_permutation_grand_product.`1 %% Q_MOD, PurePrimops.load_calldata_copy_permutation_grand_product.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_lookup_s_poly.`1 %% Q_MOD, PurePrimops.load_calldata_lookup_s_poly.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_lookup_grand_product.`1 %% Q_MOD, PurePrimops.load_calldata_lookup_grand_product.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_0.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_0.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_1.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_1.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_2.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_2.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_quotient_poly_part_3.`1 %% Q_MOD, PurePrimops.load_calldata_quotient_poly_part_3.`2 %% Q_MOD),
+        PurePrimops.load_calldata_state_poly_0_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_1_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_2_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_3_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_state_poly_3_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_gate_selector_0_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_poly_0_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_poly_1_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_poly_2_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_copy_permutation_grand_product_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_s_poly_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_grand_product_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_t_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_lookup_t_poly_opening_at_z_omega %% R_MOD,
+        PurePrimops.load_calldata_lookup_selector_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_lookup_table_type_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_quotient_poly_opening_at_z %% R_MOD,
+        PurePrimops.load_calldata_linearisation_poly_opening_at_z %% R_MOD,
+        (PurePrimops.load_calldata_opening_proof_at_z.`1 %% Q_MOD, PurePrimops.load_calldata_opening_proof_at_z.`2 %% Q_MOD),
+        (PurePrimops.load_calldata_opening_proof_at_z_omega.`1 %% Q_MOD, PurePrimops.load_calldata_opening_proof_at_z_omega.`2 %% Q_MOD),
         None,
         None
-      ). progress.
+      ).
+      have H_point_to_uint: forall (p: uint256*uint256), (
+        (point_to_uint p).`1 %% Constants.Q,
+        (point_to_uint p).`2 %% Constants.Q) =
+        point_to_uint
+          (p.`1 %% Q_MOD,
+           p.`2 %% Q_MOD).
+        progress.
+        rewrite /point_to_uint Constants.Q_int. progress.
+        rewrite uint256_cast_mod. rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). by progress.
+        rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0.
+        apply (int_lt_lt_trans _ Constants.Q). rewrite /Constants.Q. exact ltz_pmod. rewrite /Constants.Q. by trivial. reflexivity.
+        rewrite uint256_cast_mod. rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). by progress.
+        rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0.
+        apply (int_lt_lt_trans _ Constants.Q). rewrite /Constants.Q. exact ltz_pmod. rewrite /Constants.Q. by trivial. reflexivity.
+      have H_mod_r: forall (x: uint256), to_uint x %% Constants.R = to_uint (x %% R_MOD).
+        progress.
+        rewrite uint256_cast_mod. rewrite W256.of_uintK.
+        rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0.
+        apply (int_lt_lt_trans _ Constants.R). rewrite /Constants.R. exact ltz_pmod. rewrite /Constants.R. by trivial. rewrite Constants.R_int. reflexivity.
+      progress.
+      rewrite uint256_cast_mod. rewrite W256.of_uintK. rewrite W256.of_uintK.
+      rewrite (pmod_small _ W256.modulus). progress. exact modz_ge0. apply (int_lt_lt_trans _ (2^253)). exact ltz_pmod. by trivial. by progress.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_mod_r.
+      exact H_point_to_uint.
+      exact H_point_to_uint.
       rewrite /loadProof_memory_footprint. progress.
       rewrite H2. progress.
       pose mem_1 := store mem_0 _ _.
-      pose mem_1' := store mem_0 _ _.
-      have ->: mem_1' = mem_1. rewrite /mem_1 /mem_1'. rewrite uint256_cast_mod W256.of_uintK. by progress.
-      do 13! have ->: forall (x), W256.of_int ((point_to_uint x).`1 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`1 by progress.
-      do 13! have ->: forall (x), W256.of_int ((point_to_uint x).`2 %% Constants.Q) = (point_of_uint(point_to_uint_mod_q x)).`2 by progress.
+      do 13! (have ->: forall x, W256.of_int ((point_to_uint x).`1 %% Constants.Q) = x.`1 %% Q_MOD by
+        progress;
+        rewrite /point_to_uint Constants.Q_int; simplify; rewrite uint256_cast_mod; reflexivity).
+      do 13! (have ->: forall x, W256.of_int ((point_to_uint x).`2 %% Constants.Q) = x.`2 %% Q_MOD by
+        progress;
+        rewrite /point_to_uint Constants.Q_int; simplify; rewrite uint256_cast_mod; reflexivity).
+      do 18! (have ->: forall x, (W256.of_int (W256.to_uint x %% Constants.R)) = x %% R_MOD by
+        progress;
+        rewrite Constants.R_int; simplify; rewrite uint256_cast_mod; reflexivity).
       reflexivity.
 
 
