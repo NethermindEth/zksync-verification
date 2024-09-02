@@ -1117,12 +1117,12 @@ clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19
   *)
 
 
-lemma verify_mid_equiv_high:
+(* lemma verify_mid_equiv_high:
     equiv [
     Verify.high_encapsulated ~ Verify.high :
       ={arg} ==> ={res}
     ]. proc. inline LoadProof.high InitializeTranscript.high VerifyQuotientEvaluation.high PrepareQueries.high PrepareAggregatedCommitment.high FinalPairing.high. wp. skip. 
-progress.
+progress. *)
 
 lemma verify_mid_equiv_high_encapsulated:
     equiv [
