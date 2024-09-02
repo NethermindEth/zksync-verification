@@ -16,8 +16,6 @@ require import YulPrimops.
 
 import MemoryMap.
 
-abbrev ( * ) = FieldR.( * ).
-
 module MainGateLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256, stateOpening3AtZ : uint256): unit = {
   var _6, _8, _12, _15, _17, coeff;

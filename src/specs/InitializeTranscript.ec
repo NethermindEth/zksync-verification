@@ -14,10 +14,6 @@ require import VerifierConsts.
 require import YulPrimops.
 require import Keccak.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-
 module InitializeTranscript = {
   proc low(): unit = {
     var _2, _4, _6, _8, _10, _12, _14, _16, _18, _20, _23, _25, _27, _30, _33, _35, _37, _40, _43, _45, _47, _50, _52, _54, _56, _58, _60, _62, _64, z, _68, _71, _73, _75, _77, _79, _81, _83, _85, _87, _89, _91, _93, _95, _97, _99, _101, _103, _105, _107, _110, _112, _114, _116, _118;

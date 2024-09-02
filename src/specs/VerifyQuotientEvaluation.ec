@@ -12,11 +12,6 @@ require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-abbrev [-] = FieldR.([-]).
-
 module VerifyQuotientEvaluation = {
   proc low(): unit = {
     var alpha, currentAlpha, stateZ, _12, _17, _20, _21, stateT, _23, result, _24, _25, _27, _28, _30, vanishing, _32, lhs;

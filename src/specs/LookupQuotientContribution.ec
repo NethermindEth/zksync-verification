@@ -10,10 +10,6 @@ require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-
 module LookupQuotientContribution = {
   proc low(): uint256 = {
     var ret, betaLookup, gammaLookup, betaPlusOne, betaGamma, _8, _10, _12, lastOmega, _18, zMinusLastOmega, _21, _23, intermediateValue, lnMinusOneAtZ, betaGammaPowered, alphaPower8, _27, subtrahend : uint256;
