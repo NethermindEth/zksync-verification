@@ -21,9 +21,6 @@ require import YulPrimops.
 
 import MemoryMap.
 
-abbrev ( + ) = FieldR.( + ).
-abbrev ( * ) = FieldR.( * ).
-
 module PrepareQueries = {
   proc low(): unit = {
     var _1, zInDomainSize, currentZ, _3, _6, stateOpening0AtZ, stateOpening1AtZ, stateOpening2AtZ, stateOpening3AtZ, _18, _21, eta', currentEta;

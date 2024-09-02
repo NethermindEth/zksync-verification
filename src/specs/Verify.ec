@@ -6,6 +6,7 @@ require import EvaluateLagrangePolyOutOfDomain.
 require import InitializeTranscript.
 require import Field.
 require import FinalPairing.
+require import Keccak.
 require import LoadProof.
 require import LoadVerificationKey.
 require import PointAddIntoDest.
@@ -345,7 +346,505 @@ module Verify = {
   failed <- failed \/ !final_pairing_bool;
    
   return !failed;
- }
+  }
+
+      proc high (public_input_length_in_words: int, public_input: FieldR.F, proof_length_in_words: int, state_poly_0: g, state_poly_1: g, state_poly_2: g, state_poly_3: g, copy_permutation_grand_product: g, lookup_s_poly: g, lookup_grand_product: g, quotient_poly_part_0: g, quotient_poly_part_1: g, quotient_poly_part_2: g, quotient_poly_part_3: g, state_poly_0_opening_at_z: FieldR.F, state_poly_1_opening_at_z: FieldR.F, state_poly_2_opening_at_z: FieldR.F, state_poly_3_opening_at_z: FieldR.F, state_poly_3_opening_at_z_omega: FieldR.F, gate_selector_0_opening_at_z: FieldR.F, copy_permutation_poly_0_opening_at_z: FieldR.F, copy_permutation_poly_1_opening_at_z: FieldR.F, copy_permutation_poly_2_opening_at_z: FieldR.F, copy_permutation_grand_product_opening_at_z_omega: FieldR.F, lookup_s_poly_opening_at_z_omega: FieldR.F, lookup_grand_product_opening_at_z_omega: FieldR.F, lookup_t_poly_opening_at_z: FieldR.F, lookup_t_poly_opening_at_z_omega: FieldR.F, lookup_selector_poly_opening_at_z: FieldR.F, lookup_table_type_poly_opening_at_z: FieldR.F, quotient_poly_opening_at_z: FieldR.F, linearisation_poly_opening_at_z: FieldR.F, opening_proof_at_z: g, opening_proof_at_z_omega: g, recursive_proof_length_in_words: int, recursive_part_p1: g, recursive_part_p2: g) : bool = {
+    
+      (* load proof mod *)
+      var _public_input, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, 
+      _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, 
+      _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega, _lookup_grand_product_opening_at_z_omega, 
+      _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z, _lookup_table_type_poly_opening_at_z, 
+      _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z : FieldR.F; 
+      var _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product, _quotient_poly_part_0, 
+      _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _opening_proof_at_z, _opening_proof_at_z_omega: g;
+      var _recursive_part_p1, _recursive_part_p2: g option;
+
+      (* initialize transcript *)
+      var state_alpha, state_beta, state_gamma, state_eta;
+      var state_beta_lookup, state_gamma_lookup; 
+      var state_z, state_z_in_domain, state_v, state_u;
+
+      var state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3,
+      state0_4, state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7,
+      state0_8, state1_8, state0_9, state1_9, state0_10, state1_10, state0_11, state1_11,
+      state0_12, state1_12, state0_13, state1_13, state0_14, state1_14, state0_15, state1_15,
+      state0_16, state1_16, state0_17, state1_17, state0_18, state1_18, state0_19, state1_19,
+      state0_20, state1_20, state0_21, state1_21, state0_22, state1_22, state0_23, state1_23,
+      state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, state0_27, state1_27,
+      state0_28, state1_28, state0_29, state1_29, state0_30, state1_30, state0_31, state1_31,
+      state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, state0_35, state1_35,
+      state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, state0_39, state1_39,
+      state0_40, state1_40, state0_41, state1_41, state0_42, state1_42, state0_43, state1_43,
+      state0_44, state1_44 : int;
+    
+      (* verify quotient evaluation *)
+      var alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8;
+      var l0_at_z, ln_minus_one_at_z, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega;
+
+      (* prepare queries *)
+      var query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment,
+      lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated;
+
+      (* prepare aggregated commitment *)
+      var aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot;
+
+      var failed;
+      failed <- false;
+
+      (* /*////////////////////////////////////////////////////////////// *)
+      (*                         1. Load Proof *)
+      (* //////////////////////////////////////////////////////////////*/ *)
+
+      (* /// @dev This function loads a zk-SNARK proof, ensures it's properly formatted, and stores it in memory. *)
+      (* /// It ensures the number of inputs and the elliptic curve point's validity. *)
+      (* /// Note: It does NOT reject inputs that exceed these module sizes, but rather wraps them within the *)
+      (* /// module bounds. *)
+      (* /// The proof consists of: *)
+      (* /// 1. Public input: (1 field element from F_r) *)
+      (* /// *)
+      (* /// 2. Polynomial commitments (elliptic curve points over F_q): *)
+      (* ///     [a], [b], [c], [d]         - state polynomials commitments *)
+      (* ///     [z_perm]                   - copy-permutation grand product commitment *)
+      (* ///     [s]                        - polynomial for lookup argument commitment *)
+      (* ///     [z_lookup]                 - lookup grand product commitment *)
+      (* ///     [t_0], [t_1], [t_2], [t_3] - quotient polynomial parts commitments *)
+      (* ///     [W], [W']                  - proof openings commitments *)
+      (* /// *)
+      (* /// 3. Polynomial evaluations at z and z*omega (field elements from F_r): *)
+      (* ///     t(z)                                  - quotient polynomial opening *)
+      (* ///     a(z), b(z), c(z), d(z), d(z*omega)    - state polynomials openings *)
+      (* ///     main_gate_selector(z)                 - main gate selector opening *)
+      (* ///     sigma_0(z), sigma_1(z), sigma_2(z)    - permutation polynomials openings *)
+      (* ///     z_perm(z*omega)                       - copy-permutation grand product opening *)
+      (* ///     z_lookup(z*omega)                     - lookup grand product opening *)
+      (* ///     lookup_selector(z)                    - lookup selector opening *)
+      (* ///     s(x*omega), t(z*omega), table_type(z) - lookup argument polynomial openings *)
+      (* ///     r(z)                                  - linearisation polynomial opening *)
+      (* /// *)
+      (* /// 4. Recursive proof (0 or 2 elliptic curve points over F_q) *)
+
+      if ((public_input_length_in_words = 1) /\ (proof_length_in_words = 44) /\ (recursive_proof_length_in_words = 0)) {
+      (_public_input, _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product,
+        _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z,
+        _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z,
+        _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega,
+        _lookup_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z,
+        _lookup_table_type_poly_opening_at_z, _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z, _opening_proof_at_z, _opening_proof_at_z_omega,
+        _recursive_part_p1, _recursive_part_p2
+      ) <-
+      (
+        FieldR.inF ((FieldR.asint public_input) %% (2^253)),
+        state_poly_0,
+        state_poly_1,
+        state_poly_2,
+        state_poly_3,
+        copy_permutation_grand_product,
+        lookup_s_poly,
+        lookup_grand_product,
+        quotient_poly_part_0,
+        quotient_poly_part_1,
+        quotient_poly_part_2,
+        quotient_poly_part_3,
+        state_poly_0_opening_at_z,
+        state_poly_1_opening_at_z,
+        state_poly_2_opening_at_z,
+        state_poly_3_opening_at_z,
+        state_poly_3_opening_at_z_omega,
+        gate_selector_0_opening_at_z,
+        copy_permutation_poly_0_opening_at_z,
+        copy_permutation_poly_1_opening_at_z,
+        copy_permutation_poly_2_opening_at_z,
+        copy_permutation_grand_product_opening_at_z_omega,
+        lookup_s_poly_opening_at_z_omega,
+        lookup_grand_product_opening_at_z_omega,
+        lookup_t_poly_opening_at_z,
+        lookup_t_poly_opening_at_z_omega,
+        lookup_selector_poly_opening_at_z,
+        lookup_table_type_poly_opening_at_z,
+        quotient_poly_opening_at_z,
+        linearisation_poly_opening_at_z,
+        opening_proof_at_z,
+        opening_proof_at_z_omega,
+        None,
+        None
+      );
+      } else {
+          (_public_input, _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product,
+        _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z,
+        _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z,
+        _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega,
+        _lookup_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z,
+        _lookup_table_type_poly_opening_at_z, _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z, _opening_proof_at_z, _opening_proof_at_z_omega,
+        _recursive_part_p1, _recursive_part_p2
+          ) <- witness;
+          failed <- true;
+      }
+
+          (* /*////////////////////////////////////////////////////////////// *)
+          (*                         2. Transcript initialization *)
+          (* //////////////////////////////////////////////////////////////*/ *)
+
+          (* /// @notice Recomputes all challenges *)
+          (* /// @dev The process is the following: *)
+          (* /// Commit:   PI, [a], [b], [c], [d] *)
+          (* /// Get:      eta *)
+          (* /// Commit:   [s] *)
+          (* /// Get:      beta, gamma *)
+          (* /// Commit:   [z_perm] *)
+          (* /// Get:      beta', gamma' *)
+          (* /// Commit:   [z_lookup] *)
+          (* /// Get:      alpha *)
+          (* /// Commit:   [t_0], [t_1], [t_2], [t_3] *)
+          (* /// Get:      z *)
+          (* /// Commit:   t(z), a(z), b(z), c(z), d(z), d(z*omega), *)
+          (* ///           main_gate_selector(z), *)
+          (* ///           sigma_0(z), sigma_1(z), sigma_2(z), *)
+          (* ///           z_perm(z*omega), *)
+          (* ///           t(z), lookup_selector(z), table_type(z), *)
+          (* ///           s(x*omega), z_lookup(z*omega), t(z*omega), *)
+          (* ///           r(z) *)
+          (* /// Get:      v *)
+          (* /// Commit:   [W], [W'] *)
+          (* /// Get:      u *)  
+
+          state0_0 <- keccakT 0 0 0 (FieldR.asint _public_input);
+          state1_0 <- keccakT 1 0 0 (FieldR.asint _public_input);
+          state0_1 <- keccakT 0 state0_0 state1_0 (F_to_int_point (aspoint_G1 _state_poly_0)).`1;
+          state1_1 <- keccakT 1 state0_0 state1_0 (F_to_int_point (aspoint_G1 _state_poly_0)).`1;
+          state0_2 <- keccakT 0 state0_1 state1_1 (F_to_int_point (aspoint_G1 _state_poly_0)).`2;
+          state1_2 <- keccakT 1 state0_1 state1_1 (F_to_int_point (aspoint_G1 _state_poly_0)).`2;
+          state0_3 <- keccakT 0 state0_2 state1_2 (F_to_int_point (aspoint_G1 _state_poly_1)).`1;
+          state1_3 <- keccakT 1 state0_2 state1_2 (F_to_int_point (aspoint_G1 _state_poly_1)).`1;
+          state0_4 <- keccakT 0 state0_3 state1_3 (F_to_int_point (aspoint_G1 _state_poly_1)).`2;
+          state1_4 <- keccakT 1 state0_3 state1_3 (F_to_int_point (aspoint_G1 _state_poly_1)).`2;
+          state0_5 <- keccakT 0 state0_4 state1_4 (F_to_int_point (aspoint_G1 _state_poly_2)).`1;
+          state1_5 <- keccakT 1 state0_4 state1_4 (F_to_int_point (aspoint_G1 _state_poly_2)).`1;
+          state0_6 <- keccakT 0 state0_5 state1_5 (F_to_int_point (aspoint_G1 _state_poly_2)).`2;
+          state1_6 <- keccakT 1 state0_5 state1_5 (F_to_int_point (aspoint_G1 _state_poly_2)).`2;
+          state0_7 <- keccakT 0 state0_6 state1_6 (F_to_int_point (aspoint_G1 _state_poly_3)).`1;
+          state1_7 <- keccakT 1 state0_6 state1_6 (F_to_int_point (aspoint_G1 _state_poly_3)).`1;
+          state0_8 <- keccakT 0 state0_7 state1_7 (F_to_int_point (aspoint_G1 _state_poly_3)).`2;
+          state1_8 <- keccakT 1 state0_7 state1_7 (F_to_int_point (aspoint_G1 _state_poly_3)).`2;
+      
+          state_eta <- FieldR.inF ((keccakC 2 state0_8 state1_8 0) %% 2^253);
+
+          state0_9 <- keccakT 0 state0_8 state1_8 (F_to_int_point (aspoint_G1 _lookup_s_poly)).`1;
+          state1_9 <- keccakT 1 state0_8 state1_8 (F_to_int_point (aspoint_G1 _lookup_s_poly)).`1;
+          state0_10 <- keccakT 0 state0_9 state1_9 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+          state1_10 <- keccakT 1 state0_9 state1_9 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+      
+          state_beta  <- FieldR.inF ((keccakC 2 state0_10 state1_10 1) %% 2^253);
+          state_gamma <- FieldR.inF ((keccakC 2 state0_10 state1_10 2) %% 2^253);
+
+          state0_11 <- keccakT 0 state0_10 state1_10 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`1;
+          state1_11 <- keccakT 1 state0_10 state1_10 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`1;
+          state0_12 <- keccakT 0 state0_11 state1_11 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+          state1_12 <- keccakT 1 state0_11 state1_11 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+
+          state_beta_lookup  <- FieldR.inF ((keccakC 2 state0_12 state1_12 3) %% 2^253);
+          state_gamma_lookup <- FieldR.inF ((keccakC 2 state0_12 state1_12 4) %% 2^253);
+
+          state0_13 <- keccakT 0 state0_12 state1_12 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`1;
+          state1_13 <- keccakT 1 state0_12 state1_12 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`1;
+          state0_14 <- keccakT 0 state0_13 state1_13 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`2;
+          state1_14 <- keccakT 1 state0_13 state1_13 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`2;
+
+          state_alpha <- FieldR.inF ((keccakC 2 state0_14 state1_14 5) %% 2^253);
+
+          state0_15 <- keccakT 0 state0_14 state1_14 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`1;
+          state1_15 <- keccakT 1 state0_14 state1_14 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`1;
+          state0_16 <- keccakT 0 state0_15 state1_15 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`2;
+          state1_16 <- keccakT 1 state0_15 state1_15 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`2;
+          state0_17 <- keccakT 0 state0_16 state1_16 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`1;
+          state1_17 <- keccakT 1 state0_16 state1_16 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`1;
+          state0_18 <- keccakT 0 state0_17 state1_17 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`2;
+          state1_18 <- keccakT 1 state0_17 state1_17 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`2;
+          state0_19 <- keccakT 0 state0_18 state1_18 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`1;
+          state1_19 <- keccakT 1 state0_18 state1_18 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`1;
+          state0_20 <- keccakT 0 state0_19 state1_19 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`2;
+          state1_20 <- keccakT 1 state0_19 state1_19 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`2;
+          state0_21 <- keccakT 0 state0_20 state1_20 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`1;
+          state1_21 <- keccakT 1 state0_20 state1_20 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`1;
+          state0_22 <- keccakT 0 state0_21 state1_21 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`2;
+          state1_22 <- keccakT 1 state0_21 state1_21 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`2;
+
+          state_z <- FieldR.inF ((keccakC 2 state0_22 state1_22 6) %% 2^253);
+          state_z_in_domain <- state_z^Constants.DOMAIN_SIZE;
+
+          state0_23 <- keccakT 0 state0_22 state1_22 (FieldR.asint _quotient_poly_opening_at_z);
+          state1_23 <- keccakT 1 state0_22 state1_22 (FieldR.asint _quotient_poly_opening_at_z);
+          state0_24 <- keccakT 0 state0_23 state1_23 (FieldR.asint _state_poly_0_opening_at_z);
+          state1_24 <- keccakT 1 state0_23 state1_23 (FieldR.asint _state_poly_0_opening_at_z);
+          state0_25 <- keccakT 0 state0_24 state1_24 (FieldR.asint _state_poly_1_opening_at_z);
+          state1_25 <- keccakT 1 state0_24 state1_24 (FieldR.asint _state_poly_1_opening_at_z);
+          state0_26 <- keccakT 0 state0_25 state1_25 (FieldR.asint _state_poly_2_opening_at_z);
+          state1_26 <- keccakT 1 state0_25 state1_25 (FieldR.asint _state_poly_2_opening_at_z);
+          state0_27 <- keccakT 0 state0_26 state1_26 (FieldR.asint _state_poly_3_opening_at_z);
+          state1_27 <- keccakT 1 state0_26 state1_26 (FieldR.asint _state_poly_3_opening_at_z);
+          state0_28 <- keccakT 0 state0_27 state1_27 (FieldR.asint _state_poly_3_opening_at_z_omega);
+          state1_28 <- keccakT 1 state0_27 state1_27 (FieldR.asint _state_poly_3_opening_at_z_omega);
+          state0_29 <- keccakT 0 state0_28 state1_28 (FieldR.asint _gate_selector_0_opening_at_z);
+          state1_29 <- keccakT 1 state0_28 state1_28 (FieldR.asint _gate_selector_0_opening_at_z);
+          state0_30 <- keccakT 0 state0_29 state1_29 (FieldR.asint _copy_permutation_poly_0_opening_at_z);
+          state1_30 <- keccakT 1 state0_29 state1_29 (FieldR.asint _copy_permutation_poly_0_opening_at_z);
+          state0_31 <- keccakT 0 state0_30 state1_30 (FieldR.asint _copy_permutation_poly_1_opening_at_z);
+          state1_31 <- keccakT 1 state0_30 state1_30 (FieldR.asint _copy_permutation_poly_1_opening_at_z);
+          state0_32 <- keccakT 0 state0_31 state1_31 (FieldR.asint _copy_permutation_poly_2_opening_at_z);
+          state1_32 <- keccakT 1 state0_31 state1_31 (FieldR.asint _copy_permutation_poly_2_opening_at_z);
+          state0_33 <- keccakT 0 state0_32 state1_32 (FieldR.asint _copy_permutation_grand_product_opening_at_z_omega);
+          state1_33 <- keccakT 1 state0_32 state1_32 (FieldR.asint _copy_permutation_grand_product_opening_at_z_omega);
+          state0_34 <- keccakT 0 state0_33 state1_33 (FieldR.asint _lookup_t_poly_opening_at_z);
+          state1_34 <- keccakT 1 state0_33 state1_33 (FieldR.asint _lookup_t_poly_opening_at_z);
+          state0_35 <- keccakT 0 state0_34 state1_34 (FieldR.asint _lookup_selector_poly_opening_at_z);
+          state1_35 <- keccakT 1 state0_34 state1_34 (FieldR.asint _lookup_selector_poly_opening_at_z);
+          state0_36 <- keccakT 0 state0_35 state1_35 (FieldR.asint _lookup_table_type_poly_opening_at_z);
+          state1_36 <- keccakT 1 state0_35 state1_35 (FieldR.asint _lookup_table_type_poly_opening_at_z);
+          state0_37 <- keccakT 0 state0_36 state1_36 (FieldR.asint _lookup_s_poly_opening_at_z_omega);
+          state1_37 <- keccakT 1 state0_36 state1_36 (FieldR.asint _lookup_s_poly_opening_at_z_omega);
+          state0_38 <- keccakT 0 state0_37 state1_37 (FieldR.asint _lookup_grand_product_opening_at_z_omega);
+          state1_38 <- keccakT 1 state0_37 state1_37 (FieldR.asint _lookup_grand_product_opening_at_z_omega);
+          state0_39 <- keccakT 0 state0_38 state1_38 (FieldR.asint _lookup_t_poly_opening_at_z_omega);
+          state1_39 <- keccakT 1 state0_38 state1_38 (FieldR.asint _lookup_t_poly_opening_at_z_omega);
+          state0_40 <- keccakT 0 state0_39 state1_39 (FieldR.asint _linearisation_poly_opening_at_z);
+          state1_40 <- keccakT 1 state0_39 state1_39 (FieldR.asint _linearisation_poly_opening_at_z);
+
+          state_v <- FieldR.inF ((keccakC 2 state0_40 state1_40 7) %% 2^253);
+
+          state0_41 <- keccakT 0 state0_40 state1_40 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`1;
+          state1_41 <- keccakT 1 state0_40 state1_40 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`1;
+          state0_42 <- keccakT 0 state0_41 state1_41 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`2;
+          state1_42 <- keccakT 1 state0_41 state1_41 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`2;
+          state0_43 <- keccakT 0 state0_42 state1_42 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`1;
+          state1_43 <- keccakT 1 state0_42 state1_42 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`1;
+          state0_44 <- keccakT 0 state0_43 state1_43 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`2;
+          state1_44 <- keccakT 1 state0_43 state1_43 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`2;
+
+          state_u <- FieldR.inF ((keccakC 2 state0_44 state1_44 8) %% 2^253);
+
+          (* /*////////////////////////////////////////////////////////////// *)
+          (*                         3. Verifying quotient evaluation *)
+          (* //////////////////////////////////////////////////////////////*/ *)
+
+          (* /// @notice Compute linearisation polynomial's constant term: r_0 *)
+          (* /// @dev To save a verifier scalar multiplication, we split linearisation polynomial *)
+          (* /// into its constant and non-constant terms. The constant term is computed with the formula: *)
+          (* /// *)
+          (* /// r_0 = alpha^0 * L_0(z) * PI * q_{main selector}(z) + r(z)         -- main gate contribution *)
+          (* /// *)
+          (* ///     - alpha^4 * z_perm(z*omega)(sigma_0(z) * beta + gamma + a(z)) \ *)
+          (* ///                           (sigma_1(z) * beta + gamma + b(z))      | *)
+          (* ///                           (sigma_2(z) * beta + gamma + c(z))      | - permutation contribution *)
+          (* ///                           (sigma_3(z) + gamma)                    | *)
+          (* ///     - alpha^5 * L_0(z)                                            / *)
+          (* /// *)
+          (* ///     + alpha^6 * (s(z*omega) * beta' + gamma' (beta' + 1))         \ *)
+          (* ///               * (z - omega^{n-1}) * z_lookup(z*omega)             | - lookup contribution *)
+          (* ///     - alpha^7 * L_0(z)                                            | *)
+          (* ///     - alpha^8 * L_{n-1}(z) * (gamma' (beta' + 1))^{n-1}           / *)
+          (* /// *)
+          (* /// In the end we should check that t(z)*Z_H(z) = r(z) + r_0! *)
+
+          if (state_z^Constants.DOMAIN_SIZE = FieldR.one) {
+              failed <- true;
+          } else {
+              l0_at_z <- (state_z^Constants.DOMAIN_SIZE - FieldR.one) * ((Constants.DOMAIN_SIZEFr * (state_z - FieldR.one)) ^ (- 1));
+              ln_minus_one_at_z <- (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (state_z^Constants.DOMAIN_SIZE - FieldR.one)) * ((Constants.DOMAIN_SIZEFr * (state_z - Constants.OMEGAFr^(Constants.DOMAIN_SIZE- 1))) ^ (- 1)); 
+
+              failed <- failed \/ !((_quotient_poly_opening_at_z * (state_z_in_domain - FieldR.one)) 
+              = (_linearisation_poly_opening_at_z + l0_at_z * _public_input * _gate_selector_0_opening_at_z -state_alpha^4 * _copy_permutation_grand_product_opening_at_z_omega
+                * (_copy_permutation_poly_0_opening_at_z * state_beta + state_gamma + _state_poly_0_opening_at_z) 
+                * (_copy_permutation_poly_1_opening_at_z * state_beta + state_gamma + _state_poly_1_opening_at_z) 
+                * (_copy_permutation_poly_2_opening_at_z * state_beta + state_gamma + _state_poly_2_opening_at_z) 
+                * (_state_poly_3_opening_at_z + state_gamma)
+                -state_alpha^5 * l0_at_z  + ((state_alpha^6 * (_lookup_s_poly_opening_at_z_omega * state_beta_lookup + state_gamma_lookup * (state_beta_lookup + FieldR.one)) * _lookup_grand_product_opening_at_z_omega) * (state_z - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1)) 
+                - state_alpha^7 * l0_at_z 
+                - state_alpha^8 * ln_minus_one_at_z * (state_gamma_lookup * (state_beta_lookup + FieldR.one)) ^ (Constants.DOMAIN_SIZE - 1))));
+          }
+      
+          (alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega) <-
+          (
+            state_alpha^2,
+            state_alpha^3,
+            state_alpha^4,
+            state_alpha^5,
+            state_alpha^6, 
+            state_alpha^7,
+            state_alpha^8,
+            state_beta_lookup + FieldR.one,
+            state_gamma_lookup * state_beta_lookup + state_gamma_lookup,
+            state_z - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1)
+          );
+
+              (* /*////////////////////////////////////////////////////////////// *)
+              (* 4. Prepare queries *)
+              (* //////////////////////////////////////////////////////////////*/ *)
+
+              (* /// @dev Here we compute the first and second parts of batched polynomial commitment *)
+              (* /// We use the formula: *)
+              (* ///     [D0] = [t_0] + z^n * [t_1] + z^{2n} * [t_2] + z^{3n} * [t_3] *)
+              (* /// and *)
+              (* ///     [D1] = main_gate_selector(z) * (                                        \ *)
+              (* ///                a(z) * [q_a] + b(z) * [q_b] + c(z) * [q_c] + d(z) * [q_d] +  | - main gate contribution *)
+              (* ///                a(z) * b(z) * [q_ab] + a(z) * c(z) * [q_ac] +                | *)
+              (* ///                [q_const] + d(z*omega) * [q_{d_next}])                       / *)
+              (* /// *)
+              (* ///            + alpha * [custom_gate_selector] * (                             \ *)
+              (* ///                (a(z)^2 - b(z))              +                               | - custom gate contribution *)
+              (* ///                (b(z)^2 - c(z))    * alpha   +                               | *)
+              (* ///                (a(z)*c(z) - d(z)) * alpha^2 )                               / *)
+              (* /// *)
+              (* ///            + alpha^4 * [z_perm] *                                           \ *)
+              (* ///                (a(z) + beta * z      + gamma) *                             | *)
+              (* ///                (b(z) + beta * z * k0 + gamma) *                             | *)
+              (* ///                (c(z) + beta * z * k1 + gamma) *                             | *)
+              (* ///                (d(z) + beta * z * k2 + gamma)                               | - permutation contribution *)
+              (* ///            - alpha^4 * z_perm(z*omega) * beta * [sigma_3] *                 | *)
+              (* ///                (a(z) + beta * sigma_0(z) + gamma) *                         | *)
+              (* ///                (b(z) + beta * sigma_1(z) + gamma) *                         | *)
+              (* ///                (c(z) + beta * sigma_2(z) + gamma) *                         | *)
+              (* ///            + alpha^5 * L_0(z) * [z_perm]                                    / *)
+              (* /// *)
+              (* ///            - alpha^6 * (1 + beta') * (gamma' + f(z)) * (z - omega^{n-1}) *  \ *)
+              (* ///                (gamma'(1 + beta') + t(z) + beta' * t(z*omega)) * [z_lookup] | *)
+              (* ///            + alpha^6 * z_lookup(z*omega) * (z - omega^{n-1}) * [s]          | - lookup contribution *)
+              (* ///            + alpha^7 * L_0(z) * [z_lookup]                                  | *)
+              (* ///            + alpha^8 * L_{n-1}(z) * [z_lookup]                              / *)
+
+              query_at_z_0 <- 
+              _quotient_poly_part_0 +
+          (state_z_in_domain * _quotient_poly_part_1) +
+          ((state_z_in_domain * state_z_in_domain) * _quotient_poly_part_2) +
+          ((state_z_in_domain * state_z_in_domain * state_z_in_domain) * _quotient_poly_part_3);
+
+          
+            copy_permutation_first_aggregated_commitment_coeff <- (
+            alpha4 * (state_z * state_beta + state_gamma + _state_poly_0_opening_at_z) *
+            (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_0) + state_gamma + _state_poly_1_opening_at_z) *
+            (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_1) + state_gamma + _state_poly_2_opening_at_z) *
+            (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_2) + state_gamma + _state_poly_3_opening_at_z) +
+              l0_at_z * alpha5
+          ) * state_v;
+
+
+              query_at_z_1 <- (((
+                ((_state_poly_0_opening_at_z * _state_poly_0_opening_at_z - _state_poly_1_opening_at_z) * state_alpha) +
+                ((_state_poly_1_opening_at_z * _state_poly_1_opening_at_z - _state_poly_2_opening_at_z) * alpha2) +
+                ((_state_poly_2_opening_at_z * _state_poly_0_opening_at_z - _state_poly_3_opening_at_z) * alpha3)
+              ) * state_v) * vk_gate_selectors_1) + ((state_v * _gate_selector_0_opening_at_z) * (
+              (_state_poly_0_opening_at_z * vk_gate_setup_0) +
+              (_state_poly_1_opening_at_z * vk_gate_setup_1) +
+              (_state_poly_2_opening_at_z * vk_gate_setup_2) +
+              (_state_poly_3_opening_at_z * vk_gate_setup_3) +
+              ((_state_poly_0_opening_at_z * _state_poly_1_opening_at_z) * vk_gate_setup_4) +
+              ((_state_poly_0_opening_at_z * _state_poly_2_opening_at_z) * vk_gate_setup_5) +
+                vk_gate_setup_6 +
+              (state_poly_3_opening_at_z_omega * vk_gate_setup_7)
+            )) + (G.inv ((
+                alpha4 * state_beta * _copy_permutation_grand_product_opening_at_z_omega *
+                (_copy_permutation_poly_0_opening_at_z * state_beta + state_gamma + _state_poly_0_opening_at_z) *
+                (_copy_permutation_poly_1_opening_at_z * state_beta + state_gamma + _state_poly_1_opening_at_z) *
+                (_copy_permutation_poly_2_opening_at_z * state_beta + state_gamma + _state_poly_2_opening_at_z) *
+                  state_v
+              ) * vk_permutation_3));
+
+
+                  lookupSFirstAggregatedCommitment <- state_v * z_minus_last_omega * alpha6 * _lookup_grand_product_opening_at_z_omega;
+                  lookupGrandProductFirstAggregatedCoefficient 
+                  <- ((- (_lookup_t_poly_opening_at_z_omega * state_beta_lookup +
+                  _lookup_t_poly_opening_at_z + beta_gamma_plus_gamma) *
+              ((_state_poly_0_opening_at_z + state_eta * _state_poly_1_opening_at_z +
+                state_eta * state_eta * _state_poly_2_opening_at_z +
+                state_eta * state_eta * state_eta * _lookup_table_type_poly_opening_at_z) *
+                _lookup_selector_poly_opening_at_z + state_gamma_lookup)) *
+                beta_plus_one * alpha6 * z_minus_last_omega + alpha7 * l0_at_z +
+                alpha8 * ln_minus_one_at_z) *
+                state_v;
+          
+
+                query_t_poly_aggregated <-
+                vk_lookup_table_0 +
+          (state_eta * vk_lookup_table_1) +
+          (state_eta * state_eta) * vk_lookup_table_2 +
+          (state_eta * state_eta * state_eta) * vk_lookup_table_3;
+
+            (* /*////////////////////////////////////////////////////////////// *)
+            (* 5. Prepare aggregated commitment *)
+            (* //////////////////////////////////////////////////////////////*/ *)
+
+            (* /// @dev Here we compute aggregated commitment for the final pairing *)
+            (* /// We use the formula: *)
+            (* /// [E] = ( t(z) + v * r(z) *)
+            (* ///       + v^2*a(z) + v^3*b(z) + v^4*c(z) + v^5*d(z) *)
+            (* ///       + v^6*main_gate_selector(z) *)
+            (* ///       + v^7*sigma_0(z) + v^8*sigma_1(z) + v^9*sigma_2(z) *)
+            (* ///       + v^10*t(z) + v^11*lookup_selector(z) + v^12*table_type(z) *)
+            (* ///       + u * (v^13*z_perm(z*omega) + v^14*d(z*omega) *)
+            (* ///           + v^15*s(z*omega) + v^16*z_lookup(z*omega) + v^17*t(z*omega) *)
+            (* ///       ) *)
+            (* ///  ) * [1] *)
+            (* /// and *)
+            (* /// [F] = [D0] + v * [D1] *)
+            (* ///       + v^2*[a] + v^3*[b] + v^4*[c] + v^5*[d] *)
+            (* ///       + v^6*[main_gate_selector] *)
+            (* ///       + v^7*[sigma_0] + v^8*[sigma_1] + v^9*[sigma_2] *)
+            (* ///       + v^10*[t] + v^11*[lookup_selector] + v^12*[table_type] *)
+            (* ///       + u * ( v^13*[z_perm] + v^14*[d] *)
+            (* ///           + v^15*[s] + v^16*[z_lookup] + v^17*[t] *)
+            (* ///       ) *)
+
+            (* t(z) + v * r(z) + v^2*a(z) + v^3*b(z) + v^4*c(z) + v^6*main_gate_selector(z) + v^7*sigma_0(z) + v^8*sigma_1(z) + v^9*sigma_2(z) + v^11*lookup_selector(z) + v^12*table_type(z) *)
+
+            (* // v^5*d(z) + v^10*t(z) *)
+            aggregatedAtZSlot <- query_at_z_0 + query_at_z_1 + state_v ^ 2 * _state_poly_0 + state_v ^ 3 * _state_poly_1 + state_v ^ 4 * _state_poly_2 (* term "state_v ^ 5 * _state_poly_3" from aggregatedAtZOmegaSlot *) + state_v ^ 6 * vk_gate_selectors_0 + state_v ^ 7 * vk_permutation_0 + state_v ^ 8 * vk_permutation_1 + state_v ^ 9 * vk_permutation_2 (* term "state_v ^ 10 * query_t_poly_aggregated" from aggregatedAtZOmegaSlot *) + state_v ^ 11 * vk_lookup_selector + state_v ^ 12 * vk_lookup_table_type;
+
+            aggregatedOpeningAtZSlot <- _quotient_poly_opening_at_z + state_v * _linearisation_poly_opening_at_z + state_v ^ 2 * _state_poly_0_opening_at_z + state_v ^ 3 * _state_poly_1_opening_at_z + state_v ^ 4 * _state_poly_2_opening_at_z + state_v ^ 5 * _state_poly_3_opening_at_z + state_v ^ 6 * _gate_selector_0_opening_at_z + state_v ^ 7 * _copy_permutation_poly_0_opening_at_z + state_v ^ 8 * _copy_permutation_poly_1_opening_at_z + state_v ^ 9 * _copy_permutation_poly_2_opening_at_z + state_v ^ 10 * _lookup_t_poly_opening_at_z + state_v ^ 11 * _lookup_selector_poly_opening_at_z + state_v ^ 12 * _lookup_table_type_poly_opening_at_z; (* + state_v ^ 12 * _lookup_table_type_poly_opening_at_z ??? *)
+
+
+            (* u * ( v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t]) + v^5*d(z) + v^10*t(z) *)
+            (* + lookupGrandProductFirstAggregatedCoefficient * _lookup_grand_product + lookupSFirstAggregatedCommitment * _lookup_s_poly + copy_permutation_first_aggregated_commitment_coeff * _copy_permutation_grand_product ????? *) 
+            aggregatedAtZOmegaSlot <- state_u * (
+            state_v ^ 13 * _copy_permutation_grand_product + state_v ^ 14 * _state_poly_3 + state_v ^ 15 * _lookup_s_poly + state_v ^ 16 * _lookup_grand_product + state_v ^ 17 * query_t_poly_aggregated
+          ) + state_v ^ 10 * query_t_poly_aggregated + state_v ^ 5 * _state_poly_3
+            + lookupGrandProductFirstAggregatedCoefficient * _lookup_grand_product (* [z_lookup] *) + lookupSFirstAggregatedCommitment * _lookup_s_poly (* [s] *) + copy_permutation_first_aggregated_commitment_coeff * _copy_permutation_grand_product (* [z_prem] *);
+          (* *) 
+          
+
+            (* v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t] *)
+            aggregatedOpeningAtZOmega <- state_v ^ 13 * _copy_permutation_grand_product_opening_at_z_omega + state_v ^ 14 * _state_poly_3_opening_at_z_omega + state_v ^ 15 * _lookup_s_poly_opening_at_z_omega + state_v ^ 16 * _lookup_grand_product_opening_at_z_omega + state_v ^ 17 * _lookup_t_poly_opening_at_z_omega; 
+
+            pairingPairWithGeneratorSlot <- aggregatedAtZSlot + aggregatedAtZOmegaSlot; (* [F] *)
+          
+            pairingBufferPointSlot <- (aggregatedOpeningAtZOmega * state_u + _quotient_poly_opening_at_z + state_v * _linearisation_poly_opening_at_z + state_v ^ 2 * _state_poly_0_opening_at_z + state_v ^ 3 * _state_poly_1_opening_at_z + state_v ^ 4 * _state_poly_2_opening_at_z + state_v ^ 5 * _state_poly_3_opening_at_z + state_v ^ 6 * _gate_selector_0_opening_at_z + state_v ^ 7 * _copy_permutation_poly_0_opening_at_z + state_v ^ 8 * _copy_permutation_poly_1_opening_at_z + state_v ^ 9 * _copy_permutation_poly_2_opening_at_z + state_v ^ 10 * _lookup_t_poly_opening_at_z + state_v ^ 11 * _lookup_selector_poly_opening_at_z + state_v ^ 12 * _lookup_table_type_poly_opening_at_z) * EllipticCurve.g_gen; (* [E] *)
+
+            (* /*////////////////////////////////////////////////////////////// *)
+            (*                         5. Pairing *)
+            (* //////////////////////////////////////////////////////////////*/ *)
+
+            (* /// @notice Checks the final pairing *)
+            (* /// @dev We should check the equation: *)
+            (* /// e([W] + u * [W'], [x]_2) = e(z * [W] + u * z * omega * [W'] + [F] - [E], [1]_2), *)
+            (* /// where [F] and [E] were computed previously *)
+            (* /// *)
+            (* /// Also we need to check that e([P1], [x]_2) = e([P2], [1]_2) *)
+            (* /// if we have the recursive part of the proof *)
+            (* /// where [P1] and [P2] are parts of the recursive proof *)
+            (* /// *)
+            (* /// We can aggregate both pairings into one for gas optimization: *)
+            (* /// e([W] + u * [W'] + u^2 * [P1], [x]_2) = *)
+            (* /// e(z * [W] + u * z * omega * [W'] + [F] - [E] + u^2 * [P2], [1]_2) *)
+            (* /// *)
+            (* /// u is a valid challenge for such aggregation, *)
+            (* /// because [P1] and [P2] are used in PI *)
+
+            pairingPairWithGeneratorSlot <- pairingPairWithGeneratorSlot + (G.inv pairingBufferPointSlot);
+            pairingPairWithGeneratorSlot <- (state_z * _opening_proof_at_z) + pairingPairWithGeneratorSlot;
+            pairingPairWithGeneratorSlot <- ((state_z * Constants.OMEGAFr * state_u) * _opening_proof_at_z_omega) + pairingPairWithGeneratorSlot;
+            failed <- failed \/ !(e (pairingPairWithGeneratorSlot + (G.inv ((state_u * _opening_proof_at_z_omega) + _opening_proof_at_z))) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e);
+    
+            return !failed;
+
+  }
 }.
 
 lemma verify_extracted_equiv_low:
@@ -571,7 +1070,7 @@ rewrite
 /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT
 /VK_RECURSIVE_FLAG_SLOT.
 
-do 40! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
+  do 40! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 39! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 38! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 37! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
@@ -615,7 +1114,15 @@ rewrite load_store_diff; try by simplify; try (rewrite load_store_same of_uintK;
 rewrite load_store_same; by simplify.
 clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19 
       m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m41.
-*)
+  *)
+
+
+lemma verify_mid_equiv_high:
+    equiv [
+    Verify.high_encapsulated ~ Verify.high :
+      ={arg} ==> ={res}
+    ]. proc. inline LoadProof.high InitializeTranscript.high VerifyQuotientEvaluation.high PrepareQueries.high PrepareAggregatedCommitment.high FinalPairing.high. wp. skip. 
+progress.
 
 lemma verify_mid_equiv_high_encapsulated:
     equiv [

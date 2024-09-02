@@ -16,10 +16,6 @@ require import YulPrimops.
 
 import MemoryMap.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-
 module EvaluateLagrangePolyOutOfDomain = {
   proc low(polyNum: uint256, at: uint256): uint256 = {
   var ret, omegaPower, tmp267, _10, denominator;

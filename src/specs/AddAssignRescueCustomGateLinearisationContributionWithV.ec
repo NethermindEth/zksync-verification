@@ -14,10 +14,6 @@ require import YulPrimops.
 
 import MemoryMap.
 
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-abbrev ( - ) = FieldR.( - ).
-
 module AddAssignRescueCustomGateLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256, stateOpening3AtZ : uint256): unit = {
     var accumulator, intermediateValue, _4, _7, _10, _12;

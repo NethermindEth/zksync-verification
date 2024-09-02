@@ -10,11 +10,6 @@ require import YulPrimops.
 require import Utils.
 require import VerifierConsts.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-abbrev [-] = FieldR.([-]).
-
 module PermutationQuotientContribution = {
   proc low(): uint256 = {
     var _res, tmp270, tmp271, _gamma, _beta, _factorMultiplier, tmp274, tmp275, tmp276, tmp277, tmp278, tmp279, tmp280, _22, _l0AtZ, tmp282, _26;
