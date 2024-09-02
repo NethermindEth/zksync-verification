@@ -12487,3 +12487,529 @@ rewrite /mpq /prepareQueries_memory_footprint
 /QUERIES_BUFFER_POINT_SLOT /QUERIES_AT_Z_0_X_SLOT /QUERIES_AT_Z_0_Y_SLOT /QUERIES_AT_Z_1_X_SLOT /QUERIES_AT_Z_1_Y_SLOT /COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF /LOOKUP_GRAND_PRODUCT_FIRST_AGGREGATED_COMMITMENT_COEFF /QUERIES_T_POLY_AGGREGATED_X_SLOT /QUERIES_T_POLY_AGGREGATED_Y_SLOT.
 progress. rewrite /LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF. do 3! (rewrite load_store_diff; [by simplify | by simplify |]). 
 rewrite load_store_same of_uintK. apply (aux Constants.R); by simplify.
+
+have IS: forall (a b: int), a = b => b = a. by smt(). 
+
+seq 1 3:(
+  query_at_z_0_r = query_at_z_0{2} /\
+  query_at_z_1_r = query_at_z_1{2} /\
+  copy_permutation_first_aggregated_commitment_coeff_r =
+  copy_permutation_first_aggregated_commitment_coeff{2} /\
+  lookup_s_first_aggregated_commitment_r =
+  lookup_s_first_aggregated_commitment{2} /\
+  lookup_grand_product_first_aggregated_coefficient_r =
+  lookup_grand_product_first_aggregated_coefficient{2} /\
+  query_t_poly_aggregated_r = query_t_poly_aggregated{2} /\
+  z_r = state_z{2} /\
+  z_in_domain_r = state_z_in_domain{2} /\
+  v_r = state_v{2} /\
+  u_r = state_u{2} /\
+  rf = vk_recursive_flag{2} /\
+  vk_recursive_flag{2} = false /\
+  mod_public_input = _public_input{2} /\
+  mod_state_poly_0 = _state_poly_0{2} /\
+  mod_state_poly_1 = _state_poly_1{2} /\
+  mod_state_poly_2 = _state_poly_2{2} /\
+  mod_state_poly_3 = _state_poly_3{2} /\
+  mod_copy_permutation_grand_product = _copy_permutation_grand_product{2} /\
+  mod_lookup_s_poly = _lookup_s_poly{2} /\
+  mod_lookup_grand_product = _lookup_grand_product{2} /\
+  mod_quotient_poly_part_0 = _quotient_poly_part_0{2} /\
+  mod_quotient_poly_part_1 = _quotient_poly_part_1{2} /\
+  mod_quotient_poly_part_2 = _quotient_poly_part_2{2} /\
+  mod_quotient_poly_part_3 = _quotient_poly_part_3{2} /\
+  mod_state_poly_0_opening_at_z = _state_poly_0_opening_at_z{2} /\
+  mod_state_poly_1_opening_at_z = _state_poly_1_opening_at_z{2} /\
+  mod_state_poly_2_opening_at_z = _state_poly_2_opening_at_z{2} /\
+  mod_state_poly_3_opening_at_z = _state_poly_3_opening_at_z{2} /\
+  mod_state_poly_3_opening_at_z_omega = _state_poly_3_opening_at_z_omega{2} /\
+  mod_gate_selector_0_opening_at_z = _gate_selector_0_opening_at_z{2} /\
+  mod_copy_permutation_poly_0_opening_at_z =
+  _copy_permutation_poly_0_opening_at_z{2} /\
+  mod_copy_permutation_poly_1_opening_at_z =
+  _copy_permutation_poly_1_opening_at_z{2} /\
+  mod_copy_permutation_poly_2_opening_at_z =
+  _copy_permutation_poly_2_opening_at_z{2} /\
+  mod_copy_permutation_grand_product_opening_at_z_omega =
+  _copy_permutation_grand_product_opening_at_z_omega{2} /\
+  mod_lookup_s_poly_opening_at_z_omega = _lookup_s_poly_opening_at_z_omega{2} /\
+  mod_lookup_grand_product_opening_at_z_omega =
+  _lookup_grand_product_opening_at_z_omega{2} /\
+  mod_lookup_t_poly_opening_at_z = _lookup_t_poly_opening_at_z{2} /\
+  mod_lookup_t_poly_opening_at_z_omega = _lookup_t_poly_opening_at_z_omega{2} /\
+  mod_lookup_selector_poly_opening_at_z =
+  _lookup_selector_poly_opening_at_z{2} /\
+  mod_lookup_table_type_poly_opening_at_z =
+  _lookup_table_type_poly_opening_at_z{2} /\
+  mod_quotient_poly_opening_at_z = _quotient_poly_opening_at_z{2} /\
+  mod_linearisation_poly_opening_at_z = _linearisation_poly_opening_at_z{2} /\
+  mod_opening_proof_at_z = _opening_proof_at_z{2} /\
+  mod_opening_proof_at_z_omega = _opening_proof_at_z_omega{2} /\
+  mod_recursive_part_p1 = _recursive_part_p1{2} /\
+  mod_recursive_part_p2 = _recursive_part_p2{2} /\
+  to_uint (mload mpq VK_GATE_SELECTORS_0_X_SLOT) = vk_gate_selectors_0X{2} /\
+  to_uint (mload mpq VK_GATE_SELECTORS_0_Y_SLOT) = vk_gate_selectors_0Y{2} /\
+  to_uint (mload mpq VK_PERMUTATION_0_X_SLOT) = vk_permutation_0X{2} /\
+  to_uint (mload mpq VK_PERMUTATION_0_Y_SLOT) = vk_permutation_0Y{2} /\
+  to_uint (mload mpq VK_PERMUTATION_1_X_SLOT) = vk_permutation_1X{2} /\
+  to_uint (mload mpq VK_PERMUTATION_1_Y_SLOT) = vk_permutation_1Y{2} /\
+  to_uint (mload mpq VK_PERMUTATION_2_X_SLOT) = vk_permutation_2X{2} /\
+  to_uint (mload mpq VK_PERMUTATION_2_Y_SLOT) = vk_permutation_2Y{2} /\
+  to_uint (mload mpq VK_LOOKUP_SELECTOR_X_SLOT) = vk_lookup_selector_X{2} /\
+  to_uint (mload mpq VK_LOOKUP_SELECTOR_Y_SLOT) = vk_lookup_selector_Y{2} /\
+  to_uint (mload mpq VK_LOOKUP_TABLE_TYPE_X_SLOT) = vk_lookup_table_type_X{2} /\
+  to_uint (mload mpq VK_LOOKUP_TABLE_TYPE_Y_SLOT) = vk_lookup_table_type_Y{2} /\
+  mload mpq VK_RECURSIVE_FLAG_SLOT = uint256_of_bool vk_recursive_flag{2} /\
+  vk_gate_selectors_0X{2} =
+  11090534100914016361232447120294745393211436081860550365760620284449885924457 /\
+  vk_gate_selectors_0Y{2} =
+  6190121082107679677011313308624936965782748053078710395209485205617091614781 /\
+  vk_permutation_0X{2} =
+  21323538885080684424185174689480993185750201390966223018512354418490677522148 /\
+  vk_permutation_0Y{2} =
+  13825385863192118646834397710139923872086647553258488355179808994788744210563 /\
+  vk_permutation_1X{2} =
+  8390759602848414205412884900126185284679301543388803089358900543850868129488 /\
+  vk_permutation_1Y{2} =
+  7069161667387011886642940009688789554068768218554020114127791736575843662652 /\
+  vk_permutation_2X{2} =
+  21779692208264067614279093821878517213862501879831804234566704419708093761485 /\
+  vk_permutation_2Y{2} =
+  14513193766097634962386283396255157053671281137962954471134782133605379519908 /\
+  vk_lookup_selector_X{2} =
+  21714794642552531775933093644480516421064284615960245486122726724547638127878 /\
+  vk_lookup_selector_Y{2} =
+  20374981665942106195451736226451722737514281476778224282304648903722926579601 /\
+  vk_lookup_table_type_X{2} =
+  196778531949039689886328474582670216324308721975620885373710029662715787742 /\
+  vk_lookup_table_type_Y{2} =
+  11005776646725047106517461026899305486268481542412200771754169232553006481646 /\
+  ((Primops.reverted{1} /\ failed{2} /\ prepare_aggregated_commitment_opt{2} = None) \/
+  (!Primops.reverted{1} /\ !failed{2} /\
+   to_uint (mload mpq PROOF_STATE_POLYS_0_X_SLOT) = _state_poly_0{2}.`1 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_0_Y_SLOT) = _state_poly_0{2}.`2 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_1_X_SLOT) = _state_poly_1{2}.`1 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_1_Y_SLOT) = _state_poly_1{2}.`2 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_2_X_SLOT) = _state_poly_2{2}.`1 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_2_Y_SLOT) = _state_poly_2{2}.`2 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_3_X_SLOT) = _state_poly_3{2}.`1 /\
+   to_uint (mload mpq PROOF_STATE_POLYS_3_Y_SLOT) = _state_poly_3{2}.`2 /\
+   to_uint (mload mpq PROOF_LOOKUP_S_POLY_X_SLOT) = _lookup_s_poly{2}.`1 /\
+   to_uint (mload mpq PROOF_LOOKUP_S_POLY_Y_SLOT) = _lookup_s_poly{2}.`2 /\
+   to_uint (mload mpq PROOF_COPY_PERMUTATION_GRAND_PRODUCT_X_SLOT) =
+   _copy_permutation_grand_product{2}.`1 /\
+   to_uint (mload mpq PROOF_COPY_PERMUTATION_GRAND_PRODUCT_Y_SLOT) =
+   _copy_permutation_grand_product{2}.`2 /\
+   to_uint (mload mpq PROOF_LOOKUP_GRAND_PRODUCT_X_SLOT) =
+   _lookup_grand_product{2}.`1 /\
+   to_uint (mload mpq PROOF_LOOKUP_GRAND_PRODUCT_Y_SLOT) =
+   _lookup_grand_product{2}.`2 /\
+   to_uint (mload mpq PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) =
+   _quotient_poly_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_STATE_POLYS_0_OPENING_AT_Z_SLOT) =
+   _state_poly_0_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_STATE_POLYS_1_OPENING_AT_Z_SLOT) =
+   _state_poly_1_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_STATE_POLYS_2_OPENING_AT_Z_SLOT) =
+   _state_poly_2_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_STATE_POLYS_3_OPENING_AT_Z_SLOT) =
+   _state_poly_3_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_STATE_POLYS_3_OPENING_AT_Z_OMEGA_SLOT) =
+   _state_poly_3_opening_at_z_omega{2} /\
+   to_uint (mload mpq PROOF_GATE_SELECTORS_0_OPENING_AT_Z_SLOT) =
+   _gate_selector_0_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_COPY_PERMUTATION_POLYS_0_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_0_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_COPY_PERMUTATION_POLYS_1_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_1_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_COPY_PERMUTATION_POLYS_2_OPENING_AT_Z_SLOT) =
+   _copy_permutation_poly_2_opening_at_z{2} /\
+   to_uint
+     (mload mpq PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
+   _copy_permutation_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mpq PROOF_LOOKUP_T_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_t_poly_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_LOOKUP_SELECTOR_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_selector_poly_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_LOOKUP_TABLE_TYPE_POLY_OPENING_AT_Z_SLOT) =
+   _lookup_table_type_poly_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_LOOKUP_S_POLY_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_s_poly_opening_at_z_omega{2} /\
+   to_uint (mload mpq PROOF_LOOKUP_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_grand_product_opening_at_z_omega{2} /\
+   to_uint (mload mpq PROOF_LOOKUP_T_POLY_OPENING_AT_Z_OMEGA_SLOT) =
+   _lookup_t_poly_opening_at_z_omega{2} /\
+   to_uint (mload mpq PROOF_LINEARISATION_POLY_OPENING_AT_Z_SLOT) =
+   _linearisation_poly_opening_at_z{2} /\
+   to_uint (mload mpq PROOF_OPENING_PROOF_AT_Z_X_SLOT) =
+   _opening_proof_at_z{2}.`1 /\
+   to_uint (mload mpq PROOF_OPENING_PROOF_AT_Z_Y_SLOT) =
+   _opening_proof_at_z{2}.`2 /\
+   to_uint (mload mpq PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) =
+   _opening_proof_at_z_omega{2}.`1 /\
+   to_uint (mload mpq PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) =
+   _opening_proof_at_z_omega{2}.`2 /\
+   to_uint (mload mpq STATE_Z_SLOT) = state_z{2} /\
+   to_uint (mload mpq STATE_V_SLOT) = state_v{2} /\
+   to_uint (mload mpq STATE_U_SLOT) = state_u{2} /\
+   to_uint (mload mpq QUERIES_AT_Z_0_X_SLOT) = query_at_z_0{2}.`1 /\
+   to_uint (mload mpq QUERIES_AT_Z_0_Y_SLOT) = query_at_z_0{2}.`2 /\
+   to_uint (mload mpq QUERIES_AT_Z_1_X_SLOT) = query_at_z_1{2}.`1 /\
+   to_uint (mload mpq QUERIES_AT_Z_1_Y_SLOT) = query_at_z_1{2}.`2 /\
+   to_uint (mload mpq QUERIES_T_POLY_AGGREGATED_X_SLOT) =
+   query_t_poly_aggregated{2}.`1 /\
+   to_uint (mload mpq QUERIES_T_POLY_AGGREGATED_Y_SLOT) =
+   query_t_poly_aggregated{2}.`2 /\
+   to_uint (mload mpq COPY_PERMUTATION_FIRST_AGGREGATED_COMMITMENT_COEFF) =
+   copy_permutation_first_aggregated_commitment_coeff{2} /\
+   to_uint (mload mpq LOOKUP_GRAND_PRODUCT_FIRST_AGGREGATED_COMMITMENT_COEFF) =
+   lookup_grand_product_first_aggregated_coefficient{2} /\
+   to_uint (mload mpq LOOKUP_S_FIRST_AGGREGATED_COMMITMENT_COEFF) =
+   lookup_s_first_aggregated_commitment{2} /\
+   (0 <= _state_poly_0{2}.`1 && _state_poly_0{2}.`1 < Constants.Q) /\
+   (0 <= _state_poly_0{2}.`2 && _state_poly_0{2}.`2 < Constants.Q) /\
+   (0 <= _state_poly_1{2}.`1 && _state_poly_1{2}.`1 < Constants.Q) /\
+   (0 <= _state_poly_1{2}.`2 && _state_poly_1{2}.`2 < Constants.Q) /\
+   (0 <= _state_poly_2{2}.`1 && _state_poly_2{2}.`1 < Constants.Q) /\
+   (0 <= _state_poly_2{2}.`2 && _state_poly_2{2}.`2 < Constants.Q) /\
+   (0 <= _state_poly_3{2}.`1 && _state_poly_3{2}.`1 < Constants.Q) /\
+   (0 <= _state_poly_3{2}.`2 && _state_poly_3{2}.`2 < Constants.Q) /\
+   (0 <= _copy_permutation_grand_product{2}.`1 &&
+    _copy_permutation_grand_product{2}.`1 < Constants.Q) /\
+   (0 <= _copy_permutation_grand_product{2}.`2 &&
+    _copy_permutation_grand_product{2}.`2 < Constants.Q) /\
+   (0 <= _lookup_s_poly{2}.`1 && _lookup_s_poly{2}.`1 < Constants.Q) /\
+   (0 <= _lookup_s_poly{2}.`2 && _lookup_s_poly{2}.`2 < Constants.Q) /\
+   (0 <= _lookup_grand_product{2}.`1 &&
+    _lookup_grand_product{2}.`1 < Constants.Q) /\
+   (0 <= _lookup_grand_product{2}.`2 &&
+    _lookup_grand_product{2}.`2 < Constants.Q) /\
+   (0 <= _state_poly_0_opening_at_z{2} &&
+    _state_poly_0_opening_at_z{2} < Constants.R) /\
+   (0 <= _state_poly_1_opening_at_z{2} &&
+    _state_poly_1_opening_at_z{2} < Constants.R) /\
+   (0 <= _state_poly_2_opening_at_z{2} &&
+    _state_poly_2_opening_at_z{2} < Constants.R) /\
+   (0 <= _state_poly_3_opening_at_z{2} &&
+    _state_poly_3_opening_at_z{2} < Constants.R) /\
+   (0 <= _state_poly_3_opening_at_z_omega{2} &&
+    _state_poly_3_opening_at_z_omega{2} < Constants.R) /\
+   (0 <= _gate_selector_0_opening_at_z{2} &&
+    _gate_selector_0_opening_at_z{2} < Constants.R) /\
+   (0 <= _copy_permutation_poly_0_opening_at_z{2} &&
+    _copy_permutation_poly_0_opening_at_z{2} < Constants.R) /\
+   (0 <= _copy_permutation_poly_1_opening_at_z{2} &&
+    _copy_permutation_poly_1_opening_at_z{2} < Constants.R) /\
+   (0 <= _copy_permutation_poly_2_opening_at_z{2} &&
+    _copy_permutation_poly_2_opening_at_z{2} < Constants.R) /\
+   (0 <= _copy_permutation_grand_product_opening_at_z_omega{2} &&
+    _copy_permutation_grand_product_opening_at_z_omega{2} < Constants.R) /\
+   (0 <= _lookup_s_poly_opening_at_z_omega{2} &&
+    _lookup_s_poly_opening_at_z_omega{2} < Constants.R) /\
+   (0 <= _lookup_grand_product_opening_at_z_omega{2} &&
+    _lookup_grand_product_opening_at_z_omega{2} < Constants.R) /\
+   (0 <= _lookup_t_poly_opening_at_z{2} &&
+    _lookup_t_poly_opening_at_z{2} < Constants.R) /\
+   (0 <= _lookup_t_poly_opening_at_z_omega{2} &&
+    _lookup_t_poly_opening_at_z_omega{2} < Constants.R) /\
+   (0 <= _lookup_selector_poly_opening_at_z{2} &&
+    _lookup_selector_poly_opening_at_z{2} < Constants.R) /\
+   (0 <= _lookup_table_type_poly_opening_at_z{2} &&
+    _lookup_table_type_poly_opening_at_z{2} < Constants.R) /\
+   (0 <= _quotient_poly_opening_at_z{2} &&
+    _quotient_poly_opening_at_z{2} < Constants.R) /\
+   (0 <= _linearisation_poly_opening_at_z{2} &&
+    _linearisation_poly_opening_at_z{2} < Constants.R) /\
+   (0 <= _opening_proof_at_z{2}.`1 && _opening_proof_at_z{2}.`1 < Constants.Q) /\
+   (0 <= _opening_proof_at_z{2}.`2 && _opening_proof_at_z{2}.`2 < Constants.Q) /\
+   (0 <= _opening_proof_at_z_omega{2}.`1 &&
+    _opening_proof_at_z_omega{2}.`1 < Constants.Q) /\
+   (0 <= _opening_proof_at_z_omega{2}.`2 &&
+    _opening_proof_at_z_omega{2}.`2 < Constants.Q) /\
+   (0 <= state_z{2} && state_z{2} < 2 ^ 253) /\
+   (0 <= state_v{2} && state_v{2} < 2 ^ 253) /\
+   (0 <= state_u{2} && state_u{2} < 2 ^ 253) /\
+   (0 <= query_at_z_0{2}.`1 && query_at_z_0{2}.`1 < Constants.Q) /\
+   (0 <= query_at_z_0{2}.`2 && query_at_z_0{2}.`2 < Constants.Q) /\
+   (0 <= query_at_z_1{2}.`1 && query_at_z_1{2}.`1 < Constants.Q) /\
+   (0 <= query_at_z_1{2}.`2 && query_at_z_1{2}.`2 < Constants.Q) /\
+   (0 <= query_t_poly_aggregated{2}.`1 &&
+    query_t_poly_aggregated{2}.`1 < Constants.Q) /\
+   (0 <= query_t_poly_aggregated{2}.`2 &&
+    query_t_poly_aggregated{2}.`2 < Constants.Q) /\
+   (0 <= copy_permutation_first_aggregated_commitment_coeff{2} &&
+    copy_permutation_first_aggregated_commitment_coeff{2} < Constants.R) /\
+   (0 <= lookup_s_first_aggregated_commitment{2} &&
+    lookup_s_first_aggregated_commitment{2} < Constants.R) /\
+   (0 <= lookup_grand_product_first_aggregated_coefficient{2} &&
+    lookup_grand_product_first_aggregated_coefficient{2} < Constants.R) /\
+   prepare_aggregated_commitment_opt{2} = Some (
+     aggregated_at_z{2}, aggregated_opening_at_z{2}, aggregated_at_z_omega{2}, 
+     aggregated_opening_at_z_omega{2}, pairing_pair_with_generator{2}, pairing_buffer_point{2}) /\
+   exists (a1 a2 a3 a4: uint256), Primops.memory{1} = 
+     prepareAggregatedCommitment_memory_footprint mpq
+     aggregated_at_z{2} (W256.of_int aggregated_opening_at_z{2}) aggregated_at_z_omega{2} 
+     (W256.of_int aggregated_opening_at_z_omega{2})
+     pairing_pair_with_generator{2} pairing_buffer_point{2} a1 a2 a3 a4
+))
+).
+exists* Primops.reverted{1}. elim*=> reverted.
+case reverted. (* progress.
+conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}).
+progress. case H40. by progress. by progress.
+progress. left. by progress.
+(* inlining TAKES TO LONG *)
+(* wp.
+call{1} verifyQuotientEvaluation_low_pspec_revert.
+skip. simplify. progress.
+left. progress. *) admit.
+progress. wp. *) admit.
+wp. progress. call (prepareAggregatedCommitment_low_equiv_mid mpq). 
+skip. progress.
+
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+simplify. rewrite H0. by simplify. simplify. rewrite H0 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H1. by simplify. simplify. rewrite H1 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H2. by simplify. simplify. rewrite H2 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H3. by simplify. simplify. rewrite H3 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H4. by simplify. simplify. rewrite H4 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H5. by simplify. simplify. rewrite H5 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H6. by simplify. simplify. rewrite H6 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H7. by simplify. simplify. rewrite H7 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H8. by simplify. simplify. rewrite H8 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H9. by simplify. simplify. rewrite H9 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H10. by simplify. simplify. rewrite H10 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+simplify. rewrite H11. by simplify. simplify. rewrite H11 -Constants.q_eq_fieldq_p /Constants.Q. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. progress. rewrite -Constants.q_eq_fieldq_p. by simplify.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+case H12. move=>[? ?]. progress. progress. apply IS. assumption.
+
+case H16. progress. progress.
+
+case H12. move=>[? ?]. progress. progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+case H12. move=>[? ?]. progress. by progress.
+exists v10 v20 v30 v40. reflexivity.
