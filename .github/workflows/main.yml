@@ -1,0 +1,40 @@
+name: Check the proofs
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+    - name: Install EasyCrypt dependencies
+      run: |
+        sudo apt-get update
+        sudo apt install -y opam cvc4 pkg-config libgmp-dev libpcre3-dev zlib1g-dev libmpfr-dev libppl-dev autoconf
+        pip install z3-solver==4.8.7 --break-system-packages
+    - name: Install EC deps (opam)
+      run: | 
+        opam init --disable-sandboxing
+        opam update
+        opam pin -y alt-ergo 2.4.2
+        opam pin -y why3 1.7.0
+        opam pin add -y easycrypt https://github.com/EasyCrypt/easycrypt.git#86db790a841b6a182a7efd67d39c86e5bbaceb1a --update-invariant
+        opam install -y easycrypt jasmin.2022.09.3 --update-invariant
+        opam install -y alt-ergo
+        opam install -y why3
+        eval $(opam env --switch=default)
+    - name: Check'em all
+      run: |
+        eval $(opam env --switch=default)
+        cd src/
+        bash ../script/checkall

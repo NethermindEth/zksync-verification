@@ -5,7 +5,7 @@ build:
     @echo "Building the {{image}}."
     docker build -t {{image}} .
 
-xhost-docker: 
+xhost-docker:
     xhost +local:docker
 
 bash: build xhost-docker
@@ -27,3 +27,11 @@ emacs: build xhost-docker
         --mount type=bind,source=$(readlink -f ./script),target=/tmp/script \
         -it {{image}} \
         -c "cd /tmp/script; bash entrypoint.sh emacs-gtk"
+
+test: build
+    docker run -h {{image}} \
+        --net=host \
+        --mount type=bind,source=$(readlink -f ./src),target={{project_dir}} \
+        --mount type=bind,source=$(readlink -f ./script),target=/tmp/script \
+        {{image}} \
+        -c "cd /tmp/script; bash test.sh"
