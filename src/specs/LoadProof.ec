@@ -681,6 +681,8 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
         0 <= r.`30 < Constants.R /\
         0 <= r.`31.`1 < Constants.Q /\ 0 <= r.`31.`2 < Constants.Q /\
         0 <= r.`32.`1 < Constants.Q /\ 0 <= r.`32.`2 < Constants.Q /\
+        0 <= (odflt (0,0) r.`33).`1 < Constants.Q /\ 0 <= (odflt (0,0) r.`33).`2 < Constants.Q /\
+        0 <= (odflt (0,0) r.`34).`1 < Constants.Q /\ 0 <= (odflt (0,0) r.`34).`2 < Constants.Q /\
         Primops.memory{1} = loadProof_memory_footprint
           mem_0
           recursive
@@ -2607,6 +2609,8 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       exact H_r_0. exact H_r_r.
       exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
       exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
 
       rewrite /loadProof_memory_footprint. progress.
       rewrite H2. progress.
@@ -2717,7 +2721,10 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       exact H_r_0. exact H_r_r.
       exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
       exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
-      
+      by rewrite /Constants.Q; trivial.
+      by rewrite /Constants.Q; trivial.
+      by rewrite /Constants.Q; trivial.
+      by rewrite /Constants.Q; trivial.
       rewrite /loadProof_memory_footprint. progress.
       rewrite H2. progress.
       pose mem_1 := store mem_0 _ _.
