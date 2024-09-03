@@ -10,11 +10,6 @@ require import YulPrimops.
 require import Utils.
 require import VerifierConsts.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-abbrev [-] = FieldR.([-]).
-
 module PermutationQuotientContribution = {
   proc low(): uint256 = {
     var _res, tmp270, tmp271, _gamma, _beta, _factorMultiplier, tmp274, tmp275, tmp276, tmp277, tmp278, tmp279, tmp280, _22, _l0AtZ, tmp282, _26;
@@ -632,25 +627,36 @@ equiv [PermutationQuotientContribution.mid ~ PermutationQuotientContribution.hig
     proofStatePolys3OpeningAtZG,
     stateL0AtZG)
   ==>
-    FieldR.inF res{1} = res{2}].
+    res{1} = FieldR.asint res{2}
+].
 proof.
 proc. 
-seq 1 0 : (#pre /\ FieldR.inF s0BGa{1} = proofCopyPermutationPolys0OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys0OpeningAtZG).
+seq 1 0 : (
+  #pre /\
+  s0BGa{1} = FieldR.asint (proofCopyPermutationPolys0OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys0OpeningAtZG)
+).
 wp. skip. progress.
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFM. do! rewrite FieldR.asintK.
-by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF s1BGb{1} = proofCopyPermutationPolys1OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys1OpeningAtZG).
+rewrite Constants.r_eq_fieldr_p.
+rewrite FieldR.addE FieldR.addE FieldR.mulE.
+rewrite -modzDml. congr. congr. congr.
+rewrite -modzDml. reflexivity.
+seq 1 0 : (#pre /\ s1BGb{1} = FieldR.asint (proofCopyPermutationPolys1OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys1OpeningAtZG)).
 wp. skip. progress.
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFM. do! rewrite FieldR.asintK.
-by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF s2BGc{1} = proofCopyPermutationPolys2OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys2OpeningAtZG).
+rewrite Constants.r_eq_fieldr_p.
+rewrite FieldR.addE FieldR.addE FieldR.mulE.
+rewrite -modzDml. congr. congr. congr.
+rewrite -modzDml. reflexivity.
+seq 1 0 : (#pre /\ s2BGc{1} = FieldR.asint (proofCopyPermutationPolys2OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys2OpeningAtZG)).
 wp. skip. progress.
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD FieldR.inFD FieldR.inFM. do! rewrite FieldR.asintK.
-by reflexivity.
-seq 1 0 : (#pre /\ FieldR.inF s3G{1} = proofStatePolys3OpeningAtZG  + stateGammaG).
+rewrite Constants.r_eq_fieldr_p.
+rewrite FieldR.addE FieldR.addE FieldR.mulE.
+rewrite -modzDml. congr. congr. congr.
+rewrite -modzDml. reflexivity.
+seq 1 0 : (#pre /\ s3G{1} = FieldR.asint (proofStatePolys3OpeningAtZG  + stateGammaG)).
 wp. skip. progress.
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD. do! rewrite FieldR.asintK.
-by reflexivity.
+rewrite Constants.r_eq_fieldr_p.
+rewrite FieldR.addE.
+reflexivity.
 seq 1 0 : (#pre /\ FieldR.inF inv1{1} = - (statePowerOfAlpha4G * proofCopyPermutationGrandProductOpeningAtZOmegaG
   * (proofCopyPermutationPolys0OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys0OpeningAtZG)
   * (proofCopyPermutationPolys1OpeningAtZG * stateBetaG + stateGammaG + proofStatePolys1OpeningAtZG)
@@ -658,15 +664,19 @@ seq 1 0 : (#pre /\ FieldR.inF inv1{1} = - (statePowerOfAlpha4G * proofCopyPermut
   * (proofStatePolys3OpeningAtZG  + stateGammaG))).
 wp. skip. progress.
 rewrite Constants.r_eq_fieldr_p FieldR.inFD FieldR.inFN -FieldR.inF_mod. do! rewrite FieldR.inFM. do! rewrite FieldR.asintK.
-rewrite FieldR.inF_mod H H0 H1 H2 IntDiv.modzz.
-by smt(@FieldR).
+have ->: FieldR.inF FieldR.p = FieldR.zero by smt (@FieldR).
+by smt (@FieldR).
 seq 1 0 : (#pre /\ FieldR.inF inv2{1} = - statePowerOfAlpha5G * stateL0AtZG). 
 wp. skip. progress.
 rewrite Constants.r_eq_fieldr_p FieldR.inFD FieldR.inFN -FieldR.inF_mod. do! rewrite FieldR.inFM. do! rewrite FieldR.asintK.
 rewrite FieldR.inF_mod  IntDiv.modzz.
 by smt(@FieldR).
 skip. progress. 
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inFD H3 H4.
-by reflexivity.
+rewrite Constants.r_eq_fieldr_p.
+rewrite -modzDm.
+rewrite -(FieldR.inFK inv1{1}).
+rewrite -(FieldR.inFK inv2{1}).
+rewrite H H0.
+smt (@FieldR).
 qed. 
 end section.

@@ -1619,8 +1619,8 @@ lemma finalPairing_mid_equiv_high_encapsulated:
       opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
       opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
       ={vk_recursive_flag} /\
-      recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
-      recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) ==>
+      (recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) \/ !vk_recursive_flag{2}) /\
+      (recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) \/ !vk_recursive_flag{2}) ==>
       ={res}
     ].
     proof.
@@ -1659,13 +1659,17 @@ lemma finalPairing_mid_equiv_high_encapsulated:
         uu{1} = FieldR.asint (u{2} * u{2})
       ).
       sp. wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+      by case H; progress.
+      by case H; progress.
       rewrite FieldR.mulE Constants.r_eq_fieldr_p. reflexivity.
 
       seq 3 1: #pre.
-      wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. by progress.
+      wp. call pointMulAndAddIntoDest_mid_equiv_high. skip. progress.
+      by case H0; progress.
+      by case H0; progress.
 
       wp. skip. progress.
-      rewrite H. progress.
+      rewrite H1. progress.
       rewrite F_to_int_point_inzmod_1.
       rewrite F_to_int_point_inzmod_2.
       rewrite F_to_int_point_inzmod_1.
@@ -1686,7 +1690,7 @@ lemma finalPairing_mid_equiv_high_encapsulated:
       by progress.
 
       wp. skip. progress.
-      rewrite H. progress.
+      rewrite H1. progress.
       rewrite F_to_int_point_inzmod_1.
       rewrite F_to_int_point_inzmod_2.
       rewrite F_to_int_point_inzmod_1.
@@ -1717,8 +1721,8 @@ lemma finalPairing_mid_equiv_high:
       opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
       opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
       ={vk_recursive_flag} /\
-      recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
-      recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) ==>
+      (recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) \/ !vk_recursive_flag{2}) /\
+      (recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) \/ !vk_recursive_flag{2}) ==>
       ={res}
     ].
     proof.
@@ -1731,8 +1735,8 @@ lemma finalPairing_mid_equiv_high:
         opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
         opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
         ={vk_recursive_flag} /\
-        recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
-        recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) ==>
+        (recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) \/ !vk_recursive_flag{2}) /\
+        (recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) \/ !vk_recursive_flag{2}) ==>
         ={res}
       )
       (

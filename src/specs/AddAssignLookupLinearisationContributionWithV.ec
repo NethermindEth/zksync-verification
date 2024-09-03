@@ -11,10 +11,6 @@ require import YulPrimops.
 
 import MemoryMap.
 
-abbrev (+) = FieldR.(+).
-abbrev ( * ) = FieldR.( * ).
-abbrev [-] = FieldR.([-]).
-
 module AddAssignLookupLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256): unit = {
     var factor, _2, _3, _5, _9, _11, _13, fReconstructed, eta', currentEta, _15, _16, _18, _19, _21, _23, _25, _26, _27, _29, _31, _32, _34, _36, _37, _38;

@@ -14,10 +14,6 @@ require import VerifierConsts.
 require import YulPrimops.
 require import Keccak.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-
 module InitializeTranscript = {
   proc low(): unit = {
     var _2, _4, _6, _8, _10, _12, _14, _16, _18, _20, _23, _25, _27, _30, _33, _35, _37, _40, _43, _45, _47, _50, _52, _54, _56, _58, _60, _62, _64, z, _68, _71, _73, _75, _77, _79, _81, _83, _85, _87, _89, _91, _93, _95, _97, _99, _101, _103, _105, _107, _110, _112, _114, _116, _118;
@@ -253,90 +249,90 @@ module InitializeTranscript = {
             stateGammaLookup, stateEta, stateZ, stateZInDomain, stateV, stateU);
   }
 
-  proc high(
+  proc high_encapsulated(
       initialS0 initialS1 : int,
-       publicInput
-       proofStatePolys0X proofStatePolys0Y
-       proofStatePolys1X proofStatePolys1Y
-       proofStatePolys2X proofStatePolys2Y
-       proofStatePolys3X proofStatePolys3Y
-       proofLookupSPolyX proofLookupSPolyY
-       proofCopyPermutationGrandProductX proofCopyPermutationGrandProductY
-       proofLookupGrandProductX proofLookupGrandProductY
-       proofQuotientPolyParts0X proofQuotientPolyParts0Y
-       proofQuotientPolyParts1X proofQuotientPolyParts1Y
-       proofQuotientPolyParts2X proofQuotientPolyParts2Y
-       proofQuotientPolyParts3X proofQuotientPolyParts3Y
-       proofQuotientPolyOpeningAtZ
-       proofStatePolys0OpeningAtZ proofStatePolys1OpeningAtZ
-       proofStatePolys2OpeningAtZ proofStatePolys3OpeningAtZ
-       proofStatePolys3OpeningAtZOmega
-       proofGateSelectors0OpeningAtZ
-       proofCopyPermutationPolys0OpeningAtZ proofCopyPermutationPolys1OpeningAtZ proofCopyPermutationPolys2OpeningAtZ
-       proofCopyPermutationGrandProductOpeningAtZOmega
-       proofLookupTPolyOpeningAtZ
-       proofLookupSelectorPolyOpeningAtZ
-       proofLookupTableTypePolyOpeningAtZ
-       proofLookupSPolyOpeningAtZOmega
-       proofLookupGrandProductOpeningAtZOmega
-       proofLookupTPolyOpeningAtZOmega
-       proofLinearisationPolyOpeningAtZ
-       proofOpeningProofAtZX proofOpeningProofAtZY
-       proofOpeningProofAtZOmegaX proofOpeningProofAtZOmegaY: FieldR.F) :
+       publicInput: FieldR.F,
+       proofStatePolys0: g,
+       proofStatePolys1: g,
+       proofStatePolys2: g,
+       proofStatePolys3: g,
+       proofLookupSPoly: g,
+       proofCopyPermutationGrandProduct: g,
+       proofLookupGrandProduct: g,
+       proofQuotientPolyParts0: g,
+       proofQuotientPolyParts1: g,
+       proofQuotientPolyParts2: g,
+       proofQuotientPolyParts3: g,
+       proofQuotientPolyOpeningAtZ: FieldR.F,
+       proofStatePolys0OpeningAtZ proofStatePolys1OpeningAtZ: FieldR.F,
+       proofStatePolys2OpeningAtZ proofStatePolys3OpeningAtZ: FieldR.F,
+       proofStatePolys3OpeningAtZOmega: FieldR.F,
+       proofGateSelectors0OpeningAtZ: FieldR.F,
+       proofCopyPermutationPolys0OpeningAtZ proofCopyPermutationPolys1OpeningAtZ proofCopyPermutationPolys2OpeningAtZ: FieldR.F,
+       proofCopyPermutationGrandProductOpeningAtZOmega: FieldR.F,
+       proofLookupTPolyOpeningAtZ: FieldR.F,
+       proofLookupSelectorPolyOpeningAtZ: FieldR.F,
+       proofLookupTableTypePolyOpeningAtZ: FieldR.F,
+       proofLookupSPolyOpeningAtZOmega: FieldR.F,
+       proofLookupGrandProductOpeningAtZOmega: FieldR.F,
+       proofLookupTPolyOpeningAtZOmega: FieldR.F,
+       proofLinearisationPolyOpeningAtZ: FieldR.F,
+       proofOpeningProofAtZ: g,
+       proofOpeningProofAtZOmega: g) :
       FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F = {
 
     var stateAlpha, stateBeta, stateBetaLookup, stateGamma, stateGammaLookup, stateEta : FieldR.F;
     var stateZ, stateZInDomain, stateV, stateU : FieldR.F;
-    var state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3, 
+    var state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3,
         state0_4, state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7,
         state0_8, state1_8, state0_9, state1_9, state0_10, state1_10, state0_11, state1_11,
         state0_12, state1_12, state0_13, state1_13, state0_14, state1_14, state0_15, state1_15,
         state0_16, state1_16, state0_17, state1_17, state0_18, state1_18, state0_19, state1_19,
-        state0_20, state1_20, state0_21, state1_21, state0_22, state1_22, state0_23, state1_23, 
+        state0_20, state1_20, state0_21, state1_21, state0_22, state1_22, state0_23, state1_23,
         state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, state0_27, state1_27,
         state0_28, state1_28, state0_29, state1_29, state0_30, state1_30, state0_31, state1_31,
         state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, state0_35, state1_35,
         state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, state0_39, state1_39,
-        state0_40, state1_40, state0_41, state1_41, state0_42, state1_42, state0_43, state1_43, 
+        state0_40, state1_40, state0_41, state1_41, state0_42, state1_42, state0_43, state1_43,
         state0_44, state1_44 : int;
 
     (state0_0, state1_0) <@ UpdateTranscript.mid(initialS0, initialS1, FieldR.asint publicInput);
-    (state0_1, state1_1) <@ UpdateTranscript.mid(state0_0, state1_0, FieldR.asint proofStatePolys0X);
-    (state0_2, state1_2) <@ UpdateTranscript.mid(state0_1, state1_1, FieldR.asint proofStatePolys0Y);
-    (state0_3, state1_3) <@ UpdateTranscript.mid(state0_2, state1_2, FieldR.asint proofStatePolys1X);
-    (state0_4, state1_4) <@ UpdateTranscript.mid(state0_3, state1_3, FieldR.asint proofStatePolys1Y);
-    (state0_5, state1_5) <@ UpdateTranscript.mid(state0_4, state1_4, FieldR.asint proofStatePolys2X);
-    (state0_6, state1_6) <@ UpdateTranscript.mid(state0_5, state1_5, FieldR.asint proofStatePolys2Y);
-    (state0_7, state1_7) <@ UpdateTranscript.mid(state0_6, state1_6, FieldR.asint proofStatePolys3X);
-    (state0_8, state1_8) <@ UpdateTranscript.mid(state0_7, state1_7, FieldR.asint proofStatePolys3Y);
+    (state0_1, state1_1) <@ UpdateTranscript.mid(state0_0, state1_0, (F_to_int_point (aspoint_G1 proofStatePolys0)).`1);
+    (state0_2, state1_2) <@ UpdateTranscript.mid(state0_1, state1_1, (F_to_int_point (aspoint_G1 proofStatePolys0)).`2);
+    (state0_3, state1_3) <@ UpdateTranscript.mid(state0_2, state1_2, (F_to_int_point (aspoint_G1 proofStatePolys1)).`1);
+    (state0_4, state1_4) <@ UpdateTranscript.mid(state0_3, state1_3, (F_to_int_point (aspoint_G1 proofStatePolys1)).`2);
+    (state0_5, state1_5) <@ UpdateTranscript.mid(state0_4, state1_4, (F_to_int_point (aspoint_G1 proofStatePolys2)).`1);
+    (state0_6, state1_6) <@ UpdateTranscript.mid(state0_5, state1_5, (F_to_int_point (aspoint_G1 proofStatePolys2)).`2);
+    (state0_7, state1_7) <@ UpdateTranscript.mid(state0_6, state1_6, (F_to_int_point (aspoint_G1 proofStatePolys3)).`1);
+    (state0_8, state1_8) <@ UpdateTranscript.mid(state0_7, state1_7, (F_to_int_point (aspoint_G1 proofStatePolys3)).`2);
     
     stateEta <- FieldR.inF ((keccakC 2 state0_8 state1_8 0) %% 2^253);
 
-    (state0_9,   state1_9) <@ UpdateTranscript.mid(state0_8, state1_8, FieldR.asint proofLookupSPolyX);
-    (state0_10, state1_10) <@ UpdateTranscript.mid(state0_9, state1_9, FieldR.asint proofLookupSPolyY);
+    (state0_9,   state1_9) <@ UpdateTranscript.mid(state0_8, state1_8, (F_to_int_point (aspoint_G1 proofLookupSPoly)).`1);
+    (state0_10, state1_10) <@ UpdateTranscript.mid(state0_9, state1_9, (F_to_int_point (aspoint_G1 proofLookupSPoly)).`2);
     
     stateBeta  <- FieldR.inF ((keccakC 2 state0_10 state1_10 1) %% 2^253);
-    stateGamma <- FieldR.inF ((keccakC 2 state0_10 state1_10 2) %% 2^253);                                   
+    stateGamma <- FieldR.inF ((keccakC 2 state0_10 state1_10 2) %% 2^253);
 
-    (state0_11, state1_11) <@ UpdateTranscript.mid(state0_10, state1_10, FieldR.asint proofCopyPermutationGrandProductX);
-    (state0_12, state1_12) <@ UpdateTranscript.mid(state0_11, state1_11, FieldR.asint proofCopyPermutationGrandProductY);    
+    (state0_11, state1_11) <@ UpdateTranscript.mid(state0_10, state1_10, (F_to_int_point (aspoint_G1 proofCopyPermutationGrandProduct)).`1);
+    (state0_12, state1_12) <@ UpdateTranscript.mid(state0_11, state1_11, (F_to_int_point (aspoint_G1 proofCopyPermutationGrandProduct)).`2);
 
     stateBetaLookup  <- FieldR.inF ((keccakC 2 state0_12 state1_12 3) %% 2^253);
     stateGammaLookup <- FieldR.inF ((keccakC 2 state0_12 state1_12 4) %% 2^253);
 
-    (state0_13, state1_13) <@ UpdateTranscript.mid(state0_12, state1_12, FieldR.asint proofLookupGrandProductX);
-    (state0_14, state1_14) <@ UpdateTranscript.mid(state0_13, state1_13, FieldR.asint proofLookupGrandProductY);
+    (state0_13, state1_13) <@ UpdateTranscript.mid(state0_12, state1_12, (F_to_int_point (aspoint_G1 proofLookupGrandProduct)).`1);
+    (state0_14, state1_14) <@ UpdateTranscript.mid(state0_13, state1_13, (F_to_int_point (aspoint_G1 proofLookupGrandProduct)).`2);
 
     stateAlpha <- FieldR.inF ((keccakC 2 state0_14 state1_14 5) %% 2^253);
     
-    (state0_15, state1_15) <@ UpdateTranscript.mid(state0_14, state1_14, FieldR.asint proofQuotientPolyParts0X);
-    (state0_16, state1_16) <@ UpdateTranscript.mid(state0_15, state1_15, FieldR.asint proofQuotientPolyParts0Y);
-    (state0_17, state1_17) <@ UpdateTranscript.mid(state0_16, state1_16, FieldR.asint proofQuotientPolyParts1X);
-    (state0_18, state1_18) <@ UpdateTranscript.mid(state0_17, state1_17, FieldR.asint proofQuotientPolyParts1Y);
-    (state0_19, state1_19) <@ UpdateTranscript.mid(state0_18, state1_18, FieldR.asint proofQuotientPolyParts2X);
-    (state0_20, state1_20) <@ UpdateTranscript.mid(state0_19, state1_19, FieldR.asint proofQuotientPolyParts2Y);
-    (state0_21, state1_21) <@ UpdateTranscript.mid(state0_20, state1_20, FieldR.asint proofQuotientPolyParts3X);
-    (state0_22, state1_22) <@ UpdateTranscript.mid(state0_21, state1_21, FieldR.asint proofQuotientPolyParts3Y);
+    (state0_15, state1_15) <@ UpdateTranscript.mid(state0_14, state1_14, (F_to_int_point (aspoint_G1 proofQuotientPolyParts0)).`1);
+    (state0_16, state1_16) <@ UpdateTranscript.mid(state0_15, state1_15, (F_to_int_point (aspoint_G1 proofQuotientPolyParts0)).`2);
+    (state0_17, state1_17) <@ UpdateTranscript.mid(state0_16, state1_16, (F_to_int_point (aspoint_G1 proofQuotientPolyParts1)).`1);
+    (state0_18, state1_18) <@ UpdateTranscript.mid(state0_17, state1_17, (F_to_int_point (aspoint_G1 proofQuotientPolyParts1)).`2);
+    (state0_19, state1_19) <@ UpdateTranscript.mid(state0_18, state1_18, (F_to_int_point (aspoint_G1 proofQuotientPolyParts2)).`1);
+    (state0_20, state1_20) <@ UpdateTranscript.mid(state0_19, state1_19, (F_to_int_point (aspoint_G1 proofQuotientPolyParts2)).`2);
+    (state0_21, state1_21) <@ UpdateTranscript.mid(state0_20, state1_20, (F_to_int_point (aspoint_G1 proofQuotientPolyParts3)).`1);
+    (state0_22, state1_22) <@ UpdateTranscript.mid(state0_21, state1_21, (F_to_int_point (aspoint_G1 proofQuotientPolyParts3)).`2);
 
     stateZ <- FieldR.inF ((keccakC 2 state0_22 state1_22 6) %% 2^253);
     stateZInDomain <- stateZ^Constants.DOMAIN_SIZE;
@@ -362,15 +358,180 @@ module InitializeTranscript = {
 
     stateV <- FieldR.inF ((keccakC 2 state0_40 state1_40 7) %% 2^253);
 
-    (state0_41, state1_41) <@ UpdateTranscript.mid(state0_40, state1_40, FieldR.asint proofOpeningProofAtZX);
-    (state0_42, state1_42) <@ UpdateTranscript.mid(state0_41, state1_41, FieldR.asint proofOpeningProofAtZY);
-    (state0_43, state1_43) <@ UpdateTranscript.mid(state0_42, state1_42, FieldR.asint proofOpeningProofAtZOmegaX);
-    (state0_44, state1_44) <@ UpdateTranscript.mid(state0_43, state1_43, FieldR.asint proofOpeningProofAtZOmegaY);
+    (state0_41, state1_41) <@ UpdateTranscript.mid(state0_40, state1_40, (F_to_int_point (aspoint_G1 proofOpeningProofAtZ)).`1);
+    (state0_42, state1_42) <@ UpdateTranscript.mid(state0_41, state1_41, (F_to_int_point (aspoint_G1 proofOpeningProofAtZ)).`2);
+    (state0_43, state1_43) <@ UpdateTranscript.mid(state0_42, state1_42, (F_to_int_point (aspoint_G1 proofOpeningProofAtZOmega)).`1);
+    (state0_44, state1_44) <@ UpdateTranscript.mid(state0_43, state1_43, (F_to_int_point (aspoint_G1 proofOpeningProofAtZOmega)).`2);
 
     stateU <- FieldR.inF ((keccakC 2 state0_44 state1_44 8) %% 2^253);
 
     return (stateAlpha, stateBeta, stateBetaLookup, stateGamma,
             stateGammaLookup, stateEta, stateZ, stateZInDomain, stateV, stateU);
+  }
+
+    proc high(
+      initialS0 initialS1 : int,
+       publicInput: FieldR.F,
+       proofStatePolys0: g,
+       proofStatePolys1: g,
+       proofStatePolys2: g,
+       proofStatePolys3: g,
+       proofLookupSPoly: g,
+       proofCopyPermutationGrandProduct: g,
+       proofLookupGrandProduct: g,
+       proofQuotientPolyParts0: g,
+       proofQuotientPolyParts1: g,
+       proofQuotientPolyParts2: g,
+       proofQuotientPolyParts3: g,
+       proofQuotientPolyOpeningAtZ: FieldR.F,
+       proofStatePolys0OpeningAtZ proofStatePolys1OpeningAtZ: FieldR.F,
+       proofStatePolys2OpeningAtZ proofStatePolys3OpeningAtZ: FieldR.F,
+       proofStatePolys3OpeningAtZOmega: FieldR.F,
+       proofGateSelectors0OpeningAtZ: FieldR.F,
+       proofCopyPermutationPolys0OpeningAtZ proofCopyPermutationPolys1OpeningAtZ proofCopyPermutationPolys2OpeningAtZ: FieldR.F,
+       proofCopyPermutationGrandProductOpeningAtZOmega: FieldR.F,
+       proofLookupTPolyOpeningAtZ: FieldR.F,
+       proofLookupSelectorPolyOpeningAtZ: FieldR.F,
+       proofLookupTableTypePolyOpeningAtZ: FieldR.F,
+       proofLookupSPolyOpeningAtZOmega: FieldR.F,
+       proofLookupGrandProductOpeningAtZOmega: FieldR.F,
+       proofLookupTPolyOpeningAtZOmega: FieldR.F,
+       proofLinearisationPolyOpeningAtZ: FieldR.F,
+       proofOpeningProofAtZ: g,
+       proofOpeningProofAtZOmega: g) :
+      FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F * FieldR.F = {
+
+    var stateAlpha, stateBeta, stateBetaLookup, stateGamma, stateGammaLookup, stateEta : FieldR.F;
+    var stateZ, stateZInDomain, stateV, stateU : FieldR.F;
+    var state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3,
+        state0_4, state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7,
+        state0_8, state1_8, state0_9, state1_9, state0_10, state1_10, state0_11, state1_11,
+        state0_12, state1_12, state0_13, state1_13, state0_14, state1_14, state0_15, state1_15,
+        state0_16, state1_16, state0_17, state1_17, state0_18, state1_18, state0_19, state1_19,
+        state0_20, state1_20, state0_21, state1_21, state0_22, state1_22, state0_23, state1_23,
+        state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, state0_27, state1_27,
+        state0_28, state1_28, state0_29, state1_29, state0_30, state1_30, state0_31, state1_31,
+        state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, state0_35, state1_35,
+        state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, state0_39, state1_39,
+        state0_40, state1_40, state0_41, state1_41, state0_42, state1_42, state0_43, state1_43,
+        state0_44, state1_44 : int;
+
+      state0_0 <- keccakT 0 initialS0 initialS1 (FieldR.asint publicInput);
+      state1_0 <- keccakT 1 initialS0 initialS1 (FieldR.asint publicInput);
+      state0_1 <- keccakT 0 state0_0 state1_0 (F_to_int_point (aspoint_G1 proofStatePolys0)).`1;
+      state1_1 <- keccakT 1 state0_0 state1_0 (F_to_int_point (aspoint_G1 proofStatePolys0)).`1;
+      state0_2 <- keccakT 0 state0_1 state1_1 (F_to_int_point (aspoint_G1 proofStatePolys0)).`2;
+      state1_2 <- keccakT 1 state0_1 state1_1 (F_to_int_point (aspoint_G1 proofStatePolys0)).`2;
+      state0_3 <- keccakT 0 state0_2 state1_2 (F_to_int_point (aspoint_G1 proofStatePolys1)).`1;
+      state1_3 <- keccakT 1 state0_2 state1_2 (F_to_int_point (aspoint_G1 proofStatePolys1)).`1;
+      state0_4 <- keccakT 0 state0_3 state1_3 (F_to_int_point (aspoint_G1 proofStatePolys1)).`2;
+      state1_4 <- keccakT 1 state0_3 state1_3 (F_to_int_point (aspoint_G1 proofStatePolys1)).`2;
+      state0_5 <- keccakT 0 state0_4 state1_4 (F_to_int_point (aspoint_G1 proofStatePolys2)).`1;
+      state1_5 <- keccakT 1 state0_4 state1_4 (F_to_int_point (aspoint_G1 proofStatePolys2)).`1;
+      state0_6 <- keccakT 0 state0_5 state1_5 (F_to_int_point (aspoint_G1 proofStatePolys2)).`2;
+      state1_6 <- keccakT 1 state0_5 state1_5 (F_to_int_point (aspoint_G1 proofStatePolys2)).`2;
+      state0_7 <- keccakT 0 state0_6 state1_6 (F_to_int_point (aspoint_G1 proofStatePolys3)).`1;
+      state1_7 <- keccakT 1 state0_6 state1_6 (F_to_int_point (aspoint_G1 proofStatePolys3)).`1;
+      state0_8 <- keccakT 0 state0_7 state1_7 (F_to_int_point (aspoint_G1 proofStatePolys3)).`2;
+      state1_8 <- keccakT 1 state0_7 state1_7 (F_to_int_point (aspoint_G1 proofStatePolys3)).`2;
+    
+      stateEta <- FieldR.inF ((keccakC 2 state0_8 state1_8 0) %% 2^253);
+
+      state0_9 <- keccakT 0 state0_8 state1_8 (F_to_int_point (aspoint_G1 proofLookupSPoly)).`1;
+      state1_9 <- keccakT 1 state0_8 state1_8 (F_to_int_point (aspoint_G1 proofLookupSPoly)).`1;
+      state0_10 <- keccakT 0 state0_9 state1_9 (F_to_int_point (aspoint_G1 proofLookupSPoly)).`2;
+      state1_10 <- keccakT 1 state0_9 state1_9 (F_to_int_point (aspoint_G1 proofLookupSPoly)).`2;
+    
+      stateBeta  <- FieldR.inF ((keccakC 2 state0_10 state1_10 1) %% 2^253);
+      stateGamma <- FieldR.inF ((keccakC 2 state0_10 state1_10 2) %% 2^253);
+
+      state0_11 <- keccakT 0 state0_10 state1_10 (F_to_int_point (aspoint_G1 proofCopyPermutationGrandProduct)).`1;
+      state1_11 <- keccakT 1 state0_10 state1_10 (F_to_int_point (aspoint_G1 proofCopyPermutationGrandProduct)).`1;
+      state0_12 <- keccakT 0 state0_11 state1_11 (F_to_int_point (aspoint_G1 proofCopyPermutationGrandProduct)).`2;
+      state1_12 <- keccakT 1 state0_11 state1_11 (F_to_int_point (aspoint_G1 proofCopyPermutationGrandProduct)).`2;
+
+      stateBetaLookup  <- FieldR.inF ((keccakC 2 state0_12 state1_12 3) %% 2^253);
+      stateGammaLookup <- FieldR.inF ((keccakC 2 state0_12 state1_12 4) %% 2^253);
+
+      state0_13 <- keccakT 0 state0_12 state1_12 (F_to_int_point (aspoint_G1 proofLookupGrandProduct)).`1;
+      state1_13 <- keccakT 1 state0_12 state1_12 (F_to_int_point (aspoint_G1 proofLookupGrandProduct)).`1;
+      state0_14 <- keccakT 0 state0_13 state1_13 (F_to_int_point (aspoint_G1 proofLookupGrandProduct)).`2;
+      state1_14 <- keccakT 1 state0_13 state1_13 (F_to_int_point (aspoint_G1 proofLookupGrandProduct)).`2;
+
+      stateAlpha <- FieldR.inF ((keccakC 2 state0_14 state1_14 5) %% 2^253);
+
+      state0_15 <- keccakT 0 state0_14 state1_14 (F_to_int_point (aspoint_G1 proofQuotientPolyParts0)).`1;
+      state1_15 <- keccakT 1 state0_14 state1_14 (F_to_int_point (aspoint_G1 proofQuotientPolyParts0)).`1;
+      state0_16 <- keccakT 0 state0_15 state1_15 (F_to_int_point (aspoint_G1 proofQuotientPolyParts0)).`2;
+      state1_16 <- keccakT 1 state0_15 state1_15 (F_to_int_point (aspoint_G1 proofQuotientPolyParts0)).`2;
+      state0_17 <- keccakT 0 state0_16 state1_16 (F_to_int_point (aspoint_G1 proofQuotientPolyParts1)).`1;
+      state1_17 <- keccakT 1 state0_16 state1_16 (F_to_int_point (aspoint_G1 proofQuotientPolyParts1)).`1;
+      state0_18 <- keccakT 0 state0_17 state1_17 (F_to_int_point (aspoint_G1 proofQuotientPolyParts1)).`2;
+      state1_18 <- keccakT 1 state0_17 state1_17 (F_to_int_point (aspoint_G1 proofQuotientPolyParts1)).`2;
+      state0_19 <- keccakT 0 state0_18 state1_18 (F_to_int_point (aspoint_G1 proofQuotientPolyParts2)).`1;
+      state1_19 <- keccakT 1 state0_18 state1_18 (F_to_int_point (aspoint_G1 proofQuotientPolyParts2)).`1;
+      state0_20 <- keccakT 0 state0_19 state1_19 (F_to_int_point (aspoint_G1 proofQuotientPolyParts2)).`2;
+      state1_20 <- keccakT 1 state0_19 state1_19 (F_to_int_point (aspoint_G1 proofQuotientPolyParts2)).`2;
+      state0_21 <- keccakT 0 state0_20 state1_20 (F_to_int_point (aspoint_G1 proofQuotientPolyParts3)).`1;
+      state1_21 <- keccakT 1 state0_20 state1_20 (F_to_int_point (aspoint_G1 proofQuotientPolyParts3)).`1;
+      state0_22 <- keccakT 0 state0_21 state1_21 (F_to_int_point (aspoint_G1 proofQuotientPolyParts3)).`2;
+      state1_22 <- keccakT 1 state0_21 state1_21 (F_to_int_point (aspoint_G1 proofQuotientPolyParts3)).`2;
+
+      stateZ <- FieldR.inF ((keccakC 2 state0_22 state1_22 6) %% 2^253);
+      stateZInDomain <- stateZ^Constants.DOMAIN_SIZE;
+
+      state0_23 <- keccakT 0 state0_22 state1_22 (FieldR.asint proofQuotientPolyOpeningAtZ);
+      state1_23 <- keccakT 1 state0_22 state1_22 (FieldR.asint proofQuotientPolyOpeningAtZ);
+      state0_24 <- keccakT 0 state0_23 state1_23 (FieldR.asint proofStatePolys0OpeningAtZ);
+      state1_24 <- keccakT 1 state0_23 state1_23 (FieldR.asint proofStatePolys0OpeningAtZ);
+      state0_25 <- keccakT 0 state0_24 state1_24 (FieldR.asint proofStatePolys1OpeningAtZ);
+      state1_25 <- keccakT 1 state0_24 state1_24 (FieldR.asint proofStatePolys1OpeningAtZ);
+      state0_26 <- keccakT 0 state0_25 state1_25 (FieldR.asint proofStatePolys2OpeningAtZ);
+      state1_26 <- keccakT 1 state0_25 state1_25 (FieldR.asint proofStatePolys2OpeningAtZ);
+      state0_27 <- keccakT 0 state0_26 state1_26 (FieldR.asint proofStatePolys3OpeningAtZ);
+      state1_27 <- keccakT 1 state0_26 state1_26 (FieldR.asint proofStatePolys3OpeningAtZ);
+      state0_28 <- keccakT 0 state0_27 state1_27 (FieldR.asint proofStatePolys3OpeningAtZOmega);
+      state1_28 <- keccakT 1 state0_27 state1_27 (FieldR.asint proofStatePolys3OpeningAtZOmega);
+      state0_29 <- keccakT 0 state0_28 state1_28 (FieldR.asint proofGateSelectors0OpeningAtZ);
+      state1_29 <- keccakT 1 state0_28 state1_28 (FieldR.asint proofGateSelectors0OpeningAtZ);
+      state0_30 <- keccakT 0 state0_29 state1_29 (FieldR.asint proofCopyPermutationPolys0OpeningAtZ);
+      state1_30 <- keccakT 1 state0_29 state1_29 (FieldR.asint proofCopyPermutationPolys0OpeningAtZ);
+      state0_31 <- keccakT 0 state0_30 state1_30 (FieldR.asint proofCopyPermutationPolys1OpeningAtZ);
+      state1_31 <- keccakT 1 state0_30 state1_30 (FieldR.asint proofCopyPermutationPolys1OpeningAtZ);
+      state0_32 <- keccakT 0 state0_31 state1_31 (FieldR.asint proofCopyPermutationPolys2OpeningAtZ);
+      state1_32 <- keccakT 1 state0_31 state1_31 (FieldR.asint proofCopyPermutationPolys2OpeningAtZ);
+      state0_33 <- keccakT 0 state0_32 state1_32 (FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmega);
+      state1_33 <- keccakT 1 state0_32 state1_32 (FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmega);
+      state0_34 <- keccakT 0 state0_33 state1_33 (FieldR.asint proofLookupTPolyOpeningAtZ);
+      state1_34 <- keccakT 1 state0_33 state1_33 (FieldR.asint proofLookupTPolyOpeningAtZ);
+      state0_35 <- keccakT 0 state0_34 state1_34 (FieldR.asint proofLookupSelectorPolyOpeningAtZ);
+      state1_35 <- keccakT 1 state0_34 state1_34 (FieldR.asint proofLookupSelectorPolyOpeningAtZ);
+      state0_36 <- keccakT 0 state0_35 state1_35 (FieldR.asint proofLookupTableTypePolyOpeningAtZ);
+      state1_36 <- keccakT 1 state0_35 state1_35 (FieldR.asint proofLookupTableTypePolyOpeningAtZ);
+      state0_37 <- keccakT 0 state0_36 state1_36 (FieldR.asint proofLookupSPolyOpeningAtZOmega);
+      state1_37 <- keccakT 1 state0_36 state1_36 (FieldR.asint proofLookupSPolyOpeningAtZOmega);
+      state0_38 <- keccakT 0 state0_37 state1_37 (FieldR.asint proofLookupGrandProductOpeningAtZOmega);
+      state1_38 <- keccakT 1 state0_37 state1_37 (FieldR.asint proofLookupGrandProductOpeningAtZOmega);
+      state0_39 <- keccakT 0 state0_38 state1_38 (FieldR.asint proofLookupTPolyOpeningAtZOmega);
+      state1_39 <- keccakT 1 state0_38 state1_38 (FieldR.asint proofLookupTPolyOpeningAtZOmega);
+      state0_40 <- keccakT 0 state0_39 state1_39 (FieldR.asint proofLinearisationPolyOpeningAtZ);
+      state1_40 <- keccakT 1 state0_39 state1_39 (FieldR.asint proofLinearisationPolyOpeningAtZ);
+
+      stateV <- FieldR.inF ((keccakC 2 state0_40 state1_40 7) %% 2^253);
+
+      state0_41 <- keccakT 0 state0_40 state1_40 (F_to_int_point (aspoint_G1 proofOpeningProofAtZ)).`1;
+      state1_41 <- keccakT 1 state0_40 state1_40 (F_to_int_point (aspoint_G1 proofOpeningProofAtZ)).`1;
+      state0_42 <- keccakT 0 state0_41 state1_41 (F_to_int_point (aspoint_G1 proofOpeningProofAtZ)).`2;
+      state1_42 <- keccakT 1 state0_41 state1_41 (F_to_int_point (aspoint_G1 proofOpeningProofAtZ)).`2;
+      state0_43 <- keccakT 0 state0_42 state1_42 (F_to_int_point (aspoint_G1 proofOpeningProofAtZOmega)).`1;
+      state1_43 <- keccakT 1 state0_42 state1_42 (F_to_int_point (aspoint_G1 proofOpeningProofAtZOmega)).`1;
+      state0_44 <- keccakT 0 state0_43 state1_43 (F_to_int_point (aspoint_G1 proofOpeningProofAtZOmega)).`2;
+      state1_44 <- keccakT 1 state0_43 state1_43 (F_to_int_point (aspoint_G1 proofOpeningProofAtZOmega)).`2;
+
+      stateU <- FieldR.inF ((keccakC 2 state0_44 state1_44 8) %% 2^253);
+    
+      return (stateAlpha, stateBeta, stateBetaLookup, stateGamma,
+      stateGammaLookup, stateEta, stateZ, stateZInDomain, stateV, stateU);
   }
 }.
 
@@ -400,6 +561,34 @@ proof.
 qed.
 
 import MemoryMap PurePrimops.
+
+lemma initializeTranscript_low_pspec_revert:
+    phoare [
+      InitializeTranscript.low:
+      Primops.reverted ==> Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 4! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 18! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call modexp_low_pspec_revert.
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 8! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 2! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      do 2! (call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert).
+      do 2! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      do 2! (call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert).
+      do 2! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 9! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      skip.
+      by trivial.
+    qed.
+
+
 
 op initializeTranscript_memory_footprint (m: mem)
 (sEta sBeta sGamma sBetaLookup sGammaLookup sAlpha sZ sZInDomainSize sV sU : uint256)   
@@ -433,211 +622,7 @@ let m26 = getTranscriptChallenge_memory_footprint m25 8 in
 let m27 = mstore m26 STATE_U_SLOT sU in
 m27.
 
-lemma unitializeTranscript_mid_equiv_high
-      (initialS0G initialS1G: int)
-      (publicInputG
-      proofStatePolys0XG proofStatePolys0YG
-      proofStatePolys1XG proofStatePolys1YG
-      proofStatePolys2XG proofStatePolys2YG
-      proofStatePolys3XG proofStatePolys3YG
-      proofLookupSPolyXG proofLookupSPolyYG
-      proofCopyPermutationGrandProductXG proofCopyPermutationGrandProductYG
-      proofLookupGrandProductXG proofLookupGrandProductYG
-      proofQuotientPolyParts0XG proofQuotientPolyParts0YG
-      proofQuotientPolyParts1XG proofQuotientPolyParts1YG
-      proofQuotientPolyParts2XG proofQuotientPolyParts2YG
-      proofQuotientPolyParts3XG proofQuotientPolyParts3YG
-      proofQuotientPolyOpeningAtZG
-      proofStatePolys0OpeningAtZG proofStatePolys1OpeningAtZG
-      proofStatePolys2OpeningAtZG proofStatePolys3OpeningAtZG
-      proofStatePolys3OpeningAtZOmegaG
-      proofGateSelectors0OpeningAtZG
-      proofCopyPermutationPolys0OpeningAtZG
-      proofCopyPermutationPolys1OpeningAtZG
-      proofCopyPermutationPolys2OpeningAtZG
-      proofCopyPermutationGrandProductOpeningAtZOmegaG
-      proofLookupTPolyOpeningAtZG
-      proofLookupSelectorPolyOpeningAtZG
-      proofLookupTableTypePolyOpeningAtZG
-      proofLookupSPolyOpeningAtZOmegaG
-      proofLookupGrandProductOpeningAtZOmegaG
-      proofLookupTPolyOpeningAtZOmegaG
-      proofLinearisationPolyOpeningAtZG
-      proofOpeningProofAtZXG proofOpeningProofAtZYG
-      proofOpeningProofAtZOmegaXG proofOpeningProofAtZOmegaYG : FieldR.F)
-:
-equiv [InitializeTranscript.mid ~ InitializeTranscript.high :
-arg{1} = (
-initialS0G, 
-initialS1G,
-FieldR.asint publicInputG,
-FieldR.asint proofStatePolys0XG,
-FieldR.asint proofStatePolys0YG,
-FieldR.asint proofStatePolys1XG,
-FieldR.asint proofStatePolys1YG,
-FieldR.asint proofStatePolys2XG, 
-FieldR.asint proofStatePolys2YG,
-FieldR.asint proofStatePolys3XG, 
-FieldR.asint proofStatePolys3YG,
-FieldR.asint proofLookupSPolyXG, 
-FieldR.asint proofLookupSPolyYG,
-FieldR.asint proofCopyPermutationGrandProductXG, 
-FieldR.asint proofCopyPermutationGrandProductYG,
-FieldR.asint proofLookupGrandProductXG, 
-FieldR.asint proofLookupGrandProductYG,
-FieldR.asint proofQuotientPolyParts0XG, 
-FieldR.asint proofQuotientPolyParts0YG,
-FieldR.asint proofQuotientPolyParts1XG, 
-FieldR.asint proofQuotientPolyParts1YG,
-FieldR.asint proofQuotientPolyParts2XG, 
-FieldR.asint proofQuotientPolyParts2YG,
-FieldR.asint proofQuotientPolyParts3XG, 
-FieldR.asint proofQuotientPolyParts3YG,
-FieldR.asint proofQuotientPolyOpeningAtZG,
-FieldR.asint proofStatePolys0OpeningAtZG, 
-FieldR.asint proofStatePolys1OpeningAtZG,
-FieldR.asint proofStatePolys2OpeningAtZG, 
-FieldR.asint proofStatePolys3OpeningAtZG,
-FieldR.asint proofStatePolys3OpeningAtZOmegaG,
-FieldR.asint proofGateSelectors0OpeningAtZG,
-FieldR.asint proofCopyPermutationPolys0OpeningAtZG, 
-FieldR.asint proofCopyPermutationPolys1OpeningAtZG, 
-FieldR.asint proofCopyPermutationPolys2OpeningAtZG,
-FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmegaG,
-FieldR.asint proofLookupTPolyOpeningAtZG,
-FieldR.asint proofLookupSelectorPolyOpeningAtZG,
-FieldR.asint proofLookupTableTypePolyOpeningAtZG,
-FieldR.asint proofLookupSPolyOpeningAtZOmegaG,
-FieldR.asint proofLookupGrandProductOpeningAtZOmegaG,
-FieldR.asint proofLookupTPolyOpeningAtZOmegaG,
-FieldR.asint proofLinearisationPolyOpeningAtZG,
-FieldR.asint proofOpeningProofAtZXG, 
-FieldR.asint proofOpeningProofAtZYG,
-FieldR.asint proofOpeningProofAtZOmegaXG, 
-FieldR.asint proofOpeningProofAtZOmegaYG) /\
-arg{2} = (
-initialS0G, 
-initialS1G,
-publicInputG,
-proofStatePolys0XG,
-proofStatePolys0YG,
-proofStatePolys1XG,
-proofStatePolys1YG,
-proofStatePolys2XG, 
-proofStatePolys2YG,
-proofStatePolys3XG, 
-proofStatePolys3YG,
-proofLookupSPolyXG, 
-proofLookupSPolyYG,
-proofCopyPermutationGrandProductXG, 
-proofCopyPermutationGrandProductYG,
-proofLookupGrandProductXG, 
-proofLookupGrandProductYG,
-proofQuotientPolyParts0XG, 
-proofQuotientPolyParts0YG,
-proofQuotientPolyParts1XG, 
-proofQuotientPolyParts1YG,
-proofQuotientPolyParts2XG, 
-proofQuotientPolyParts2YG,
-proofQuotientPolyParts3XG, 
-proofQuotientPolyParts3YG,
-proofQuotientPolyOpeningAtZG,
-proofStatePolys0OpeningAtZG, 
-proofStatePolys1OpeningAtZG,
-proofStatePolys2OpeningAtZG, 
-proofStatePolys3OpeningAtZG,
-proofStatePolys3OpeningAtZOmegaG,
-proofGateSelectors0OpeningAtZG,
-proofCopyPermutationPolys0OpeningAtZG, 
-proofCopyPermutationPolys1OpeningAtZG, 
-proofCopyPermutationPolys2OpeningAtZG,
-proofCopyPermutationGrandProductOpeningAtZOmegaG,
-proofLookupTPolyOpeningAtZG,
-proofLookupSelectorPolyOpeningAtZG,
-proofLookupTableTypePolyOpeningAtZG,
-proofLookupSPolyOpeningAtZOmegaG,
-proofLookupGrandProductOpeningAtZOmegaG,
-proofLookupTPolyOpeningAtZOmegaG,
-proofLinearisationPolyOpeningAtZG,
-proofOpeningProofAtZXG, 
-proofOpeningProofAtZYG,
-proofOpeningProofAtZOmegaXG, 
-proofOpeningProofAtZOmegaYG)
-==>
-FieldR.inF res{1}.`1 = res{2}.`1   /\ 0 <= res{1}.`1 < 2^253 /\
-FieldR.inF res{1}.`2 = res{2}.`2   /\ 0 <= res{1}.`2 < 2^253 /\
-FieldR.inF res{1}.`3 = res{2}.`3   /\ 0 <= res{1}.`3 < 2^253 /\
-FieldR.inF res{1}.`4 = res{2}.`4   /\ 0 <= res{1}.`4 < 2^253 /\
-FieldR.inF res{1}.`5 = res{2}.`5   /\ 0 <= res{1}.`5 < 2^253 /\
-FieldR.inF res{1}.`6 = res{2}.`6   /\ 0 <= res{1}.`6 < 2^253 /\
-FieldR.inF res{1}.`7 = res{2}.`7   /\ 0 <= res{1}.`7 < 2^253 /\
-FieldR.inF res{1}.`8 = res{2}.`8   /\
-FieldR.inF res{1}.`9 = res{2}.`9   /\ 0 <= res{1}.`9 < 2^253 /\
-FieldR.inF res{1}.`10 = res{2}.`10 /\ 0 <= res{1}.`10 < 2^253
-].
-proof. proc.
-have I: forall a b c, 0 <= keccakC 2 a b c %% 2^253. by smt().
-have II: forall a b c, (keccakC 2 a b c %% 2^253) < 2^253. by smt().
-
-seq 9 9: (#pre /\ 
-  ={state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3, state0_4,
-    state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7, state0_8, state1_8}). 
-inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateEta{1} = stateEta{2} /\ 0 <= stateEta{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-
-seq 2 2: (#pre /\ ={state0_9, state1_9, state0_10, state1_10}).
-inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateBeta{1} = stateBeta{2} /\ 0 <= stateBeta{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-seq 1 1: (#pre /\ FieldR.inF stateGamma{1} = stateGamma{2} /\ 0 <= stateGamma{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-
-seq 2 2: (#pre /\ ={state0_11, state1_11, state0_12, state1_12}).
-inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateBetaLookup{1} = stateBetaLookup{2} /\ 0 <= stateBetaLookup{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-seq 1 1: (#pre /\ FieldR.inF stateGammaLookup{1} = stateGammaLookup{2} /\ 0 <= stateGammaLookup{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-
-seq 2 2: (#pre /\ ={state0_13, state1_13, state0_14, state1_14}).
-inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateAlpha{1} = stateAlpha{2} /\ 0 <= stateAlpha{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-
-seq 8 8: (#pre /\ 
-  ={state0_15, state1_15, state0_16, state1_16, state0_17, state1_17, state0_18, state1_18,
-    state0_19, state1_19, state0_20, state1_20, state0_21, state1_21, state0_22, state1_22}).
-inline *; wp; skip; by progress.
-
-seq 2 2: (#pre /\ 
-    FieldR.inF stateZ{1} = stateZ{2} /\ 0 <= stateZ{1} < 2^253 /\ 
-    FieldR.inF stateZInDomain{1} = stateZInDomain{2}).
-inline*; wp; skip; progress. apply I. apply II.
-rewrite Constants.r_eq_fieldr_p -FieldR.inF_mod FieldR.inF_exp /Constants.DOMAIN_SIZE; smt (@FieldR).
-
-seq 8 8: (#pre /\
-  ={state0_23, state1_23, state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, 
-    state0_27, state1_27, state0_28, state1_28, state0_29, state1_29, state0_30, state1_30}).
-inline *; wp; skip; by progress.
-seq 10 10: (#pre /\
-  ={state0_31, state1_31, state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, 
-    state0_35, state1_35, state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, 
-    state0_39, state1_39, state0_40, state1_40}).
-inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateV{1} = stateV{2} /\ 0 <= stateV{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-
-seq 4 4: (#pre /\
-  ={state0_41, state1_41, state0_42, state1_42, state0_43, state1_43, state0_44, state1_44}).
-inline *; wp; skip; by progress.
-seq 1 1: (#pre /\ FieldR.inF stateU{1} = stateU{2} /\ 0 <= stateU{1} < 2^253). 
-inline*; wp; skip; progress; [apply I | apply II].
-
-skip. progress.
-qed.
-
-lemma unitializeTranscript_low_equiv_mid (m : mem) (
+lemma initializeTranscript_low_equiv_mid (m : mem) (
       initialS0G initialS1G
       publicInputG
       proofStatePolys0XG proofStatePolys0YG
@@ -26796,3 +26781,382 @@ rewrite /m65 /m64 /m63 /m62 /m61 /m60 /m59 /m58 /m57 /m56 /m55 /m54 /m53 /m52 /m
 do 38! rewrite updateTranscript_memory_footprint_same. progress.
 smt().
 qed.
+
+lemma initializeTranscript_mid_equiv_high_encapsulated
+:
+equiv [InitializeTranscript.mid ~ InitializeTranscript.high_encapsulated :
+arg{1} = (
+initialS0{2}, 
+initialS1{2},
+FieldR.asint publicInput{2},
+(F_to_int_point(aspoint_G1 proofStatePolys0{2})).`1,
+(F_to_int_point(aspoint_G1 proofStatePolys0{2})).`2,
+(F_to_int_point(aspoint_G1 proofStatePolys1{2})).`1,
+(F_to_int_point(aspoint_G1 proofStatePolys1{2})).`2,
+(F_to_int_point(aspoint_G1 proofStatePolys2{2})).`1, 
+(F_to_int_point(aspoint_G1 proofStatePolys2{2})).`2,
+(F_to_int_point(aspoint_G1 proofStatePolys3{2})).`1, 
+(F_to_int_point(aspoint_G1 proofStatePolys3{2})).`2,
+(F_to_int_point(aspoint_G1 proofLookupSPoly{2})).`1, 
+(F_to_int_point(aspoint_G1 proofLookupSPoly{2})).`2,
+(F_to_int_point(aspoint_G1 proofCopyPermutationGrandProduct{2})).`1, 
+(F_to_int_point(aspoint_G1 proofCopyPermutationGrandProduct{2})).`2,
+(F_to_int_point(aspoint_G1 proofLookupGrandProduct{2})).`1, 
+(F_to_int_point(aspoint_G1 proofLookupGrandProduct{2})).`2,
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts0{2})).`1, 
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts0{2})).`2,
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts1{2})).`1, 
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts1{2})).`2,
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts2{2})).`1, 
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts2{2})).`2,
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts3{2})).`1, 
+(F_to_int_point(aspoint_G1 proofQuotientPolyParts3{2})).`2,
+FieldR.asint proofQuotientPolyOpeningAtZ{2},
+FieldR.asint proofStatePolys0OpeningAtZ{2}, 
+FieldR.asint proofStatePolys1OpeningAtZ{2},
+FieldR.asint proofStatePolys2OpeningAtZ{2}, 
+FieldR.asint proofStatePolys3OpeningAtZ{2},
+FieldR.asint proofStatePolys3OpeningAtZOmega{2},
+FieldR.asint proofGateSelectors0OpeningAtZ{2},
+FieldR.asint proofCopyPermutationPolys0OpeningAtZ{2}, 
+FieldR.asint proofCopyPermutationPolys1OpeningAtZ{2}, 
+FieldR.asint proofCopyPermutationPolys2OpeningAtZ{2},
+FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmega{2},
+FieldR.asint proofLookupTPolyOpeningAtZ{2},
+FieldR.asint proofLookupSelectorPolyOpeningAtZ{2},
+FieldR.asint proofLookupTableTypePolyOpeningAtZ{2},
+FieldR.asint proofLookupSPolyOpeningAtZOmega{2},
+FieldR.asint proofLookupGrandProductOpeningAtZOmega{2},
+FieldR.asint proofLookupTPolyOpeningAtZOmega{2},
+FieldR.asint proofLinearisationPolyOpeningAtZ{2},
+(F_to_int_point(aspoint_G1 proofOpeningProofAtZ{2})).`1, 
+(F_to_int_point(aspoint_G1 proofOpeningProofAtZ{2})).`2,
+(F_to_int_point(aspoint_G1 proofOpeningProofAtZOmega{2})).`1,
+(F_to_int_point(aspoint_G1 proofOpeningProofAtZOmega{2})).`2) 
+==>
+res{1}.`1  = FieldR.asint res{2}.`1 /\ 
+res{1}.`2  = FieldR.asint res{2}.`2 /\
+res{1}.`3  = FieldR.asint res{2}.`3 /\
+res{1}.`4  = FieldR.asint res{2}.`4 /\
+res{1}.`5  = FieldR.asint res{2}.`5 /\
+res{1}.`6  = FieldR.asint res{2}.`6 /\
+res{1}.`7  = FieldR.asint res{2}.`7 /\
+res{1}.`8  = FieldR.asint res{2}.`8 /\
+res{1}.`9  = FieldR.asint res{2}.`9 /\
+res{1}.`10 = FieldR.asint res{2}.`10
+].
+proof. proc.
+have I: forall a b c, 0 <= keccakC 2 a b c %% 2^253. by smt().
+have II: forall a b c, (keccakC 2 a b c %% 2^253) < 2^253. by smt().
+
+seq 9 9: (#pre /\ 
+  ={state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3, state0_4,
+    state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7, state0_8, state1_8}). 
+inline *; wp; skip; by progress.
+seq 1 1: (#pre /\ stateEta{1} = FieldR.asint stateEta{2} /\ 0 <= stateEta{1} < 2^253). 
+inline*. wp. skip. progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+
+seq 2 2: (#pre /\ ={state0_9, state1_9, state0_10, state1_10}).
+inline *; wp; skip; by progress.
+seq 1 1: (#pre /\ stateBeta{1} = FieldR.asint stateBeta{2} /\ 0 <= stateBeta{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+seq 1 1: (#pre /\ stateGamma{1} = FieldR.asint stateGamma{2} /\ 0 <= stateGamma{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+
+seq 2 2: (#pre /\ ={state0_11, state1_11, state0_12, state1_12}).
+inline *; wp; skip; by progress.
+seq 1 1: (#pre /\ stateBetaLookup{1} = FieldR.asint stateBetaLookup{2} /\ 0 <= stateBetaLookup{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+seq 1 1: (#pre /\ stateGammaLookup{1} = FieldR.asint stateGammaLookup{2} /\ 0 <= stateGammaLookup{1} < 2^253).
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+
+seq 2 2: (#pre /\ ={state0_13, state1_13, state0_14, state1_14}).
+inline *; wp; skip; by progress.
+seq 1 1: (#pre /\ stateAlpha{1} = FieldR.asint stateAlpha{2} /\ 0 <= stateAlpha{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+
+seq 8 8: (#pre /\ 
+  ={state0_15, state1_15, state0_16, state1_16, state0_17, state1_17, state0_18, state1_18,
+    state0_19, state1_19, state0_20, state1_20, state0_21, state1_21, state0_22, state1_22}).
+inline *; wp; skip; by progress.
+
+seq 2 2: (#pre /\ 
+    stateZ{1} = FieldR.asint stateZ{2} /\ 0 <= stateZ{1} < 2^253 /\ 
+    stateZInDomain{1} = FieldR.asint stateZInDomain{2}).
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+  rewrite RexpE.
+  rewrite FieldR.exp_inF.
+  rewrite /Constants.DOMAIN_SIZE.
+  have ->: 0 <= 67108864 by trivial.
+  have ->: forall (a b: FieldR.F), (if true then a else b) = a by trivial.
+  rewrite FieldR.inFK.
+  rewrite Constants.r_eq_fieldr_p.
+  reflexivity.
+
+seq 8 8: (#pre /\
+  ={state0_23, state1_23, state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, 
+    state0_27, state1_27, state0_28, state1_28, state0_29, state1_29, state0_30, state1_30}).
+inline *; wp; skip; by progress.
+seq 10 10: (#pre /\
+  ={state0_31, state1_31, state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, 
+    state0_35, state1_35, state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, 
+    state0_39, state1_39, state0_40, state1_40}).
+inline *; wp; skip; by progress.
+seq 1 1: (#pre /\ stateV{1} = FieldR.asint stateV{2} /\ 0 <= stateV{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+
+seq 4 4: (#pre /\
+  ={state0_41, state1_41, state0_42, state1_42, state0_43, state1_43, state0_44, state1_44}).
+inline *; wp; skip; by progress.
+seq 1 1: (#pre /\ stateU{1} = FieldR.asint stateU{2} /\ 0 <= stateU{1} < 2^253). 
+inline*; wp; skip; progress.
+  rewrite FieldR.inFK -Constants.r_eq_fieldr_p /Constants.R. smt ().
+  exact I. exact II.
+
+skip. progress.
+qed.
+
+lemma initializeTranscript_mid_equiv_high :
+equiv [InitializeTranscript.mid ~ InitializeTranscript.high :
+      arg{1} = (
+    initialS0{2}, 
+    initialS1{2},
+    FieldR.asint publicInput{2},
+        (F_to_int_point(aspoint_G1 proofStatePolys0{2})).`1,
+        (F_to_int_point(aspoint_G1 proofStatePolys0{2})).`2,
+        (F_to_int_point(aspoint_G1 proofStatePolys1{2})).`1,
+        (F_to_int_point(aspoint_G1 proofStatePolys1{2})).`2,
+        (F_to_int_point(aspoint_G1 proofStatePolys2{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofStatePolys2{2})).`2,
+        (F_to_int_point(aspoint_G1 proofStatePolys3{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofStatePolys3{2})).`2,
+        (F_to_int_point(aspoint_G1 proofLookupSPoly{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofLookupSPoly{2})).`2,
+        (F_to_int_point(aspoint_G1 proofCopyPermutationGrandProduct{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofCopyPermutationGrandProduct{2})).`2,
+        (F_to_int_point(aspoint_G1 proofLookupGrandProduct{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofLookupGrandProduct{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts0{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts0{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts1{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts1{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts2{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts2{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts3{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts3{2})).`2,
+          FieldR.asint proofQuotientPolyOpeningAtZ{2},
+          FieldR.asint proofStatePolys0OpeningAtZ{2}, 
+          FieldR.asint proofStatePolys1OpeningAtZ{2},
+          FieldR.asint proofStatePolys2OpeningAtZ{2}, 
+          FieldR.asint proofStatePolys3OpeningAtZ{2},
+          FieldR.asint proofStatePolys3OpeningAtZOmega{2},
+          FieldR.asint proofGateSelectors0OpeningAtZ{2},
+          FieldR.asint proofCopyPermutationPolys0OpeningAtZ{2}, 
+          FieldR.asint proofCopyPermutationPolys1OpeningAtZ{2}, 
+          FieldR.asint proofCopyPermutationPolys2OpeningAtZ{2},
+          FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmega{2},
+          FieldR.asint proofLookupTPolyOpeningAtZ{2},
+          FieldR.asint proofLookupSelectorPolyOpeningAtZ{2},
+          FieldR.asint proofLookupTableTypePolyOpeningAtZ{2},
+          FieldR.asint proofLookupSPolyOpeningAtZOmega{2},
+          FieldR.asint proofLookupGrandProductOpeningAtZOmega{2},
+          FieldR.asint proofLookupTPolyOpeningAtZOmega{2},
+          FieldR.asint proofLinearisationPolyOpeningAtZ{2},
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZ{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZ{2})).`2,
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZOmega{2})).`1,
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZOmega{2})).`2)
+      ==>
+        res{1}.`1  = FieldR.asint res{2}.`1 /\
+        res{1}.`2  = FieldR.asint res{2}.`2 /\
+        res{1}.`3  = FieldR.asint res{2}.`3 /\
+        res{1}.`4  = FieldR.asint res{2}.`4 /\
+        res{1}.`5  = FieldR.asint res{2}.`5 /\
+        res{1}.`6  = FieldR.asint res{2}.`6 /\
+        res{1}.`7  = FieldR.asint res{2}.`7 /\
+        res{1}.`8  = FieldR.asint res{2}.`8 /\
+        res{1}.`9  = FieldR.asint res{2}.`9 /\
+        res{1}.`10 = FieldR.asint res{2}.`10
+    ].
+    proof.
+      transitivity InitializeTranscript.high_encapsulated
+    (
+      arg{1} = (
+    initialS0{2}, 
+    initialS1{2},
+    FieldR.asint publicInput{2},
+        (F_to_int_point(aspoint_G1 proofStatePolys0{2})).`1,
+        (F_to_int_point(aspoint_G1 proofStatePolys0{2})).`2,
+        (F_to_int_point(aspoint_G1 proofStatePolys1{2})).`1,
+        (F_to_int_point(aspoint_G1 proofStatePolys1{2})).`2,
+        (F_to_int_point(aspoint_G1 proofStatePolys2{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofStatePolys2{2})).`2,
+        (F_to_int_point(aspoint_G1 proofStatePolys3{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofStatePolys3{2})).`2,
+        (F_to_int_point(aspoint_G1 proofLookupSPoly{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofLookupSPoly{2})).`2,
+        (F_to_int_point(aspoint_G1 proofCopyPermutationGrandProduct{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofCopyPermutationGrandProduct{2})).`2,
+        (F_to_int_point(aspoint_G1 proofLookupGrandProduct{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofLookupGrandProduct{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts0{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts0{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts1{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts1{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts2{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts2{2})).`2,
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts3{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofQuotientPolyParts3{2})).`2,
+          FieldR.asint proofQuotientPolyOpeningAtZ{2},
+          FieldR.asint proofStatePolys0OpeningAtZ{2}, 
+          FieldR.asint proofStatePolys1OpeningAtZ{2},
+          FieldR.asint proofStatePolys2OpeningAtZ{2}, 
+          FieldR.asint proofStatePolys3OpeningAtZ{2},
+          FieldR.asint proofStatePolys3OpeningAtZOmega{2},
+          FieldR.asint proofGateSelectors0OpeningAtZ{2},
+          FieldR.asint proofCopyPermutationPolys0OpeningAtZ{2}, 
+          FieldR.asint proofCopyPermutationPolys1OpeningAtZ{2}, 
+          FieldR.asint proofCopyPermutationPolys2OpeningAtZ{2},
+          FieldR.asint proofCopyPermutationGrandProductOpeningAtZOmega{2},
+          FieldR.asint proofLookupTPolyOpeningAtZ{2},
+          FieldR.asint proofLookupSelectorPolyOpeningAtZ{2},
+          FieldR.asint proofLookupTableTypePolyOpeningAtZ{2},
+          FieldR.asint proofLookupSPolyOpeningAtZOmega{2},
+          FieldR.asint proofLookupGrandProductOpeningAtZOmega{2},
+          FieldR.asint proofLookupTPolyOpeningAtZOmega{2},
+          FieldR.asint proofLinearisationPolyOpeningAtZ{2},
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZ{2})).`1, 
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZ{2})).`2,
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZOmega{2})).`1,
+        (F_to_int_point(aspoint_G1 proofOpeningProofAtZOmega{2})).`2)
+      ==>
+        res{1}.`1  = FieldR.asint res{2}.`1 /\
+        res{1}.`2  = FieldR.asint res{2}.`2 /\
+        res{1}.`3  = FieldR.asint res{2}.`3 /\
+        res{1}.`4  = FieldR.asint res{2}.`4 /\
+        res{1}.`5  = FieldR.asint res{2}.`5 /\
+        res{1}.`6  = FieldR.asint res{2}.`6 /\
+        res{1}.`7  = FieldR.asint res{2}.`7 /\
+        res{1}.`8  = FieldR.asint res{2}.`8 /\
+        res{1}.`9  = FieldR.asint res{2}.`9 /\
+        res{1}.`10 = FieldR.asint res{2}.`10
+    ) (={arg} ==> ={res}).
+        progress.
+        exists arg{2}. by progress.
+        by progress.
+        exact initializeTranscript_mid_equiv_high_encapsulated.
+        proc.
+        seq 1 2 : (#pre /\ state0_0{1} = state0_0{2} /\ state1_0{1} = state1_0{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_1{1} = state0_1{2} /\ state1_1{1} = state1_1{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_2{1} = state0_2{2} /\ state1_2{1} = state1_2{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_3{1} = state0_3{2} /\ state1_3{1} = state1_3{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_4{1} = state0_4{2} /\ state1_4{1} = state1_4{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_5{1} = state0_5{2} /\ state1_5{1} = state1_5{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_6{1} = state0_6{2} /\ state1_6{1} = state1_6{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_7{1} = state0_7{2} /\ state1_7{1} = state1_7{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_8{1} = state0_8{2} /\ state1_8{1} = state1_8{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 1 : (#pre /\ stateEta{1} = stateEta{2}). wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_9{1} = state0_9{2} /\ state1_9{1} = state1_9{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_10{1} = state0_10{2} /\ state1_10{1} = state1_10{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 2 2 : (#pre /\ stateBeta{1} = stateBeta{2} /\ stateGamma{1} = stateGamma{2}). wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_11{1} = state0_11{2} /\ state1_11{1} = state1_11{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_12{1} = state0_12{2} /\ state1_12{1} = state1_12{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 2 2 : (#pre /\ stateBetaLookup{1} = stateBetaLookup{2} /\ stateGammaLookup{1} = stateGammaLookup{2}). wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_13{1} = state0_13{2} /\ state1_13{1} = state1_13{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_14{1} = state0_14{2} /\ state1_14{1} = state1_14{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 1 : (#pre /\ stateAlpha{1} = stateAlpha{2}). wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_15{1} = state0_15{2} /\ state1_15{1} = state1_15{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_16{1} = state0_16{2} /\ state1_16{1} = state1_16{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_17{1} = state0_17{2} /\ state1_17{1} = state1_17{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_18{1} = state0_18{2} /\ state1_18{1} = state1_18{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_19{1} = state0_19{2} /\ state1_19{1} = state1_19{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_20{1} = state0_20{2} /\ state1_20{1} = state1_20{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_21{1} = state0_21{2} /\ state1_21{1} = state1_21{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_22{1} = state0_22{2} /\ state1_22{1} = state1_22{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 2 2 : (#pre /\ stateZ{1} = stateZ{2} /\ stateZInDomain{1} = stateZInDomain{2}). wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_23{1} = state0_23{2} /\ state1_23{1} = state1_23{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_24{1} = state0_24{2} /\ state1_24{1} = state1_24{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_25{1} = state0_25{2} /\ state1_25{1} = state1_25{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_26{1} = state0_26{2} /\ state1_26{1} = state1_26{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_27{1} = state0_27{2} /\ state1_27{1} = state1_27{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_28{1} = state0_28{2} /\ state1_28{1} = state1_28{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_29{1} = state0_29{2} /\ state1_29{1} = state1_29{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_30{1} = state0_30{2} /\ state1_30{1} = state1_30{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_31{1} = state0_31{2} /\ state1_31{1} = state1_31{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_32{1} = state0_32{2} /\ state1_32{1} = state1_32{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_33{1} = state0_33{2} /\ state1_33{1} = state1_33{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_34{1} = state0_34{2} /\ state1_34{1} = state1_34{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_35{1} = state0_35{2} /\ state1_35{1} = state1_35{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_36{1} = state0_36{2} /\ state1_36{1} = state1_36{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_37{1} = state0_37{2} /\ state1_37{1} = state1_37{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_38{1} = state0_38{2} /\ state1_38{1} = state1_38{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_39{1} = state0_39{2} /\ state1_39{1} = state1_39{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_40{1} = state0_40{2} /\ state1_40{1} = state1_40{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 1 : (#pre /\ stateV{1} = stateV{2}). wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_41{1} = state0_41{2} /\ state1_41{1} = state1_41{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_42{1} = state0_42{2} /\ state1_42{1} = state1_42{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_43{1} = state0_43{2} /\ state1_43{1} = state1_43{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        seq 1 2 : (#pre /\ state0_44{1} = state0_44{2} /\ state1_44{1} = state1_44{2}).
+        inline UpdateTranscript.mid. wp. skip. progress.
+        wp. skip. progress.
+  qed.
