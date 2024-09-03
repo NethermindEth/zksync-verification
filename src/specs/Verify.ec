@@ -3416,7 +3416,7 @@ exists (
       (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g
 ).
 
-lemma verify_mid_equiv_high_encapsulated_or_revert (
+lemma verify_mid_equiv_high_or_revert (
     state_poly_0_i: int*int,
     state_poly_1_i: int*int,
     state_poly_2_i: int*int,
@@ -3460,7 +3460,7 @@ lemma verify_mid_equiv_high_encapsulated_or_revert (
       (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2) = aspoint_G1 opening_proof_at_z_g /\
       (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g /\
       equiv [
-        Verify.mid ~ Verify.high_encapsulated:
+        Verify.mid ~ Verify.high:
         ={public_input_length_in_words} /\
         (public_input{1} %% (2^253)) = FieldR.asint public_input{2} /\
         ={proof_length_in_words} /\
@@ -3793,7 +3793,53 @@ lemma verify_mid_equiv_high_encapsulated_or_revert (
       rewrite -H12 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
       progress.
       exact verify_mid_canonicalisation.
+      transitivity Verify.high_encapsulated
+      (
+        ={public_input_length_in_words} /\
+        public_input{1} = FieldR.asint public_input{2} /\ 0 <= public_input{1} < (2^253) /\
+        ={proof_length_in_words} /\
+        state_poly_0{1} = F_to_int_point(aspoint_G1 state_poly_0{2}) /\
+        state_poly_1{1} = F_to_int_point(aspoint_G1 state_poly_1{2}) /\
+        state_poly_2{1} = F_to_int_point(aspoint_G1 state_poly_2{2}) /\
+        state_poly_3{1} = F_to_int_point(aspoint_G1 state_poly_3{2}) /\
+        copy_permutation_grand_product{1} = F_to_int_point(aspoint_G1 copy_permutation_grand_product{2}) /\
+        lookup_s_poly{1} = F_to_int_point(aspoint_G1 lookup_s_poly{2}) /\
+        lookup_grand_product{1} = F_to_int_point(aspoint_G1 lookup_grand_product{2}) /\
+        quotient_poly_part_0{1} = F_to_int_point(aspoint_G1 quotient_poly_part_0{2}) /\
+        quotient_poly_part_1{1} = F_to_int_point(aspoint_G1 quotient_poly_part_1{2}) /\
+        quotient_poly_part_2{1} = F_to_int_point(aspoint_G1 quotient_poly_part_2{2}) /\
+        quotient_poly_part_3{1} = F_to_int_point(aspoint_G1 quotient_poly_part_3{2}) /\
+        state_poly_0_opening_at_z{1} = FieldR.asint state_poly_0_opening_at_z{2} /\
+        state_poly_1_opening_at_z{1} = FieldR.asint state_poly_1_opening_at_z{2} /\
+        state_poly_2_opening_at_z{1} = FieldR.asint state_poly_2_opening_at_z{2} /\
+        state_poly_3_opening_at_z{1} = FieldR.asint state_poly_3_opening_at_z{2} /\
+        state_poly_3_opening_at_z_omega{1} = FieldR.asint state_poly_3_opening_at_z_omega{2} /\
+        gate_selector_0_opening_at_z{1} = FieldR.asint gate_selector_0_opening_at_z{2} /\
+        copy_permutation_poly_0_opening_at_z{1} = FieldR.asint copy_permutation_poly_0_opening_at_z{2} /\
+        copy_permutation_poly_1_opening_at_z{1} = FieldR.asint copy_permutation_poly_1_opening_at_z{2} /\
+        copy_permutation_poly_2_opening_at_z{1} = FieldR.asint copy_permutation_poly_2_opening_at_z{2} /\
+        copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2} /\
+        lookup_s_poly_opening_at_z_omega{1} = FieldR.asint lookup_s_poly_opening_at_z_omega{2} /\
+        lookup_grand_product_opening_at_z_omega{1} = FieldR.asint lookup_grand_product_opening_at_z_omega{2} /\
+        lookup_t_poly_opening_at_z{1} = FieldR.asint lookup_t_poly_opening_at_z{2} /\
+        lookup_t_poly_opening_at_z_omega{1} = FieldR.asint lookup_t_poly_opening_at_z_omega{2} /\
+        lookup_selector_poly_opening_at_z{1} = FieldR.asint lookup_selector_poly_opening_at_z{2} /\
+        lookup_table_type_poly_opening_at_z{1} = FieldR.asint lookup_table_type_poly_opening_at_z{2} /\
+        quotient_poly_opening_at_z{1} = FieldR.asint quotient_poly_opening_at_z{2} /\
+        linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
+        opening_proof_at_z{1} = F_to_int_point(aspoint_G1 opening_proof_at_z{2}) /\
+        opening_proof_at_z_omega{1} = F_to_int_point(aspoint_G1 opening_proof_at_z_omega{2}) /\
+        ={recursive_proof_length_in_words} ==> 
+        ={res}
+      )
+      (
+        ={arg} ==> ={res}
+      ).
+      progress.
+      exists (arg{2}). by progress.
+      by progress.
       exact verify_mid_equiv_high_encapsulated.
+      exact verify_high_encapsulated_equiv_high.
       progress.
 
       right.
