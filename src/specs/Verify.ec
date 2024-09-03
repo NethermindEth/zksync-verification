@@ -614,6 +614,194 @@ clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19
       m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m41.
 *)
 
+lemma verify_mid_lossless: islossless Verify.mid.
+    proof.
+      proc.
+      sp.
+      conseq (_ : true ==> true).
+      inline LoadProof.mid. sp. conseq (_ : true ==> true).
+      inline InitializeTranscript.mid. sp. conseq (_ : true ==> true).
+      do 9! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true ).
+      do 2! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      do 2! (inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true )).
+      do 2! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      do 2! (inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true )).
+      do 2! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true ).
+      do 8! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true ).
+      inline (1) Modexp.Modexp.mid; sp; conseq (_ : true ==> true).
+      do 18! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true ).
+      do 4! (inline (1) UpdateTranscript.UpdateTranscript.mid; sp; conseq (_ : true ==> true)).
+      inline (1) GetTranscriptChallenge.GetTranscriptChallenge.mid; sp; conseq (_ :true ==> true ).
+      inline VerifyQuotientEvaluation.mid. sp. conseq (_: true => true).
+      inline EvaluateLagrangePolyOutOfDomain.EvaluateLagrangePolyOutOfDomain.mid; sp; conseq (_ :true ==> true ).
+      if; sp; conseq (_ :true ==> true ).
+      inline PrepareQueries.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline MainGateLinearisationContributionWithV.MainGateLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 5! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline AddAssignRescueCustomGateLinearisationContributionWithV.AddAssignRescueCustomGateLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointSubAssign.PointSubAssign.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      inline AddAssignLookupLinearisationContributionWithV.AddAssignLookupLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline PrepareAggregatedCommitment.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 9! (inline (1) UpdateAggregationChallenge.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 4! (inline (1) UpdateAggregationChallenge_105.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline FinalPairing.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointSubAssign.PointSubAssign.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline AddAssignLookupLinearisationContributionWithV.AddAssignLookupLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline PrepareAggregatedCommitment.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 9! (inline (1) UpdateAggregationChallenge.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 4! (inline (1) UpdateAggregationChallenge_105.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline FinalPairing.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointSubAssign.PointSubAssign.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+      inline PermutationQuotientContribution.PermutationQuotientContribution.mid; sp; conseq (_ : true ==> true ).
+      inline LookupQuotientContribution.LookupQuotientContribution.mid; sp; conseq (_ : true ==> true ).
+      inline Modexp.Modexp.mid; sp; conseq (_ : true ==> true).
+      inline PrepareQueries.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline MainGateLinearisationContributionWithV.MainGateLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 5! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline AddAssignRescueCustomGateLinearisationContributionWithV.AddAssignRescueCustomGateLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointSubAssign.PointSubAssign.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      inline AddAssignLookupLinearisationContributionWithV.AddAssignLookupLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline PrepareAggregatedCommitment.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 9! (inline (1) UpdateAggregationChallenge.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 4! (inline (1) UpdateAggregationChallenge_105.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline FinalPairing.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointSubAssign.PointSubAssign.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline AddAssignLookupLinearisationContributionWithV.AddAssignLookupLinearisationContributionWithV.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline PrepareAggregatedCommitment.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 9! (inline (1) UpdateAggregationChallenge.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 4! (inline (1) UpdateAggregationChallenge_105.mid; sp; conseq (_ : true ==> true);
+      inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointMulIntoDest.mid; sp; conseq (_ : true ==> true).
+      inline FinalPairing.mid; sp; conseq (_ : true ==> true ).
+      inline (1) PointSubAssign.PointSubAssign.mid; sp; conseq (_ : true ==> true).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+
+      inline (1) PointAddIntoDest.mid; sp; conseq (_ : true ==> true).
+      do 3! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      inline (1) PointNegate.PointNegate.mid; sp; conseq (_ : true ==> true).
+      if; sp; conseq (_ : true ==> true ).
+      do 2! (inline (1) PointMulAndAddIntoDest.mid; sp; conseq (_ : true ==> true)).
+      skip. by trivial.
+      skip. by trivial.
+qed.
+
+
+
 lemma verify_mid_equiv_high_encapsulated:
     equiv [
       Verify.mid ~ Verify.high_encapsulated:
