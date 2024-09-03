@@ -171,7 +171,6 @@ module AddAssignPermutationLinearisationContributionWithV = {
   }
 }.
 
-(* requries sub assign extracted fix *)
 lemma addAssignPermutationLinearisationContributionWithV_extracted_equiv_low :
     equiv [
       Verifier_1261.usr_addAssignPermutationLinearisationContributionWithV ~ AddAssignPermutationLinearisationContributionWithV.low :
@@ -183,7 +182,21 @@ proof.
   call (pointSubAssign_extracted_equiv_low). wp.
   call (pointMulIntoDest_extracted_equiv_low).
   inline*. wp. skip. rewrite /Constants.R. by progress.
-    qed.
+qed.
+
+lemma addAssignPermutationLinearisationContributionWithV_low_pspec_revert :
+    phoare [
+      AddAssignPermutationLinearisationContributionWithV.low :
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      call pointSubAssign_low_pspec_revert.
+      call pointMulIntoDest_low_pspec_revert.
+      inline*. wp. skip. by progress.
+qed.
+   
 
 op addAssignPermutation_memory_footprint
 (mem_0: mem)

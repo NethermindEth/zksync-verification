@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require import AddAssignPermutationLinearisationContributionWithV.
 require import AddAssignRescueCustomGateLinearisationContributionWithV.
 require import AddAssignLookupLinearisationContributionWithV.
@@ -525,6 +526,29 @@ lemma prepareQueries_extracted_equiv_low:
       call pointMulAndAddIntoDest_extracted_equiv_low. wp.
       skip. rewrite /Constants.R. by progress.
     qed.
+
+lemma prepareQueries_low_pspec_revert:
+    phoare [ PrepareQueries.low : Primops.reverted ==> Primops.reverted ] = 1%r.
+    proof.
+      proc.
+      do 3! (call pointMulAndAddIntoDest_low_pspec_revert; wp).
+      call ConcretePrimops.mload_pspec_revert.
+      call ConcretePrimops.mstore_pspec_revert.
+      call ConcretePrimops.mload_pspec_revert.
+      call ConcretePrimops.mstore_pspec_revert.
+      call ConcretePrimops.mload_pspec_revert.
+      call addAssignLookupLinearisationContributionWithV_low_pspec_revert.
+      call addAssignPermutationLinearisationContributionWithV_low_pspec_revert.
+      call addAssignRescueCustomGateLinearisationContributionWithV_low_pspec_revert.
+      call mainGateLinearisationContributionWithV_low_pspec_revert.
+      do 4! call ConcretePrimops.mload_pspec_revert.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert.
+      inline*. wp. skip. by progress.
+qed.
+
+
 
 op prepareQueries_memory_footprint
   (mem_0: mem)
