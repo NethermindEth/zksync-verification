@@ -649,6 +649,38 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
       (
         !Primops.reverted{1} /\
         exists r, res{2} = Some r /\
+        0 <= r.`1 < 2^253 /\
+        0 <= r.`2.`1 < Constants.Q /\ 0 <= r.`2.`2 < Constants.Q /\
+        0 <= r.`3.`1 < Constants.Q /\ 0 <= r.`3.`2 < Constants.Q /\
+        0 <= r.`4.`1 < Constants.Q /\ 0 <= r.`4.`2 < Constants.Q /\
+        0 <= r.`5.`1 < Constants.Q /\ 0 <= r.`5.`2 < Constants.Q /\
+        0 <= r.`6.`1 < Constants.Q /\ 0 <= r.`6.`2 < Constants.Q /\
+        0 <= r.`7.`1 < Constants.Q /\ 0 <= r.`7.`2 < Constants.Q /\
+        0 <= r.`8.`1 < Constants.Q /\ 0 <= r.`8.`2 < Constants.Q /\
+        0 <= r.`9.`1 < Constants.Q /\ 0 <= r.`9.`2 < Constants.Q /\
+        0 <= r.`10.`1 < Constants.Q /\ 0 <= r.`10.`2 < Constants.Q /\
+        0 <= r.`11.`1 < Constants.Q /\ 0 <= r.`11.`2 < Constants.Q /\
+        0 <= r.`12.`1 < Constants.Q /\ 0 <= r.`12.`2 < Constants.Q /\
+        0 <= r.`13 < Constants.R /\
+        0 <= r.`14 < Constants.R /\
+        0 <= r.`15 < Constants.R /\
+        0 <= r.`16 < Constants.R /\
+        0 <= r.`17 < Constants.R /\
+        0 <= r.`18 < Constants.R /\
+        0 <= r.`19 < Constants.R /\
+        0 <= r.`20 < Constants.R /\
+        0 <= r.`21 < Constants.R /\
+        0 <= r.`22 < Constants.R /\
+        0 <= r.`23 < Constants.R /\
+        0 <= r.`24 < Constants.R /\
+        0 <= r.`25 < Constants.R /\
+        0 <= r.`26 < Constants.R /\
+        0 <= r.`27 < Constants.R /\
+        0 <= r.`28 < Constants.R /\
+        0 <= r.`29 < Constants.R /\
+        0 <= r.`30 < Constants.R /\
+        0 <= r.`31.`1 < Constants.Q /\ 0 <= r.`31.`2 < Constants.Q /\
+        0 <= r.`32.`1 < Constants.Q /\ 0 <= r.`32.`2 < Constants.Q /\
         Primops.memory{1} = loadProof_memory_footprint
           mem_0
           recursive
@@ -2535,7 +2567,47 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
         point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z_omega,
         Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p1),
         Some(point_to_uint_mod_q PurePrimops.load_calldata_recursive_part_p2)
-      ). progress.
+      ).
+      have H_q_1_0: forall p, 0 <= (point_to_uint_mod_q p).`1. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact modz_ge0.
+      have H_q_2_0: forall p, 0 <= (point_to_uint_mod_q p).`2. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact modz_ge0.
+      have H_q_1_q: forall p, (point_to_uint_mod_q p).`1 < Constants.Q. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact ltz_pmod.
+      have H_q_2_q: forall p, (point_to_uint_mod_q p).`2 < Constants.Q. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact ltz_pmod.
+      have H_r_0: forall r, 0 <= r %% Constants.R. progress. rewrite /Constants.R. exact modz_ge0.
+      have H_r_r: forall r, r %% Constants.R < Constants.R. progress. rewrite /Constants.R. exact ltz_pmod.
+      progress.
+      exact modz_ge0. exact ltz_pmod.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+
       rewrite /loadProof_memory_footprint. progress.
       rewrite H2. progress.
       pose mem_1 := store mem_0 _ _.
@@ -2605,7 +2677,47 @@ lemma loadProof_low_equiv_mid (mem_0: mem) (recursive: bool):
         point_to_uint_mod_q PurePrimops.load_calldata_opening_proof_at_z_omega,
         None,
         None
-      ). progress.
+      ).
+      have H_q_1_0: forall p, 0 <= (point_to_uint_mod_q p).`1. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact modz_ge0.
+      have H_q_2_0: forall p, 0 <= (point_to_uint_mod_q p).`2. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact modz_ge0.
+      have H_q_1_q: forall p, (point_to_uint_mod_q p).`1 < Constants.Q. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact ltz_pmod.
+      have H_q_2_q: forall p, (point_to_uint_mod_q p).`2 < Constants.Q. progress. rewrite /point_to_uint_mod_q. simplify. rewrite /Constants.Q. exact ltz_pmod.
+      have H_r_0: forall r, 0 <= r %% Constants.R. progress. rewrite /Constants.R. exact modz_ge0.
+      have H_r_r: forall r, r %% Constants.R < Constants.R. progress. rewrite /Constants.R. exact ltz_pmod.
+      progress.
+      exact modz_ge0. exact ltz_pmod.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_r_0. exact H_r_r.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      exact H_q_1_0. exact H_q_1_q. exact H_q_2_0. exact H_q_2_q.
+      
       rewrite /loadProof_memory_footprint. progress.
       rewrite H2. progress.
       pose mem_1 := store mem_0 _ _.
