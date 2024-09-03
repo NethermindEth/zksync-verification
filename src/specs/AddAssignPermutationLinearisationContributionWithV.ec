@@ -15,9 +15,6 @@ require import YulPrimops.
 
 import MemoryMap.
 
-abbrev ( + ) = FieldR.( + ).
-abbrev ( * ) = FieldR.( * ).
-
 module AddAssignPermutationLinearisationContributionWithV = {
   proc low(dest : uint256, stateOpening0AtZ : uint256, stateOpening1AtZ : uint256, stateOpening2AtZ : uint256, stateOpening3AtZ : uint256): unit = {
     var factor, _1, _3, gamma, _4, intermediateValue, _6, _7, _9, _10, _12, _13, l0AtZ, _16, _17, _18, _20, _21, _23, beta', gamma_1, _25, _26, _27, intermediateValue_1, _29, _30, _31, _33, _34, _35, _36;

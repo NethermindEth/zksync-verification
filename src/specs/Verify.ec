@@ -1,8 +1,12 @@
 pragma Goals:printall.
 
+require import AllCore.
+require import AddAssignLookupLinearisationContributionWithV.
+require import EvaluateLagrangePolyOutOfDomain.
 require import InitializeTranscript.
 require import Field.
 require import FinalPairing.
+require import Keccak.
 require import LoadProof.
 require import LoadVerificationKey.
 require import PointAddIntoDest.
@@ -342,8 +346,1468 @@ module Verify = {
   failed <- failed \/ !final_pairing_bool;
    
   return !failed;
- }
+  }
+
+  proc high (public_input_length_in_words: int, public_input: FieldR.F, proof_length_in_words: int, state_poly_0: g, state_poly_1: g, state_poly_2: g, state_poly_3: g, copy_permutation_grand_product: g, lookup_s_poly: g, lookup_grand_product: g, quotient_poly_part_0: g, quotient_poly_part_1: g, quotient_poly_part_2: g, quotient_poly_part_3: g, state_poly_0_opening_at_z: FieldR.F, state_poly_1_opening_at_z: FieldR.F, state_poly_2_opening_at_z: FieldR.F, state_poly_3_opening_at_z: FieldR.F, state_poly_3_opening_at_z_omega: FieldR.F, gate_selector_0_opening_at_z: FieldR.F, copy_permutation_poly_0_opening_at_z: FieldR.F, copy_permutation_poly_1_opening_at_z: FieldR.F, copy_permutation_poly_2_opening_at_z: FieldR.F, copy_permutation_grand_product_opening_at_z_omega: FieldR.F, lookup_s_poly_opening_at_z_omega: FieldR.F, lookup_grand_product_opening_at_z_omega: FieldR.F, lookup_t_poly_opening_at_z: FieldR.F, lookup_t_poly_opening_at_z_omega: FieldR.F, lookup_selector_poly_opening_at_z: FieldR.F, lookup_table_type_poly_opening_at_z: FieldR.F, quotient_poly_opening_at_z: FieldR.F, linearisation_poly_opening_at_z: FieldR.F, opening_proof_at_z: g, opening_proof_at_z_omega: g, recursive_proof_length_in_words: int, recursive_part_p1: g, recursive_part_p2: g) : bool = {
+     
+   
+   (* load proof mod *)
+   var _public_input, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, 
+       _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, 
+       _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega, _lookup_grand_product_opening_at_z_omega, 
+       _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z, _lookup_table_type_poly_opening_at_z, 
+       _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z : FieldR.F; 
+   var _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product, _quotient_poly_part_0, 
+       _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _opening_proof_at_z, _opening_proof_at_z_omega: g;
+   var _recursive_part_p1, _recursive_part_p2: g option;
+    
+   (* load verification key related *)
+   var vk_recursive_flag: bool;
+
+   (* initialize transcript *)
+
+   (* verify quotient evaluation *)
+
+   (* prepare queries *)
+
+   (* prepare aggregated commitment *)
+   
+   (* final pairing *)
+
+   var isValid;
+   var state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3,
+        state0_4, state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7,
+        state0_8, state1_8, state0_9, state1_9, state0_10, state1_10, state0_11, state1_11,
+        state0_12, state1_12, state0_13, state1_13, state0_14, state1_14, state0_15, state1_15,
+        state0_16, state1_16, state0_17, state1_17, state0_18, state1_18, state0_19, state1_19,
+        state0_20, state1_20, state0_21, state1_21, state0_22, state1_22, state0_23, state1_23,
+        state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, state0_27, state1_27,
+        state0_28, state1_28, state0_29, state1_29, state0_30, state1_30, state0_31, state1_31,
+        state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, state0_35, state1_35,
+        state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, state0_39, state1_39,
+        state0_40, state1_40, state0_41, state1_41, state0_42, state1_42, state0_43, state1_43,
+        state0_44, state1_44 : int;
+   var state_alpha, state_beta, state_beta_lookup, state_gamma, state_gamma_lookup, state_eta, state_z, state_z_in_domain, state_v, state_u: FieldR.F;
+   var l0_at_z, ln_minus_one_at_z, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega: FieldR.F;
+   var query_at_z_0, query_at_z_1, query_t_poly_aggregated: g;
+   var copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient: FieldR.F;
+   var aggregatedAtZSlot, aggregatedAtZOmegaSlot, pairing_pair_with_generator, pairing_buffer_point: g;
+   var aggregatedOpeningAtZ, aggregatedOpeningAtZSlot, aggregationChallenge, firstDCoeff, firstTCoeff, copyPermutationCoeff, aggregatedOpeningAtZOmega, aggregatedValue: FieldR.F;
+   var pairing_pair_with_x: g;
+   isValid <- true;
+   
+      (* load proof inlined *)
+      
+      isValid <- public_input_length_in_words = 1;
+      isValid <- isValid /\ (proof_length_in_words = 44);
+      isValid <- isValid /\ (recursive_proof_length_in_words = 0);
+      public_input <- FieldR.inF ((FieldR.asint public_input) %% 2^253);
+
+      (* initialize transcript inlined *)
+
+      state0_0 <- keccakT 0 0 0 (FieldR.asint public_input);
+      state1_0 <- keccakT 1 0 0 (FieldR.asint public_input);
+      state0_1 <- keccakT 0 state0_0 state1_0 (F_to_int_point (aspoint_G1 state_poly_0)).`1;
+      state1_1 <- keccakT 1 state0_0 state1_0 (F_to_int_point (aspoint_G1 state_poly_0)).`1;
+      state0_2 <- keccakT 0 state0_1 state1_1 (F_to_int_point (aspoint_G1 state_poly_0)).`2;
+      state1_2 <- keccakT 1 state0_1 state1_1 (F_to_int_point (aspoint_G1 state_poly_0)).`2;
+      state0_3 <- keccakT 0 state0_2 state1_2 (F_to_int_point (aspoint_G1 state_poly_1)).`1;
+      state1_3 <- keccakT 1 state0_2 state1_2 (F_to_int_point (aspoint_G1 state_poly_1)).`1;
+      state0_4 <- keccakT 0 state0_3 state1_3 (F_to_int_point (aspoint_G1 state_poly_1)).`2;
+      state1_4 <- keccakT 1 state0_3 state1_3 (F_to_int_point (aspoint_G1 state_poly_1)).`2;
+      state0_5 <- keccakT 0 state0_4 state1_4 (F_to_int_point (aspoint_G1 state_poly_2)).`1;
+      state1_5 <- keccakT 1 state0_4 state1_4 (F_to_int_point (aspoint_G1 state_poly_2)).`1;
+      state0_6 <- keccakT 0 state0_5 state1_5 (F_to_int_point (aspoint_G1 state_poly_2)).`2;
+      state1_6 <- keccakT 1 state0_5 state1_5 (F_to_int_point (aspoint_G1 state_poly_2)).`2;
+      state0_7 <- keccakT 0 state0_6 state1_6 (F_to_int_point (aspoint_G1 state_poly_3)).`1;
+      state1_7 <- keccakT 1 state0_6 state1_6 (F_to_int_point (aspoint_G1 state_poly_3)).`1;
+      state0_8 <- keccakT 0 state0_7 state1_7 (F_to_int_point (aspoint_G1 state_poly_3)).`2;
+      state1_8 <- keccakT 1 state0_7 state1_7 (F_to_int_point (aspoint_G1 state_poly_3)).`2;
+    
+      state_eta <- FieldR.inF ((keccakC 2 state0_8 state1_8 0) %% 2^253);
+
+      state0_9 <- keccakT 0 state0_8 state1_8 (F_to_int_point (aspoint_G1 lookup_s_poly)).`1;
+      state1_9 <- keccakT 1 state0_8 state1_8 (F_to_int_point (aspoint_G1 lookup_s_poly)).`1;
+      state0_10 <- keccakT 0 state0_9 state1_9 (F_to_int_point (aspoint_G1 lookup_s_poly)).`2;
+      state1_10 <- keccakT 1 state0_9 state1_9 (F_to_int_point (aspoint_G1 lookup_s_poly)).`2;
+    
+      state_beta  <- FieldR.inF ((keccakC 2 state0_10 state1_10 1) %% 2^253);
+      state_gamma <- FieldR.inF ((keccakC 2 state0_10 state1_10 2) %% 2^253);
+
+      state0_11 <- keccakT 0 state0_10 state1_10 (F_to_int_point (aspoint_G1 copy_permutation_grand_product)).`1;
+      state1_11 <- keccakT 1 state0_10 state1_10 (F_to_int_point (aspoint_G1 copy_permutation_grand_product)).`1;
+      state0_12 <- keccakT 0 state0_11 state1_11 (F_to_int_point (aspoint_G1 copy_permutation_grand_product)).`2;
+      state1_12 <- keccakT 1 state0_11 state1_11 (F_to_int_point (aspoint_G1 copy_permutation_grand_product)).`2;
+
+      state_beta_lookup  <- FieldR.inF ((keccakC 2 state0_12 state1_12 3) %% 2^253);
+      state_gamma_lookup <- FieldR.inF ((keccakC 2 state0_12 state1_12 4) %% 2^253);
+
+      state0_13 <- keccakT 0 state0_12 state1_12 (F_to_int_point (aspoint_G1 lookup_grand_product)).`1;
+      state1_13 <- keccakT 1 state0_12 state1_12 (F_to_int_point (aspoint_G1 lookup_grand_product)).`1;
+      state0_14 <- keccakT 0 state0_13 state1_13 (F_to_int_point (aspoint_G1 lookup_grand_product)).`2;
+      state1_14 <- keccakT 1 state0_13 state1_13 (F_to_int_point (aspoint_G1 lookup_grand_product)).`2;
+
+      state_alpha <- FieldR.inF ((keccakC 2 state0_14 state1_14 5) %% 2^253);
+
+      state0_15 <- keccakT 0 state0_14 state1_14 (F_to_int_point (aspoint_G1 quotient_poly_part_0)).`1;
+      state1_15 <- keccakT 1 state0_14 state1_14 (F_to_int_point (aspoint_G1 quotient_poly_part_0)).`1;
+      state0_16 <- keccakT 0 state0_15 state1_15 (F_to_int_point (aspoint_G1 quotient_poly_part_0)).`2;
+      state1_16 <- keccakT 1 state0_15 state1_15 (F_to_int_point (aspoint_G1 quotient_poly_part_0)).`2;
+      state0_17 <- keccakT 0 state0_16 state1_16 (F_to_int_point (aspoint_G1 quotient_poly_part_1)).`1;
+      state1_17 <- keccakT 1 state0_16 state1_16 (F_to_int_point (aspoint_G1 quotient_poly_part_1)).`1;
+      state0_18 <- keccakT 0 state0_17 state1_17 (F_to_int_point (aspoint_G1 quotient_poly_part_1)).`2;
+      state1_18 <- keccakT 1 state0_17 state1_17 (F_to_int_point (aspoint_G1 quotient_poly_part_1)).`2;
+      state0_19 <- keccakT 0 state0_18 state1_18 (F_to_int_point (aspoint_G1 quotient_poly_part_2)).`1;
+      state1_19 <- keccakT 1 state0_18 state1_18 (F_to_int_point (aspoint_G1 quotient_poly_part_2)).`1;
+      state0_20 <- keccakT 0 state0_19 state1_19 (F_to_int_point (aspoint_G1 quotient_poly_part_2)).`2;
+      state1_20 <- keccakT 1 state0_19 state1_19 (F_to_int_point (aspoint_G1 quotient_poly_part_2)).`2;
+      state0_21 <- keccakT 0 state0_20 state1_20 (F_to_int_point (aspoint_G1 quotient_poly_part_3)).`1;
+      state1_21 <- keccakT 1 state0_20 state1_20 (F_to_int_point (aspoint_G1 quotient_poly_part_3)).`1;
+      state0_22 <- keccakT 0 state0_21 state1_21 (F_to_int_point (aspoint_G1 quotient_poly_part_3)).`2;
+      state1_22 <- keccakT 1 state0_21 state1_21 (F_to_int_point (aspoint_G1 quotient_poly_part_3)).`2;
+
+      state_z <- FieldR.inF ((keccakC 2 state0_22 state1_22 6) %% 2^253);
+      state_z_in_domain <- state_z^Constants.DOMAIN_SIZE;
+
+      state0_23 <- keccakT 0 state0_22 state1_22 (FieldR.asint quotient_poly_opening_at_z);
+      state1_23 <- keccakT 1 state0_22 state1_22 (FieldR.asint quotient_poly_opening_at_z);
+      state0_24 <- keccakT 0 state0_23 state1_23 (FieldR.asint state_poly_0_opening_at_z);
+      state1_24 <- keccakT 1 state0_23 state1_23 (FieldR.asint state_poly_0_opening_at_z);
+      state0_25 <- keccakT 0 state0_24 state1_24 (FieldR.asint state_poly_1_opening_at_z);
+      state1_25 <- keccakT 1 state0_24 state1_24 (FieldR.asint state_poly_1_opening_at_z);
+      state0_26 <- keccakT 0 state0_25 state1_25 (FieldR.asint state_poly_2_opening_at_z);
+      state1_26 <- keccakT 1 state0_25 state1_25 (FieldR.asint state_poly_2_opening_at_z);
+      state0_27 <- keccakT 0 state0_26 state1_26 (FieldR.asint state_poly_3_opening_at_z);
+      state1_27 <- keccakT 1 state0_26 state1_26 (FieldR.asint state_poly_3_opening_at_z);
+      state0_28 <- keccakT 0 state0_27 state1_27 (FieldR.asint state_poly_3_opening_at_z_omega);
+      state1_28 <- keccakT 1 state0_27 state1_27 (FieldR.asint state_poly_3_opening_at_z_omega);
+      state0_29 <- keccakT 0 state0_28 state1_28 (FieldR.asint gate_selector_0_opening_at_z);
+      state1_29 <- keccakT 1 state0_28 state1_28 (FieldR.asint gate_selector_0_opening_at_z);
+      state0_30 <- keccakT 0 state0_29 state1_29 (FieldR.asint copy_permutation_poly_0_opening_at_z);
+      state1_30 <- keccakT 1 state0_29 state1_29 (FieldR.asint copy_permutation_poly_0_opening_at_z);
+      state0_31 <- keccakT 0 state0_30 state1_30 (FieldR.asint copy_permutation_poly_1_opening_at_z);
+      state1_31 <- keccakT 1 state0_30 state1_30 (FieldR.asint copy_permutation_poly_1_opening_at_z);
+      state0_32 <- keccakT 0 state0_31 state1_31 (FieldR.asint copy_permutation_poly_2_opening_at_z);
+      state1_32 <- keccakT 1 state0_31 state1_31 (FieldR.asint copy_permutation_poly_2_opening_at_z);
+      state0_33 <- keccakT 0 state0_32 state1_32 (FieldR.asint copy_permutation_grand_product_opening_at_z_omega);
+      state1_33 <- keccakT 1 state0_32 state1_32 (FieldR.asint copy_permutation_grand_product_opening_at_z_omega);
+      state0_34 <- keccakT 0 state0_33 state1_33 (FieldR.asint lookup_t_poly_opening_at_z);
+      state1_34 <- keccakT 1 state0_33 state1_33 (FieldR.asint lookup_t_poly_opening_at_z);
+      state0_35 <- keccakT 0 state0_34 state1_34 (FieldR.asint lookup_selector_poly_opening_at_z);
+      state1_35 <- keccakT 1 state0_34 state1_34 (FieldR.asint lookup_selector_poly_opening_at_z);
+      state0_36 <- keccakT 0 state0_35 state1_35 (FieldR.asint lookup_table_type_poly_opening_at_z);
+      state1_36 <- keccakT 1 state0_35 state1_35 (FieldR.asint lookup_table_type_poly_opening_at_z);
+      state0_37 <- keccakT 0 state0_36 state1_36 (FieldR.asint lookup_s_poly_opening_at_z_omega);
+      state1_37 <- keccakT 1 state0_36 state1_36 (FieldR.asint lookup_s_poly_opening_at_z_omega);
+      state0_38 <- keccakT 0 state0_37 state1_37 (FieldR.asint lookup_grand_product_opening_at_z_omega);
+      state1_38 <- keccakT 1 state0_37 state1_37 (FieldR.asint lookup_grand_product_opening_at_z_omega);
+      state0_39 <- keccakT 0 state0_38 state1_38 (FieldR.asint lookup_t_poly_opening_at_z_omega);
+      state1_39 <- keccakT 1 state0_38 state1_38 (FieldR.asint lookup_t_poly_opening_at_z_omega);
+      state0_40 <- keccakT 0 state0_39 state1_39 (FieldR.asint linearisation_poly_opening_at_z);
+      state1_40 <- keccakT 1 state0_39 state1_39 (FieldR.asint linearisation_poly_opening_at_z);
+
+      state_v <- FieldR.inF ((keccakC 2 state0_40 state1_40 7) %% 2^253);
+
+      state0_41 <- keccakT 0 state0_40 state1_40 (F_to_int_point (aspoint_G1 opening_proof_at_z)).`1;
+      state1_41 <- keccakT 1 state0_40 state1_40 (F_to_int_point (aspoint_G1 opening_proof_at_z)).`1;
+      state0_42 <- keccakT 0 state0_41 state1_41 (F_to_int_point (aspoint_G1 opening_proof_at_z)).`2;
+      state1_42 <- keccakT 1 state0_41 state1_41 (F_to_int_point (aspoint_G1 opening_proof_at_z)).`2;
+      state0_43 <- keccakT 0 state0_42 state1_42 (F_to_int_point (aspoint_G1 opening_proof_at_z_omega)).`1;
+      state1_43 <- keccakT 1 state0_42 state1_42 (F_to_int_point (aspoint_G1 opening_proof_at_z_omega)).`1;
+      state0_44 <- keccakT 0 state0_43 state1_43 (F_to_int_point (aspoint_G1 opening_proof_at_z_omega)).`2;
+      state1_44 <- keccakT 1 state0_43 state1_43 (F_to_int_point (aspoint_G1 opening_proof_at_z_omega)).`2;
+
+      state_u <- FieldR.inF ((keccakC 2 state0_44 state1_44 8) %% 2^253);
+
+      (* verify quotient evaluation inlined *)
+
+      isValid <- isValid /\ (state_z^Constants.DOMAIN_SIZE <> FieldR.one);
+      l0_at_z <- (state_z^Constants.DOMAIN_SIZE - FieldR.one) * ((Constants.DOMAIN_SIZEFr * (state_z - FieldR.one)) ^ (- 1));
+      ln_minus_one_at_z <- (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (state_z^Constants.DOMAIN_SIZE - FieldR.one)) * ((Constants.DOMAIN_SIZEFr * (state_z - Constants.OMEGAFr^(Constants.DOMAIN_SIZE- 1))) ^ (- 1));
+
+      isValid <- isValid /\ ((quotient_poly_opening_at_z * (state_z_in_domain - FieldR.one)) 
+         = (linearisation_poly_opening_at_z + l0_at_z * public_input * gate_selector_0_opening_at_z -state_alpha^4 * copy_permutation_grand_product_opening_at_z_omega 
+         * (copy_permutation_poly_0_opening_at_z * state_beta + state_gamma + state_poly_0_opening_at_z) 
+         * (copy_permutation_poly_1_opening_at_z * state_beta + state_gamma + state_poly_1_opening_at_z) 
+         * (copy_permutation_poly_2_opening_at_z * state_beta + state_gamma + state_poly_2_opening_at_z) 
+         * (state_poly_3_opening_at_z + state_gamma)
+      -state_alpha^5 * l0_at_z  + ((state_alpha^6 * (lookup_s_poly_opening_at_z_omega * state_beta_lookup + state_gamma_lookup * (state_beta_lookup + FieldR.one)) * lookup_grand_product_opening_at_z_omega) * (state_z - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1)) 
+        - state_alpha^7 * l0_at_z 
+        - state_alpha^8 * ln_minus_one_at_z * (state_gamma_lookup * (state_beta_lookup + FieldR.one)) ^ (Constants.DOMAIN_SIZE - 1))));
+
+     beta_plus_one <- state_beta_lookup + FieldR.one;
+     beta_gamma_plus_gamma <- state_gamma_lookup * state_beta_lookup + state_gamma_lookup;
+     z_minus_last_omega <- state_z - Constants.OMEGAFr^(Constants.DOMAIN_SIZE-1);
+
+     (* prepare queries inlined *)
+     
+     query_at_z_0 <- 
+        quotient_poly_part_0 +
+        (state_z_in_domain * quotient_poly_part_1) +
+        ((state_z_in_domain * state_z_in_domain) * quotient_poly_part_2) +
+        ((state_z_in_domain * state_z_in_domain * state_z_in_domain) * quotient_poly_part_3);
+
+  
+      copy_permutation_first_aggregated_commitment_coeff <- (
+        (state_alpha^4) * (state_z * state_beta + state_gamma + state_poly_0_opening_at_z) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_0) + state_gamma + state_poly_1_opening_at_z) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_1) + state_gamma + state_poly_2_opening_at_z) *
+        (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_2) + state_gamma + state_poly_3_opening_at_z) +
+        l0_at_z * (state_alpha^5)
+      ) * state_v;
+
+
+      query_at_z_1 <- (((
+        ((state_poly_0_opening_at_z * state_poly_0_opening_at_z - state_poly_1_opening_at_z) * state_alpha) +
+        ((state_poly_1_opening_at_z * state_poly_1_opening_at_z - state_poly_2_opening_at_z) * (state_alpha^2)) +
+        ((state_poly_2_opening_at_z * state_poly_0_opening_at_z - state_poly_3_opening_at_z) * (state_alpha^3))
+      ) * state_v) * vk_gate_selectors_1) + ((state_v * gate_selector_0_opening_at_z) * (
+        (state_poly_0_opening_at_z * vk_gate_setup_0) +
+        (state_poly_1_opening_at_z * vk_gate_setup_1) +
+        (state_poly_2_opening_at_z * vk_gate_setup_2) +
+        (state_poly_3_opening_at_z * vk_gate_setup_3) +
+        ((state_poly_0_opening_at_z * state_poly_1_opening_at_z) * vk_gate_setup_4) +
+        ((state_poly_0_opening_at_z * state_poly_2_opening_at_z) * vk_gate_setup_5) +
+        vk_gate_setup_6 +
+        (state_poly_3_opening_at_z_omega * vk_gate_setup_7)
+      )) + (G.inv ((
+        (state_alpha^4) * state_beta * copy_permutation_grand_product_opening_at_z_omega *
+        (copy_permutation_poly_0_opening_at_z * state_beta + state_gamma + state_poly_0_opening_at_z) *
+        (copy_permutation_poly_1_opening_at_z * state_beta + state_gamma + state_poly_1_opening_at_z) *
+        (copy_permutation_poly_2_opening_at_z * state_beta + state_gamma + state_poly_2_opening_at_z) *
+        state_v
+      ) * vk_permutation_3));
+
+
+      lookupSFirstAggregatedCommitment <- state_v * z_minus_last_omega * (state_alpha^6) * lookup_grand_product_opening_at_z_omega;
+      lookupGrandProductFirstAggregatedCoefficient 
+            <- ((- (lookup_t_poly_opening_at_z_omega * state_beta_lookup +
+            lookup_t_poly_opening_at_z + beta_gamma_plus_gamma) *
+            ((state_poly_0_opening_at_z + state_eta * state_poly_1_opening_at_z +
+              state_eta * state_eta * state_poly_2_opening_at_z +
+              state_eta * state_eta * state_eta * lookup_table_type_poly_opening_at_z) *
+            lookup_selector_poly_opening_at_z + state_gamma_lookup)) *
+        beta_plus_one * (state_alpha^6) * z_minus_last_omega + (state_alpha^7) * l0_at_z +
+        (state_alpha^8) * ln_minus_one_at_z) *
+          state_v;
+    
+
+      query_t_poly_aggregated <-
+        vk_lookup_table_0 +
+        (state_eta * vk_lookup_table_1) +
+        (state_eta * state_eta) * vk_lookup_table_2 +
+        (state_eta * state_eta * state_eta) * vk_lookup_table_3;
+
+      (* prepare aggregated commitment inlined *)
+
+        aggregatedAtZSlot <- query_at_z_0;
+        aggregatedOpeningAtZ <- quotient_poly_opening_at_z;
+      
+        aggregatedAtZSlot <- aggregatedAtZSlot + query_at_z_1;
+
+        aggregationChallenge <- state_v;
+        aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * linearisation_poly_opening_at_z;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * state_poly_0 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * state_poly_0_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * state_poly_1 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * state_poly_1_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * state_poly_2 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * state_poly_2_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- aggregationChallenge * state_v;
+      
+        firstDCoeff <- aggregationChallenge;
+
+        aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * state_poly_3_opening_at_z;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * vk_gate_selectors_0 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * gate_selector_0_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * vk_permutation_0 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * copy_permutation_poly_0_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * vk_permutation_1 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * copy_permutation_poly_1_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * vk_permutation_2 + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * copy_permutation_poly_2_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+      
+        firstTCoeff <- aggregationChallenge;
+
+        aggregatedOpeningAtZ <- aggregatedOpeningAtZ + aggregationChallenge * lookup_t_poly_opening_at_z;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * vk_lookup_selector + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * lookup_selector_poly_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZSlot <- aggregationChallenge * vk_lookup_table_type + aggregatedAtZSlot;
+        aggregatedOpeningAtZ <- aggregationChallenge * lookup_table_type_poly_opening_at_z + aggregatedOpeningAtZ;
+
+        aggregatedOpeningAtZSlot <- aggregatedOpeningAtZ;
+
+        aggregationChallenge <- aggregationChallenge * state_v;
+
+        copyPermutationCoeff <- copy_permutation_first_aggregated_commitment_coeff + aggregationChallenge * state_u;
+
+        aggregatedAtZOmegaSlot <- copyPermutationCoeff * copy_permutation_grand_product;
+
+        aggregatedOpeningAtZOmega <- copy_permutation_grand_product_opening_at_z_omega * aggregationChallenge;
+
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZOmegaSlot <- (state_u * aggregationChallenge + firstDCoeff) * state_poly_3 + aggregatedAtZOmegaSlot;
+        aggregatedOpeningAtZOmega <- aggregationChallenge * state_poly_3_opening_at_z_omega + aggregatedOpeningAtZOmega;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZOmegaSlot <- (state_u * aggregationChallenge + lookupSFirstAggregatedCommitment) * lookup_s_poly + aggregatedAtZOmegaSlot;
+        aggregatedOpeningAtZOmega <- aggregationChallenge * lookup_s_poly_opening_at_z_omega + aggregatedOpeningAtZOmega;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZOmegaSlot <- (state_u * aggregationChallenge + lookupGrandProductFirstAggregatedCoefficient) * lookup_grand_product + aggregatedAtZOmegaSlot;
+        aggregatedOpeningAtZOmega <- aggregationChallenge * lookup_grand_product_opening_at_z_omega + aggregatedOpeningAtZOmega;
+
+        aggregationChallenge <- state_v * aggregationChallenge;
+        aggregatedAtZOmegaSlot <- (state_u * aggregationChallenge + firstTCoeff) * query_t_poly_aggregated + aggregatedAtZOmegaSlot;
+        aggregatedOpeningAtZOmega <- aggregationChallenge * lookup_t_poly_opening_at_z_omega + aggregatedOpeningAtZOmega;
+
+        pairing_pair_with_generator <- aggregatedAtZSlot + aggregatedAtZOmegaSlot;
+      
+        aggregatedValue <- aggregatedOpeningAtZOmega * state_u + aggregatedOpeningAtZ;
+      
+        pairing_buffer_point <- aggregatedValue * EllipticCurve.g_gen;
+
+        pairing_pair_with_generator <- pairing_pair_with_generator + (G.inv pairing_buffer_point);
+        pairing_pair_with_generator <- (state_z *opening_proof_at_z) + pairing_pair_with_generator;
+        pairing_pair_with_generator <- ((state_z * Constants.OMEGAFr * state_u) * opening_proof_at_z_omega) + pairing_pair_with_generator;
+        pairing_pair_with_x <- (state_u *opening_proof_at_z_omega) + opening_proof_at_z;
+        pairing_pair_with_x <- G.inv pairing_pair_with_x;
+
+        return isValid /\ (e (pairing_pair_with_generator + pairing_pair_with_x) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e);
+  }
+
+      proc high_with_spec (public_input_length_in_words: int, public_input: FieldR.F, proof_length_in_words: int, state_poly_0: g, state_poly_1: g, state_poly_2: g, state_poly_3: g, copy_permutation_grand_product: g, lookup_s_poly: g, lookup_grand_product: g, quotient_poly_part_0: g, quotient_poly_part_1: g, quotient_poly_part_2: g, quotient_poly_part_3: g, state_poly_0_opening_at_z: FieldR.F, state_poly_1_opening_at_z: FieldR.F, state_poly_2_opening_at_z: FieldR.F, state_poly_3_opening_at_z: FieldR.F, state_poly_3_opening_at_z_omega: FieldR.F, gate_selector_0_opening_at_z: FieldR.F, copy_permutation_poly_0_opening_at_z: FieldR.F, copy_permutation_poly_1_opening_at_z: FieldR.F, copy_permutation_poly_2_opening_at_z: FieldR.F, copy_permutation_grand_product_opening_at_z_omega: FieldR.F, lookup_s_poly_opening_at_z_omega: FieldR.F, lookup_grand_product_opening_at_z_omega: FieldR.F, lookup_t_poly_opening_at_z: FieldR.F, lookup_t_poly_opening_at_z_omega: FieldR.F, lookup_selector_poly_opening_at_z: FieldR.F, lookup_table_type_poly_opening_at_z: FieldR.F, quotient_poly_opening_at_z: FieldR.F, linearisation_poly_opening_at_z: FieldR.F, opening_proof_at_z: g, opening_proof_at_z_omega: g, recursive_proof_length_in_words: int, recursive_part_p1: g, recursive_part_p2: g) : bool = {
+    
+      (* load proof mod *)
+      var _public_input, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z, _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, 
+      _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z, _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, 
+      _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega, _lookup_grand_product_opening_at_z_omega, 
+      _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z, _lookup_table_type_poly_opening_at_z, 
+      _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z : FieldR.F; 
+      var _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product, _quotient_poly_part_0, 
+      _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _opening_proof_at_z, _opening_proof_at_z_omega: g;
+      var _recursive_part_p1, _recursive_part_p2: g option;
+
+      (* initialize transcript *)
+      var state_alpha, state_beta, state_gamma, state_eta;
+      var state_beta_lookup, state_gamma_lookup; 
+      var state_z, state_z_in_domain, state_v, state_u;
+
+      var state0_0, state1_0, state0_1, state1_1, state0_2, state1_2, state0_3, state1_3,
+      state0_4, state1_4, state0_5, state1_5, state0_6, state1_6, state0_7, state1_7,
+      state0_8, state1_8, state0_9, state1_9, state0_10, state1_10, state0_11, state1_11,
+      state0_12, state1_12, state0_13, state1_13, state0_14, state1_14, state0_15, state1_15,
+      state0_16, state1_16, state0_17, state1_17, state0_18, state1_18, state0_19, state1_19,
+      state0_20, state1_20, state0_21, state1_21, state0_22, state1_22, state0_23, state1_23,
+      state0_24, state1_24, state0_25, state1_25, state0_26, state1_26, state0_27, state1_27,
+      state0_28, state1_28, state0_29, state1_29, state0_30, state1_30, state0_31, state1_31,
+      state0_32, state1_32, state0_33, state1_33, state0_34, state1_34, state0_35, state1_35,
+      state0_36, state1_36, state0_37, state1_37, state0_38, state1_38, state0_39, state1_39,
+      state0_40, state1_40, state0_41, state1_41, state0_42, state1_42, state0_43, state1_43,
+      state0_44, state1_44 : int;
+    
+      (* verify quotient evaluation *)
+      var alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8;
+      var l0_at_z, ln_minus_one_at_z, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega;
+
+      (* prepare queries *)
+      var query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment,
+      lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated;
+
+      (* prepare aggregated commitment *)
+      var aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot;
+
+      var failed;
+      failed <- false;
+
+      (* /*////////////////////////////////////////////////////////////// *)
+      (*                         1. Load Proof *)
+      (* //////////////////////////////////////////////////////////////*/ *)
+
+      (* /// @dev This function loads a zk-SNARK proof, ensures it's properly formatted, and stores it in memory. *)
+      (* /// It ensures the number of inputs and the elliptic curve point's validity. *)
+      (* /// Note: It does NOT reject inputs that exceed these module sizes, but rather wraps them within the *)
+      (* /// module bounds. *)
+      (* /// The proof consists of: *)
+      (* /// 1. Public input: (1 field element from F_r) *)
+      (* /// *)
+      (* /// 2. Polynomial commitments (elliptic curve points over F_q): *)
+      (* ///     [a], [b], [c], [d]         - state polynomials commitments *)
+      (* ///     [z_perm]                   - copy-permutation grand product commitment *)
+      (* ///     [s]                        - polynomial for lookup argument commitment *)
+      (* ///     [z_lookup]                 - lookup grand product commitment *)
+      (* ///     [t_0], [t_1], [t_2], [t_3] - quotient polynomial parts commitments *)
+      (* ///     [W], [W']                  - proof openings commitments *)
+      (* /// *)
+      (* /// 3. Polynomial evaluations at z and z*omega (field elements from F_r): *)
+      (* ///     t(z)                                  - quotient polynomial opening *)
+      (* ///     a(z), b(z), c(z), d(z), d(z*omega)    - state polynomials openings *)
+      (* ///     main_gate_selector(z)                 - main gate selector opening *)
+      (* ///     sigma_0(z), sigma_1(z), sigma_2(z)    - permutation polynomials openings *)
+      (* ///     z_perm(z*omega)                       - copy-permutation grand product opening *)
+      (* ///     z_lookup(z*omega)                     - lookup grand product opening *)
+      (* ///     lookup_selector(z)                    - lookup selector opening *)
+      (* ///     s(x*omega), t(z*omega), table_type(z) - lookup argument polynomial openings *)
+      (* ///     r(z)                                  - linearisation polynomial opening *)
+      (* /// *)
+      (* /// 4. Recursive proof (0 or 2 elliptic curve points over F_q) *)
+
+      if ((public_input_length_in_words = 1) /\ (proof_length_in_words = 44) /\ (recursive_proof_length_in_words = 0)) {
+      (_public_input, _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product,
+        _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z,
+        _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z,
+        _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega,
+        _lookup_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z,
+        _lookup_table_type_poly_opening_at_z, _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z, _opening_proof_at_z, _opening_proof_at_z_omega,
+        _recursive_part_p1, _recursive_part_p2
+      ) <-
+      (
+        FieldR.inF ((FieldR.asint public_input) %% (2^253)),
+        state_poly_0,
+        state_poly_1,
+        state_poly_2,
+        state_poly_3,
+        copy_permutation_grand_product,
+        lookup_s_poly,
+        lookup_grand_product,
+        quotient_poly_part_0,
+        quotient_poly_part_1,
+        quotient_poly_part_2,
+        quotient_poly_part_3,
+        state_poly_0_opening_at_z,
+        state_poly_1_opening_at_z,
+        state_poly_2_opening_at_z,
+        state_poly_3_opening_at_z,
+        state_poly_3_opening_at_z_omega,
+        gate_selector_0_opening_at_z,
+        copy_permutation_poly_0_opening_at_z,
+        copy_permutation_poly_1_opening_at_z,
+        copy_permutation_poly_2_opening_at_z,
+        copy_permutation_grand_product_opening_at_z_omega,
+        lookup_s_poly_opening_at_z_omega,
+        lookup_grand_product_opening_at_z_omega,
+        lookup_t_poly_opening_at_z,
+        lookup_t_poly_opening_at_z_omega,
+        lookup_selector_poly_opening_at_z,
+        lookup_table_type_poly_opening_at_z,
+        quotient_poly_opening_at_z,
+        linearisation_poly_opening_at_z,
+        opening_proof_at_z,
+        opening_proof_at_z_omega,
+        None,
+        None
+      );
+      } else {
+          (_public_input, _state_poly_0, _state_poly_1, _state_poly_2, _state_poly_3, _copy_permutation_grand_product, _lookup_s_poly, _lookup_grand_product,
+        _quotient_poly_part_0, _quotient_poly_part_1, _quotient_poly_part_2, _quotient_poly_part_3, _state_poly_0_opening_at_z, _state_poly_1_opening_at_z,
+        _state_poly_2_opening_at_z, _state_poly_3_opening_at_z, _state_poly_3_opening_at_z_omega, _gate_selector_0_opening_at_z, _copy_permutation_poly_0_opening_at_z,
+        _copy_permutation_poly_1_opening_at_z, _copy_permutation_poly_2_opening_at_z, _copy_permutation_grand_product_opening_at_z_omega, _lookup_s_poly_opening_at_z_omega,
+        _lookup_grand_product_opening_at_z_omega, _lookup_t_poly_opening_at_z, _lookup_t_poly_opening_at_z_omega, _lookup_selector_poly_opening_at_z,
+        _lookup_table_type_poly_opening_at_z, _quotient_poly_opening_at_z, _linearisation_poly_opening_at_z, _opening_proof_at_z, _opening_proof_at_z_omega,
+        _recursive_part_p1, _recursive_part_p2
+          ) <- witness;
+          failed <- true;
+      }
+
+          (* /*////////////////////////////////////////////////////////////// *)
+          (*                         2. Transcript initialization *)
+          (* //////////////////////////////////////////////////////////////*/ *)
+
+          (* /// @notice Recomputes all challenges *)
+          (* /// @dev The process is the following: *)
+          (* /// Commit:   PI, [a], [b], [c], [d] *)
+          (* /// Get:      eta *)
+          (* /// Commit:   [s] *)
+          (* /// Get:      beta, gamma *)
+          (* /// Commit:   [z_perm] *)
+          (* /// Get:      beta', gamma' *)
+          (* /// Commit:   [z_lookup] *)
+          (* /// Get:      alpha *)
+          (* /// Commit:   [t_0], [t_1], [t_2], [t_3] *)
+          (* /// Get:      z *)
+          (* /// Commit:   t(z), a(z), b(z), c(z), d(z), d(z*omega), *)
+          (* ///           main_gate_selector(z), *)
+          (* ///           sigma_0(z), sigma_1(z), sigma_2(z), *)
+          (* ///           z_perm(z*omega), *)
+          (* ///           t(z), lookup_selector(z), table_type(z), *)
+          (* ///           s(x*omega), z_lookup(z*omega), t(z*omega), *)
+          (* ///           r(z) *)
+          (* /// Get:      v *)
+          (* /// Commit:   [W], [W'] *)
+          (* /// Get:      u *)  
+
+          state0_0 <- keccakT 0 0 0 (FieldR.asint _public_input);
+          state1_0 <- keccakT 1 0 0 (FieldR.asint _public_input);
+          state0_1 <- keccakT 0 state0_0 state1_0 (F_to_int_point (aspoint_G1 _state_poly_0)).`1;
+          state1_1 <- keccakT 1 state0_0 state1_0 (F_to_int_point (aspoint_G1 _state_poly_0)).`1;
+          state0_2 <- keccakT 0 state0_1 state1_1 (F_to_int_point (aspoint_G1 _state_poly_0)).`2;
+          state1_2 <- keccakT 1 state0_1 state1_1 (F_to_int_point (aspoint_G1 _state_poly_0)).`2;
+          state0_3 <- keccakT 0 state0_2 state1_2 (F_to_int_point (aspoint_G1 _state_poly_1)).`1;
+          state1_3 <- keccakT 1 state0_2 state1_2 (F_to_int_point (aspoint_G1 _state_poly_1)).`1;
+          state0_4 <- keccakT 0 state0_3 state1_3 (F_to_int_point (aspoint_G1 _state_poly_1)).`2;
+          state1_4 <- keccakT 1 state0_3 state1_3 (F_to_int_point (aspoint_G1 _state_poly_1)).`2;
+          state0_5 <- keccakT 0 state0_4 state1_4 (F_to_int_point (aspoint_G1 _state_poly_2)).`1;
+          state1_5 <- keccakT 1 state0_4 state1_4 (F_to_int_point (aspoint_G1 _state_poly_2)).`1;
+          state0_6 <- keccakT 0 state0_5 state1_5 (F_to_int_point (aspoint_G1 _state_poly_2)).`2;
+          state1_6 <- keccakT 1 state0_5 state1_5 (F_to_int_point (aspoint_G1 _state_poly_2)).`2;
+          state0_7 <- keccakT 0 state0_6 state1_6 (F_to_int_point (aspoint_G1 _state_poly_3)).`1;
+          state1_7 <- keccakT 1 state0_6 state1_6 (F_to_int_point (aspoint_G1 _state_poly_3)).`1;
+          state0_8 <- keccakT 0 state0_7 state1_7 (F_to_int_point (aspoint_G1 _state_poly_3)).`2;
+          state1_8 <- keccakT 1 state0_7 state1_7 (F_to_int_point (aspoint_G1 _state_poly_3)).`2;
+      
+          state_eta <- FieldR.inF ((keccakC 2 state0_8 state1_8 0) %% 2^253);
+
+          state0_9 <- keccakT 0 state0_8 state1_8 (F_to_int_point (aspoint_G1 _lookup_s_poly)).`1;
+          state1_9 <- keccakT 1 state0_8 state1_8 (F_to_int_point (aspoint_G1 _lookup_s_poly)).`1;
+          state0_10 <- keccakT 0 state0_9 state1_9 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+          state1_10 <- keccakT 1 state0_9 state1_9 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+      
+          state_beta  <- FieldR.inF ((keccakC 2 state0_10 state1_10 1) %% 2^253);
+          state_gamma <- FieldR.inF ((keccakC 2 state0_10 state1_10 2) %% 2^253);
+
+          state0_11 <- keccakT 0 state0_10 state1_10 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`1;
+          state1_11 <- keccakT 1 state0_10 state1_10 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`1;
+          state0_12 <- keccakT 0 state0_11 state1_11 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+          state1_12 <- keccakT 1 state0_11 state1_11 (F_to_int_point (aspoint_G1 _copy_permutation_grand_product)).`2;
+
+          state_beta_lookup  <- FieldR.inF ((keccakC 2 state0_12 state1_12 3) %% 2^253);
+          state_gamma_lookup <- FieldR.inF ((keccakC 2 state0_12 state1_12 4) %% 2^253);
+
+          state0_13 <- keccakT 0 state0_12 state1_12 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`1;
+          state1_13 <- keccakT 1 state0_12 state1_12 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`1;
+          state0_14 <- keccakT 0 state0_13 state1_13 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`2;
+          state1_14 <- keccakT 1 state0_13 state1_13 (F_to_int_point (aspoint_G1 _lookup_grand_product)).`2;
+
+          state_alpha <- FieldR.inF ((keccakC 2 state0_14 state1_14 5) %% 2^253);
+
+          state0_15 <- keccakT 0 state0_14 state1_14 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`1;
+          state1_15 <- keccakT 1 state0_14 state1_14 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`1;
+          state0_16 <- keccakT 0 state0_15 state1_15 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`2;
+          state1_16 <- keccakT 1 state0_15 state1_15 (F_to_int_point (aspoint_G1 _quotient_poly_part_0)).`2;
+          state0_17 <- keccakT 0 state0_16 state1_16 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`1;
+          state1_17 <- keccakT 1 state0_16 state1_16 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`1;
+          state0_18 <- keccakT 0 state0_17 state1_17 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`2;
+          state1_18 <- keccakT 1 state0_17 state1_17 (F_to_int_point (aspoint_G1 _quotient_poly_part_1)).`2;
+          state0_19 <- keccakT 0 state0_18 state1_18 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`1;
+          state1_19 <- keccakT 1 state0_18 state1_18 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`1;
+          state0_20 <- keccakT 0 state0_19 state1_19 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`2;
+          state1_20 <- keccakT 1 state0_19 state1_19 (F_to_int_point (aspoint_G1 _quotient_poly_part_2)).`2;
+          state0_21 <- keccakT 0 state0_20 state1_20 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`1;
+          state1_21 <- keccakT 1 state0_20 state1_20 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`1;
+          state0_22 <- keccakT 0 state0_21 state1_21 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`2;
+          state1_22 <- keccakT 1 state0_21 state1_21 (F_to_int_point (aspoint_G1 _quotient_poly_part_3)).`2;
+
+          state_z <- FieldR.inF ((keccakC 2 state0_22 state1_22 6) %% 2^253);
+          state_z_in_domain <- state_z^Constants.DOMAIN_SIZE;
+
+          state0_23 <- keccakT 0 state0_22 state1_22 (FieldR.asint _quotient_poly_opening_at_z);
+          state1_23 <- keccakT 1 state0_22 state1_22 (FieldR.asint _quotient_poly_opening_at_z);
+          state0_24 <- keccakT 0 state0_23 state1_23 (FieldR.asint _state_poly_0_opening_at_z);
+          state1_24 <- keccakT 1 state0_23 state1_23 (FieldR.asint _state_poly_0_opening_at_z);
+          state0_25 <- keccakT 0 state0_24 state1_24 (FieldR.asint _state_poly_1_opening_at_z);
+          state1_25 <- keccakT 1 state0_24 state1_24 (FieldR.asint _state_poly_1_opening_at_z);
+          state0_26 <- keccakT 0 state0_25 state1_25 (FieldR.asint _state_poly_2_opening_at_z);
+          state1_26 <- keccakT 1 state0_25 state1_25 (FieldR.asint _state_poly_2_opening_at_z);
+          state0_27 <- keccakT 0 state0_26 state1_26 (FieldR.asint _state_poly_3_opening_at_z);
+          state1_27 <- keccakT 1 state0_26 state1_26 (FieldR.asint _state_poly_3_opening_at_z);
+          state0_28 <- keccakT 0 state0_27 state1_27 (FieldR.asint _state_poly_3_opening_at_z_omega);
+          state1_28 <- keccakT 1 state0_27 state1_27 (FieldR.asint _state_poly_3_opening_at_z_omega);
+          state0_29 <- keccakT 0 state0_28 state1_28 (FieldR.asint _gate_selector_0_opening_at_z);
+          state1_29 <- keccakT 1 state0_28 state1_28 (FieldR.asint _gate_selector_0_opening_at_z);
+          state0_30 <- keccakT 0 state0_29 state1_29 (FieldR.asint _copy_permutation_poly_0_opening_at_z);
+          state1_30 <- keccakT 1 state0_29 state1_29 (FieldR.asint _copy_permutation_poly_0_opening_at_z);
+          state0_31 <- keccakT 0 state0_30 state1_30 (FieldR.asint _copy_permutation_poly_1_opening_at_z);
+          state1_31 <- keccakT 1 state0_30 state1_30 (FieldR.asint _copy_permutation_poly_1_opening_at_z);
+          state0_32 <- keccakT 0 state0_31 state1_31 (FieldR.asint _copy_permutation_poly_2_opening_at_z);
+          state1_32 <- keccakT 1 state0_31 state1_31 (FieldR.asint _copy_permutation_poly_2_opening_at_z);
+          state0_33 <- keccakT 0 state0_32 state1_32 (FieldR.asint _copy_permutation_grand_product_opening_at_z_omega);
+          state1_33 <- keccakT 1 state0_32 state1_32 (FieldR.asint _copy_permutation_grand_product_opening_at_z_omega);
+          state0_34 <- keccakT 0 state0_33 state1_33 (FieldR.asint _lookup_t_poly_opening_at_z);
+          state1_34 <- keccakT 1 state0_33 state1_33 (FieldR.asint _lookup_t_poly_opening_at_z);
+          state0_35 <- keccakT 0 state0_34 state1_34 (FieldR.asint _lookup_selector_poly_opening_at_z);
+          state1_35 <- keccakT 1 state0_34 state1_34 (FieldR.asint _lookup_selector_poly_opening_at_z);
+          state0_36 <- keccakT 0 state0_35 state1_35 (FieldR.asint _lookup_table_type_poly_opening_at_z);
+          state1_36 <- keccakT 1 state0_35 state1_35 (FieldR.asint _lookup_table_type_poly_opening_at_z);
+          state0_37 <- keccakT 0 state0_36 state1_36 (FieldR.asint _lookup_s_poly_opening_at_z_omega);
+          state1_37 <- keccakT 1 state0_36 state1_36 (FieldR.asint _lookup_s_poly_opening_at_z_omega);
+          state0_38 <- keccakT 0 state0_37 state1_37 (FieldR.asint _lookup_grand_product_opening_at_z_omega);
+          state1_38 <- keccakT 1 state0_37 state1_37 (FieldR.asint _lookup_grand_product_opening_at_z_omega);
+          state0_39 <- keccakT 0 state0_38 state1_38 (FieldR.asint _lookup_t_poly_opening_at_z_omega);
+          state1_39 <- keccakT 1 state0_38 state1_38 (FieldR.asint _lookup_t_poly_opening_at_z_omega);
+          state0_40 <- keccakT 0 state0_39 state1_39 (FieldR.asint _linearisation_poly_opening_at_z);
+          state1_40 <- keccakT 1 state0_39 state1_39 (FieldR.asint _linearisation_poly_opening_at_z);
+
+          state_v <- FieldR.inF ((keccakC 2 state0_40 state1_40 7) %% 2^253);
+
+          state0_41 <- keccakT 0 state0_40 state1_40 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`1;
+          state1_41 <- keccakT 1 state0_40 state1_40 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`1;
+          state0_42 <- keccakT 0 state0_41 state1_41 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`2;
+          state1_42 <- keccakT 1 state0_41 state1_41 (F_to_int_point (aspoint_G1 _opening_proof_at_z)).`2;
+          state0_43 <- keccakT 0 state0_42 state1_42 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`1;
+          state1_43 <- keccakT 1 state0_42 state1_42 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`1;
+          state0_44 <- keccakT 0 state0_43 state1_43 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`2;
+          state1_44 <- keccakT 1 state0_43 state1_43 (F_to_int_point (aspoint_G1 _opening_proof_at_z_omega)).`2;
+
+          state_u <- FieldR.inF ((keccakC 2 state0_44 state1_44 8) %% 2^253);
+
+          (* /*////////////////////////////////////////////////////////////// *)
+          (*                         3. Verifying quotient evaluation *)
+          (* //////////////////////////////////////////////////////////////*/ *)
+
+          (* /// @notice Compute linearisation polynomial's constant term: r_0 *)
+          (* /// @dev To save a verifier scalar multiplication, we split linearisation polynomial *)
+          (* /// into its constant and non-constant terms. The constant term is computed with the formula: *)
+          (* /// *)
+          (* /// r_0 = alpha^0 * L_0(z) * PI * q_{main selector}(z) + r(z)         -- main gate contribution *)
+          (* /// *)
+          (* ///     - alpha^4 * z_perm(z*omega)(sigma_0(z) * beta + gamma + a(z)) \ *)
+          (* ///                           (sigma_1(z) * beta + gamma + b(z))      | *)
+          (* ///                           (sigma_2(z) * beta + gamma + c(z))      | - permutation contribution *)
+          (* ///                           (sigma_3(z) + gamma)                    | *)
+          (* ///     - alpha^5 * L_0(z)                                            / *)
+          (* /// *)
+          (* ///     + alpha^6 * (s(z*omega) * beta' + gamma' (beta' + 1))         \ *)
+          (* ///               * (z - omega^{n-1}) * z_lookup(z*omega)             | - lookup contribution *)
+          (* ///     - alpha^7 * L_0(z)                                            | *)
+          (* ///     - alpha^8 * L_{n-1}(z) * (gamma' (beta' + 1))^{n-1}           / *)
+          (* /// *)
+          (* /// In the end we should check that t(z)*Z_H(z) = r(z) + r_0! *)
+
+          if (state_z^Constants.DOMAIN_SIZE = FieldR.one) {
+              failed <- true;
+          } else {
+              l0_at_z <- (state_z^Constants.DOMAIN_SIZE - FieldR.one) * ((Constants.DOMAIN_SIZEFr * (state_z - FieldR.one)) ^ (- 1));
+              ln_minus_one_at_z <- (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (state_z^Constants.DOMAIN_SIZE - FieldR.one)) * ((Constants.DOMAIN_SIZEFr * (state_z - Constants.OMEGAFr^(Constants.DOMAIN_SIZE- 1))) ^ (- 1)); 
+
+              failed <- failed \/ !((_quotient_poly_opening_at_z * (state_z_in_domain - FieldR.one)) 
+              = (_linearisation_poly_opening_at_z + l0_at_z * _public_input * _gate_selector_0_opening_at_z -state_alpha^4 * _copy_permutation_grand_product_opening_at_z_omega
+                * (_copy_permutation_poly_0_opening_at_z * state_beta + state_gamma + _state_poly_0_opening_at_z) 
+                * (_copy_permutation_poly_1_opening_at_z * state_beta + state_gamma + _state_poly_1_opening_at_z) 
+                * (_copy_permutation_poly_2_opening_at_z * state_beta + state_gamma + _state_poly_2_opening_at_z) 
+                * (_state_poly_3_opening_at_z + state_gamma)
+                -state_alpha^5 * l0_at_z  + ((state_alpha^6 * (_lookup_s_poly_opening_at_z_omega * state_beta_lookup + state_gamma_lookup * (state_beta_lookup + FieldR.one)) * _lookup_grand_product_opening_at_z_omega) * (state_z - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1)) 
+                - state_alpha^7 * l0_at_z 
+                - state_alpha^8 * ln_minus_one_at_z * (state_gamma_lookup * (state_beta_lookup + FieldR.one)) ^ (Constants.DOMAIN_SIZE - 1))));
+          }
+      
+          (alpha2, alpha3, alpha4, alpha5, alpha6, alpha7, alpha8, beta_plus_one, beta_gamma_plus_gamma, z_minus_last_omega) <-
+          (
+            state_alpha^2,
+            state_alpha^3,
+            state_alpha^4,
+            state_alpha^5,
+            state_alpha^6, 
+            state_alpha^7,
+            state_alpha^8,
+            state_beta_lookup + FieldR.one,
+            state_gamma_lookup * state_beta_lookup + state_gamma_lookup,
+            state_z - Constants.OMEGAFr ^(Constants.DOMAIN_SIZE - 1)
+          );
+
+              (* /*////////////////////////////////////////////////////////////// *)
+              (* 4. Prepare queries *)
+              (* //////////////////////////////////////////////////////////////*/ *)
+
+              (* /// @dev Here we compute the first and second parts of batched polynomial commitment *)
+              (* /// We use the formula: *)
+              (* ///     [D0] = [t_0] + z^n * [t_1] + z^{2n} * [t_2] + z^{3n} * [t_3] *)
+              (* /// and *)
+              (* ///     [D1] = main_gate_selector(z) * (                                        \ *)
+              (* ///                a(z) * [q_a] + b(z) * [q_b] + c(z) * [q_c] + d(z) * [q_d] +  | - main gate contribution *)
+              (* ///                a(z) * b(z) * [q_ab] + a(z) * c(z) * [q_ac] +                | *)
+              (* ///                [q_const] + d(z*omega) * [q_{d_next}])                       / *)
+              (* /// *)
+              (* ///            + alpha * [custom_gate_selector] * (                             \ *)
+              (* ///                (a(z)^2 - b(z))              +                               | - custom gate contribution *)
+              (* ///                (b(z)^2 - c(z))    * alpha   +                               | *)
+              (* ///                (a(z)*c(z) - d(z)) * alpha^2 )                               / *)
+              (* /// *)
+              (* ///            + alpha^4 * [z_perm] *                                           \ *)
+              (* ///                (a(z) + beta * z      + gamma) *                             | *)
+              (* ///                (b(z) + beta * z * k0 + gamma) *                             | *)
+              (* ///                (c(z) + beta * z * k1 + gamma) *                             | *)
+              (* ///                (d(z) + beta * z * k2 + gamma)                               | - permutation contribution *)
+              (* ///            - alpha^4 * z_perm(z*omega) * beta * [sigma_3] *                 | *)
+              (* ///                (a(z) + beta * sigma_0(z) + gamma) *                         | *)
+              (* ///                (b(z) + beta * sigma_1(z) + gamma) *                         | *)
+              (* ///                (c(z) + beta * sigma_2(z) + gamma) *                         | *)
+              (* ///            + alpha^5 * L_0(z) * [z_perm]                                    / *)
+              (* /// *)
+              (* ///            - alpha^6 * (1 + beta') * (gamma' + f(z)) * (z - omega^{n-1}) *  \ *)
+              (* ///                (gamma'(1 + beta') + t(z) + beta' * t(z*omega)) * [z_lookup] | *)
+              (* ///            + alpha^6 * z_lookup(z*omega) * (z - omega^{n-1}) * [s]          | - lookup contribution *)
+              (* ///            + alpha^7 * L_0(z) * [z_lookup]                                  | *)
+              (* ///            + alpha^8 * L_{n-1}(z) * [z_lookup]                              / *)
+
+              query_at_z_0 <- 
+              _quotient_poly_part_0 +
+          (state_z_in_domain * _quotient_poly_part_1) +
+          ((state_z_in_domain * state_z_in_domain) * _quotient_poly_part_2) +
+          ((state_z_in_domain * state_z_in_domain * state_z_in_domain) * _quotient_poly_part_3);
+
+          
+            copy_permutation_first_aggregated_commitment_coeff <- (
+            alpha4 * (state_z * state_beta + state_gamma + _state_poly_0_opening_at_z) *
+            (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_0) + state_gamma + _state_poly_1_opening_at_z) *
+            (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_1) + state_gamma + _state_poly_2_opening_at_z) *
+            (state_z * state_beta * (FieldR.inF Constants.NON_RESIDUE_2) + state_gamma + _state_poly_3_opening_at_z) +
+              l0_at_z * alpha5
+          ) * state_v;
+
+
+              query_at_z_1 <- (((
+                ((_state_poly_0_opening_at_z * _state_poly_0_opening_at_z - _state_poly_1_opening_at_z) * state_alpha) +
+                ((_state_poly_1_opening_at_z * _state_poly_1_opening_at_z - _state_poly_2_opening_at_z) * alpha2) +
+                ((_state_poly_2_opening_at_z * _state_poly_0_opening_at_z - _state_poly_3_opening_at_z) * alpha3)
+              ) * state_v) * vk_gate_selectors_1) + ((state_v * _gate_selector_0_opening_at_z) * (
+              (_state_poly_0_opening_at_z * vk_gate_setup_0) +
+              (_state_poly_1_opening_at_z * vk_gate_setup_1) +
+              (_state_poly_2_opening_at_z * vk_gate_setup_2) +
+              (_state_poly_3_opening_at_z * vk_gate_setup_3) +
+              ((_state_poly_0_opening_at_z * _state_poly_1_opening_at_z) * vk_gate_setup_4) +
+              ((_state_poly_0_opening_at_z * _state_poly_2_opening_at_z) * vk_gate_setup_5) +
+                vk_gate_setup_6 +
+              (state_poly_3_opening_at_z_omega * vk_gate_setup_7)
+            )) + (G.inv ((
+                alpha4 * state_beta * _copy_permutation_grand_product_opening_at_z_omega *
+                (_copy_permutation_poly_0_opening_at_z * state_beta + state_gamma + _state_poly_0_opening_at_z) *
+                (_copy_permutation_poly_1_opening_at_z * state_beta + state_gamma + _state_poly_1_opening_at_z) *
+                (_copy_permutation_poly_2_opening_at_z * state_beta + state_gamma + _state_poly_2_opening_at_z) *
+                  state_v
+              ) * vk_permutation_3));
+
+
+                  lookupSFirstAggregatedCommitment <- state_v * z_minus_last_omega * alpha6 * _lookup_grand_product_opening_at_z_omega;
+                  lookupGrandProductFirstAggregatedCoefficient 
+                  <- ((- (_lookup_t_poly_opening_at_z_omega * state_beta_lookup +
+                  _lookup_t_poly_opening_at_z + beta_gamma_plus_gamma) *
+              ((_state_poly_0_opening_at_z + state_eta * _state_poly_1_opening_at_z +
+                state_eta * state_eta * _state_poly_2_opening_at_z +
+                state_eta * state_eta * state_eta * _lookup_table_type_poly_opening_at_z) *
+                _lookup_selector_poly_opening_at_z + state_gamma_lookup)) *
+                beta_plus_one * alpha6 * z_minus_last_omega + alpha7 * l0_at_z +
+                alpha8 * ln_minus_one_at_z) *
+                state_v;
+          
+
+                query_t_poly_aggregated <-
+                vk_lookup_table_0 +
+          (state_eta * vk_lookup_table_1) +
+          (state_eta * state_eta) * vk_lookup_table_2 +
+          (state_eta * state_eta * state_eta) * vk_lookup_table_3;
+
+            (* /*////////////////////////////////////////////////////////////// *)
+            (* 5. Prepare aggregated commitment *)
+            (* //////////////////////////////////////////////////////////////*/ *)
+
+            (* /// @dev Here we compute aggregated commitment for the final pairing *)
+            (* /// We use the formula: *)
+            (* /// [E] = ( t(z) + v * r(z) *)
+            (* ///       + v^2*a(z) + v^3*b(z) + v^4*c(z) + v^5*d(z) *)
+            (* ///       + v^6*main_gate_selector(z) *)
+            (* ///       + v^7*sigma_0(z) + v^8*sigma_1(z) + v^9*sigma_2(z) *)
+            (* ///       + v^10*t(z) + v^11*lookup_selector(z) + v^12*table_type(z) *)
+            (* ///       + u * (v^13*z_perm(z*omega) + v^14*d(z*omega) *)
+            (* ///           + v^15*s(z*omega) + v^16*z_lookup(z*omega) + v^17*t(z*omega) *)
+            (* ///       ) *)
+            (* ///  ) * [1] *)
+            (* /// and *)
+            (* /// [F] = [D0] + v * [D1] *)
+            (* ///       + v^2*[a] + v^3*[b] + v^4*[c] + v^5*[d] *)
+            (* ///       + v^6*[main_gate_selector] *)
+            (* ///       + v^7*[sigma_0] + v^8*[sigma_1] + v^9*[sigma_2] *)
+            (* ///       + v^10*[t] + v^11*[lookup_selector] + v^12*[table_type] *)
+            (* ///       + u * ( v^13*[z_perm] + v^14*[d] *)
+            (* ///           + v^15*[s] + v^16*[z_lookup] + v^17*[t] *)
+            (* ///       ) *)
+
+            (* t(z) + v * r(z) + v^2*a(z) + v^3*b(z) + v^4*c(z) + v^6*main_gate_selector(z) + v^7*sigma_0(z) + v^8*sigma_1(z) + v^9*sigma_2(z) + v^11*lookup_selector(z) + v^12*table_type(z) *)
+
+            (* // v^5*d(z) + v^10*t(z) *)
+            aggregatedAtZSlot <- query_at_z_0 + query_at_z_1 + state_v ^ 2 * _state_poly_0 + state_v ^ 3 * _state_poly_1 + state_v ^ 4 * _state_poly_2 (* term "state_v ^ 5 * _state_poly_3" from aggregatedAtZOmegaSlot *) + state_v ^ 6 * vk_gate_selectors_0 + state_v ^ 7 * vk_permutation_0 + state_v ^ 8 * vk_permutation_1 + state_v ^ 9 * vk_permutation_2 (* term "state_v ^ 10 * query_t_poly_aggregated" from aggregatedAtZOmegaSlot *) + state_v ^ 11 * vk_lookup_selector + state_v ^ 12 * vk_lookup_table_type;
+
+            aggregatedOpeningAtZSlot <- _quotient_poly_opening_at_z + state_v * _linearisation_poly_opening_at_z + state_v ^ 2 * _state_poly_0_opening_at_z + state_v ^ 3 * _state_poly_1_opening_at_z + state_v ^ 4 * _state_poly_2_opening_at_z + state_v ^ 5 * _state_poly_3_opening_at_z + state_v ^ 6 * _gate_selector_0_opening_at_z + state_v ^ 7 * _copy_permutation_poly_0_opening_at_z + state_v ^ 8 * _copy_permutation_poly_1_opening_at_z + state_v ^ 9 * _copy_permutation_poly_2_opening_at_z + state_v ^ 10 * _lookup_t_poly_opening_at_z + state_v ^ 11 * _lookup_selector_poly_opening_at_z + state_v ^ 12 * _lookup_table_type_poly_opening_at_z; (* + state_v ^ 12 * _lookup_table_type_poly_opening_at_z ??? *)
+
+
+            (* u * ( v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t]) + v^5*d(z) + v^10*t(z) *)
+            (* + lookupGrandProductFirstAggregatedCoefficient * _lookup_grand_product + lookupSFirstAggregatedCommitment * _lookup_s_poly + copy_permutation_first_aggregated_commitment_coeff * _copy_permutation_grand_product ????? *) 
+            aggregatedAtZOmegaSlot <- state_u * (
+            state_v ^ 13 * _copy_permutation_grand_product + state_v ^ 14 * _state_poly_3 + state_v ^ 15 * _lookup_s_poly + state_v ^ 16 * _lookup_grand_product + state_v ^ 17 * query_t_poly_aggregated
+          ) + state_v ^ 10 * query_t_poly_aggregated + state_v ^ 5 * _state_poly_3
+            + lookupGrandProductFirstAggregatedCoefficient * _lookup_grand_product (* [z_lookup] *) + lookupSFirstAggregatedCommitment * _lookup_s_poly (* [s] *) + copy_permutation_first_aggregated_commitment_coeff * _copy_permutation_grand_product (* [z_prem] *);
+          (* *) 
+          
+
+            (* v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t] *)
+            aggregatedOpeningAtZOmega <- state_v ^ 13 * _copy_permutation_grand_product_opening_at_z_omega + state_v ^ 14 * _state_poly_3_opening_at_z_omega + state_v ^ 15 * _lookup_s_poly_opening_at_z_omega + state_v ^ 16 * _lookup_grand_product_opening_at_z_omega + state_v ^ 17 * _lookup_t_poly_opening_at_z_omega; 
+
+            pairingPairWithGeneratorSlot <- aggregatedAtZSlot + aggregatedAtZOmegaSlot; (* [F] *)
+          
+            pairingBufferPointSlot <- (aggregatedOpeningAtZOmega * state_u + _quotient_poly_opening_at_z + state_v * _linearisation_poly_opening_at_z + state_v ^ 2 * _state_poly_0_opening_at_z + state_v ^ 3 * _state_poly_1_opening_at_z + state_v ^ 4 * _state_poly_2_opening_at_z + state_v ^ 5 * _state_poly_3_opening_at_z + state_v ^ 6 * _gate_selector_0_opening_at_z + state_v ^ 7 * _copy_permutation_poly_0_opening_at_z + state_v ^ 8 * _copy_permutation_poly_1_opening_at_z + state_v ^ 9 * _copy_permutation_poly_2_opening_at_z + state_v ^ 10 * _lookup_t_poly_opening_at_z + state_v ^ 11 * _lookup_selector_poly_opening_at_z + state_v ^ 12 * _lookup_table_type_poly_opening_at_z) * EllipticCurve.g_gen; (* [E] *)
+
+            (* /*////////////////////////////////////////////////////////////// *)
+            (*                         5. Pairing *)
+            (* //////////////////////////////////////////////////////////////*/ *)
+
+            (* /// @notice Checks the final pairing *)
+            (* /// @dev We should check the equation: *)
+            (* /// e([W] + u * [W'], [x]_2) = e(z * [W] + u * z * omega * [W'] + [F] - [E], [1]_2), *)
+            (* /// where [F] and [E] were computed previously *)
+            (* /// *)
+            (* /// Also we need to check that e([P1], [x]_2) = e([P2], [1]_2) *)
+            (* /// if we have the recursive part of the proof *)
+            (* /// where [P1] and [P2] are parts of the recursive proof *)
+            (* /// *)
+            (* /// We can aggregate both pairings into one for gas optimization: *)
+            (* /// e([W] + u * [W'] + u^2 * [P1], [x]_2) = *)
+            (* /// e(z * [W] + u * z * omega * [W'] + [F] - [E] + u^2 * [P2], [1]_2) *)
+            (* /// *)
+            (* /// u is a valid challenge for such aggregation, *)
+            (* /// because [P1] and [P2] are used in PI *)
+
+            pairingPairWithGeneratorSlot <- pairingPairWithGeneratorSlot + (G.inv pairingBufferPointSlot);
+            pairingPairWithGeneratorSlot <- (state_z * _opening_proof_at_z) + pairingPairWithGeneratorSlot;
+            pairingPairWithGeneratorSlot <- ((state_z * Constants.OMEGAFr * state_u) * _opening_proof_at_z_omega) + pairingPairWithGeneratorSlot;
+            failed <- failed \/ !(e (pairingPairWithGeneratorSlot + (G.inv ((state_u * _opening_proof_at_z_omega) + _opening_proof_at_z))) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e);
+    
+            return !failed;
+
+  }
 }.
+
+lemma verify_high_encapsulated_equiv_high:
+    equiv [
+      Verify.high_encapsulated ~ Verify.high:
+      ={arg} ==> ={res}
+    ].
+    proof.
+      proc.
+      seq 5 5: (
+        (failed{1} /\ !isValid{2}) \/
+        (!failed{1} /\ isValid{2} /\
+        !vk_recursive_flag{1} /\
+        _public_input{1} = public_input{2} /\
+        _state_poly_0{1} = state_poly_0{2} /\
+        _state_poly_1{1} = state_poly_1{2} /\
+        _state_poly_2{1} = state_poly_2{2} /\
+        _state_poly_3{1} = state_poly_3{2} /\
+        _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+        _lookup_s_poly{1} = lookup_s_poly{2} /\
+        _lookup_grand_product{1} = lookup_grand_product{2} /\
+        _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+        _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+        _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+        _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+        _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+        _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+        _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+        _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+        _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+        _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+        _copy_permutation_poly_0_opening_at_z{1} = copy_permutation_poly_0_opening_at_z{2} /\
+        _copy_permutation_poly_1_opening_at_z{1} = copy_permutation_poly_1_opening_at_z{2} /\
+        _copy_permutation_poly_2_opening_at_z{1} = copy_permutation_poly_2_opening_at_z{2} /\
+        _copy_permutation_grand_product_opening_at_z_omega{1} = copy_permutation_grand_product_opening_at_z_omega{2} /\
+        _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+        _lookup_grand_product_opening_at_z_omega{1} = lookup_grand_product_opening_at_z_omega{2} /\
+        _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+        _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+        _lookup_selector_poly_opening_at_z{1} = lookup_selector_poly_opening_at_z{2} /\
+        _lookup_table_type_poly_opening_at_z{1} = lookup_table_type_poly_opening_at_z{2} /\
+        _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+        _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+        _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+        _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2}
+      )).
+      inline LoadProof.high.
+      rcondf{1} 43. progress. wp. skip. by progress.
+      wp. skip. by progress.
+
+      seq 1 100: (
+        (failed{1} /\ !isValid{2}) \/
+        (!failed{1} /\ isValid{2} /\
+        !vk_recursive_flag{1} /\
+        _public_input{1} = public_input{2} /\
+        _state_poly_0{1} = state_poly_0{2} /\
+        _state_poly_1{1} = state_poly_1{2} /\
+        _state_poly_2{1} = state_poly_2{2} /\
+        _state_poly_3{1} = state_poly_3{2} /\
+        _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+        _lookup_s_poly{1} = lookup_s_poly{2} /\
+        _lookup_grand_product{1} = lookup_grand_product{2} /\
+        _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+        _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+        _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+        _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+        _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+        _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+        _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+        _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+        _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+        _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+        _copy_permutation_poly_0_opening_at_z{1} = copy_permutation_poly_0_opening_at_z{2} /\
+        _copy_permutation_poly_1_opening_at_z{1} = copy_permutation_poly_1_opening_at_z{2} /\
+        _copy_permutation_poly_2_opening_at_z{1} = copy_permutation_poly_2_opening_at_z{2} /\
+        _copy_permutation_grand_product_opening_at_z_omega{1} = copy_permutation_grand_product_opening_at_z_omega{2} /\
+        _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+        _lookup_grand_product_opening_at_z_omega{1} = lookup_grand_product_opening_at_z_omega{2} /\
+        _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+        _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+        _lookup_selector_poly_opening_at_z{1} = lookup_selector_poly_opening_at_z{2} /\
+        _lookup_table_type_poly_opening_at_z{1} = lookup_table_type_poly_opening_at_z{2} /\
+        _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+        _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+        _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+        _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2} /\
+        state_alpha{1} = state_alpha{2} /\
+        state_beta{1} = state_beta{2} /\
+        state_beta_lookup{1} = state_beta_lookup{2} /\
+        state_gamma{1} = state_gamma{2} /\
+        state_gamma_lookup{1} = state_gamma_lookup{2} /\
+        state_eta{1} = state_eta{2} /\
+        state_z{1} = state_z{2} /\
+        state_z_in_domain{1} = state_z_in_domain{2} /\
+        state_v{1} = state_v{2} /\
+        state_u{1} = state_u{2}
+      )).
+      inline InitializeTranscript.high.
+      case (failed{1}).
+      conseq (_: (failed{1} /\ !isValid{2}) ==> (failed{1} /\ !isValid{2})). progress. by case H; progress.
+      progress. left. by case H; progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      seq 10 10: #pre. wp. skip. by progress.
+      wp. skip. by progress.
+
+      conseq (_ : (
+   !failed{1} /\
+   isValid{2} /\
+   !vk_recursive_flag{1} /\
+   _public_input{1} = public_input{2} /\
+   _state_poly_0{1} = state_poly_0{2} /\
+   _state_poly_1{1} = state_poly_1{2} /\
+   _state_poly_2{1} = state_poly_2{2} /\
+   _state_poly_3{1} = state_poly_3{2} /\
+   _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+   _lookup_s_poly{1} = lookup_s_poly{2} /\
+   _lookup_grand_product{1} = lookup_grand_product{2} /\
+   _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+   _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+   _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+   _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+   _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+   _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+   _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+   _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+   _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+   _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+   _copy_permutation_poly_0_opening_at_z{1} =
+   copy_permutation_poly_0_opening_at_z{2} /\
+   _copy_permutation_poly_1_opening_at_z{1} =
+   copy_permutation_poly_1_opening_at_z{2} /\
+   _copy_permutation_poly_2_opening_at_z{1} =
+   copy_permutation_poly_2_opening_at_z{2} /\
+   _copy_permutation_grand_product_opening_at_z_omega{1} =
+   copy_permutation_grand_product_opening_at_z_omega{2} /\
+   _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+   _lookup_grand_product_opening_at_z_omega{1} =
+   lookup_grand_product_opening_at_z_omega{2} /\
+   _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+   _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+   _lookup_selector_poly_opening_at_z{1} =
+   lookup_selector_poly_opening_at_z{2} /\
+   _lookup_table_type_poly_opening_at_z{1} =
+   lookup_table_type_poly_opening_at_z{2} /\
+   _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+   _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+   _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+   _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2}
+      ) ==> (
+!failed{1} /\
+  isValid{2} /\
+  !vk_recursive_flag{1} /\
+  _public_input{1} = public_input{2} /\
+  _state_poly_0{1} = state_poly_0{2} /\
+  _state_poly_1{1} = state_poly_1{2} /\
+  _state_poly_2{1} = state_poly_2{2} /\
+  _state_poly_3{1} = state_poly_3{2} /\
+  _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+  _lookup_s_poly{1} = lookup_s_poly{2} /\
+  _lookup_grand_product{1} = lookup_grand_product{2} /\
+  _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+  _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+  _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+  _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+  _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+  _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+  _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+  _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+  _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+  _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+  _copy_permutation_poly_0_opening_at_z{1} =
+  copy_permutation_poly_0_opening_at_z{2} /\
+  _copy_permutation_poly_1_opening_at_z{1} =
+  copy_permutation_poly_1_opening_at_z{2} /\
+  _copy_permutation_poly_2_opening_at_z{1} =
+  copy_permutation_poly_2_opening_at_z{2} /\
+  _copy_permutation_grand_product_opening_at_z_omega{1} =
+  copy_permutation_grand_product_opening_at_z_omega{2} /\
+  _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+  _lookup_grand_product_opening_at_z_omega{1} =
+  lookup_grand_product_opening_at_z_omega{2} /\
+  _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+  _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+  _lookup_selector_poly_opening_at_z{1} =
+  lookup_selector_poly_opening_at_z{2} /\
+  _lookup_table_type_poly_opening_at_z{1} =
+  lookup_table_type_poly_opening_at_z{2} /\
+  _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+  _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+  _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+  _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2} /\
+  ={state_alpha, state_beta, state_beta_lookup, state_gamma,
+      state_gamma_lookup, state_eta, state_z, state_z_in_domain, state_v,
+      state_u}
+      )).
+      progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      by case H; progress.
+      progress.
+      sp 34 0.
+      seq 4 4: (
+        #pre /\
+        ={state0_0, state1_0, state0_1, state1_1}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_2, state1_2, state0_3, state1_3}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_4, state1_4, state0_5, state1_5}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_6, state1_6, state0_7, state1_7}
+      ). wp. skip. by progress.
+      seq 3 3: (
+        #pre /\
+        ={state0_8, state1_8} /\
+        stateEta{1} = state_eta{2}
+      ). wp. skip. by progress.
+      seq 3 3: (
+        #pre /\
+        ={state0_9, state1_9, state0_10}
+      ). wp. skip. by progress.
+      seq 3 3: (
+        #pre /\
+        ={state1_10} /\
+        stateBeta{1} = state_beta{2} /\
+        stateGamma{1} = state_gamma{2}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_11, state1_11, state0_12, state1_12}
+      ). wp. skip. by progress.
+      seq 2 2: (
+        #pre /\
+        stateBetaLookup{1} = state_beta_lookup{2} /\
+        stateGammaLookup{1} = state_gamma_lookup{2}
+      ). wp. skip. by progress.
+      seq 5 5: (
+        #pre /\
+        ={state0_13, state1_13, state0_14, state1_14} /\
+        stateAlpha{1} = state_alpha{2}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_15, state1_15, state0_16, state1_16}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_17, state1_17, state0_18, state1_18}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_19, state1_19, state0_20, state1_20}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_21, state1_21, state0_22, state1_22}
+      ). wp. skip. by progress.
+      seq 2 2: (
+        #pre /\
+        stateZ{1} = state_z{2} /\
+        stateZInDomain{1} = state_z_in_domain{2}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_23, state1_23, state0_24, state1_24}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_25, state1_25, state0_26, state1_26}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_27, state1_27, state0_28, state1_28}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_29, state1_29, state0_30, state1_30}
+      ). wp. skip. by progress.        
+      seq 4 4: (
+        #pre /\
+        ={state0_31, state1_31, state0_32, state1_32}
+      ). wp. skip. by progress.        
+      seq 4 4: (
+        #pre /\
+        ={state0_33, state1_33, state0_34, state1_34}
+      ). wp. skip. by progress.        
+      seq 4 4: (
+        #pre /\
+        ={state0_35, state1_35, state0_36, state1_36}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_37, state1_37, state0_38, state1_38}
+      ). wp. skip. by progress.
+      seq 5 5: (
+        #pre /\
+        ={state0_39, state1_39, state0_40, state1_40} /\
+        stateV{1} = state_v{2}
+      ). wp. skip. by progress.
+      seq 4 4: (
+        #pre /\
+        ={state0_41, state1_41, state0_42, state1_42}
+      ). wp. skip. by progress.
+      wp. skip. by progress.
+      seq 2 7: (
+        (failed{1} /\ !isValid{2}) \/
+        (!failed{1} /\ isValid{2} /\
+        !vk_recursive_flag{1} /\
+        _public_input{1} = public_input{2} /\
+        _state_poly_0{1} = state_poly_0{2} /\
+        _state_poly_1{1} = state_poly_1{2} /\
+        _state_poly_2{1} = state_poly_2{2} /\
+        _state_poly_3{1} = state_poly_3{2} /\
+        _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+        _lookup_s_poly{1} = lookup_s_poly{2} /\
+        _lookup_grand_product{1} = lookup_grand_product{2} /\
+        _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+        _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+        _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+        _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+        _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+        _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+        _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+        _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+        _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+        _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+        _copy_permutation_poly_0_opening_at_z{1} = copy_permutation_poly_0_opening_at_z{2} /\
+        _copy_permutation_poly_1_opening_at_z{1} = copy_permutation_poly_1_opening_at_z{2} /\
+        _copy_permutation_poly_2_opening_at_z{1} = copy_permutation_poly_2_opening_at_z{2} /\
+        _copy_permutation_grand_product_opening_at_z_omega{1} = copy_permutation_grand_product_opening_at_z_omega{2} /\
+        _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+        _lookup_grand_product_opening_at_z_omega{1} = lookup_grand_product_opening_at_z_omega{2} /\
+        _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+        _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+        _lookup_selector_poly_opening_at_z{1} = lookup_selector_poly_opening_at_z{2} /\
+        _lookup_table_type_poly_opening_at_z{1} = lookup_table_type_poly_opening_at_z{2} /\
+        _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+        _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+        _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+        _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2} /\
+        state_alpha{1} = state_alpha{2} /\
+        state_beta{1} = state_beta{2} /\
+        state_beta_lookup{1} = state_beta_lookup{2} /\
+        state_gamma{1} = state_gamma{2} /\
+        state_gamma_lookup{1} = state_gamma_lookup{2} /\
+        state_eta{1} = state_eta{2} /\
+        state_z{1} = state_z{2} /\
+        state_z_in_domain{1} = state_z_in_domain{2} /\
+        state_v{1} = state_v{2} /\
+        state_u{1} = state_u{2} /\
+        l0_at_z{1} = l0_at_z{2} /\
+        ln_minus_one_at_z{1} = ln_minus_one_at_z{2} /\
+        beta_plus_one{1} = beta_plus_one{2} /\
+        beta_gamma_plus_gamma{1} = beta_gamma_plus_gamma{2} /\
+        z_minus_last_omega{1} = z_minus_last_omega{2} /\
+        alpha2{1} = state_alpha{2}^2 /\
+        alpha3{1} = state_alpha{2}^3 /\
+        alpha4{1} = state_alpha{2}^4 /\
+        alpha5{1} = state_alpha{2}^5 /\
+        alpha6{1} = state_alpha{2}^6 /\
+        alpha7{1} = state_alpha{2}^7 /\
+        alpha8{1} = state_alpha{2}^8
+      )).
+      case (failed{1}).
+      conseq (_: (failed{1} /\ !isValid{2}) ==> (failed{1} /\ !isValid{2})). progress. by case H; progress.
+      progress. left. by case H; progress.
+      inline VerifyQuotientEvaluation.high.
+      wp. skip. progress. rewrite H0. by progress.
+      left. assumption.
+      rewrite H0. by progress.
+
+      inline VerifyQuotientEvaluation.high.
+      wp. skip. progress.
+      case H. by progress. progress.
+      rewrite H2. progress.
+      rewrite H1. by progress.
+      rewrite H0. progress.
+      case H. by progress. progress.
+      rewrite H1. progress.
+      rewrite H2. progress.
+      rewrite H3. progress.
+      smt ().
+
+      seq 1 6: (
+        (failed{1} /\ !isValid{2}) \/
+        (!failed{1} /\ isValid{2} /\
+        !vk_recursive_flag{1} /\
+        _public_input{1} = public_input{2} /\
+        _state_poly_0{1} = state_poly_0{2} /\
+        _state_poly_1{1} = state_poly_1{2} /\
+        _state_poly_2{1} = state_poly_2{2} /\
+        _state_poly_3{1} = state_poly_3{2} /\
+        _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+        _lookup_s_poly{1} = lookup_s_poly{2} /\
+        _lookup_grand_product{1} = lookup_grand_product{2} /\
+        _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+        _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+        _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+        _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+        _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+        _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+        _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+        _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+        _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+        _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+        _copy_permutation_poly_0_opening_at_z{1} = copy_permutation_poly_0_opening_at_z{2} /\
+        _copy_permutation_poly_1_opening_at_z{1} = copy_permutation_poly_1_opening_at_z{2} /\
+        _copy_permutation_poly_2_opening_at_z{1} = copy_permutation_poly_2_opening_at_z{2} /\
+        _copy_permutation_grand_product_opening_at_z_omega{1} = copy_permutation_grand_product_opening_at_z_omega{2} /\
+        _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+        _lookup_grand_product_opening_at_z_omega{1} = lookup_grand_product_opening_at_z_omega{2} /\
+        _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+        _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+        _lookup_selector_poly_opening_at_z{1} = lookup_selector_poly_opening_at_z{2} /\
+        _lookup_table_type_poly_opening_at_z{1} = lookup_table_type_poly_opening_at_z{2} /\
+        _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+        _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+        _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+        _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2} /\
+        state_alpha{1} = state_alpha{2} /\
+        state_beta{1} = state_beta{2} /\
+        state_beta_lookup{1} = state_beta_lookup{2} /\
+        state_gamma{1} = state_gamma{2} /\
+        state_gamma_lookup{1} = state_gamma_lookup{2} /\
+        state_eta{1} = state_eta{2} /\
+        state_z{1} = state_z{2} /\
+        state_z_in_domain{1} = state_z_in_domain{2} /\
+        state_v{1} = state_v{2} /\
+        state_u{1} = state_u{2} /\
+        l0_at_z{1} = l0_at_z{2} /\
+        ln_minus_one_at_z{1} = ln_minus_one_at_z{2} /\
+        beta_plus_one{1} = beta_plus_one{2} /\
+        beta_gamma_plus_gamma{1} = beta_gamma_plus_gamma{2} /\
+        z_minus_last_omega{1} = z_minus_last_omega{2} /\
+        alpha2{1} = state_alpha{2}^2 /\
+        alpha3{1} = state_alpha{2}^3 /\
+        alpha4{1} = state_alpha{2}^4 /\
+        alpha5{1} = state_alpha{2}^5 /\
+        alpha6{1} = state_alpha{2}^6 /\
+        alpha7{1} = state_alpha{2}^7 /\
+        alpha8{1} = state_alpha{2}^8 /\
+        query_at_z_0{1} = query_at_z_0{2} /\
+        query_at_z_1{1} = query_at_z_1{2} /\
+        copy_permutation_first_aggregated_commitment_coeff{1} = copy_permutation_first_aggregated_commitment_coeff{2} /\
+        lookupSFirstAggregatedCommitment{1} = lookupSFirstAggregatedCommitment{2} /\
+        lookupGrandProductFirstAggregatedCoefficient{1} = lookupGrandProductFirstAggregatedCoefficient{2} /\
+        query_t_poly_aggregated{1} = query_t_poly_aggregated{2}
+      )).
+      case (failed{1}).
+      conseq (_: (failed{1} /\ !isValid{2}) ==> (failed{1} /\ !isValid{2})).
+      progress. by case H; progress.
+      progress. left. rewrite H1 H2. by trivial.
+      inline PrepareQueries.high.
+      wp. skip. by progress.
+
+      inline PrepareQueries.high.
+      wp. skip. progress. right.
+      case H. by progress. by progress.
+
+      seq 1 58 : (
+        (failed{1} /\ !isValid{2}) \/
+        (!failed{1} /\ isValid{2} /\
+        !vk_recursive_flag{1} /\
+        _public_input{1} = public_input{2} /\
+        _state_poly_0{1} = state_poly_0{2} /\
+        _state_poly_1{1} = state_poly_1{2} /\
+        _state_poly_2{1} = state_poly_2{2} /\
+        _state_poly_3{1} = state_poly_3{2} /\
+        _copy_permutation_grand_product{1} = copy_permutation_grand_product{2} /\
+        _lookup_s_poly{1} = lookup_s_poly{2} /\
+        _lookup_grand_product{1} = lookup_grand_product{2} /\
+        _quotient_poly_part_0{1} = quotient_poly_part_0{2} /\
+        _quotient_poly_part_1{1} = quotient_poly_part_1{2} /\
+        _quotient_poly_part_2{1} = quotient_poly_part_2{2} /\
+        _quotient_poly_part_3{1} = quotient_poly_part_3{2} /\
+        _state_poly_0_opening_at_z{1} = state_poly_0_opening_at_z{2} /\
+        _state_poly_1_opening_at_z{1} = state_poly_1_opening_at_z{2} /\
+        _state_poly_2_opening_at_z{1} = state_poly_2_opening_at_z{2} /\
+        _state_poly_3_opening_at_z{1} = state_poly_3_opening_at_z{2} /\
+        _state_poly_3_opening_at_z_omega{1} = state_poly_3_opening_at_z_omega{2} /\
+        _gate_selector_0_opening_at_z{1} = gate_selector_0_opening_at_z{2} /\
+        _copy_permutation_poly_0_opening_at_z{1} = copy_permutation_poly_0_opening_at_z{2} /\
+        _copy_permutation_poly_1_opening_at_z{1} = copy_permutation_poly_1_opening_at_z{2} /\
+        _copy_permutation_poly_2_opening_at_z{1} = copy_permutation_poly_2_opening_at_z{2} /\
+        _copy_permutation_grand_product_opening_at_z_omega{1} = copy_permutation_grand_product_opening_at_z_omega{2} /\
+        _lookup_s_poly_opening_at_z_omega{1} = lookup_s_poly_opening_at_z_omega{2} /\
+        _lookup_grand_product_opening_at_z_omega{1} = lookup_grand_product_opening_at_z_omega{2} /\
+        _lookup_t_poly_opening_at_z{1} = lookup_t_poly_opening_at_z{2} /\
+        _lookup_t_poly_opening_at_z_omega{1} = lookup_t_poly_opening_at_z_omega{2} /\
+        _lookup_selector_poly_opening_at_z{1} = lookup_selector_poly_opening_at_z{2} /\
+        _lookup_table_type_poly_opening_at_z{1} = lookup_table_type_poly_opening_at_z{2} /\
+        _quotient_poly_opening_at_z{1} = quotient_poly_opening_at_z{2} /\
+        _linearisation_poly_opening_at_z{1} = linearisation_poly_opening_at_z{2} /\
+        _opening_proof_at_z{1} = opening_proof_at_z{2} /\
+        _opening_proof_at_z_omega{1} = opening_proof_at_z_omega{2} /\
+        state_alpha{1} = state_alpha{2} /\
+        state_beta{1} = state_beta{2} /\
+        state_beta_lookup{1} = state_beta_lookup{2} /\
+        state_gamma{1} = state_gamma{2} /\
+        state_gamma_lookup{1} = state_gamma_lookup{2} /\
+        state_eta{1} = state_eta{2} /\
+        state_z{1} = state_z{2} /\
+        state_z_in_domain{1} = state_z_in_domain{2} /\
+        state_v{1} = state_v{2} /\
+        state_u{1} = state_u{2} /\
+        l0_at_z{1} = l0_at_z{2} /\
+        ln_minus_one_at_z{1} = ln_minus_one_at_z{2} /\
+        beta_plus_one{1} = beta_plus_one{2} /\
+        beta_gamma_plus_gamma{1} = beta_gamma_plus_gamma{2} /\
+        z_minus_last_omega{1} = z_minus_last_omega{2} /\
+        alpha2{1} = state_alpha{2}^2 /\
+        alpha3{1} = state_alpha{2}^3 /\
+        alpha4{1} = state_alpha{2}^4 /\
+        alpha5{1} = state_alpha{2}^5 /\
+        alpha6{1} = state_alpha{2}^6 /\
+        alpha7{1} = state_alpha{2}^7 /\
+        alpha8{1} = state_alpha{2}^8 /\
+        query_at_z_0{1} = query_at_z_0{2} /\
+        query_at_z_1{1} = query_at_z_1{2} /\
+        copy_permutation_first_aggregated_commitment_coeff{1} = copy_permutation_first_aggregated_commitment_coeff{2} /\
+        lookupSFirstAggregatedCommitment{1} = lookupSFirstAggregatedCommitment{2} /\
+        lookupGrandProductFirstAggregatedCoefficient{1} = lookupGrandProductFirstAggregatedCoefficient{2} /\
+        query_t_poly_aggregated{1} = query_t_poly_aggregated{2} /\
+        aggregatedAtZSlot{1} = aggregatedAtZSlot{2} /\
+        aggregatedOpeningAtZSlot{1} = aggregatedOpeningAtZSlot{2} /\
+        aggregatedAtZOmegaSlot{1} = aggregatedAtZOmegaSlot{2} /\
+        aggregatedOpeningAtZOmega{1} = aggregatedOpeningAtZOmega{2} /\
+        pairingPairWithGeneratorSlot{1} = pairing_pair_with_generator{2} /\
+        pairingBufferPointSlot{1} = pairing_buffer_point{2}
+      )).
+      case (failed{1}).
+      conseq (_ : (failed{1} /\ !isValid{2}) ==> (failed{1} /\ !isValid{2})).
+      progress. by case H; progress.
+      progress. left. by case H; progress.
+      inline PrepareAggregatedCommitment.high.
+      wp. skip. by progress.
+
+      inline PrepareAggregatedCommitment.high.
+      sp. skip. progress.
+      right.
+      case H. by progress. by progress.
+
+      case (failed{1}).
+      conseq (_ : (failed{1} /\ !isValid{2}) ==> (failed{1} /\ !isValid{2})).
+      progress. by case H; progress.
+      progress. smt ().
+      inline FinalPairing.high.
+      wp. skip. progress. left. assumption.
+      left. assumption.
+
+      inline FinalPairing.high.
+      wp. skip. progress.
+      rewrite H0. progress. case H. by progress. by progress.
+      rewrite H0. progress. case H. by progress. progress.
+      rewrite H2. by progress.
+qed.
+
+
+
+
+
+
+
+
+
+      
 
 lemma verify_extracted_equiv_low:
     equiv [
@@ -568,7 +2032,7 @@ rewrite
 /VK_LOOKUP_SELECTOR_Y_SLOT /VK_LOOKUP_SELECTOR_X_SLOT /VK_LOOKUP_TABLE_TYPE_Y_SLOT /VK_LOOKUP_TABLE_TYPE_X_SLOT
 /VK_RECURSIVE_FLAG_SLOT.
 
-do 40! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
+  do 40! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 39! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 38! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
 do 37! (rewrite load_store_diff; try by simplify); try (rewrite load_store_same of_uintK; by simplify).
@@ -612,13 +2076,21 @@ rewrite load_store_diff; try by simplify; try (rewrite load_store_same of_uintK;
 rewrite load_store_same; by simplify.
 clear m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19 
       m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m41.
-*)
+  *)
+
+
+(* lemma verify_mid_equiv_high:
+    equiv [
+    Verify.high_encapsulated ~ Verify.high :
+      ={arg} ==> ={res}
+    ]. proc. inline LoadProof.high InitializeTranscript.high VerifyQuotientEvaluation.high PrepareQueries.high PrepareAggregatedCommitment.high FinalPairing.high. wp. skip. 
+progress. *)
 
 lemma verify_mid_equiv_high_encapsulated:
     equiv [
       Verify.mid ~ Verify.high_encapsulated:
         ={public_input_length_in_words} /\
-        public_input{1} = FieldR.asint public_input{2} /\
+        public_input{1} = FieldR.asint public_input{2} /\ 0 <= public_input{1} < (2^253) /\
         ={proof_length_in_words} /\
         state_poly_0{1} = F_to_int_point(aspoint_G1 state_poly_0{2}) /\
         state_poly_1{1} = F_to_int_point(aspoint_G1 state_poly_1{2}) /\
@@ -651,9 +2123,10 @@ lemma verify_mid_equiv_high_encapsulated:
         linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
         opening_proof_at_z{1} = F_to_int_point(aspoint_G1 opening_proof_at_z{2}) /\
         opening_proof_at_z_omega{1} = F_to_int_point(aspoint_G1 opening_proof_at_z_omega{2}) /\
-        ={recursive_proof_length_in_words} /\
-        recursive_part_p1{1} = F_to_int_point(aspoint_G1 recursive_part_p1{2}) /\
-        recursive_part_p2{1} = F_to_int_point(aspoint_G1 recursive_part_p2{2}) ==> 
+        ={recursive_proof_length_in_words}
+        (* only necessary if we generalise over vk_recursive_flag /\
+        recursive_part_p1{1} = F_to_int_point(aspoint_G1 recursive_part_p1{2} /\
+        recursive_part_p2{1} = F_to_int_point(aspoint_G1 recursive_part_p2{2}) *) ==> 
         ={res}
     ].
     proof.
@@ -709,7 +2182,7 @@ lemma verify_mid_equiv_high_encapsulated:
       seq 3 3: (
         (failed{1} /\ failed{2}) \/
         (!failed{1} /\ !failed{2} /\
-        _public_input{1} = FieldR.asint _public_input{2} /\
+        _public_input{1} = FieldR.asint _public_input{2} /\ 0 <= public_input{1} < (2^253) /\
         _state_poly_0{1} = F_to_int_point(aspoint_G1 _state_poly_0{2}) /\
         _state_poly_1{1} = F_to_int_point(aspoint_G1 _state_poly_1{2}) /\
         _state_poly_2{1} = F_to_int_point(aspoint_G1 _state_poly_2{2}) /\
@@ -741,8 +2214,8 @@ lemma verify_mid_equiv_high_encapsulated:
         _linearisation_poly_opening_at_z{1} = FieldR.asint _linearisation_poly_opening_at_z{2} /\
         _opening_proof_at_z{1} = F_to_int_point(aspoint_G1 _opening_proof_at_z{2}) /\
         _opening_proof_at_z_omega{1} = F_to_int_point(aspoint_G1 _opening_proof_at_z_omega{2}) /\
-        _recursive_part_p1{1} = (omap F_to_int_point (omap aspoint_G1 _recursive_part_p1{2})) /\
-        _recursive_part_p2{1} = (omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2})) /\
+        _recursive_part_p1{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p1{2}) /\
+        _recursive_part_p2{1} = omap F_to_int_point (omap aspoint_G1 _recursive_part_p2{2}) /\
         !vk_recursive_flag{1} /\ !vk_recursive_flag{2} /\
         (vk_gate_setup_0X{1}, vk_gate_setup_0Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_0) /\
         (vk_gate_setup_1X{1}, vk_gate_setup_1Y{1}) = F_to_int_point (aspoint_G1 vk_gate_setup_1) /\
@@ -768,14 +2241,14 @@ lemma verify_mid_equiv_high_encapsulated:
       wp.
       call (loadProof_mid_equiv_high false). skip.
       progress.
-      rewrite H1 H2. by progress.
-      rewrite H1. by progress.
-      case H23. by progress. progress. right. by progress.
+      rewrite H3 H4. by progress.
+      rewrite H3. by progress.
+      case H25. by progress. progress. right. by progress.
 
       seq 1 1: (
         (failed{1} /\ failed{2}) \/ (
           !failed{1} /\  !failed{2} /\
-          _public_input{1} = FieldR.asint _public_input{2} /\
+          _public_input{1} = FieldR.asint _public_input{2} /\ 0 <= public_input{1} < (2^253) /\
           _state_poly_0{1} = F_to_int_point (aspoint_G1 _state_poly_0{2}) /\
           _state_poly_1{1} = F_to_int_point (aspoint_G1 _state_poly_1{2}) /\
            _state_poly_2{1} = F_to_int_point (aspoint_G1 _state_poly_2{2}) /\
@@ -1443,3 +2916,2616 @@ lemma verify_mid_equiv_high_encapsulated:
       rewrite H H3.
       by trivial.
 qed.
+
+lemma verify_mid_canonicalisation:
+    equiv [
+      Verify.mid ~ Verify.mid:
+      ={public_input_length_in_words} /\
+      public_input{2} = public_input{1} %% (2^253) /\
+      ={proof_length_in_words} /\
+      state_poly_0{2}.`1 = state_poly_0{1}.`1 %% FieldQ.p /\
+      state_poly_0{2}.`2 = state_poly_0{1}.`2 %% FieldQ.p /\
+      state_poly_1{2}.`1 = state_poly_1{1}.`1 %% FieldQ.p /\
+      state_poly_1{2}.`2 = state_poly_1{1}.`2 %% FieldQ.p /\
+      state_poly_2{2}.`1 = state_poly_2{1}.`1 %% FieldQ.p /\
+      state_poly_2{2}.`2 = state_poly_2{1}.`2 %% FieldQ.p /\
+      state_poly_3{2}.`1 = state_poly_3{1}.`1 %% FieldQ.p /\
+      state_poly_3{2}.`2 = state_poly_3{1}.`2 %% FieldQ.p /\
+      copy_permutation_grand_product{2}.`1 = copy_permutation_grand_product{1}.`1 %% FieldQ.p /\
+      copy_permutation_grand_product{2}.`2 = copy_permutation_grand_product{1}.`2 %% FieldQ.p /\
+      lookup_s_poly{2}.`1 = lookup_s_poly{1}.`1 %% FieldQ.p /\
+      lookup_s_poly{2}.`2 = lookup_s_poly{1}.`2 %% FieldQ.p /\
+      lookup_grand_product{2}.`1 = lookup_grand_product{1}.`1 %% FieldQ.p /\
+      lookup_grand_product{2}.`2 = lookup_grand_product{1}.`2 %% FieldQ.p /\
+      quotient_poly_part_0{2}.`1 = quotient_poly_part_0{1}.`1 %% FieldQ.p /\
+      quotient_poly_part_0{2}.`2 = quotient_poly_part_0{1}.`2 %% FieldQ.p /\
+      quotient_poly_part_1{2}.`1 = quotient_poly_part_1{1}.`1 %% FieldQ.p /\
+      quotient_poly_part_1{2}.`2 = quotient_poly_part_1{1}.`2 %% FieldQ.p /\
+      quotient_poly_part_2{2}.`1 = quotient_poly_part_2{1}.`1 %% FieldQ.p /\
+      quotient_poly_part_2{2}.`2 = quotient_poly_part_2{1}.`2 %% FieldQ.p /\
+      quotient_poly_part_3{2}.`1 = quotient_poly_part_3{1}.`1 %% FieldQ.p /\
+      quotient_poly_part_3{2}.`2 = quotient_poly_part_3{1}.`2 %% FieldQ.p /\
+      state_poly_0_opening_at_z{2} = state_poly_0_opening_at_z{1} %% FieldR.p /\
+      state_poly_1_opening_at_z{2} = state_poly_1_opening_at_z{1} %% FieldR.p /\
+      state_poly_2_opening_at_z{2} = state_poly_2_opening_at_z{1} %% FieldR.p /\
+      state_poly_3_opening_at_z{2} = state_poly_3_opening_at_z{1} %% FieldR.p /\
+      state_poly_3_opening_at_z_omega{2} = state_poly_3_opening_at_z_omega{1} %% FieldR.p /\
+      gate_selector_0_opening_at_z{2} = gate_selector_0_opening_at_z{1} %% FieldR.p /\
+      copy_permutation_poly_0_opening_at_z{2} = copy_permutation_poly_0_opening_at_z{1} %% FieldR.p /\
+      copy_permutation_poly_1_opening_at_z{2} = copy_permutation_poly_1_opening_at_z{1} %% FieldR.p /\
+      copy_permutation_poly_2_opening_at_z{2} = copy_permutation_poly_2_opening_at_z{1} %% FieldR.p /\
+      copy_permutation_grand_product_opening_at_z_omega{2} = copy_permutation_grand_product_opening_at_z_omega{1} %% FieldR.p /\
+      lookup_s_poly_opening_at_z_omega{2} = lookup_s_poly_opening_at_z_omega{1} %% FieldR.p /\
+      lookup_grand_product_opening_at_z_omega{2} = lookup_grand_product_opening_at_z_omega{1} %% FieldR.p /\
+      lookup_t_poly_opening_at_z{2} = lookup_t_poly_opening_at_z{1} %% FieldR.p /\
+      lookup_t_poly_opening_at_z_omega{2} = lookup_t_poly_opening_at_z_omega{1} %% FieldR.p /\
+      lookup_selector_poly_opening_at_z{2} = lookup_selector_poly_opening_at_z{1} %% FieldR.p /\
+      lookup_table_type_poly_opening_at_z{2} = lookup_table_type_poly_opening_at_z{1} %% FieldR.p /\
+      quotient_poly_opening_at_z{2} = quotient_poly_opening_at_z{1} %% FieldR.p /\
+      linearisation_poly_opening_at_z{2} = linearisation_poly_opening_at_z{1} %% FieldR.p /\
+      opening_proof_at_z{2}.`1 = opening_proof_at_z{1}.`1 %% FieldQ.p /\
+      opening_proof_at_z{2}.`2 = opening_proof_at_z{1}.`2 %% FieldQ.p /\
+      opening_proof_at_z_omega{2}.`1 = opening_proof_at_z_omega{1}.`1 %% FieldQ.p /\
+      opening_proof_at_z_omega{2}.`2 = opening_proof_at_z_omega{1}.`2 %% FieldQ.p /\
+      ={recursive_proof_length_in_words} /\
+      recursive_part_p1{2}.`1 = recursive_part_p1{1}.`1 %% FieldQ.p /\
+      recursive_part_p1{2}.`2 = recursive_part_p1{1}.`2 %% FieldQ.p /\
+      recursive_part_p2{2}.`1 = recursive_part_p2{1}.`1 %% FieldQ.p /\
+      recursive_part_p2{2}.`2 = recursive_part_p2{1}.`2 %% FieldQ.p ==> 
+      ={res}
+    ].
+    proof.
+    proc.
+      simplify.
+      sp.
+      seq 1 1: (
+        ={
+          load_proof_opt,
+          failed,
+          vk_gate_setup_0X, vk_gate_setup_0Y,
+          vk_gate_setup_1X, vk_gate_setup_1Y,
+          vk_gate_setup_2X, vk_gate_setup_2Y,
+          vk_gate_setup_3X, vk_gate_setup_3Y,
+          vk_gate_setup_4X, vk_gate_setup_4Y,
+          vk_gate_setup_5X, vk_gate_setup_5Y,
+          vk_gate_setup_6X, vk_gate_setup_6Y,
+          vk_gate_setup_7X, vk_gate_setup_7Y,
+          vk_gate_selectors_0X, vk_gate_selectors_0Y,
+          vk_gate_selectors_1X, vk_gate_selectors_1Y,
+          vk_permutation_0X, vk_permutation_0Y,
+          vk_permutation_1X, vk_permutation_1Y,
+          vk_permutation_2X, vk_permutation_2Y,
+          vk_permutation_3X, vk_permutation_3Y,
+          vk_lookup_table_0X, vk_lookup_table_0Y,
+          vk_lookup_table_1X, vk_lookup_table_1Y,
+          vk_lookup_table_2X, vk_lookup_table_2Y,
+          vk_lookup_table_3X, vk_lookup_table_3Y,
+          vk_lookup_selector_X, vk_lookup_selector_Y,
+          vk_lookup_table_type_X, vk_lookup_table_type_Y,
+          vk_recursive_flag
+        }
+      ).
+      inline LoadProof.mid.
+      seq 38 38 : (
+        ={failed} /\
+        ={public_input_length_in_words0} /\
+        public_input0{2} = public_input0{1} %% (2^253) /\
+        ={proof_length_in_words0} /\
+        state_poly_00{2}.`1 = state_poly_00{1}.`1 %% FieldQ.p /\
+        state_poly_00{2}.`2 = state_poly_00{1}.`2 %% FieldQ.p /\
+        state_poly_10{2}.`1 = state_poly_10{1}.`1 %% FieldQ.p /\
+        state_poly_10{2}.`2 = state_poly_10{1}.`2 %% FieldQ.p /\
+        state_poly_20{2}.`1 = state_poly_20{1}.`1 %% FieldQ.p /\
+        state_poly_20{2}.`2 = state_poly_20{1}.`2 %% FieldQ.p /\
+        state_poly_30{2}.`1 = state_poly_30{1}.`1 %% FieldQ.p /\
+        state_poly_30{2}.`2 = state_poly_30{1}.`2 %% FieldQ.p /\
+        copy_permutation_grand_product0{2}.`1 = copy_permutation_grand_product0{1}.`1 %% FieldQ.p /\
+        copy_permutation_grand_product0{2}.`2 = copy_permutation_grand_product0{1}.`2 %% FieldQ.p /\
+        lookup_s_poly0{2}.`1 = lookup_s_poly0{1}.`1 %% FieldQ.p /\
+        lookup_s_poly0{2}.`2 = lookup_s_poly0{1}.`2 %% FieldQ.p /\
+        lookup_grand_product0{2}.`1 = lookup_grand_product0{1}.`1 %% FieldQ.p /\
+        lookup_grand_product0{2}.`2 = lookup_grand_product0{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_00{2}.`1 = quotient_poly_part_00{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_00{2}.`2 = quotient_poly_part_00{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_10{2}.`1 = quotient_poly_part_10{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_10{2}.`2 = quotient_poly_part_10{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_20{2}.`1 = quotient_poly_part_20{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_20{2}.`2 = quotient_poly_part_20{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_30{2}.`1 = quotient_poly_part_30{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_30{2}.`2 = quotient_poly_part_30{1}.`2 %% FieldQ.p /\
+        state_poly_0_opening_at_z0{2} = state_poly_0_opening_at_z0{1} %% FieldR.p /\
+        state_poly_1_opening_at_z0{2} = state_poly_1_opening_at_z0{1} %% FieldR.p /\
+        state_poly_2_opening_at_z0{2} = state_poly_2_opening_at_z0{1} %% FieldR.p /\
+        state_poly_3_opening_at_z0{2} = state_poly_3_opening_at_z0{1} %% FieldR.p /\
+        state_poly_3_opening_at_z_omega0{2} = state_poly_3_opening_at_z_omega0{1} %% FieldR.p /\
+        gate_selector_0_opening_at_z0{2} = gate_selector_0_opening_at_z0{1} %% FieldR.p /\
+        copy_permutation_poly_0_opening_at_z0{2} = copy_permutation_poly_0_opening_at_z0{1} %% FieldR.p /\
+        copy_permutation_poly_1_opening_at_z0{2} = copy_permutation_poly_1_opening_at_z0{1} %% FieldR.p /\
+        copy_permutation_poly_2_opening_at_z0{2} = copy_permutation_poly_2_opening_at_z0{1} %% FieldR.p /\
+        copy_permutation_grand_product_opening_at_z_omega0{2} = copy_permutation_grand_product_opening_at_z_omega0{1} %% FieldR.p /\
+        lookup_s_poly_opening_at_z_omega0{2} = lookup_s_poly_opening_at_z_omega0{1} %% FieldR.p /\
+        lookup_grand_product_opening_at_z_omega0{2} = lookup_grand_product_opening_at_z_omega0{1} %% FieldR.p /\
+        lookup_t_poly_opening_at_z0{2} = lookup_t_poly_opening_at_z0{1} %% FieldR.p /\
+        lookup_t_poly_opening_at_z_omega0{2} = lookup_t_poly_opening_at_z_omega0{1} %% FieldR.p /\
+        lookup_selector_poly_opening_at_z0{2} = lookup_selector_poly_opening_at_z0{1} %% FieldR.p /\
+        lookup_table_type_poly_opening_at_z0{2} = lookup_table_type_poly_opening_at_z0{1} %% FieldR.p /\
+        quotient_poly_opening_at_z0{2} = quotient_poly_opening_at_z0{1} %% FieldR.p /\
+        linearisation_poly_opening_at_z0{2} = linearisation_poly_opening_at_z0{1} %% FieldR.p /\
+        opening_proof_at_z0{2}.`1 = opening_proof_at_z0{1}.`1 %% FieldQ.p /\
+        opening_proof_at_z0{2}.`2 = opening_proof_at_z0{1}.`2 %% FieldQ.p /\
+        opening_proof_at_z_omega0{2}.`1 = opening_proof_at_z_omega0{1}.`1 %% FieldQ.p /\
+        opening_proof_at_z_omega0{2}.`2 = opening_proof_at_z_omega0{1}.`2 %% FieldQ.p /\
+        ={recursive_proof_length_in_words0} /\
+        recursive_part_p10{2}.`1 = recursive_part_p10{1}.`1 %% FieldQ.p /\
+        recursive_part_p10{2}.`2 = recursive_part_p10{1}.`2 %% FieldQ.p /\
+        recursive_part_p20{2}.`1 = recursive_part_p20{1}.`1 %% FieldQ.p /\
+        recursive_part_p20{2}.`2 = recursive_part_p20{1}.`2 %% FieldQ.p /\
+        ={
+          vk_gate_setup_0X, vk_gate_setup_0Y,
+          vk_gate_setup_1X, vk_gate_setup_1Y,
+          vk_gate_setup_2X, vk_gate_setup_2Y,
+          vk_gate_setup_3X, vk_gate_setup_3Y,
+          vk_gate_setup_4X, vk_gate_setup_4Y,
+          vk_gate_setup_5X, vk_gate_setup_5Y,
+          vk_gate_setup_6X, vk_gate_setup_6Y,
+          vk_gate_setup_7X, vk_gate_setup_7Y,
+          vk_gate_selectors_0X, vk_gate_selectors_0Y,
+          vk_gate_selectors_1X, vk_gate_selectors_1Y,
+          vk_permutation_0X, vk_permutation_0Y,
+          vk_permutation_1X, vk_permutation_1Y,
+          vk_permutation_2X, vk_permutation_2Y,
+          vk_permutation_3X, vk_permutation_3Y,
+          vk_lookup_table_0X, vk_lookup_table_0Y,
+          vk_lookup_table_1X, vk_lookup_table_1Y,
+          vk_lookup_table_2X, vk_lookup_table_2Y,
+          vk_lookup_table_3X, vk_lookup_table_3Y,
+          vk_lookup_selector_X, vk_lookup_selector_Y,
+          vk_lookup_table_type_X, vk_lookup_table_type_Y,
+          vk_recursive_flag,
+          vk_recursive_flag0
+        }
+      ).
+      wp. skip. by progress.
+      seq 2 2: (
+        #pre /\
+        ={isValid}
+      ).
+      sp. skip. by progress.
+      have H_on_curve: forall (b: bool) (p1 p2: int*int),
+        p1.`1 = p2.`1 %% FieldQ.p =>
+        p1.`2 = p2.`2 %% FieldQ.p =>
+        (b /\ on_curve_int p2) = (b /\ on_curve_int p1).
+        progress.
+        case b. progress. rewrite /on_curve_int.
+        rewrite H H0 Constants.q_eq_fieldq_p.
+        rewrite (modzMm p2.`1 p2.`1).
+        rewrite (modzMml p2.`1).
+        rewrite (modzMm p2.`2 p2.`2).
+        reflexivity.
+        by progress.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: #pre. wp. skip. progress. exact H_on_curve.
+      seq 1 1: (
+        #pre /\
+        ={ret_recursive_part_p1} /\
+        ={ret_recursive_part_p2}
+      ).
+      case (vk_recursive_flag0{1}).
+      rcondt{1} 1. by progress.
+      rcondt{2} 1. by progress.
+      wp. skip. progress.
+      pose b := isValid{2} /\ recursive_proof_length_in_words0{2} = 4.
+      have ->: (b /\ on_curve_int recursive_part_p10{1}) = (b /\ on_curve_int recursive_part_p10{2}).
+        exact (H_on_curve b recursive_part_p10{2} recursive_part_p10{1}).
+      exact H_on_curve.
+      rewrite H25. rewrite Constants.q_eq_fieldq_p. rewrite modz_mod. reflexivity.
+      rewrite H26. rewrite Constants.q_eq_fieldq_p. rewrite modz_mod. reflexivity.
+      rewrite H27. rewrite Constants.q_eq_fieldq_p. rewrite modz_mod. reflexivity.
+      rewrite H28. rewrite Constants.q_eq_fieldq_p. rewrite modz_mod. reflexivity.
+
+      rcondf{1} 1. by progress.
+      rcondf{2} 1. by progress.
+      wp. skip. by progress.
+
+      case (isValid{1}).
+      rcondt{1} 1. by progress.
+      rcondt{2} 1. by progress.
+      wp. skip. rewrite Constants.q_eq_fieldq_p Constants.r_eq_fieldr_p.
+      progress.
+      rewrite modz_mod; reflexivity.
+      rewrite H modz_mod; reflexivity.
+      rewrite H0 modz_mod; reflexivity.
+      rewrite H1 modz_mod; reflexivity.
+      rewrite H2 modz_mod; reflexivity.
+      rewrite H3 modz_mod; reflexivity.
+      rewrite H4 modz_mod; reflexivity.
+      rewrite H5 modz_mod; reflexivity.
+      rewrite H6 modz_mod; reflexivity.
+      rewrite H7 modz_mod; reflexivity.
+      rewrite H8 modz_mod; reflexivity.
+      rewrite H9 modz_mod; reflexivity.
+      rewrite H10 modz_mod; reflexivity.
+      rewrite H11 modz_mod; reflexivity.
+      rewrite H12 modz_mod; reflexivity.
+      rewrite H13 modz_mod; reflexivity.
+      rewrite H14 modz_mod; reflexivity.
+      rewrite H15 modz_mod; reflexivity.
+      rewrite H16 modz_mod; reflexivity.
+      rewrite H17 modz_mod; reflexivity.
+      rewrite H18 modz_mod; reflexivity.
+      rewrite H19 modz_mod; reflexivity.
+      rewrite H20 modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite modz_mod; reflexivity.
+      rewrite H21 modz_mod; reflexivity.
+      rewrite H22 modz_mod; reflexivity.
+      rewrite H23 modz_mod; reflexivity.
+      rewrite H24 modz_mod; reflexivity.
+
+      rcondf{1} 1. by progress.
+      rcondf{2} 1. by progress.
+      wp. skip. by progress.
+      seq 1 1: #pre. wp. skip. by progress.
+      seq 1 1: (
+        #pre /\
+        ={
+          _public_input,                                      
+          _state_poly_0,                                     
+          _state_poly_1,                                     
+          _state_poly_2,                                     
+          _state_poly_3,                                     
+          _copy_permutation_grand_product,                   
+          _lookup_s_poly,                                    
+          _lookup_grand_product,                             
+          _quotient_poly_part_0,                             
+          _quotient_poly_part_1,                             
+          _quotient_poly_part_2,                             
+          _quotient_poly_part_3,                             
+          _state_poly_0_opening_at_z,                        
+          _state_poly_1_opening_at_z,                        
+          _state_poly_2_opening_at_z,                        
+          _state_poly_3_opening_at_z,                        
+          _state_poly_3_opening_at_z_omega,                  
+          _gate_selector_0_opening_at_z,                     
+          _copy_permutation_poly_0_opening_at_z,             
+          _copy_permutation_poly_1_opening_at_z,             
+          _copy_permutation_poly_2_opening_at_z,             
+          _copy_permutation_grand_product_opening_at_z_omega,
+          _lookup_s_poly_opening_at_z_omega,                 
+          _lookup_grand_product_opening_at_z_omega,          
+          _lookup_t_poly_opening_at_z,                       
+          _lookup_t_poly_opening_at_z_omega,                 
+          _lookup_selector_poly_opening_at_z,                
+          _lookup_table_type_poly_opening_at_z,              
+          _quotient_poly_opening_at_z,                       
+          _linearisation_poly_opening_at_z,                  
+          _opening_proof_at_z,                               
+          _opening_proof_at_z_omega,                         
+          _recursive_part_p1,                                
+          _recursive_part_p2
+        }
+      ).
+      by sim.
+      seq 1 1: (
+        #pre /\
+        ={
+          state_alpha,
+          state_beta,
+          state_beta_lookup,
+          state_gamma,
+          state_gamma_lookup,
+          state_eta,
+          state_z,
+          state_z_in_domain,
+          state_v,
+          state_u
+        }
+      ).
+      by sim.
+      seq 1 1: (
+        #pre /\
+        ={
+          verify_quotient_evaluation_opt,
+          alpha2,
+          alpha3,
+          alpha4,
+          alpha5,
+          alpha6,
+          alpha7,
+          alpha8,
+          l0_at_z,
+          ln_minus_one_at_z,
+          beta_plus_one,
+          beta_gamma_plus_gamma,
+          z_minus_last_omega
+        }
+      ).
+      by sim.
+      seq 1 1 : #pre. by sim.
+      seq 1 1 : (
+        #pre /\
+        ={prepare_queries_opt}
+      ). inline PrepareQueries.mid.
+      seq 56 56: (
+        #pre /\
+        ={
+          zInDomainSize,
+          quotient_poly_part_00,
+          quotient_poly_part_10,
+          quotient_poly_part_20,
+          quotient_poly_part_30,
+          stateOpening0AtZ,
+          stateOpening1AtZ,
+          stateOpening2AtZ,
+          stateOpening3AtZ,
+          vk_lookup_table_0,
+          vk_lookup_table_1,
+          vk_lookup_table_2,
+          vk_lookup_table_3,
+          state_eta0,
+          vk_gate_setup_0,
+          vk_gate_setup_1,
+          vk_gate_setup_2,
+          vk_gate_setup_3,
+          vk_gate_setup_4,
+          vk_gate_setup_5,
+          vk_gate_setup_6,
+          vk_gate_setup_7,
+          poly3_omega,
+          v,
+          z,
+          gate_selector_0_opening,
+          alpha,
+          alpha20,          
+          alpha30,
+          alpha40,
+          alpha50,
+          alpha60,
+          alpha70,
+          alpha80,
+          state_beta0,
+          gamma,
+          vk_gate_selector_1,
+          vk_permutation_3,
+          gp_omega,
+          l0AtZ,
+          poly0_opening,
+          poly1_opening,
+          poly2_opening,
+          proofLookupGrandProductOpeningAtZOmega,
+          zMinusLastOmega,
+          proofLookupTPolyOpeningAtZOmega,
+          betaLookup,
+          proofLookupTPolyOpeningAtZ,
+          betaGammaPlusGamma,
+          proofLookupSelectorPolyOpeningAtZ,
+          proofLookupTableTypePolyOpeningAtZ,
+          gammaLookup,
+          betaPlusOne,
+          lNMinusOneAtZ,
+          failed0,
+          query_at_z_00
+        }
+      ). wp. skip. by progress.
+      seq 3 3: (
+        #pre /\
+        ={query_at_z_0_opt}
+      ). by sim.
+      seq 4 4: (
+        #pre /\
+        ={currentZ}
+      ). by sim.
+      seq 4 4: #pre. by sim.
+      seq 3 3: (
+        #pre /\
+        ={query_at_z_1_opt, query_at_z_10}
+      ). by sim.
+      seq 3 3: #pre. by sim.
+      seq 3 3: (
+        #pre /\
+        ={result, copy_permutation_first_aggregated_commitment_coeff0}
+      ). by sim.
+      seq 1 1: (
+        #pre /\
+        ={lookupSFirstAggregatedCommitment0, lookupGrandProductFirstAggregatedCoefficient0}
+      ). by sim.
+      seq 6 6: (
+        #pre /\
+        ={query_t_poly_aggregated0, query_t_poly_aggregated0, currentEta}
+      ). by sim.
+      seq 4 4: #pre. by sim.
+      seq 3 3: #pre. by sim.
+      by sim.
+
+      seq 2 2: (
+        #pre /\
+        ={query_at_z_0, query_at_z_1, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient, query_t_poly_aggregated}
+      ). by sim.
+      by sim.
+qed.
+
+pred inputs_castable_to_curve (
+    state_poly_0_i: int*int,
+    state_poly_1_i: int*int,
+    state_poly_2_i: int*int,
+    state_poly_3_i: int*int,
+    copy_permutation_grand_product_i: int*int,
+    lookup_s_poly_i: int*int,
+    lookup_grand_product_i: int*int,
+    quotient_poly_part_0_i: int*int,
+    quotient_poly_part_1_i: int*int,
+    quotient_poly_part_2_i: int*int,
+    quotient_poly_part_3_i: int*int,
+    opening_proof_at_z_i: int*int,
+    opening_proof_at_z_omega_i: int*int
+) =
+exists (
+      state_poly_0_g: g,
+      state_poly_1_g: g,
+      state_poly_2_g: g,
+      state_poly_3_g: g,
+      copy_permutation_grand_product_g: g,
+      lookup_s_poly_g: g,
+      lookup_grand_product_g: g,
+      quotient_poly_part_0_g: g,
+      quotient_poly_part_1_g: g,
+      quotient_poly_part_2_g: g,
+      quotient_poly_part_3_g: g,
+      opening_proof_at_z_g: g,
+      opening_proof_at_z_omega_g: g
+    ), (
+      (FieldQ.inF state_poly_0_i.`1, FieldQ.inF state_poly_0_i.`2) = aspoint_G1 state_poly_0_g /\
+      (FieldQ.inF state_poly_1_i.`1, FieldQ.inF state_poly_1_i.`2) = aspoint_G1 state_poly_1_g /\
+      (FieldQ.inF state_poly_2_i.`1, FieldQ.inF state_poly_2_i.`2) = aspoint_G1 state_poly_2_g /\
+      (FieldQ.inF state_poly_3_i.`1, FieldQ.inF state_poly_3_i.`2) = aspoint_G1 state_poly_3_g /\
+      (FieldQ.inF copy_permutation_grand_product_i.`1, FieldQ.inF copy_permutation_grand_product_i.`2) = aspoint_G1 copy_permutation_grand_product_g /\
+      (FieldQ.inF lookup_s_poly_i.`1, FieldQ.inF lookup_s_poly_i.`2) = aspoint_G1 lookup_s_poly_g /\
+      (FieldQ.inF lookup_grand_product_i.`1, FieldQ.inF lookup_grand_product_i.`2) = aspoint_G1 lookup_grand_product_g /\
+      (FieldQ.inF quotient_poly_part_0_i.`1, FieldQ.inF quotient_poly_part_0_i.`2) = aspoint_G1 quotient_poly_part_0_g /\
+      (FieldQ.inF quotient_poly_part_1_i.`1, FieldQ.inF quotient_poly_part_1_i.`2) = aspoint_G1 quotient_poly_part_1_g /\
+      (FieldQ.inF quotient_poly_part_2_i.`1, FieldQ.inF quotient_poly_part_2_i.`2) = aspoint_G1 quotient_poly_part_2_g /\
+      (FieldQ.inF quotient_poly_part_3_i.`1, FieldQ.inF quotient_poly_part_3_i.`2) = aspoint_G1 quotient_poly_part_3_g /\
+      (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2) = aspoint_G1 opening_proof_at_z_g /\
+      (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g
+).
+
+lemma verify_mid_equiv_high_or_revert (
+    state_poly_0_i: int*int,
+    state_poly_1_i: int*int,
+    state_poly_2_i: int*int,
+    state_poly_3_i: int*int,
+    copy_permutation_grand_product_i: int*int,
+    lookup_s_poly_i: int*int,
+    lookup_grand_product_i: int*int,
+    quotient_poly_part_0_i: int*int,
+    quotient_poly_part_1_i: int*int,
+    quotient_poly_part_2_i: int*int,
+    quotient_poly_part_3_i: int*int,
+    opening_proof_at_z_i: int*int,
+    opening_proof_at_z_omega_i: int*int
+):
+    (exists (
+      state_poly_0_g: g,
+      state_poly_1_g: g,
+      state_poly_2_g: g,
+      state_poly_3_g: g,
+      copy_permutation_grand_product_g: g,
+      lookup_s_poly_g: g,
+      lookup_grand_product_g: g,
+      quotient_poly_part_0_g: g,
+      quotient_poly_part_1_g: g,
+      quotient_poly_part_2_g: g,
+      quotient_poly_part_3_g: g,
+      opening_proof_at_z_g: g,
+      opening_proof_at_z_omega_g: g
+    ), (
+      (FieldQ.inF state_poly_0_i.`1, FieldQ.inF state_poly_0_i.`2) = aspoint_G1 state_poly_0_g /\
+      (FieldQ.inF state_poly_1_i.`1, FieldQ.inF state_poly_1_i.`2) = aspoint_G1 state_poly_1_g /\
+      (FieldQ.inF state_poly_2_i.`1, FieldQ.inF state_poly_2_i.`2) = aspoint_G1 state_poly_2_g /\
+      (FieldQ.inF state_poly_3_i.`1, FieldQ.inF state_poly_3_i.`2) = aspoint_G1 state_poly_3_g /\
+      (FieldQ.inF copy_permutation_grand_product_i.`1, FieldQ.inF copy_permutation_grand_product_i.`2) = aspoint_G1 copy_permutation_grand_product_g /\
+      (FieldQ.inF lookup_s_poly_i.`1, FieldQ.inF lookup_s_poly_i.`2) = aspoint_G1 lookup_s_poly_g /\
+      (FieldQ.inF lookup_grand_product_i.`1, FieldQ.inF lookup_grand_product_i.`2) = aspoint_G1 lookup_grand_product_g /\
+      (FieldQ.inF quotient_poly_part_0_i.`1, FieldQ.inF quotient_poly_part_0_i.`2) = aspoint_G1 quotient_poly_part_0_g /\
+      (FieldQ.inF quotient_poly_part_1_i.`1, FieldQ.inF quotient_poly_part_1_i.`2) = aspoint_G1 quotient_poly_part_1_g /\
+      (FieldQ.inF quotient_poly_part_2_i.`1, FieldQ.inF quotient_poly_part_2_i.`2) = aspoint_G1 quotient_poly_part_2_g /\
+      (FieldQ.inF quotient_poly_part_3_i.`1, FieldQ.inF quotient_poly_part_3_i.`2) = aspoint_G1 quotient_poly_part_3_g /\
+      (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2) = aspoint_G1 opening_proof_at_z_g /\
+      (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g /\
+      equiv [
+        Verify.mid ~ Verify.high:
+        ={public_input_length_in_words} /\
+        (public_input{1} %% (2^253)) = FieldR.asint public_input{2} /\
+        ={proof_length_in_words} /\
+        state_poly_0{1} = state_poly_0_i /\ state_poly_0{2} = state_poly_0_g /\
+        state_poly_1{1} = state_poly_1_i /\ state_poly_1{2} = state_poly_1_g /\
+        state_poly_2{1} = state_poly_2_i /\ state_poly_2{2} = state_poly_2_g /\
+        state_poly_3{1} = state_poly_3_i /\ state_poly_3{2} = state_poly_3_g /\
+        copy_permutation_grand_product{1} = copy_permutation_grand_product_i /\
+        copy_permutation_grand_product{2} = copy_permutation_grand_product_g /\
+        lookup_s_poly{1} = lookup_s_poly_i /\
+        lookup_s_poly{2} = lookup_s_poly_g /\
+        lookup_grand_product{1} = lookup_grand_product_i /\
+        lookup_grand_product{2} = lookup_grand_product_g /\
+        quotient_poly_part_0{1} = quotient_poly_part_0_i /\
+        quotient_poly_part_0{2} = quotient_poly_part_0_g /\
+        quotient_poly_part_1{1} = quotient_poly_part_1_i /\
+        quotient_poly_part_1{2} = quotient_poly_part_1_g /\
+        quotient_poly_part_2{1} = quotient_poly_part_2_i /\
+        quotient_poly_part_2{2} = quotient_poly_part_2_g /\
+        quotient_poly_part_3{1} = quotient_poly_part_3_i /\
+        quotient_poly_part_3{2} = quotient_poly_part_3_g /\
+        state_poly_0_opening_at_z{1} = FieldR.asint state_poly_0_opening_at_z{2} /\
+        state_poly_1_opening_at_z{1} = FieldR.asint state_poly_1_opening_at_z{2} /\
+        state_poly_2_opening_at_z{1} = FieldR.asint state_poly_2_opening_at_z{2} /\
+        state_poly_3_opening_at_z{1} = FieldR.asint state_poly_3_opening_at_z{2} /\
+        state_poly_3_opening_at_z_omega{1} = FieldR.asint state_poly_3_opening_at_z_omega{2} /\
+        gate_selector_0_opening_at_z{1} = FieldR.asint gate_selector_0_opening_at_z{2} /\
+        copy_permutation_poly_0_opening_at_z{1} = FieldR.asint copy_permutation_poly_0_opening_at_z{2} /\
+        copy_permutation_poly_1_opening_at_z{1} = FieldR.asint copy_permutation_poly_1_opening_at_z{2} /\
+        copy_permutation_poly_2_opening_at_z{1} = FieldR.asint copy_permutation_poly_2_opening_at_z{2} /\
+        copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2} /\
+        lookup_s_poly_opening_at_z_omega{1} = FieldR.asint lookup_s_poly_opening_at_z_omega{2} /\
+        lookup_grand_product_opening_at_z_omega{1} = FieldR.asint lookup_grand_product_opening_at_z_omega{2} /\
+        lookup_t_poly_opening_at_z{1} = FieldR.asint lookup_t_poly_opening_at_z{2} /\
+        lookup_t_poly_opening_at_z_omega{1} = FieldR.asint lookup_t_poly_opening_at_z_omega{2} /\
+        lookup_selector_poly_opening_at_z{1} = FieldR.asint lookup_selector_poly_opening_at_z{2} /\
+        lookup_table_type_poly_opening_at_z{1} = FieldR.asint lookup_table_type_poly_opening_at_z{2} /\
+        quotient_poly_opening_at_z{1} = FieldR.asint quotient_poly_opening_at_z{2} /\
+        linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
+        opening_proof_at_z{1} = opening_proof_at_z_i /\
+        opening_proof_at_z{2} = opening_proof_at_z_g /\
+        opening_proof_at_z_omega{1} = opening_proof_at_z_omega_i /\
+        opening_proof_at_z_omega{2} = opening_proof_at_z_omega_g /\
+        ={recursive_proof_length_in_words} ==> 
+        ={res}
+      ]
+    )) \/
+    (hoare [
+      Verify.mid:
+      state_poly_0 = state_poly_0_i /\
+      state_poly_1 = state_poly_1_i /\
+      state_poly_2 = state_poly_2_i /\
+      state_poly_3 = state_poly_3_i /\
+      copy_permutation_grand_product = copy_permutation_grand_product_i /\
+      lookup_s_poly = lookup_s_poly_i /\
+      lookup_grand_product = lookup_grand_product_i /\
+      quotient_poly_part_0 = quotient_poly_part_0_i /\
+      quotient_poly_part_1 = quotient_poly_part_1_i /\
+      quotient_poly_part_2 = quotient_poly_part_2_i /\
+      quotient_poly_part_3 = quotient_poly_part_3_i /\
+      opening_proof_at_z = opening_proof_at_z_i /\
+      opening_proof_at_z_omega = opening_proof_at_z_omega_i ==>
+      res = false
+    ] /\ !exists (
+      state_poly_0_g: g,
+      state_poly_1_g: g,
+      state_poly_2_g: g,
+      state_poly_3_g: g,
+      copy_permutation_grand_product_g: g,
+      lookup_s_poly_g: g,
+      lookup_grand_product_g: g,
+      quotient_poly_part_0_g: g,
+      quotient_poly_part_1_g: g,
+      quotient_poly_part_2_g: g,
+      quotient_poly_part_3_g: g,
+      opening_proof_at_z_g: g,
+      opening_proof_at_z_omega_g: g
+    ), (
+      (FieldQ.inF state_poly_0_i.`1, FieldQ.inF state_poly_0_i.`2) = aspoint_G1 state_poly_0_g /\
+      (FieldQ.inF state_poly_1_i.`1, FieldQ.inF state_poly_1_i.`2) = aspoint_G1 state_poly_1_g /\
+      (FieldQ.inF state_poly_2_i.`1, FieldQ.inF state_poly_2_i.`2) = aspoint_G1 state_poly_2_g /\
+      (FieldQ.inF state_poly_3_i.`1, FieldQ.inF state_poly_3_i.`2) = aspoint_G1 state_poly_3_g /\
+      (FieldQ.inF copy_permutation_grand_product_i.`1, FieldQ.inF copy_permutation_grand_product_i.`2) = aspoint_G1 copy_permutation_grand_product_g /\
+      (FieldQ.inF lookup_s_poly_i.`1, FieldQ.inF lookup_s_poly_i.`2) = aspoint_G1 lookup_s_poly_g /\
+      (FieldQ.inF lookup_grand_product_i.`1, FieldQ.inF lookup_grand_product_i.`2) = aspoint_G1 lookup_grand_product_g /\
+      (FieldQ.inF quotient_poly_part_0_i.`1, FieldQ.inF quotient_poly_part_0_i.`2) = aspoint_G1 quotient_poly_part_0_g /\
+      (FieldQ.inF quotient_poly_part_1_i.`1, FieldQ.inF quotient_poly_part_1_i.`2) = aspoint_G1 quotient_poly_part_1_g /\
+      (FieldQ.inF quotient_poly_part_2_i.`1, FieldQ.inF quotient_poly_part_2_i.`2) = aspoint_G1 quotient_poly_part_2_g /\
+      (FieldQ.inF quotient_poly_part_3_i.`1, FieldQ.inF quotient_poly_part_3_i.`2) = aspoint_G1 quotient_poly_part_3_g /\
+      (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2) = aspoint_G1 opening_proof_at_z_g /\
+      (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g
+    )).
+    case (
+      on_curve_int state_poly_0_i /\
+      on_curve_int state_poly_1_i /\
+      on_curve_int state_poly_2_i /\
+      on_curve_int state_poly_3_i /\
+      on_curve_int copy_permutation_grand_product_i /\
+      on_curve_int lookup_s_poly_i /\
+      on_curve_int lookup_grand_product_i /\
+      on_curve_int quotient_poly_part_0_i /\
+      on_curve_int quotient_poly_part_1_i /\
+      on_curve_int quotient_poly_part_2_i /\
+      on_curve_int quotient_poly_part_3_i /\
+      on_curve_int opening_proof_at_z_i /\
+      on_curve_int opening_proof_at_z_omega_i
+    ).
+    progress. left.
+    have H_on_curve_int : forall (x y: int), on_curve_int (x,y) => exists p, (FieldQ.inF x, FieldQ.inF y) = aspoint_G1 p.
+      rewrite /on_curve_int. progress.
+      have H_on_curve : on_curve (FieldQ.inF x, FieldQ.inF y).
+        rewrite /on_curve. simplify.
+        rewrite Constants.q_eq_fieldq_p in H12.
+        rewrite -FieldQ.inFM.
+        rewrite FieldQ.inF_mod.
+        rewrite -H12.
+        rewrite -FieldQ.inFD.
+        rewrite FieldQ.inFK.
+        pose x_mod := x %% FieldQ.p.
+        rewrite -FieldQ.inFM.
+        rewrite FieldQ.inFK.
+        pose x2_mod := (x*x) %% FieldQ.p.
+        rewrite -modzMml.
+        rewrite -/x_mod.
+        rewrite modzDml.
+        rewrite -FieldQ.inF_mod.
+        reflexivity.
+      have H_point : exists (p: g), aspoint_G1 p = (FieldQ.inF x, FieldQ.inF y).
+        exact (on_curve_as_point (FieldQ.inF x) (FieldQ.inF y)).
+      case H_point. progress.
+      exists p. rewrite H13. reflexivity.
+    have H_state_poly_0: exists state_poly_0_g, (FieldQ.inF state_poly_0_i.`1, FieldQ.inF state_poly_0_i.`2) = aspoint_G1 state_poly_0_g. exact H_on_curve_int.
+    have H_state_poly_1: exists state_poly_1_g, (FieldQ.inF state_poly_1_i.`1, FieldQ.inF state_poly_1_i.`2) = aspoint_G1 state_poly_1_g. exact H_on_curve_int.
+    have H_state_poly_2: exists state_poly_2_g, (FieldQ.inF state_poly_2_i.`1, FieldQ.inF state_poly_2_i.`2) = aspoint_G1 state_poly_2_g. exact H_on_curve_int.
+    have H_state_poly_3: exists state_poly_3_g, (FieldQ.inF state_poly_3_i.`1, FieldQ.inF state_poly_3_i.`2) = aspoint_G1 state_poly_3_g. exact H_on_curve_int.
+    have H_copy_permutation_grand_product: exists copy_permutation_grand_product_g, (FieldQ.inF copy_permutation_grand_product_i.`1, FieldQ.inF copy_permutation_grand_product_i.`2) = aspoint_G1 copy_permutation_grand_product_g. exact H_on_curve_int.
+    have H_lookup_s_poly: exists lookup_s_poly_g, (FieldQ.inF lookup_s_poly_i.`1, FieldQ.inF lookup_s_poly_i.`2) = aspoint_G1 lookup_s_poly_g. exact H_on_curve_int.
+    have H_lookup_grand_product: exists lookup_grand_product_g, (FieldQ.inF lookup_grand_product_i.`1, FieldQ.inF lookup_grand_product_i.`2) = aspoint_G1 lookup_grand_product_g. exact H_on_curve_int.
+    have H_quotient_poly_part_0: exists quotient_poly_part_0_g, (FieldQ.inF quotient_poly_part_0_i.`1, FieldQ.inF quotient_poly_part_0_i.`2) = aspoint_G1 quotient_poly_part_0_g. exact H_on_curve_int.
+    have H_quotient_poly_part_1: exists quotient_poly_part_1_g, (FieldQ.inF quotient_poly_part_1_i.`1, FieldQ.inF quotient_poly_part_1_i.`2) = aspoint_G1 quotient_poly_part_1_g. exact H_on_curve_int.
+    have H_quotient_poly_part_2: exists quotient_poly_part_2_g, (FieldQ.inF quotient_poly_part_2_i.`1, FieldQ.inF quotient_poly_part_2_i.`2) = aspoint_G1 quotient_poly_part_2_g. exact H_on_curve_int.
+    have H_quotient_poly_part_3: exists quotient_poly_part_3_g, (FieldQ.inF quotient_poly_part_3_i.`1, FieldQ.inF quotient_poly_part_3_i.`2) = aspoint_G1 quotient_poly_part_3_g. exact H_on_curve_int.
+    have H_opening_proof_at_z: exists opening_proof_at_z_g, (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2) = aspoint_G1 opening_proof_at_z_g. exact H_on_curve_int.
+    have H_opening_proof_at_z_omega: exists opening_proof_at_z_omega_g, (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g. exact H_on_curve_int.
+    case H_state_poly_0.
+    case H_state_poly_1.
+    case H_state_poly_2.
+    case H_state_poly_3.
+    case H_copy_permutation_grand_product.
+    case H_lookup_s_poly.
+    case H_lookup_grand_product.
+    case H_quotient_poly_part_0.
+    case H_quotient_poly_part_1.
+    case H_quotient_poly_part_2.
+    case H_quotient_poly_part_3.
+    case H_opening_proof_at_z.
+    case H_opening_proof_at_z_omega.
+    progress.
+    exists state_poly_0_g state_poly_1_g state_poly_2_g state_poly_3_g copy_permutation_grand_product_g lookup_s_poly_g lookup_grand_product_g quotient_poly_part_0_g quotient_poly_part_1_g quotient_poly_part_2_g quotient_poly_part_3_g opening_proof_at_z_g opening_proof_at_z_omega_g.
+    progress.
+      transitivity Verify.mid
+      (
+        ={public_input_length_in_words} /\
+        public_input{2} = public_input{1} %% (2^253) /\
+        ={proof_length_in_words} /\
+        state_poly_0{2}.`1 = state_poly_0{1}.`1 %% FieldQ.p /\
+        state_poly_0{2}.`2 = state_poly_0{1}.`2 %% FieldQ.p /\
+        state_poly_1{2}.`1 = state_poly_1{1}.`1 %% FieldQ.p /\
+        state_poly_1{2}.`2 = state_poly_1{1}.`2 %% FieldQ.p /\
+        state_poly_2{2}.`1 = state_poly_2{1}.`1 %% FieldQ.p /\
+        state_poly_2{2}.`2 = state_poly_2{1}.`2 %% FieldQ.p /\
+        state_poly_3{2}.`1 = state_poly_3{1}.`1 %% FieldQ.p /\
+        state_poly_3{2}.`2 = state_poly_3{1}.`2 %% FieldQ.p /\
+        copy_permutation_grand_product{2}.`1 = copy_permutation_grand_product{1}.`1 %% FieldQ.p /\
+        copy_permutation_grand_product{2}.`2 = copy_permutation_grand_product{1}.`2 %% FieldQ.p /\
+        lookup_s_poly{2}.`1 = lookup_s_poly{1}.`1 %% FieldQ.p /\
+        lookup_s_poly{2}.`2 = lookup_s_poly{1}.`2 %% FieldQ.p /\
+        lookup_grand_product{2}.`1 = lookup_grand_product{1}.`1 %% FieldQ.p /\
+        lookup_grand_product{2}.`2 = lookup_grand_product{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_0{2}.`1 = quotient_poly_part_0{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_0{2}.`2 = quotient_poly_part_0{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_1{2}.`1 = quotient_poly_part_1{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_1{2}.`2 = quotient_poly_part_1{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_2{2}.`1 = quotient_poly_part_2{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_2{2}.`2 = quotient_poly_part_2{1}.`2 %% FieldQ.p /\
+        quotient_poly_part_3{2}.`1 = quotient_poly_part_3{1}.`1 %% FieldQ.p /\
+        quotient_poly_part_3{2}.`2 = quotient_poly_part_3{1}.`2 %% FieldQ.p /\
+        state_poly_0_opening_at_z{2} = state_poly_0_opening_at_z{1} %% FieldR.p /\
+        state_poly_1_opening_at_z{2} = state_poly_1_opening_at_z{1} %% FieldR.p /\
+        state_poly_2_opening_at_z{2} = state_poly_2_opening_at_z{1} %% FieldR.p /\
+        state_poly_3_opening_at_z{2} = state_poly_3_opening_at_z{1} %% FieldR.p /\
+        state_poly_3_opening_at_z_omega{2} = state_poly_3_opening_at_z_omega{1} %% FieldR.p /\
+        gate_selector_0_opening_at_z{2} = gate_selector_0_opening_at_z{1} %% FieldR.p /\
+        copy_permutation_poly_0_opening_at_z{2} = copy_permutation_poly_0_opening_at_z{1} %% FieldR.p /\
+        copy_permutation_poly_1_opening_at_z{2} = copy_permutation_poly_1_opening_at_z{1} %% FieldR.p /\
+        copy_permutation_poly_2_opening_at_z{2} = copy_permutation_poly_2_opening_at_z{1} %% FieldR.p /\
+        copy_permutation_grand_product_opening_at_z_omega{2} = copy_permutation_grand_product_opening_at_z_omega{1} %% FieldR.p /\
+        lookup_s_poly_opening_at_z_omega{2} = lookup_s_poly_opening_at_z_omega{1} %% FieldR.p /\
+        lookup_grand_product_opening_at_z_omega{2} = lookup_grand_product_opening_at_z_omega{1} %% FieldR.p /\
+        lookup_t_poly_opening_at_z{2} = lookup_t_poly_opening_at_z{1} %% FieldR.p /\
+        lookup_t_poly_opening_at_z_omega{2} = lookup_t_poly_opening_at_z_omega{1} %% FieldR.p /\
+        lookup_selector_poly_opening_at_z{2} = lookup_selector_poly_opening_at_z{1} %% FieldR.p /\
+        lookup_table_type_poly_opening_at_z{2} = lookup_table_type_poly_opening_at_z{1} %% FieldR.p /\
+        quotient_poly_opening_at_z{2} = quotient_poly_opening_at_z{1} %% FieldR.p /\
+        linearisation_poly_opening_at_z{2} = linearisation_poly_opening_at_z{1} %% FieldR.p /\
+        opening_proof_at_z{2}.`1 = opening_proof_at_z{1}.`1 %% FieldQ.p /\
+        opening_proof_at_z{2}.`2 = opening_proof_at_z{1}.`2 %% FieldQ.p /\
+        opening_proof_at_z_omega{2}.`1 = opening_proof_at_z_omega{1}.`1 %% FieldQ.p /\
+        opening_proof_at_z_omega{2}.`2 = opening_proof_at_z_omega{1}.`2 %% FieldQ.p /\
+        ={recursive_proof_length_in_words} /\
+        recursive_part_p1{2}.`1 = recursive_part_p1{1}.`1 %% FieldQ.p /\
+        recursive_part_p1{2}.`2 = recursive_part_p1{1}.`2 %% FieldQ.p /\
+        recursive_part_p2{2}.`1 = recursive_part_p2{1}.`1 %% FieldQ.p /\
+        recursive_part_p2{2}.`2 = recursive_part_p2{1}.`2 %% FieldQ.p ==> 
+        ={res}
+      )
+      (
+        ={public_input_length_in_words} /\
+        public_input{1} = FieldR.asint public_input{2} /\ 0 <= public_input{1} < (2^253) /\
+        ={proof_length_in_words} /\
+        state_poly_0{1} = F_to_int_point(aspoint_G1 state_poly_0{2}) /\
+        state_poly_1{1} = F_to_int_point(aspoint_G1 state_poly_1{2}) /\
+        state_poly_2{1} = F_to_int_point(aspoint_G1 state_poly_2{2}) /\
+        state_poly_3{1} = F_to_int_point(aspoint_G1 state_poly_3{2}) /\
+        copy_permutation_grand_product{1} = F_to_int_point(aspoint_G1 copy_permutation_grand_product{2}) /\
+        lookup_s_poly{1} = F_to_int_point(aspoint_G1 lookup_s_poly{2}) /\
+        lookup_grand_product{1} = F_to_int_point(aspoint_G1 lookup_grand_product{2}) /\
+        quotient_poly_part_0{1} = F_to_int_point(aspoint_G1 quotient_poly_part_0{2}) /\
+        quotient_poly_part_1{1} = F_to_int_point(aspoint_G1 quotient_poly_part_1{2}) /\
+        quotient_poly_part_2{1} = F_to_int_point(aspoint_G1 quotient_poly_part_2{2}) /\
+        quotient_poly_part_3{1} = F_to_int_point(aspoint_G1 quotient_poly_part_3{2}) /\
+        state_poly_0_opening_at_z{1} = FieldR.asint state_poly_0_opening_at_z{2} /\
+        state_poly_1_opening_at_z{1} = FieldR.asint state_poly_1_opening_at_z{2} /\
+        state_poly_2_opening_at_z{1} = FieldR.asint state_poly_2_opening_at_z{2} /\
+        state_poly_3_opening_at_z{1} = FieldR.asint state_poly_3_opening_at_z{2} /\
+        state_poly_3_opening_at_z_omega{1} = FieldR.asint state_poly_3_opening_at_z_omega{2} /\
+        gate_selector_0_opening_at_z{1} = FieldR.asint gate_selector_0_opening_at_z{2} /\
+        copy_permutation_poly_0_opening_at_z{1} = FieldR.asint copy_permutation_poly_0_opening_at_z{2} /\
+        copy_permutation_poly_1_opening_at_z{1} = FieldR.asint copy_permutation_poly_1_opening_at_z{2} /\
+        copy_permutation_poly_2_opening_at_z{1} = FieldR.asint copy_permutation_poly_2_opening_at_z{2} /\
+        copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2} /\
+        lookup_s_poly_opening_at_z_omega{1} = FieldR.asint lookup_s_poly_opening_at_z_omega{2} /\
+        lookup_grand_product_opening_at_z_omega{1} = FieldR.asint lookup_grand_product_opening_at_z_omega{2} /\
+        lookup_t_poly_opening_at_z{1} = FieldR.asint lookup_t_poly_opening_at_z{2} /\
+        lookup_t_poly_opening_at_z_omega{1} = FieldR.asint lookup_t_poly_opening_at_z_omega{2} /\
+        lookup_selector_poly_opening_at_z{1} = FieldR.asint lookup_selector_poly_opening_at_z{2} /\
+        lookup_table_type_poly_opening_at_z{1} = FieldR.asint lookup_table_type_poly_opening_at_z{2} /\
+        quotient_poly_opening_at_z{1} = FieldR.asint quotient_poly_opening_at_z{2} /\
+        linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
+        opening_proof_at_z{1} = F_to_int_point(aspoint_G1 opening_proof_at_z{2}) /\
+        opening_proof_at_z_omega{1} = F_to_int_point(aspoint_G1 opening_proof_at_z_omega{2}) /\
+        ={recursive_proof_length_in_words}
+        (* only necessary if we generalise over vk_recursive_flag /\
+        recursive_part_p1{1} = F_to_int_point(aspoint_G1 recursive_part_p1{2} /\
+        recursive_part_p2{1} = F_to_int_point(aspoint_G1 recursive_part_p2{2}) *) ==> 
+        ={res}
+      ).
+      progress.
+      exists (
+        public_input_length_in_words{1},
+        public_input{1} %% (2^253),
+        proof_length_in_words{1},
+        (state_poly_0{1}.`1 %% FieldQ.p, state_poly_0{1}.`2 %% FieldQ.p),
+        (state_poly_1{1}.`1 %% FieldQ.p, state_poly_1{1}.`2 %% FieldQ.p),
+        (state_poly_2{1}.`1 %% FieldQ.p, state_poly_2{1}.`2 %% FieldQ.p),
+        (state_poly_3{1}.`1 %% FieldQ.p, state_poly_3{1}.`2 %% FieldQ.p),
+        (copy_permutation_grand_product{1}.`1 %% FieldQ.p, copy_permutation_grand_product{1}.`2 %% FieldQ.p),
+        (lookup_s_poly{1}.`1 %% FieldQ.p, lookup_s_poly{1}.`2 %% FieldQ.p),
+        (lookup_grand_product{1}.`1 %% FieldQ.p, lookup_grand_product{1}.`2 %% FieldQ.p),
+        (quotient_poly_part_0{1}.`1 %% FieldQ.p, quotient_poly_part_0{1}.`2 %% FieldQ.p),
+        (quotient_poly_part_1{1}.`1 %% FieldQ.p, quotient_poly_part_1{1}.`2 %% FieldQ.p),
+        (quotient_poly_part_2{1}.`1 %% FieldQ.p, quotient_poly_part_2{1}.`2 %% FieldQ.p),
+        (quotient_poly_part_3{1}.`1 %% FieldQ.p, quotient_poly_part_3{1}.`2 %% FieldQ.p),
+        state_poly_0_opening_at_z{1} %% FieldR.p,
+        state_poly_1_opening_at_z{1} %% FieldR.p,
+        state_poly_2_opening_at_z{1} %% FieldR.p,
+        state_poly_3_opening_at_z{1} %% FieldR.p,
+        state_poly_3_opening_at_z_omega{1} %% FieldR.p,
+        gate_selector_0_opening_at_z{1} %% FieldR.p,
+        copy_permutation_poly_0_opening_at_z{1} %% FieldR.p,
+        copy_permutation_poly_1_opening_at_z{1} %% FieldR.p,
+        copy_permutation_poly_2_opening_at_z{1} %% FieldR.p,
+        copy_permutation_grand_product_opening_at_z_omega{1} %% FieldR.p,
+        lookup_s_poly_opening_at_z_omega{1} %% FieldR.p,
+        lookup_grand_product_opening_at_z_omega{1} %% FieldR.p,
+        lookup_t_poly_opening_at_z{1} %% FieldR.p,
+        lookup_t_poly_opening_at_z_omega{1} %% FieldR.p,
+        lookup_selector_poly_opening_at_z{1} %% FieldR.p,
+        lookup_table_type_poly_opening_at_z{1} %% FieldR.p,
+        quotient_poly_opening_at_z{1} %% FieldR.p,
+        linearisation_poly_opening_at_z{1} %% FieldR.p,
+        (opening_proof_at_z{1}.`1 %% FieldQ.p, opening_proof_at_z{1}.`2 %% FieldQ.p),
+        (opening_proof_at_z_omega{1}.`1 %% FieldQ.p, opening_proof_at_z_omega{1}.`2 %% FieldQ.p),
+        recursive_proof_length_in_words{1},
+        (recursive_part_p1{1}.`1 %% FieldQ.p, recursive_part_p1{1}.`2 %% FieldQ.p),
+        (recursive_part_p2{1}.`1 %% FieldQ.p, recursive_part_p2{1}.`2 %% FieldQ.p)
+      ).
+      progress.
+      rewrite H26. exact FieldR.ge0_asint. exact ltz_pmod.
+      rewrite -H24 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H23 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H22 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H21 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H20 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H19 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H18 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H17 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H16 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H15 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H14 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite H28. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H29. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H30. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H31. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H32. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H33. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H34. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H35. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H36. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H37. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H38. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H39. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H40. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H41. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H42. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H43. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H44. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite H45. rewrite pmod_small. exact FieldR.rg_asint. reflexivity.
+      rewrite -H13 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      rewrite -H12 /F_to_int_point. simplify. rewrite FieldQ.inFK FieldQ.inFK. reflexivity.
+      progress.
+      exact verify_mid_canonicalisation.
+      transitivity Verify.high_encapsulated
+      (
+        ={public_input_length_in_words} /\
+        public_input{1} = FieldR.asint public_input{2} /\ 0 <= public_input{1} < (2^253) /\
+        ={proof_length_in_words} /\
+        state_poly_0{1} = F_to_int_point(aspoint_G1 state_poly_0{2}) /\
+        state_poly_1{1} = F_to_int_point(aspoint_G1 state_poly_1{2}) /\
+        state_poly_2{1} = F_to_int_point(aspoint_G1 state_poly_2{2}) /\
+        state_poly_3{1} = F_to_int_point(aspoint_G1 state_poly_3{2}) /\
+        copy_permutation_grand_product{1} = F_to_int_point(aspoint_G1 copy_permutation_grand_product{2}) /\
+        lookup_s_poly{1} = F_to_int_point(aspoint_G1 lookup_s_poly{2}) /\
+        lookup_grand_product{1} = F_to_int_point(aspoint_G1 lookup_grand_product{2}) /\
+        quotient_poly_part_0{1} = F_to_int_point(aspoint_G1 quotient_poly_part_0{2}) /\
+        quotient_poly_part_1{1} = F_to_int_point(aspoint_G1 quotient_poly_part_1{2}) /\
+        quotient_poly_part_2{1} = F_to_int_point(aspoint_G1 quotient_poly_part_2{2}) /\
+        quotient_poly_part_3{1} = F_to_int_point(aspoint_G1 quotient_poly_part_3{2}) /\
+        state_poly_0_opening_at_z{1} = FieldR.asint state_poly_0_opening_at_z{2} /\
+        state_poly_1_opening_at_z{1} = FieldR.asint state_poly_1_opening_at_z{2} /\
+        state_poly_2_opening_at_z{1} = FieldR.asint state_poly_2_opening_at_z{2} /\
+        state_poly_3_opening_at_z{1} = FieldR.asint state_poly_3_opening_at_z{2} /\
+        state_poly_3_opening_at_z_omega{1} = FieldR.asint state_poly_3_opening_at_z_omega{2} /\
+        gate_selector_0_opening_at_z{1} = FieldR.asint gate_selector_0_opening_at_z{2} /\
+        copy_permutation_poly_0_opening_at_z{1} = FieldR.asint copy_permutation_poly_0_opening_at_z{2} /\
+        copy_permutation_poly_1_opening_at_z{1} = FieldR.asint copy_permutation_poly_1_opening_at_z{2} /\
+        copy_permutation_poly_2_opening_at_z{1} = FieldR.asint copy_permutation_poly_2_opening_at_z{2} /\
+        copy_permutation_grand_product_opening_at_z_omega{1} = FieldR.asint copy_permutation_grand_product_opening_at_z_omega{2} /\
+        lookup_s_poly_opening_at_z_omega{1} = FieldR.asint lookup_s_poly_opening_at_z_omega{2} /\
+        lookup_grand_product_opening_at_z_omega{1} = FieldR.asint lookup_grand_product_opening_at_z_omega{2} /\
+        lookup_t_poly_opening_at_z{1} = FieldR.asint lookup_t_poly_opening_at_z{2} /\
+        lookup_t_poly_opening_at_z_omega{1} = FieldR.asint lookup_t_poly_opening_at_z_omega{2} /\
+        lookup_selector_poly_opening_at_z{1} = FieldR.asint lookup_selector_poly_opening_at_z{2} /\
+        lookup_table_type_poly_opening_at_z{1} = FieldR.asint lookup_table_type_poly_opening_at_z{2} /\
+        quotient_poly_opening_at_z{1} = FieldR.asint quotient_poly_opening_at_z{2} /\
+        linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
+        opening_proof_at_z{1} = F_to_int_point(aspoint_G1 opening_proof_at_z{2}) /\
+        opening_proof_at_z_omega{1} = F_to_int_point(aspoint_G1 opening_proof_at_z_omega{2}) /\
+        ={recursive_proof_length_in_words} ==> 
+        ={res}
+      )
+      (
+        ={arg} ==> ={res}
+      ).
+      progress.
+      exists (arg{2}). by progress.
+      by progress.
+      exact verify_mid_equiv_high_encapsulated.
+      exact verify_high_encapsulated_equiv_high.
+      progress.
+
+      right.
+      have H_de_morgan: (
+        !on_curve_int state_poly_0_i \/
+        !on_curve_int state_poly_1_i \/
+        !on_curve_int state_poly_2_i \/
+        !on_curve_int state_poly_3_i \/
+        !on_curve_int copy_permutation_grand_product_i \/
+        !on_curve_int lookup_s_poly_i \/
+        !on_curve_int lookup_grand_product_i \/
+        !on_curve_int quotient_poly_part_0_i \/
+        !on_curve_int quotient_poly_part_1_i \/
+        !on_curve_int quotient_poly_part_2_i \/
+        !on_curve_int quotient_poly_part_3_i \/
+        !on_curve_int opening_proof_at_z_i \/
+        !on_curve_int opening_proof_at_z_omega_i
+      ). smt ().
+      case H_de_morgan.
+        progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 41: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 12: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists state_poly_0_g, (FieldQ.inF state_poly_0_i.`1, FieldQ.inF state_poly_0_i.`2) = aspoint_G1 state_poly_0_g.          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF state_poly_0_i.`1, FieldQ.inF state_poly_0_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 42: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 11: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists state_poly_1_g, (FieldQ.inF state_poly_1_i.`1, FieldQ.inF state_poly_1_i.`2) = aspoint_G1 state_poly_1_g.          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF state_poly_1_i.`1, FieldQ.inF state_poly_1_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 43: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 10: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists state_poly_2_g, (FieldQ.inF state_poly_2_i.`1, FieldQ.inF state_poly_2_i.`2) = aspoint_G1 state_poly_2_g.          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF state_poly_2_i.`1, FieldQ.inF state_poly_2_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 44: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 9: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists state_poly_3_g, (FieldQ.inF state_poly_3_i.`1, FieldQ.inF state_poly_3_i.`2) = aspoint_G1 state_poly_3_g.          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF state_poly_3_i.`1, FieldQ.inF state_poly_3_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 45: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 8: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists copy_permutation_grand_product_g, (FieldQ.inF copy_permutation_grand_product_i.`1, FieldQ.inF copy_permutation_grand_product_i.`2) = aspoint_G1 copy_permutation_grand_product_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF copy_permutation_grand_product_i.`1, FieldQ.inF copy_permutation_grand_product_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 46: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 7: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists lookup_s_poly_g, (FieldQ.inF lookup_s_poly_i.`1, FieldQ.inF lookup_s_poly_i.`2) = aspoint_G1 lookup_s_poly_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF lookup_s_poly_i.`1, FieldQ.inF lookup_s_poly_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 47: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 6: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists lookup_grand_product_g, (FieldQ.inF lookup_grand_product_i.`1, FieldQ.inF lookup_grand_product_i.`2) = aspoint_G1 lookup_grand_product_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF lookup_grand_product_i.`1, FieldQ.inF lookup_grand_product_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 48: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 5: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists quotient_poly_part_0_g, (FieldQ.inF quotient_poly_part_0_i.`1, FieldQ.inF quotient_poly_part_0_i.`2) = aspoint_G1 quotient_poly_part_0_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF quotient_poly_part_0_i.`1, FieldQ.inF quotient_poly_part_0_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 49: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 4: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists quotient_poly_part_1_g, (FieldQ.inF quotient_poly_part_1_i.`1, FieldQ.inF quotient_poly_part_1_i.`2) = aspoint_G1 quotient_poly_part_1_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF quotient_poly_part_1_i.`1, FieldQ.inF quotient_poly_part_1_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 50: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 3: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists quotient_poly_part_2_g, (FieldQ.inF quotient_poly_part_2_i.`1, FieldQ.inF quotient_poly_part_2_i.`2) = aspoint_G1 quotient_poly_part_2_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF quotient_poly_part_2_i.`1, FieldQ.inF quotient_poly_part_2_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 51: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 2: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists quotient_poly_part_3_g, (FieldQ.inF quotient_poly_part_3_i.`1, FieldQ.inF quotient_poly_part_3_i.`2) = aspoint_G1 quotient_poly_part_3_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF quotient_poly_part_3_i.`1, FieldQ.inF quotient_poly_part_3_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. case H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 52: (!isValid). sp. skip. progress. rewrite H0. by progress.
+        seq 1: (!isValid). sp. skip. progress. rewrite H1. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H1. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H1. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H1. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H1. by progress. rewrite H1. by progress.
+          have H_neg: !exists opening_proof_at_z_g, (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2) = aspoint_G1 opening_proof_at_z_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF opening_proof_at_z_i.`1, FieldQ.inF opening_proof_at_z_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H0.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+      move => H_de_morgan. progress.
+        proc. simplify.
+        sp. inline LoadProof.mid.
+        seq 53: (!isValid). sp. skip. progress. rewrite H_de_morgan. by progress.
+        seq 4: failed.
+        case (vk_recursive_flag0). rcondt 1. by progress.
+        seq 5: (!isValid). wp. skip. progress. rewrite H0. by progress.
+        rcondf 1. by progress. wp. skip. by progress.
+        rcondf 1. by progress.
+        rcondf 4. wp. skip. progress. rewrite H0. by progress. wp. skip. by progress.
+        seq 1: #pre. wp. skip. by progress.
+        inline InitializeTranscript.mid.
+        seq 47: #pre. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. by progress.
+        seq 1: #pre. inline*. wp. skip. progress. rewrite H0. left. by trivial.
+        seq 2: #pre. inline PrepareQueries.mid.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 10: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. sp. skip. progress. smt ().
+        seq 3: #pre. inline AddAssignPermutationLinearisationContributionWithV.AddAssignPermutationLinearisationContributionWithV.mid.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          seq 10: #pre. wp. skip. by progress.
+          inline*. wp. skip. by progress.
+
+        seq 3: #pre. inline AddAssignLookupLinearisationContributionWithV.mid.
+          wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 4: #pre. inline*. wp. skip. by progress.
+        seq 3: #pre. inline*. wp. skip. by progress.
+        wp. skip. by progress.
+
+        seq 3: #pre. inline PrepareAggregatedCommitment.mid.
+          seq 40: #pre. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          seq 5: #pre. inline*. wp. skip. by progress.
+          wp. skip. by progress.
+          inline*. wp. skip. progress. rewrite H0. by progress. rewrite H0. by progress.
+          have H_neg: !exists opening_proof_at_z_omega_g, (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2) = aspoint_G1 opening_proof_at_z_omega_g.
+          rewrite negb_exists. progress.
+            have H_curve: !on_curve (FieldQ.inF opening_proof_at_z_omega_i.`1, FieldQ.inF opening_proof_at_z_omega_i.`2).
+              rewrite /on_curve.
+              rewrite /on_curve_int in H_de_morgan.
+              rewrite -FieldQ.inFD.
+              simplify.
+              rewrite -FieldQ.inFM.
+              rewrite -FieldQ.inFM.
+              rewrite FieldQ.inFK.
+              rewrite FieldQ.inFK.
+              smt (@Constants @FieldQ @IntDiv).
+            smt (@EllipticCurve).
+          smt ().
+qed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

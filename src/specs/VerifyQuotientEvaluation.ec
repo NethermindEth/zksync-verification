@@ -12,11 +12,6 @@ require import Verifier.
 require import VerifierConsts.
 require import YulPrimops.
 
-abbrev (-) = FieldR.(-).
-abbrev ( * ) = FieldR.( * ).
-abbrev ( + ) = FieldR.( + ).
-abbrev [-] = FieldR.([-]).
-
 module VerifyQuotientEvaluation = {
   proc low(): unit = {
     var alpha, currentAlpha, stateZ, _12, _17, _20, _21, stateT, _23, result, _24, _25, _27, _28, _30, vanishing, _32, lhs;
@@ -103,6 +98,11 @@ module VerifyQuotientEvaluation = {
     
     if (elpodL0 = None) {
       r <- None;
+      stateBetaGammaPlusGamma <- 0;
+      stateBetaPlusOne <- 0;
+      stateL0AtZ <- 0;
+      stateLnMinusOneAtZ <- 0;
+      stateZMinusLastOmega <- 0;
     } else {
       stateL0AtZ <- oget(elpodL0);
       elpodLn <@ EvaluateLagrangePolyOutOfDomain.mid((Constants.DOMAIN_SIZE - 1), stateZ);
@@ -204,6 +204,11 @@ module VerifyQuotientEvaluation = {
     
     if (elpodL0 = None) {
       r <- None;
+      stateBetaGammaPlusGamma <- FieldR.zero;
+      stateBetaPlusOne <- FieldR.zero;
+      stateL0AtZ <- FieldR.zero;
+      stateLnMinusOneAtZ <- FieldR.zero;
+      stateZMinusLastOmega <- FieldR.zero;
     } else {
       stateL0AtZ <- oget(elpodL0);
       elpodLn <@ EvaluateLagrangePolyOutOfDomain.high((Constants.DOMAIN_SIZE - 1), stateZ);
@@ -301,6 +306,11 @@ module VerifyQuotientEvaluation = {
 
     if (stateZAtDomainSize = FieldR.one) {
       r <- None;
+      stateBetaGammaPlusGamma <- FieldR.zero;
+      stateBetaPlusOne <- FieldR.zero;
+      stateL0AtZ <- FieldR.zero;
+      stateLnMinusOneAtZ <- FieldR.zero;
+      stateZMinusLastOmega <- FieldR.zero;
     } else {
       stateL0AtZ <- (stateZAtDomainSize - FieldR.one) * ((Constants.DOMAIN_SIZEFr * (stateZ - FieldR.one)) ^ (- 1));
       stateLnMinusOneAtZ <- (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (stateZAtDomainSize - FieldR.one)) * ((Constants.DOMAIN_SIZEFr * (stateZ - Constants.OMEGAFr^(Constants.DOMAIN_SIZE- 1))) ^ (- 1)); 
@@ -383,6 +393,8 @@ module VerifyQuotientEvaluation = {
 
     if (stateZ^Constants.DOMAIN_SIZE = FieldR.one) {
       r <- None;
+      stateL0AtZ <- FieldR.zero;
+      stateLnMinusOneAtZ <- FieldR.zero;
     } else {
       stateL0AtZ <- (stateZ^Constants.DOMAIN_SIZE - FieldR.one) * ((Constants.DOMAIN_SIZEFr * (stateZ - FieldR.one)) ^ (- 1));
       stateLnMinusOneAtZ <- (Constants.OMEGAFr ^ (Constants.DOMAIN_SIZE - 1) * (stateZ^Constants.DOMAIN_SIZE - FieldR.one)) * ((Constants.DOMAIN_SIZEFr * (stateZ - Constants.OMEGAFr^(Constants.DOMAIN_SIZE- 1))) ^ (- 1)); 
