@@ -555,10 +555,9 @@ W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SL
 W256.to_uint (mload m STATE_Z_IN_DOMAIN_SIZE) = stateZInDomainSizeG /\
 W256.to_uint (mload m PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = proofQuotientPolyOpeningAtZG
 ==>
-(Primops.reverted{1} /\
-  (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R = 0 /\ res{2}.`1 = None)
-    \/
-   (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\ res{2}.`1 = Some false))
+((((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R = 0 /\ res{2}.`1 = None /\ Primops.reverted{1})
+ \/
+ (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\ res{2}.`1 = Some false /\ Primops.reverted{1}))
 \/
 (!Primops.reverted{1} /\
   ((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\
