@@ -562,6 +562,34 @@ qed.
 
 import MemoryMap PurePrimops.
 
+lemma initializeTranscript_low_pspec_revert:
+    phoare [
+      InitializeTranscript.low:
+      Primops.reverted ==> Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 4! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 18! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call modexp_low_pspec_revert.
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 8! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 2! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      do 2! (call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert).
+      do 2! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      do 2! (call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert).
+      do 2! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      call ConcretePrimops.mstore_pspec_revert; call getTranscriptChallenge_pspec_revert.
+      do 9! (call updateTranscript_pspec_revert; call ConcretePrimops.mload_pspec_revert).
+      skip.
+      by trivial.
+    qed.
+
+
+
 op initializeTranscript_memory_footprint (m: mem)
 (sEta sBeta sGamma sBetaLookup sGammaLookup sAlpha sZ sZInDomainSize sV sU : uint256)   
 (s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 : uint256) : mem =

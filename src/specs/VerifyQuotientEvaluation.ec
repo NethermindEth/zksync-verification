@@ -458,6 +458,26 @@ lemma verifyQuotientEvaluation_extracted_equiv_low:
 
 import MemoryMap PurePrimops.
 
+lemma verifyQuotientEvaluation_low_pspec_revert:
+    phoare [
+      VerifyQuotientEvaluation.low:
+      Primops.reverted ==> Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline RevertWithMessage.low Primops.revert Primops.mstore.
+      wp.
+      do 3! (call ConcretePrimops.mload_pspec_revert; wp).
+      call lookupQuotientContribution_pspec_revert. wp.
+      call permutationQuotientContribution_pspec_revert. wp.
+      do 3! (call ConcretePrimops.mload_pspec_revert; wp).
+      call evaluateLagrangePolyOutOfDomain_pspec_revert. wp.
+      call evaluateLagrangePolyOutOfDomain_pspec_revert.      
+      call ConcretePrimops.mload_pspec_revert. wp.
+      call ConcretePrimops.mload_pspec_revert. skip.
+      by progress.
+qed.
+
 op verifyQuotientEvaluation_memory_footprint (m: mem)
 (a2 a3 a4 a5 a6 a7 a8 : uint256)
 (sl0az slnm1az : uint256)
