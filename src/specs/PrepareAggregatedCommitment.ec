@@ -392,15 +392,15 @@ module PrepareAggregatedCommitment = {
         state_v ^ 8 * vkPermutation1 + (* v^8*[sigma_1] *) 
         state_v ^ 9 * vkPermutation2 + (* v^9*[sigma_2] *)
         state_v ^ 11 * vkLookupSelector + (* v^11*[lookup_selector] *)
-        state_v ^ 12 * vkLookupTableType; (* v^11*[lookup_selector] *)
+        state_v ^ 12 * vkLookupTableType; (* v^12*[table_type] *)
 
         aggregatedOpeningAtZSlot <- proofQuotientPolyOpeningAtZ + state_v * proofLinearisationPolyOpeningAtZ + state_v ^ 2 * proofStatePolys0OpeningAtZ + state_v ^ 3 * proofStatePolys1OpeningAtZ + state_v ^ 4 * proofStatePolys2OpeningAtZ + state_v ^ 5 * proofStatePolys3OpeningAtZ + state_v ^ 6 * proofGateSelectors0OpeningAtZ + state_v ^ 7 * proofCopyPermutationPolys0OpeningAtZ + state_v ^ 8 * proofCopyPermutationPolys1OpeningAtZ + state_v ^ 9 * proofCopyPermutationPolys2OpeningAtZ + state_v ^ 10 * proofLookupTPolyOpeningAtZ + state_v ^ 11 * proofLookupSelectorPolyOpeningAtZ + state_v ^ 12 * proofLookupTableTypePolyOpeningAtZ; (* + state_v ^ 12 * _lookup_table_type_poly_opening_at_z ??? *)
 
 
-        (* u * ( v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t]) + v^5*[d] + v^10*[t] + ????? *)
+        (* v^5*[d] + v^10*[t] + u * ( v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t]) + ????? *)
         aggregatedAtZOmegaSlot <-
-        state_v ^ 10 * queriesTPolyAggregated + (* v^10*[t] *)
         state_v ^ 5 * proofStatePolys3 + (* v^5*[d] *)
+        state_v ^ 10 * queriesTPolyAggregated + (* v^10*[t] *)
         state_u * ( (* u * *)
         state_v ^ 13 * proofCopyPermutationGrandProduct + (* v^13*[z_perm] *)
         state_v ^ 14 * proofStatePolys3 + (* v^14*[d] *)
@@ -464,7 +464,7 @@ lemma assoc_g (x y z : g) : x + (y + z) = x + y + z. smt. qed.
 lemma rearrange1 (x y z : g) : x + (y + z) = y + (x + z). smt (@EllipticCurve). qed.
 
   
-lemma prepareAggregatedCommitment_high_equiv_stoned :
+lemma prepareAggregatedCommitment_high_equiv_super_high :
   equiv [
     PrepareAggregatedCommitment.high ~ PrepareAggregatedCommitment.super_high :
       ={arg} ==> ={res}
@@ -563,7 +563,6 @@ lemma prepareAggregatedCommitment_high_equiv_stoned :
     ).
         do 25! (rewrite -assoc_g).
         do 9! congr.
-        rewrite rearrange1. congr.
         smt.
 
         rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
