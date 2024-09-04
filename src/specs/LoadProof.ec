@@ -2799,8 +2799,8 @@ lemma loadProof_mid_equiv_high (recursive: bool):
       linearisation_poly_opening_at_z{1} = FieldR.asint linearisation_poly_opening_at_z{2} /\
       opening_proof_at_z{1} = F_to_int_point (aspoint_G1 opening_proof_at_z{2}) /\
       opening_proof_at_z_omega{1} = F_to_int_point (aspoint_G1 opening_proof_at_z_omega{2}) /\
-      (recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) \/ !recursive) /\
-      (recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) \/ !recursive)
+      recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) /\
+      recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2})
        ==>
       (res{1} = None /\ res{2} = None) \/
       (
@@ -2857,15 +2857,9 @@ lemma loadProof_mid_equiv_high (recursive: bool):
         ret_recursive_part_p1{1} = omap F_to_int_point (omap aspoint_G1 ret_recursive_part_p1{2}) /\
         ret_recursive_part_p2{1} = omap F_to_int_point (omap aspoint_G1 ret_recursive_part_p2{2})
       ).
-      wp. skip. progress.
-      have H_rec1 : recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) by case H; progress.
-      have H_rec2 : recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) by case H0; progress.
-      rewrite H_rec1 H_rec2. do 2! rewrite on_curve_int_of_cast. by progress.
-
-      have H_rec1 : recursive_part_p1{1} = F_to_int_point (aspoint_G1 recursive_part_p1{2}) by case H; progress.
-      rewrite Constants.q_eq_fieldq_p H_rec1. rewrite F_to_int_point_mod_Q_1. rewrite F_to_int_point_mod_Q_2. by progress.
-      have H_rec2 : recursive_part_p2{1} = F_to_int_point (aspoint_G1 recursive_part_p2{2}) by case H0; progress.
-      rewrite Constants.q_eq_fieldq_p H_rec2. rewrite F_to_int_point_mod_Q_1. rewrite F_to_int_point_mod_Q_2. by progress.
+      wp. skip. progress. do rewrite on_curve_int_of_cast. by progress.
+      rewrite Constants.q_eq_fieldq_p. rewrite F_to_int_point_mod_Q_1. rewrite F_to_int_point_mod_Q_2. by progress.
+      rewrite Constants.q_eq_fieldq_p. rewrite F_to_int_point_mod_Q_1. rewrite F_to_int_point_mod_Q_2. by progress.
      
       exists* isValid{1}. elim*=> isValid_L.
       case isValid_L. rcondt{1} 1. by progress.
