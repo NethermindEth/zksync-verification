@@ -1,4 +1,6 @@
 pragma Goals:printall.
+
+require import AllCore.
 require        Constants.
 require import EllipticCurve.
 require import Field.
@@ -374,7 +376,25 @@ lemma prepareAggregatedCommitment_extracted_equiv_low:
       call pointAddIntoDest_extracted_equiv_low.
       wp. skip. by progress.
   qed.
-  
+
+lemma prepareAggregatedCommitment_low_pspec_revert:
+    phoare [
+      PrepareAggregatedCommitment.low:
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline Primops.mload Primops.mstore.
+      call pointMulIntoDest_low_pspec_revert. wp.
+      call pointAddIntoDest_pspec_revert. wp.
+      do 4! (call updateAggregationChallenge_105_low_pspec_revert; wp).
+      call pointMulIntoDest_low_pspec_revert. wp.
+      do 9! (call updateAggregationChallenge_low_pspec_revert; wp).
+      call pointAddIntoDest_pspec_revert. wp.
+      skip. by progress.
+qed.
+
 op prepareAggregatedCommitment_memory_footprint (mem_0 : mem) (aggregatedAtZSlot_rep : int * int) (aggregatedOpeningAtZSlot_rep : uint256) (aggregatedAtZOmegaXSlot_rep : int * int) (aggregatedOpeningAtZOmega_rep : uint256) (pairingPairWithGeneratorSlot_rep : int * int) (pairingBufferPointSlot_rep : int * int) (v1 v2 v3 v4 : uint256) : mem =
 let mem_0' = store (store (store (store mem_0 W256.zero v1) (W256.of_int 32) v2) (W256.of_int 64) v3) (W256.of_int 96) v4 in 
 let mem_1 = store mem_0' AGGREGATED_AT_Z_X_SLOT (W256.of_int aggregatedAtZSlot_rep.`1) in

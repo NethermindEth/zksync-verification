@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require        Constants.
 require import Field.
 require import PointMulAndAddIntoDest.
@@ -256,6 +257,89 @@ lemma finalPairing_extracted_equiv_low:
       call revertWithMessage_extracted_equiv_low. skip. by progress.
       skip. by progress.*)
     qed.
+
+lemma finalPairing_low_pspec_revert:
+    phoare [
+      FinalPairing.low:
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+      wp. simplify.
+      call ConcretePrimops.staticcall_pspec_revert.
+      inline Primops.gas. wp. simplify.
+      sp. conseq (_ : Primops.reverted ==> _). by progress.
+      inline (1) PointSubAssign.low.
+        inline (1) PointNegate.low.
+        inline (1 2) RevertWithMessage.low.
+        inline (1 2) Primops.revert.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload Primops.gas.
+        sp 38. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      inline (1) PointMulAndAddIntoDest.low.
+        inline (1 2) Primops.mload.
+        inline (1 2 3) Primops.mstore.
+        inline Primops.gas.
+        sp 17. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 9. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 11. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 7. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+        inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      inline (1) PointMulAndAddIntoDest.low.
+        inline (1 2) Primops.mload.
+        inline (1 2 3) Primops.mstore.
+        inline Primops.gas.
+        sp 17. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 9. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 11. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 7. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+        inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      sp 10. conseq (_ : Primops.reverted ==> _). by progress.
+      inline (1) PointMulAndAddIntoDest.low.
+        inline (1 2) Primops.mload.
+        inline (1 2 3) Primops.mstore.
+        inline Primops.gas.
+        sp 17. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 9. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 11. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 7. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+        inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      inline PointNegate.low.
+        inline Primops.mload RevertWithMessage.low Primops.mstore Primops.revert.
+        sp 4. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+      if.
+        call pointMulAndAddIntoDest_low_pspec_revert.
+        call pointMulAndAddIntoDest_low_pspec_revert.
+        wp. skip. by progress.
+      skip. by progress.
+qed.
+
+      
 
 lemma finalPairing_low_equiv_mid:
     equiv [
