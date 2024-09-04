@@ -27,7 +27,7 @@ require import PurePrimops.
 require import Utils.
 require import VerifierConsts.
 
-import MemoryMap VerifierConsts PurePrimops.
+import MemoryMap PurePrimops.
 
 op vk_gate_setup_0: g.
 axiom vk_gate_setup_0_F: aspoint_G1 vk_gate_setup_0 = (
@@ -10854,8 +10854,6 @@ seq 0 3:  (Primops.reverted{1} /\ failed{2}). inline*. wp. skip. by progress.
 seq 0 3:  (Primops.reverted{1} /\ failed{2}). inline*. wp. skip. by progress.
 seq 0 3:  (Primops.reverted{1} /\ failed{2}). inline*. wp. skip. by progress.
 seq 0 3:  (Primops.reverted{1} /\ failed{2}). inline*. wp. skip. by progress.
-have prepareQueries_low_pspec_revert : phoare [ PrepareQueries.low : Primops.reverted ==> Primops.reverted ] = 1%r.
-admit. 
 call{1} prepareQueries_low_pspec_revert.
 inline*. wp. skip. by progress.
 progress. wp. progress.
@@ -10988,18 +10986,6 @@ case H40. move=>[? ?]. progress. by progress.
 case H40. move=>[? ?]. progress. by progress.
 
 case H178. progress. progress. right. progress.
-
-(* rewrite Constants.q_eq_fieldq_p. by simplify.
-rewrite Constants.q_eq_fieldq_p. by simplify.
-rewrite Constants.q_eq_fieldq_p. by simplify.
-rewrite Constants.q_eq_fieldq_p. by simplify.
-rewrite Constants.q_eq_fieldq_p. by simplify.
-rewrite Constants.q_eq_fieldq_p. by simplify.
-rewrite Constants.r_eq_fieldr_p. by simplify.
-rewrite Constants.r_eq_fieldr_p. by simplify.
-rewrite Constants.r_eq_fieldr_p. by simplify.
-admit. admit. admit. admit. admit. admit. admit. admit. admit.
-exists x0 x32 x64 x96 buffer_x buffer_y. reflexivity. *)
 
 case H40. move=>[? ?]. progress. by simplify.
 case H40. move=>[? ?]. progress. by simplify.
@@ -11911,7 +11897,7 @@ inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
 inline (1) UpdateAggregationChallenge_105.mid. sp. conseq (_ : true ==> true).
 inline PointMulAndAddIntoDest.mid. sp. conseq (_ : true ==> true).
 skip. by trivial.
-have prepareAggregatedCommitment_low_pspec_revert : phoare [ PrepareAggregatedCommitment.low : Primops.reverted ==> Primops.reverted ] = 1%r. admit. 
+
 call{1} prepareAggregatedCommitment_low_pspec_revert.
 skip. progress. 
 wp. progress. call (prepareAggregatedCommitment_low_equiv_mid mpq).
@@ -12161,7 +12147,6 @@ case H12. move=>[? ?]. progress. by progress.
 case H12. move=>[? ?]. progress. by progress.
 case H12. move=>[? ?]. progress. by progress.
 case H12. move=>[? ?]. progress. by progress.
-admit. admit. admit. admit. admit. admit. admit. admit.
 exists v10 v20 v30 v40. reflexivity.
 
 exists* aggregated_at_z{2}, aggregated_opening_at_z{2}, aggregated_at_z_omega{2}, aggregated_opening_at_z_omega{2}, pairing_pair_with_generator{2}, pairing_buffer_point{2}.
@@ -12260,14 +12245,11 @@ progress. right. progress.
 
 wp. conseq (_ : Primops.reverted{1} /\ failed{2}  ==> Primops.reverted{1} /\ failed{2}). 
 progress. left. assumption.
-
-have finalPairing_low_pspec_revert : phoare [ FinalPairing.low : Primops.reverted ==> Primops.reverted ] = 1%r. admit. 
 call{1} finalPairing_low_pspec_revert.
 inline*. wp. skip. progress.
 
 wp. progress. call (finalPairing_low_equiv_mid).
 skip. progress.
- 
 case H0. move=>[? ?]. progress. progress. apply IS. assumption.
 case H0. move=>[? ?]. progress. progress. apply IS. assumption.
 case H0. move=>[? ?]. progress. progress. apply IS. assumption.
@@ -12305,7 +12287,6 @@ case result_R. progress. progress.
 inline*. wp. skip. progress.
 case H. progress. left. smt(). progress. right. smt().
 qed.
-
 
 (* lemma verify_mid_equiv_high:
     equiv [
