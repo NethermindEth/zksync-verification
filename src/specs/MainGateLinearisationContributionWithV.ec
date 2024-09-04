@@ -1,5 +1,6 @@
 pragma Goals: printall.
 
+require import AllCore.
 require        Constants.
 require import EllipticCurve.
 require import Field.
@@ -142,6 +143,28 @@ proof.
   call (pointMulIntoDest_extracted_equiv_low). wp.
   skip. rewrite /Constants.R. by progress.
 qed.
+
+lemma mainGateLinearisationContributionWithV_low_pspec_revert:
+    phoare [
+      MainGateLinearisationContributionWithV.low :
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r .
+    proof.
+      proc.
+      inline Primops.mload.
+      call pointMulIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointAddAssign_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      call pointMulIntoDest_low_pspec_revert.
+      skip. by progress.
+qed.
+  
 
 prover timeout=100.
 

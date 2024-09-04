@@ -1,3 +1,6 @@
+pragma Goals:printall.
+
+require import AllCore.
 require        Constants.
 require import Field.
 require import IntDiv.
@@ -309,6 +312,17 @@ proof.
   rewrite /Constants.R.
   by progress.
 qed.
+
+lemma addAssignLookupLinearisationContributionWithV_low_pspec_revert:
+    phoare [ AddAssignLookupLinearisationContributionWithV.low : Primops.reverted ==> Primops.reverted] = 1%r.
+    proof.
+      proc.
+      call ConcretePrimops.mstore_pspec_revert. wp.
+      do 16! (call ConcretePrimops.mload_pspec_revert; wp).
+      call ConcretePrimops.mstore_pspec_revert. wp.
+      do 4! (call ConcretePrimops.mload_pspec_revert; wp).
+      skip. by progress.
+    qed.
 
 lemma addAssignLookupLinearisationContributionWithV_low_equiv_low_no_reassignment:
     equiv [
