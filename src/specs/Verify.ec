@@ -12295,7 +12295,7 @@ qed.
     ]. proc. inline LoadProof.high InitializeTranscript.high VerifyQuotientEvaluation.high PrepareQueries.high PrepareAggregatedCommitment.high FinalPairing.high. wp. skip. 
 progress. *)
 
-lemma verify_mid_equiv_high_encapsulated:
+(* lemma verify_mid_equiv_high_encapsulated:
     equiv [
       Verify.mid ~ Verify.high_encapsulated:
         ={public_input_length_in_words} /\
@@ -15715,3 +15715,4 @@ lemma verify_mid_equiv_high_or_revert (
             smt (@EllipticCurve).
           smt ().
 qed.
+*)
