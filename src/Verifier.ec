@@ -1,4 +1,3 @@
-
 require import UInt256 PurePrimops YulPrimops.
 
 op STRING : int = 0.
@@ -1018,7 +1017,7 @@ module Verifier_1261 = {
     }
   
   proc usr_pointSubAssign(usr_p1 : uint256, usr_p2 : uint256): unit = {
-    var _1, tmp65, _2, _3, _4, _5, tmp66, _6, tmp67, _7, _8, _9, tmp68, _10, _11, _12, _13, _14, _15, tmp69, _16, tmp70, _17, _18, _19, tmp71;
+    var _1, tmp65, _2, _3, _4, _5, tmp66, _6, tmp67, _7, _8, _9, tmp68, (*_10, _11,*) _12, _13, _14, _15, tmp69, _16, tmp70, _17, _18, _19, tmp71;
     tmp65 <@ Primops.mload(usr_p1);
     _1 <- tmp65;
     _2 <- (W256.of_int 0);
@@ -1032,13 +1031,14 @@ module Verifier_1261 = {
     _6 <- tmp67;
     _7 <- (W256.of_int 64);
     Primops.mstore(_7, _6);
-    _8 <- (usr_p2 + _3);
+    _8 <- (usr_p2 + _3); (* p2.y *)
     tmp68 <@ Primops.mload(_8);
     _9 <- tmp68;
-    _10 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583);
-    _11 <- (_10 - _9);
-    _12 <- (W256.of_int 96);
-    Primops.mstore(_12, _11);
+    (*_10 <- (W256.of_int 21888242871839275222246405745257275088696311157297823662689037894645226208583); (* Q *)
+    _11 <- (_10 - _9); (* Q - p2.y *) *)
+    _12 <- (W256.of_int 96); 
+    Primops.mstore(_12, _9); (* Primops.mstore(_12, _11); *) (* store _9 at _12 instead of _11 *)
+    usr_pointNegate(W256.of_int 64); (* call pointNegate_extracted on address 64 *)
     _13 <- (W256.of_int 128);
     _14 <- (W256.of_int 6);
     tmp69 <@ Primops.gas();
