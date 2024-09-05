@@ -79,6 +79,18 @@ proof.
   inline*. wp. skip. rewrite /Constants.R. by progress.
 qed.
 
+lemma addAssignRescueCustomGateLinearisationContributionWithV_low_pspec_revert :
+    phoare [
+      AddAssignRescueCustomGateLinearisationContributionWithV.low:
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      call pointMulAndAddIntoDest_low_pspec_revert.
+      inline*. wp. skip. by progress.
+qed.
+
 op addAssignRescue_memory_footprint (mem_0: mem) (dest: uint256) (ret: (int*int)) (scratch1 scratch2 scratch3 scratch4: uint256): mem =
     let mem_1 = store mem_0 W256.zero scratch1 in
     let mem_2 = store mem_1 (W256.of_int 32) scratch2 in

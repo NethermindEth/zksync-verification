@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require        Constants.
 require import Field.
 require import PointMulAndAddIntoDest.
@@ -72,6 +73,20 @@ proof.
   call (pointMulAndAddIntoDest_extracted_equiv_low). wp.
   skip. rewrite /Constants.R. by progress.
 qed.
+
+lemma updateAggregationChallenge_low_pspec_revert :
+    phoare [
+      UpdateAggregationChallenge.low:
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline Primops.mload. wp.
+      call pointMulAndAddIntoDest_low_pspec_revert. wp.
+      skip. by progress.
+qed.
+   
 
 
 op updateAggregationChallenge_footprint (x y x' y' : int) (currAggregatedAtZSlot : int * int) (mem_0 : mem) =

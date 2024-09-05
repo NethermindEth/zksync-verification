@@ -458,6 +458,26 @@ lemma verifyQuotientEvaluation_extracted_equiv_low:
 
 import MemoryMap PurePrimops.
 
+lemma verifyQuotientEvaluation_low_pspec_revert:
+    phoare [
+      VerifyQuotientEvaluation.low:
+      Primops.reverted ==> Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline RevertWithMessage.low Primops.revert Primops.mstore.
+      wp.
+      do 3! (call ConcretePrimops.mload_pspec_revert; wp).
+      call lookupQuotientContribution_pspec_revert. wp.
+      call permutationQuotientContribution_pspec_revert. wp.
+      do 3! (call ConcretePrimops.mload_pspec_revert; wp).
+      call evaluateLagrangePolyOutOfDomain_pspec_revert. wp.
+      call evaluateLagrangePolyOutOfDomain_pspec_revert.      
+      call ConcretePrimops.mload_pspec_revert. wp.
+      call ConcretePrimops.mload_pspec_revert. skip.
+      by progress.
+qed.
+
 op verifyQuotientEvaluation_memory_footprint (m: mem)
 (a2 a3 a4 a5 a6 a7 a8 : uint256)
 (sl0az slnm1az : uint256)
@@ -535,10 +555,9 @@ W256.to_uint (mload m PROOF_COPY_PERMUTATION_GRAND_PRODUCT_OPENING_AT_Z_OMEGA_SL
 W256.to_uint (mload m STATE_Z_IN_DOMAIN_SIZE) = stateZInDomainSizeG /\
 W256.to_uint (mload m PROOF_QUOTIENT_POLY_OPENING_AT_Z_SLOT) = proofQuotientPolyOpeningAtZG
 ==>
-(Primops.reverted{1} /\
-  (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R = 0 /\ res{2}.`1 = None)
-    \/
-   (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\ res{2}.`1 = Some false))
+((((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R = 0 /\ res{2}.`1 = None /\ Primops.reverted{1})
+ \/
+ (((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\ res{2}.`1 = Some false /\ Primops.reverted{1}))
 \/
 (!Primops.reverted{1} /\
   ((stateZG^Constants.DOMAIN_SIZE) - 1) %% Constants.R <> 0 /\

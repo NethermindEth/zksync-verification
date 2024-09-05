@@ -1,5 +1,6 @@
 pragma Goals:printall.
 
+require import AllCore.
 require        Constants.
 require import Field.
 require import PointMulAndAddIntoDest.
@@ -257,6 +258,89 @@ lemma finalPairing_extracted_equiv_low:
       skip. by progress.*)
     qed.
 
+lemma finalPairing_low_pspec_revert:
+    phoare [
+      FinalPairing.low:
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+      wp. simplify.
+      call ConcretePrimops.staticcall_pspec_revert.
+      inline Primops.gas. wp. simplify.
+      sp. conseq (_ : Primops.reverted ==> _). by progress.
+      inline (1) PointSubAssign.low.
+        inline (1) PointNegate.low.
+        inline (1 2) RevertWithMessage.low.
+        inline (1 2) Primops.revert.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload Primops.gas.
+        sp 38. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      inline (1) PointMulAndAddIntoDest.low.
+        inline (1 2) Primops.mload.
+        inline (1 2 3) Primops.mstore.
+        inline Primops.gas.
+        sp 17. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 9. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 11. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 7. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+        inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      inline (1) PointMulAndAddIntoDest.low.
+        inline (1 2) Primops.mload.
+        inline (1 2 3) Primops.mstore.
+        inline Primops.gas.
+        sp 17. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 9. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 11. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 7. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+        inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      sp 10. conseq (_ : Primops.reverted ==> _). by progress.
+      inline (1) PointMulAndAddIntoDest.low.
+        inline (1 2) Primops.mload.
+        inline (1 2 3) Primops.mstore.
+        inline Primops.gas.
+        sp 17. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 9. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 11. conseq (_ : Primops.reverted ==> _). by progress.
+        inline (1) Primops.staticcall.
+        inline Primops.mstore Primops.mload.
+        sp 7. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+        sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+        inline RevertWithMessage.low Primops.revert Primops.mstore Primops.mload.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      inline PointNegate.low.
+        inline Primops.mload RevertWithMessage.low Primops.mstore Primops.revert.
+        sp 4. conseq (_ : Primops.reverted ==> _). by progress.
+        sp 1. conseq (_ : Primops.reverted ==> _). progress. smt ().
+      sp 2. conseq (_ : Primops.reverted ==> _). by progress.
+      if.
+        call pointMulAndAddIntoDest_low_pspec_revert.
+        call pointMulAndAddIntoDest_low_pspec_revert.
+        wp. skip. by progress.
+      skip. by progress.
+qed.
+
+      
+
 lemma finalPairing_low_equiv_mid:
     equiv [
       FinalPairing.low ~ FinalPairing.mid:
@@ -272,10 +356,10 @@ lemma finalPairing_low_equiv_mid:
       opening_proof_at_z_omega{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) /\
       opening_proof_at_z_omega{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) /\
       vk_recursive_flag{2} = bool_of_uint256 (load Primops.memory{1} VK_RECURSIVE_FLAG_SLOT) /\
-      recursive_part_p1{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_X_SLOT) /\
-      recursive_part_p1{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_Y_SLOT) /\
-      recursive_part_p2{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_X_SLOT) /\
-      recursive_part_p2{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_Y_SLOT) /\
+      (recursive_part_p1{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_X_SLOT) \/ !vk_recursive_flag{2}) /\
+      (recursive_part_p1{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_Y_SLOT) \/ !vk_recursive_flag{2}) /\
+      (recursive_part_p2{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_X_SLOT) \/ !vk_recursive_flag{2}) /\
+      (recursive_part_p2{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_Y_SLOT) \/ !vk_recursive_flag{2}) /\
       0 <= pairing_pair_with_generator{2}.`1 < FieldQ.p /\
       0 <= pairing_pair_with_generator{2}.`2 < FieldQ.p /\
       0 <= pairing_buffer_point{2}.`1 < FieldQ.p /\
@@ -313,10 +397,10 @@ lemma finalPairing_low_equiv_mid:
           opening_proof_at_z_omega{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) /\
           opening_proof_at_z_omega{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) /\
           vk_recursive_flag{2} = bool_of_uint256 (load Primops.memory{1} VK_RECURSIVE_FLAG_SLOT) /\
-          recursive_part_p1{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_X_SLOT) /\
-          recursive_part_p1{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_Y_SLOT) /\
-          recursive_part_p2{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_X_SLOT) /\
-          recursive_part_p2{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_Y_SLOT) /\
+          (recursive_part_p1{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_X_SLOT) \/ !vk_recursive_flag{2}) /\
+          (recursive_part_p1{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_Y_SLOT) \/ !vk_recursive_flag{2}) /\
+          (recursive_part_p2{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_X_SLOT) \/ !vk_recursive_flag{2}) /\
+          (recursive_part_p2{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_Y_SLOT) \/ !vk_recursive_flag{2}) /\
           0 <= pairing_pair_with_generator{2}.`1 < FieldQ.p /\
           0 <= pairing_pair_with_generator{2}.`2 < FieldQ.p /\
           0 <= pairing_buffer_point{2}.`1 < FieldQ.p /\
@@ -747,10 +831,10 @@ lemma finalPairing_low_equiv_mid:
               opening_proof_at_z_omega{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_X_SLOT) /\
               opening_proof_at_z_omega{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_OPENING_PROOF_AT_Z_OMEGA_Y_SLOT) /\
               vk_recursive_flag{2} = bool_of_uint256 (load Primops.memory{1} VK_RECURSIVE_FLAG_SLOT) /\
-              recursive_part_p1{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_X_SLOT) /\
-              recursive_part_p1{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_Y_SLOT) /\
-              recursive_part_p2{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_X_SLOT) /\
-              recursive_part_p2{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_Y_SLOT) /\
+              (recursive_part_p1{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_X_SLOT) \/ !vk_recursive_flag{2}) /\
+              (recursive_part_p1{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P1_Y_SLOT) \/ !vk_recursive_flag{2}) /\
+              (recursive_part_p2{2}.`1 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_X_SLOT) \/ !vk_recursive_flag{2}) /\
+              (recursive_part_p2{2}.`2 = W256.to_uint (load Primops.memory{1} PROOF_RECURSIVE_PART_P2_Y_SLOT) \/ !vk_recursive_flag{2}) /\
               0 <= pairing_pair_with_generator{2}.`1 < FieldQ.p /\
               0 <= pairing_pair_with_generator{2}.`2 < FieldQ.p /\
               0 <= pairing_buffer_point{2}.`1 < FieldQ.p /\
@@ -864,18 +948,30 @@ lemma finalPairing_low_equiv_mid:
           by rewrite /VK_RECURSIVE_FLAG_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
             do 8! ((rewrite load_store_diff; first by progress); first by progress);
             reflexivity.
-          by rewrite H9 /PROOF_RECURSIVE_PART_P1_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
+          by case H9; [
+            progress; left; rewrite H9 /PROOF_RECURSIVE_PART_P1_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
             do 8! ((rewrite load_store_diff; first by progress); first by progress);
-            reflexivity.
-          by rewrite H10 /PROOF_RECURSIVE_PART_P1_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
+            reflexivity |
+            progress; right; progress
+          ].
+          by case H10; [
+            progress; left; rewrite H10 /PROOF_RECURSIVE_PART_P1_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
             do 8! ((rewrite load_store_diff; first by progress); first by progress);
-            reflexivity.
-          by rewrite H11 /PROOF_RECURSIVE_PART_P2_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
+            reflexivity |
+            progress; right; progress
+          ].
+          by case H11; [
+            progress; left; rewrite H11 /PROOF_RECURSIVE_PART_P2_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
             do 8! ((rewrite load_store_diff; first by progress); first by progress);
-            reflexivity.
-          by rewrite H12 /PROOF_RECURSIVE_PART_P2_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
+            reflexivity |
+            progress; right; progress
+          ].
+          by case H12; [
+            progress; left; rewrite H12 /PROOF_RECURSIVE_PART_P2_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT /PROOF_OPENING_PROOF_AT_Z_Y_SLOT /PROOF_OPENING_PROOF_AT_Z_X_SLOT /PAIRING_PAIR_WITH_X_Y_SLOT;
             do 8! ((rewrite load_store_diff; first by progress); first by progress);
-            reflexivity.
+            reflexivity |
+            progress; right; progress
+          ].
           exact F_to_int_point_1_ge_zero.
           exact F_to_int_point_1_lt_p.
           exact F_to_int_point_2_ge_zero.
@@ -1014,41 +1110,53 @@ lemma finalPairing_low_equiv_mid:
               reflexivity
             ]
           ].
-          by rewrite /PROOF_RECURSIVE_PART_P1_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
-            progress |
-            progress |
-            rewrite load_store_diff; [
+          by case H23; [
+            progress; left; rewrite /PROOF_RECURSIVE_PART_P1_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
               progress |
               progress |
-              rewrite H23; reflexivity
-            ]
-          ].  
-          by rewrite /PROOF_RECURSIVE_PART_P1_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
-            progress |
-            progress |
-            rewrite load_store_diff; [
-              progress |
-              progress |
-              rewrite H24; reflexivity
-            ]
+              rewrite load_store_diff; [
+                progress |
+                progress |
+                rewrite H23; reflexivity
+              ]
+            ] |
+            progress; right; progress
           ].
-          by rewrite /PROOF_RECURSIVE_PART_P2_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
-            progress |
-            progress |
-            rewrite load_store_diff; [
+          by case H24; [
+            progress; left; rewrite /PROOF_RECURSIVE_PART_P1_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
               progress |
               progress |
-              rewrite H25; reflexivity
-            ]
-          ].  
-          by rewrite /PROOF_RECURSIVE_PART_P2_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
-            progress |
-            progress |
-            rewrite load_store_diff; [
+              rewrite load_store_diff; [
+                progress |
+                progress |
+                rewrite H24; reflexivity
+              ]
+            ] |
+            progress; right; progress
+          ].
+          by case H25; [
+            progress; left; rewrite /PROOF_RECURSIVE_PART_P2_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
               progress |
               progress |
-              rewrite H26; reflexivity
-            ]
+              rewrite load_store_diff; [
+                progress |
+                progress |
+                rewrite H25; reflexivity
+              ]
+            ] |
+            progress; right; progress
+          ].
+          by case H26; [
+            progress; left; rewrite /PROOF_RECURSIVE_PART_P2_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT load_store_diff; [
+              progress |
+              progress |
+              rewrite load_store_diff; [
+                progress |
+                progress |
+                rewrite H26; reflexivity
+              ]
+            ] |
+            progress; right; progress
           ].
           by rewrite -Constants.q_eq_fieldq_p; assumption.
           by rewrite -Constants.q_eq_fieldq_p; assumption.
@@ -1139,10 +1247,11 @@ lemma finalPairing_low_equiv_mid:
           by case H; progress.
           by case H; progress.
           by case H; progress.
-          by case H; progress.
-          by case H; progress.
-          by case H; progress.
-          by case H; progress.
+          search FieldR.exp. (*rewrite FieldR.ZrRing.exprS; reflexivity*)         
+          case H. by progress. progress. case H13; by progress.
+          case H. by progress. progress. case H14; by progress.
+          case H. by progress. progress. case H15; by progress.
+          case H. by progress. progress. case H16; by progress.
           by case H; progress.
           by case H; progress.
           by case H; progress.
@@ -1342,17 +1451,16 @@ lemma finalPairing_low_equiv_mid:
           by rewrite /VK_RECURSIVE_FLAG_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
             do 6! ((rewrite load_store_diff; first by progress); first by progress);
             case H; progress; case H; by progress.
-          by rewrite /PROOF_RECURSIVE_PART_P1_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
+          by left; rewrite /PROOF_RECURSIVE_PART_P1_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
             do 6! ((rewrite load_store_diff; first by progress); first by progress);
             case H; progress; case H; by progress.
-          by rewrite /PROOF_RECURSIVE_PART_P1_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
+          by left; rewrite /PROOF_RECURSIVE_PART_P1_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
             do 6! ((rewrite load_store_diff; first by progress); first by progress);
             case H; progress; case H; by progress.
-          by rewrite /PROOF_RECURSIVE_PART_P2_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
+          by left; rewrite /PROOF_RECURSIVE_PART_P2_X_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
             do 6! ((rewrite load_store_diff; first by progress); first by progress);
             case H; progress; case H; by progress.
-          by rewrite /VK_RECURSIVE_FLAG_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
-          by rewrite /PROOF_RECURSIVE_PART_P2_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
+          by left; rewrite /PROOF_RECURSIVE_PART_P2_Y_SLOT /PAIRING_PAIR_WITH_X_X_SLOT;
             do 6! ((rewrite load_store_diff; first by progress); first by progress);
             case H; progress; case H; by progress.
           by case H; progress.

@@ -1,4 +1,6 @@
 pragma Goals:printall.
+
+require import AllCore.
 require        Constants.
 require import EllipticCurve.
 require import Field.
@@ -463,7 +465,25 @@ lemma prepareAggregatedCommitment_extracted_equiv_low:
       call pointAddIntoDest_extracted_equiv_low.
       wp. skip. by progress.
   qed.
-  
+
+lemma prepareAggregatedCommitment_low_pspec_revert:
+    phoare [
+      PrepareAggregatedCommitment.low:
+      Primops.reverted ==>
+      Primops.reverted
+    ] = 1%r.
+    proof.
+      proc.
+      inline Primops.mload Primops.mstore.
+      call pointMulIntoDest_low_pspec_revert. wp.
+      call pointAddIntoDest_pspec_revert. wp.
+      do 4! (call updateAggregationChallenge_105_low_pspec_revert; wp).
+      call pointMulIntoDest_low_pspec_revert. wp.
+      do 9! (call updateAggregationChallenge_low_pspec_revert; wp).
+      call pointAddIntoDest_pspec_revert. wp.
+      skip. by progress.
+qed.
+
 op prepareAggregatedCommitment_memory_footprint (mem_0 : mem) (aggregatedAtZSlot_rep : int * int) (aggregatedOpeningAtZSlot_rep : uint256) (aggregatedAtZOmegaXSlot_rep : int * int) (aggregatedOpeningAtZOmega_rep : uint256) (pairingPairWithGeneratorSlot_rep : int * int) (pairingBufferPointSlot_rep : int * int) (v1 v2 v3 v4 : uint256) : mem =
 let mem_0' = store (store (store (store mem_0 W256.zero v1) (W256.of_int 32) v2) (W256.of_int 64) v3) (W256.of_int 96) v4 in 
 let mem_1 = store mem_0' AGGREGATED_AT_Z_X_SLOT (W256.of_int aggregatedAtZSlot_rep.`1) in
@@ -564,6 +584,10 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
           !Primops.reverted{1} /\
           exists aggregatedAtZSlot aggregatedOpeningAtZSlot aggregatedAtZOmegaXSlot aggregatedOpeningAtZOmega pairingPairWithGeneratorSlot pairingBufferPointSlot v1 v2 v3 v4,
           res{2} = Some (aggregatedAtZSlot, W256.to_uint aggregatedOpeningAtZSlot, aggregatedAtZOmegaXSlot, W256.to_uint aggregatedOpeningAtZOmega,  pairingPairWithGeneratorSlot, pairingBufferPointSlot) /\
+          0 <= pairingPairWithGeneratorSlot.`1 < FieldQ.p /\
+          0 <= pairingPairWithGeneratorSlot.`2 < FieldQ.p /\
+          0 <= pairingBufferPointSlot.`1 < FieldQ.p /\
+          0 <= pairingBufferPointSlot.`2 < FieldQ.p /\
           Primops.memory{1} = prepareAggregatedCommitment_memory_footprint mem0 aggregatedAtZSlot aggregatedOpeningAtZSlot aggregatedAtZOmegaXSlot aggregatedOpeningAtZOmega pairingPairWithGeneratorSlot pairingBufferPointSlot v1 v2 v3 v4
         )
       ]. proc.
@@ -3729,12 +3753,20 @@ lemma prepareAggregatedCommitment_low_equiv_mid  (mem0 : mem) :
            case H.
            smt ().
        move=> [J0 [J2 [J3 [J5 [J6 [J7 [J8 [J9 [J10 [J11 [J12 [J13 [J14 J15]]]]]]]]]]]]].
-           case J15. move => u0 u1 u2 u3 newAggregateAtZSlot newAggregatedAtZOmegaSlot pairingPairWithGeneratorSlot_p pairingBufferPointSlot_p J15. progress.
+           case J15. move => u0 u1 u2 u3 newAggregateAtZSlot newAggregatedAtZOmegaSlot pairingPairWithGeneratorSlot_p pairingBufferPointSlot_p [J15 [J16 [J17 [J18 J19]]]].
 
            exists aggregatedAtZSlot{2} (W256.of_int aggregatedOpeningAtZSlot{2}) aggregatedAtZOmegaSlot{2} (W256.of_int aggregatedOpeningAtZOmega{2}) pairingPairWithGeneratorSlot{2} pairingBufferPointSlot{2} u0 u1 u2 u3.
            progress.
            rewrite J7 -J5 to_uintK. reflexivity.
            rewrite -J11 to_uintK. reflexivity.
+           rewrite J18. simplify. exact FieldQ.ge0_asint.
+           rewrite J18. simplify. exact FieldQ.gtp_asint.
+           rewrite J18. simplify. exact FieldQ.ge0_asint.
+           rewrite J18. simplify. exact FieldQ.gtp_asint.
+           rewrite J19. simplify. exact FieldQ.ge0_asint.
+           rewrite J19. simplify. exact FieldQ.gtp_asint.
+           rewrite J19. simplify. exact FieldQ.ge0_asint.
+           rewrite J19. simplify. exact FieldQ.gtp_asint.
        have ->: Primops.memory{1} =
            PurePrimops.mstore
        (PurePrimops.mstore
