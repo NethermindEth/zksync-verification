@@ -60,6 +60,8 @@ module PointSubAssign = {
   }
 }.
 
+import PurePrimops.
+
 lemma pointSubAssign_extracted_equiv_low :
     equiv [
     Verifier_1261.usr_pointSubAssign ~ PointSubAssign.low :
@@ -67,11 +69,80 @@ lemma pointSubAssign_extracted_equiv_low :
       ={res, glob PointSubAssign}
     ].
 proof.
-    admit.
-  (* proc. *)
-  (* seq 26 10: (#pre /\ ={_16}). *)
-  (* inline*. wp. skip. rewrite /Constants.Q. by progress. *)
-  (* inline*. wp. skip. by progress. *)
+proc.
+seq 1 1: (#pre /\ tmp65{1} = _1{2}). inline*. wp. skip. by progress.
+
+exists* Primops.memory{1}. elim*=> m.
+seq 3 1: (
+  (usr_p1{1}, usr_p2{1}) = (p1{2}, p2{2}) /\
+  ={Primops.reverted, Primops.memory} /\
+  Primops.memory{1} = mstore m W256.zero tmp65{1} /\
+  tmp65{1} = _1{2} /\ _2{1} = W256.zero
+). sp. progress. inline*. wp. by progress.
+
+seq 3 1: (#pre /\ tmp66{1} = _5{2} /\ _3{1} = W256.of_int 32). inline*. wp. skip. by progress.
+
+exists* tmp65{1}; elim*=> t65.
+pose m2 := mstore m W256.zero t65.
+seq 2 1: (
+  t65 = tmp65{1} /\
+  (usr_p1{1}, usr_p2{1}) = (p1{2}, p2{2}) /\
+   ={Primops.reverted, Primops.memory} /\
+   Primops.memory{1} = mstore m2 (W256.of_int 32) tmp66{1} /\
+  tmp65{1} = _1{2} /\ _2{1} = W256.zero /\
+  tmp66{1} = _5{2} /\ _3{1} = (of_int 32)%W256).
+inline *. wp. skip. by progress.
+
+seq 1 1: (#pre /\ tmp67{1} = _6{2}). inline*. wp. skip. by progress.
+
+exists* tmp66{1}; elim*=> t66.
+pose m3 := mstore m2 (W256.of_int 32) t66.
+seq 3 1: (
+  t66 = tmp66{1} /\
+  t65 = tmp65{1} /\
+  (usr_p1{1}, usr_p2{1}) = (p1{2}, p2{2}) /\
+  ={Primops.reverted, Primops.memory} /\
+  Primops.memory{1} = mstore m3 ((of_int 64))%W256 tmp67{1} /\
+  tmp65{1} = _1{2} /\ tmp66{1} = _5{2} /\ _2{1} = W256.zero /\ _7{1} = (of_int 64)%W256 /\
+  tmp67{1} = _6{2} /\ _3{1} = (of_int 32)%W256
+). inline *. wp. skip. by progress.
+
+seq 2 1: (#pre /\ tmp68{1} = _9{2}). inline*. wp. skip. by progress.
+
+exists* tmp67{1}; elim*=> t67.
+pose m4 := mstore m3 (W256.of_int 64) t67.
+seq 3 1: (
+  t67 = tmp67{1} /\
+  t66 = tmp66{1} /\
+  t65 = tmp65{1} /\
+  (usr_p1{1}, usr_p2{1}) = (p1{2}, p2{2}) /\
+  ={Primops.reverted, Primops.memory} /\
+  Primops.memory{1} = mstore m4 ((of_int 96))%W256 tmp68{1} /\
+  tmp65{1} = _1{2} /\ _12{1} = (of_int 96)%W256 /\ _2{1} = W256.zero /\ _7{1} = (of_int 64)%W256 /\
+  tmp66{1} = _5{2} /\ tmp67{1} = _6{2} /\ _3{1} = (of_int 32)%W256 /\
+  tmp68{1} = _9{2}
+).
+inline*. wp. skip. by progress.
+
+seq 1 1: (
+  t67 = tmp67{1} /\
+  t66 = tmp66{1} /\
+  t65 = tmp65{1} /\
+  (usr_p1{1}, usr_p2{1}) = (p1{2}, p2{2}) /\
+  ={Primops.reverted, Primops.memory} /\
+  tmp65{1} = _1{2} /\
+  _12{1} = (of_int 96)%W256 /\
+  tmp66{1} = _5{2} /\ _2{1} = W256.zero /\ _7{1} = (of_int 64)%W256 /\
+  tmp67{1} = _6{2} /\ _3{1} = (of_int 32)%W256 /\ tmp68{1} = _9{2}
+).
+call (pointNegate_extracted_equiv_low). skip. by progress.
+
+seq 4 1: (#pre /\ _13{1} = (of_int 128)%W256 /\ _14{1} = (of_int 6)%W256 /\ ={_15}).
+inline*. wp. skip. by progress.
+
+seq 2 1: (#pre /\ ={_16}). inline*. wp. skip. by progress.
+
+inline*. wp. progress.
 qed.
 
 op pointSubAssign_memory_footprint (memory: mem) (p1 p2 x64 x96: uint256) (result: int*int): mem =
