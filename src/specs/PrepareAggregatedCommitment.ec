@@ -354,7 +354,96 @@ module PrepareAggregatedCommitment = {
 
         return (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot);
     }
-}.
+
+        (* /*////////////////////////////////////////////////////////////// *)
+        (* 5. Prepare aggregated commitment *)
+        (* //////////////////////////////////////////////////////////////*/ *)
+
+        (* /// @dev Here we compute aggregated commitment for the final pairing *)
+        (* /// We use the formula: *)
+        (* /// [E] = ( t(z) + v * r(z) *)
+        (* ///       + v^2*a(z) + v^3*b(z) + v^4*c(z) + v^5*d(z) *)
+        (* ///       + v^6*main_gate_selector(z) *)
+        (* ///       + v^7*sigma_0(z) + v^8*sigma_1(z) + v^9*sigma_2(z) *)
+        (* ///       + v^10*t(z) + v^11*lookup_selector(z) + v^12*table_type(z) *)
+        (* ///       + u * (v^13*z_perm(z*omega) + v^14*d(z*omega) *)
+        (* ///           + v^15*s(z*omega) + v^16*z_lookup(z*omega) + v^17*t(z*omega) *)
+        (* ///       ) *)
+        (* ///  ) * [1] *)
+        (* /// and *)
+        (* /// [F] = [D0] + v * [D1] *)
+        (* ///       + v^2*[a] + v^3*[b] + v^4*[c] + v^5*[d] *)
+        (* ///       + v^6*[main_gate_selector] *)
+        (* ///       + v^7*[sigma_0] + v^8*[sigma_1] + v^9*[sigma_2] *)
+        (* ///       + v^10*[t] + v^11*[lookup_selector] + v^12*[table_type] *)
+        (* ///       + u * ( v^13*[z_perm] + v^14*[d] *)
+        (* ///           + v^15*[s] + v^16*[z_lookup] + v^17*[t] *)
+        (* ///       ) *)
+    
+    proc super_high(queriesAtZ0 : g, proofQuotientPolyOpeningAtZ : FieldR.F, queriesAtZ1 : g, state_v : FieldR.F, proofLinearisationPolyOpeningAtZ : FieldR.F, proofStatePolys0 : g, proofStatePolys0OpeningAtZ : FieldR.F, proofStatePolys1 : g, proofStatePolys1OpeningAtZ : FieldR.F, proofStatePolys2 : g, proofStatePolys2OpeningAtZ : FieldR.F, proofStatePolys3OpeningAtZ : FieldR.F, vkGateSelectors0 : g, proofGateSelectors0OpeningAtZ : FieldR.F, vkPermutation0 : g, proofCopyPermutationPolys0OpeningAtZ : FieldR.F, vkPermutation1 : g, proofCopyPermutationPolys1OpeningAtZ : FieldR.F, vkPermutation2 : g, proofCopyPermutationPolys2OpeningAtZ : FieldR.F, proofLookupTPolyOpeningAtZ : FieldR.F, vkLookupSelector : g, proofLookupSelectorPolyOpeningAtZ : FieldR.F, vkLookupTableType : g, proofLookupTableTypePolyOpeningAtZ : FieldR.F, copyPermutationFirstAggregatedCommitmentCoeff : FieldR.F, state_u : FieldR.F, proofCopyPermutationGrandProduct : g, proofCopyPermutationGrandProductOpeningAtZOmega : FieldR.F, proofStatePolys3 : g, proofStatePolys3OpeningAtZOmega : FieldR.F, proofLookupSPoly : g, proofLookupSPolyOpeningAtZOmega : FieldR.F, lookupSFirstAggregatedCommitmentCoeff : FieldR.F, proofLookupGrandProduct : g, proofLookupGrandProductOpeningAtZOmega : FieldR.F, lookupGrandProductFirstAggregatedCommitmentCoeff : FieldR.F, queriesTPolyAggregated : g, proofLookupTPolyOpeningAtZOmega : FieldR.F) : (g * FieldR.F * g * FieldR.F * g * g) = {
+        var aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot;
+        (* [D0] + v * [D1] + v^2*[a] + v^3*[b] + v^4*[c] + v^6*[main_gate_selector] + v^7*[sigma_0] + v^8*[sigma_1] + v^9*[sigma_2] + v^11*[lookup_selector] + v^12*[table_type] *)
+        aggregatedAtZSlot <-
+        queriesAtZ0 + (* [D0] *)
+        queriesAtZ1 + (* v * [D1] *)
+        state_v ^ 2 * proofStatePolys0 + (* v^2*[a] *)
+        state_v ^ 3 * proofStatePolys1 + (* v^3*[b] *)
+        state_v ^ 4 * proofStatePolys2 + (* v^4*[c] *)
+        state_v ^ 6 * vkGateSelectors0 + (* v^6*[main_gate_selector] *)
+        state_v ^ 7 * vkPermutation0 + (* v^7*[sigma_0] *)
+        state_v ^ 8 * vkPermutation1 + (* v^8*[sigma_1] *) 
+        state_v ^ 9 * vkPermutation2 + (* v^9*[sigma_2] *)
+        state_v ^ 11 * vkLookupSelector + (* v^11*[lookup_selector] *)
+        state_v ^ 12 * vkLookupTableType; (* v^12*[table_type] *)
+
+        aggregatedOpeningAtZSlot <- proofQuotientPolyOpeningAtZ + state_v * proofLinearisationPolyOpeningAtZ + state_v ^ 2 * proofStatePolys0OpeningAtZ + state_v ^ 3 * proofStatePolys1OpeningAtZ + state_v ^ 4 * proofStatePolys2OpeningAtZ + state_v ^ 5 * proofStatePolys3OpeningAtZ + state_v ^ 6 * proofGateSelectors0OpeningAtZ + state_v ^ 7 * proofCopyPermutationPolys0OpeningAtZ + state_v ^ 8 * proofCopyPermutationPolys1OpeningAtZ + state_v ^ 9 * proofCopyPermutationPolys2OpeningAtZ + state_v ^ 10 * proofLookupTPolyOpeningAtZ + state_v ^ 11 * proofLookupSelectorPolyOpeningAtZ + state_v ^ 12 * proofLookupTableTypePolyOpeningAtZ; (* + state_v ^ 12 * _lookup_table_type_poly_opening_at_z ??? *)
+
+
+        (* v^5*[d] + v^10*[t] + u * ( v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t]) + ????? *)
+        aggregatedAtZOmegaSlot <-
+        state_v ^ 5 * proofStatePolys3 + (* v^5*[d] *)
+        state_v ^ 10 * queriesTPolyAggregated + (* v^10*[t] *)
+        state_u * ( (* u * *)
+        state_v ^ 13 * proofCopyPermutationGrandProduct + (* v^13*[z_perm] *)
+        state_v ^ 14 * proofStatePolys3 + (* v^14*[d] *)
+        state_v ^ 15 * proofLookupSPoly + (* v^15*[s] *) 
+        state_v ^ 16 * proofLookupGrandProduct + (* v^16*[z_lookup] *)
+        state_v ^ 17 * queriesTPolyAggregated (* v^17*[t] *)
+      )
+          + lookupGrandProductFirstAggregatedCommitmentCoeff * proofLookupGrandProduct (* [z_lookup] *) + lookupSFirstAggregatedCommitmentCoeff * proofLookupSPoly (* [s] *) + copyPermutationFirstAggregatedCommitmentCoeff * proofCopyPermutationGrandProduct (* [z_prem] *); (* ????? *)
+      
+          (* v^13*z_perm(z*omega) + v^14*d(z*omega) + v^15*s(z*omega) + v^16*z_lookup(z*omega) + v^17*t(z*omega) *)
+          aggregatedOpeningAtZOmega <-
+          state_v ^ 13 * proofCopyPermutationGrandProductOpeningAtZOmega +
+          state_v ^ 14 * proofStatePolys3OpeningAtZOmega +
+          state_v ^ 15 * proofLookupSPolyOpeningAtZOmega +
+          state_v ^ 16 * proofLookupGrandProductOpeningAtZOmega +
+          state_v ^ 17 * proofLookupTPolyOpeningAtZOmega; 
+
+          pairingPairWithGeneratorSlot <- (* [F] *)
+          aggregatedAtZSlot + (* [D0] + v * [D1] + v^2*[a] + v^3*[b] + v^4*[c] + v^6*[main_gate_selector] + v^7*[sigma_0] + v^8*[sigma_1] + v^9*[sigma_2] + v^11*[lookup_selector] + v^12*[table_type] *)
+          aggregatedAtZOmegaSlot; (* u * ( v^13*[z_perm] + v^14*[d] + v^15*[s] + v^16*[z_lookup] + v^17*[t]) + v^5*[d] + v^10*[t] + ????? *)
+      
+          pairingBufferPointSlot <- (* [E] *)
+      (
+        proofQuotientPolyOpeningAtZ + (* t(z) *)
+        state_v * proofLinearisationPolyOpeningAtZ + (* v * r(z) *)
+        state_v ^ 2 * proofStatePolys0OpeningAtZ + (* v^2*a(z) *)
+        state_v ^ 3 * proofStatePolys1OpeningAtZ + (* v^3*b(z) *)
+        state_v ^ 4 * proofStatePolys2OpeningAtZ + (* v^4*c(z) *)
+        state_v ^ 5 * proofStatePolys3OpeningAtZ + (* v^5*d(z) *)
+        state_v ^ 6 * proofGateSelectors0OpeningAtZ + (* v^6*main_gate_selector(z) *)
+        state_v ^ 7 * proofCopyPermutationPolys0OpeningAtZ + (* v^7*sigma_0(z) *)
+        state_v ^ 8 * proofCopyPermutationPolys1OpeningAtZ + (* v^8*sigma_1(z) *)
+        state_v ^ 9 * proofCopyPermutationPolys2OpeningAtZ + (* v^9*sigma_2(z) *)
+        state_v ^ 10 * proofLookupTPolyOpeningAtZ + (* v^10*t(z) *)
+        state_v ^ 11 * proofLookupSelectorPolyOpeningAtZ + (* v^11*lookup_selector(z) *)
+        state_v ^ 12 * proofLookupTableTypePolyOpeningAtZ + (* v^12*table_type(z) *)
+        state_u * aggregatedOpeningAtZOmega (* u * (v^13*z_perm(z*omega) + v^14*d(z*omega) + v^15*s(z*omega) + v^16*z_lookup(z*omega) + v^17*t(z*omega)) *)
+      ) * EllipticCurve.g_gen;  (* * [1] *)
+        return (aggregatedAtZSlot, aggregatedOpeningAtZSlot, aggregatedAtZOmegaSlot, aggregatedOpeningAtZOmega, pairingPairWithGeneratorSlot, pairingBufferPointSlot);
+    }
+  }.
 
 lemma prepareAggregatedCommitment_extracted_equiv_low:
     equiv [
@@ -3827,4 +3916,127 @@ lemma prepareAggregatedCommitment_mid_equiv_high :
         exact prepareAggregatedCommitment_mid_equiv_high_encapsulated.
         proc.
         inline PointAddIntoDest.high PointMulIntoDest.high UpdateAggregationChallenge.high UpdateAggregationChallenge_105.high. wp. skip. progress.
+  qed.
+
+lemma x_mul_x_eq_pow_2 (x : FieldR.F) : x * x = FieldR.exp x 2. smt (@Field). qed.
+
+lemma prepareAggregatedCommitment_high_equiv_super_high :
+  equiv [
+    PrepareAggregatedCommitment.high ~ PrepareAggregatedCommitment.super_high :
+      ={arg} ==> ={res}
+    ]. proof.
+        proc. wp. skip. progress.
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+    
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        do 9! (rewrite -RexpE).
+        do 10! (rewrite Utils.g_comm; congr).
+
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        do 11! (rewrite -RexpE).
+        do 2! (rewrite FieldR.ZrRing.addrC; congr).
+        congr.
+        do 4! (rewrite FieldR.ZrRing.addrC; congr).
+        congr.
+        do 4! (rewrite FieldR.ZrRing.addrC; congr).
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        do 7! (rewrite -RexpE).
+        do 4! (rewrite Utils.left_distrib_g).
+        do 5! (rewrite Utils.left_distrib_add_g).
+        do 5! (rewrite Utils.left_assoc_mul_g).
+        do 11! (rewrite Utils.assoc_g).
+        smt.
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        smt (@Field).
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        do 4! (rewrite Utils.left_distrib_g).
+        do 5! (rewrite Utils.left_distrib_add_g).
+        do 5! (rewrite Utils.left_assoc_mul_g).
+        do 16! (rewrite -RexpE).
+        do 27! (rewrite Utils.assoc_g).
+        do 11! (rewrite -Utils.assoc_g).
+        rewrite
+    (
+      Utils.g_comm
+      (
+        state_v{2} ^ 12 * vkLookupTableType{2} +
+        state_v{2} ^ 11 * vkLookupSelector{2} + state_v{2} ^ 9 * vkPermutation2{2} +
+        state_v{2} ^ 8 * vkPermutation1{2} + state_v{2} ^ 7 * vkPermutation0{2} +
+        state_v{2} ^ 6 * vkGateSelectors0{2} + state_v{2} ^ 4 * proofStatePolys2{2} +
+        state_v{2} ^ 3 * proofStatePolys1{2} + state_v{2} ^ 2 * proofStatePolys0{2}
+      )
+    ) -Utils.assoc_g.
+    do 19! (rewrite -(Utils.assoc_g queriesAtZ0{2})).
+        congr.
+        do 19! (rewrite -(Utils.assoc_g queriesAtZ1{2})).
+        congr.
+        have ->:
+        state_v{2} ^ 12 * vkLookupTableType{2} +
+        state_v{2} ^ 11 * vkLookupSelector{2} +
+        state_v{2} ^ 9 * vkPermutation2{2} +
+        state_v{2} ^ 8 * vkPermutation1{2} +
+        state_v{2} ^ 7 * vkPermutation0{2} +
+        state_v{2} ^ 6 * vkGateSelectors0{2} +
+        state_v{2} ^ 4 * proofStatePolys2{2} +
+        state_v{2} ^ 3 * proofStatePolys1{2} +
+        state_v{2} ^ 2 * proofStatePolys0{2} =
+        state_v{2} ^ 2 * proofStatePolys0{2} +
+        state_v{2} ^ 3 * proofStatePolys1{2} +
+        state_v{2} ^ 4 * proofStatePolys2{2} +
+        state_v{2} ^ 6 * vkGateSelectors0{2} +
+        state_v{2} ^ 7 * vkPermutation0{2} +
+        state_v{2} ^ 8 * vkPermutation1{2} +
+        state_v{2} ^ 9 * vkPermutation2{2} +
+        state_v{2} ^ 11 * vkLookupSelector{2} +
+        state_v{2} ^ 12 * vkLookupTableType{2}.
+        do 7! (rewrite -Utils.assoc_g).
+        do 10! (rewrite Utils.g_comm; congr).
+        rewrite
+    (
+      Utils.g_comm _
+      (
+        state_v{2} ^ 2 * proofStatePolys0{2} + state_v{2} ^ 3 * proofStatePolys1{2} +
+        state_v{2} ^ 4 * proofStatePolys2{2} + state_v{2} ^ 6 * vkGateSelectors0{2} +
+        state_v{2} ^ 7 * vkPermutation0{2} + state_v{2} ^ 8 * vkPermutation1{2} +
+        state_v{2} ^ 9 * vkPermutation2{2} + state_v{2} ^ 11 * vkLookupSelector{2} +
+        state_v{2} ^ 12 * vkLookupTableType{2}
+      )
+    ).
+        do 25! (rewrite -Utils.assoc_g).
+        do 9! congr.
+        smt.
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        congr.
+        smt.
   qed.

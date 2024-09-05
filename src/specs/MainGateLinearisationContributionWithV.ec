@@ -1947,15 +1947,14 @@ equiv [
         skip.
         progress.
         congr.
-        have H_comm: forall (a b: g), (a + b) = (b + a). exact G.mulcC.
-        rewrite H_comm.
+        rewrite Utils.g_comm.
         have H_right: forall (a b c: g), a = b => (a+c) = (b+c). by progress.
         apply H_right. apply H_right.
-        rewrite H_comm. apply H_right.
-        rewrite H_comm. apply H_right.
-        rewrite H_comm. apply H_right.
-        rewrite H_comm. apply H_right.
-        rewrite H_comm. apply H_right.
+        rewrite Utils.g_comm. apply H_right.
+        rewrite Utils.g_comm. apply H_right.
+        rewrite Utils.g_comm. apply H_right.
+        rewrite Utils.g_comm. apply H_right.
+        rewrite Utils.g_comm. apply H_right.
         reflexivity.
     qed.
 
