@@ -16,6 +16,7 @@ lemma Q_int: Q = W256.to_uint VerifierConsts.Q_MOD
 lemma R_int: R = W256.to_uint VerifierConsts.R_MOD
     by rewrite /VerifierConsts.R_MOD W256.of_uintK rE pmod_small; [trivial | reflexivity].
 
+axiom order_g : EllipticCurve.G.order = R.
 axiom q_eq_fieldq_p: Q = FieldQ.p.
 axiom r_eq_fieldr_p: R = FieldR.p.    
 lemma prime_q : prime Q by rewrite q_eq_fieldq_p; exact FieldQ.prime_p.

@@ -3,6 +3,7 @@ pragma Goals:printall.
 require import AllCore.
 require import Array.
 require import EllipticCurve.
+require import Field.
 require import Logic.
 require import UInt256.
 import StdOrder.
@@ -812,3 +813,40 @@ require import Constants.
 lemma mod_R_W256_mod_R (n : int) : n %% Constants.R %% W256.modulus = n %% R. proof. by smt(). qed.
 lemma R_mod_W256_R : R %% W256.modulus = R. by smt(). qed.      
 
+    (* Group *)
+lemma g_comm (a b : g) : a + b = b + a. rewrite EllipticCurve.gaddE. exact G.mulcC. qed.
+lemma assoc_g (x y z : g) : x + (y + z) = x + y + z. rewrite EllipticCurve.gaddE EllipticCurve.gaddE. exact G.mulcA. qed.
+  
+lemma left_distrib_g (a : FieldR.F) (g1 g2 : g) : a * (g1 + g2) = (a * g1) + (a * g2). smt (@EllipticCurve). qed.
+lemma left_distrib_add_g (a b : FieldR.F) (x : g) : (a + b) * x = (a * x) + (b * x).
+    have ->: a + b = FieldR.inF (((FieldR.asint a) + (FieldR.asint b)) %% FieldR.p).
+    apply FieldR.asint_eq.
+    rewrite FieldR.addE FieldR.inFK /Fcgr.
+    smt (@Constants @FieldR).
+    rewrite EllipticCurve.gmulE EllipticCurve.gmulE EllipticCurve.gmulE EllipticCurve.gaddE FieldR.inFK mod_mod_eq_mod'. rewrite -G.expD -Constants.r_eq_fieldr_p -Constants.order_g.
+
+    have H := G.log_spec x.
+    case H. progress.
+    have E2 : forall (P Q : bool), P /\ Q => Q. progress.
+    rewrite /log_spec in H.
+    have H0 := E2 _ _ H.
+    rewrite -H0 -G.expM -G.expM -G.expg_modz -(G.expg_modz (k * ((FieldR.asint a) + (FieldR.asint b)))).
+    congr.
+    smt (@IntDiv).
+  qed.
+lemma left_assoc_mul_g (a b : FieldR.F) (x : g) : (a * b) * x = a * (b * x).
+    have ->: a * b = FieldR.inF (((FieldR.asint a) * (FieldR.asint b)) %% FieldR.p).
+    apply FieldR.asint_eq.
+    rewrite FieldR.mulE FieldR.inFK /Fcgr.
+    smt (@Constants @FieldR).
+    rewrite EllipticCurve.gmulE EllipticCurve.gmulE EllipticCurve.gmulE FieldR.inFK mod_mod_eq_mod' -G.expM.
+
+    have H := G.log_spec x.
+    case H. progress.
+    have E2 : forall (P Q : bool), P /\ Q => Q. progress.
+    rewrite /log_spec in H.
+    have H0 := E2 _ _ H.
+    rewrite -H0 -G.expM -G.expM -G.expg_modz -(G.expg_modz (k * ((FieldR.asint b) * (FieldR.asint a)))) Constants.order_g Constants.r_eq_fieldr_p.
+    congr.
+    smt (@IntDiv).
+  qed.

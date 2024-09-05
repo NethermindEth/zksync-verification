@@ -443,137 +443,6 @@ module PrepareAggregatedCommitment = {
     }
   }.
 
-lemma FieldR_comm (a b : FieldR.F) : a + b = b + a. smt (@FieldR). qed.
-lemma g_comm (a b : g) : a + b = b + a. smt (@EllipticCurve). qed.
-
-lemma expS (b : FieldR.F) (e : int) : 0 < e => FieldR.exp b e = b * (FieldR.exp b (e - 1)). smt (@Field). qed.
-lemma expZ (b : FieldR.F) : FieldR.exp b 0 = FieldR.one. smt (@Field). qed.
-lemma mulZ (a : FieldR.F) : a * FieldR.one = a. smt (@Field). qed.
-lemma Rassoc (a b c : FieldR.F) : a * b * c = a * (b * c). smt (@Field). qed.
-
-lemma left_fold (v : FieldR.F) (n : int) : v * (FieldR.exp v n) = FieldR.exp v (n + 1). admit. qed.
-lemma right_fold (v : FieldR.F) (n : int) :  (FieldR.exp v n) * v = FieldR.exp v (n + 1). admit. qed.
-lemma x_mul_x_eq_pow_2 (x : FieldR.F) : x * x = FieldR.exp x 2. smt (@Field). qed.
-
-lemma left_distrib (a b c : FieldR.F) : a * (b + c) = a * b + a * c. smt (@Field). qed.
-lemma right_distrib (a b c : FieldR.F) : (a + b) * c = a * c + b * c. smt (@Field). qed.
-lemma left_distrib_g (a : FieldR.F) (g1 g2 : g) : a * (g1 + g2) = (a * g1) + (a * g2). smt (@EllipticCurve). qed.
-lemma left_distrib_add_g (a b : FieldR.F) (x : g) : (a + b) * x = (a * x) + (b * x). admit. qed.
-lemma left_assoc_mul_g (a b : FieldR.F) (x : g) : (a * b) * x = a * (b * x). admit. qed.
-lemma assoc_g (x y z : g) : x + (y + z) = x + y + z. smt. qed.
-lemma rearrange1 (x y z : g) : x + (y + z) = y + (x + z). smt (@EllipticCurve). qed.
-
-  
-lemma prepareAggregatedCommitment_high_equiv_super_high :
-  equiv [
-    PrepareAggregatedCommitment.high ~ PrepareAggregatedCommitment.super_high :
-      ={arg} ==> ={res}
-    ]. proof. proc. wp. skip. progress.
-    
-        rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
-        do 7! (rewrite left_fold). progress.
-        do 9! (rewrite -RexpE).
-        do 10! (rewrite g_comm; congr).
-
-        rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
-        do 7! (rewrite left_fold). progress.
-        do 11! (rewrite -RexpE).
-        do 2! (rewrite FieldR_comm; congr).
-        congr.
-        do 4! (rewrite FieldR_comm; congr).
-        congr.
-        do 4! (rewrite FieldR_comm; congr).
-
-        rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
-        do 7! (rewrite left_fold). progress.
-        rewrite right_fold.
-        do 4! (rewrite left_fold).
-        progress.
-        do 4! (rewrite left_distrib_g).
-        do 5! (rewrite left_distrib_add_g).
-        do 5! (rewrite left_assoc_mul_g).
-        do 7! (rewrite -RexpE).
-        do 11! (rewrite assoc_g).
-        smt timeout=20.
-
-        rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
-        do 7! (rewrite left_fold). progress.
-        rewrite right_fold.
-        do 4! (rewrite left_fold).
-        progress.
-        smt (@Field).
-
-        rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
-        do 7! (rewrite left_fold). progress.
-        rewrite right_fold.
-        do 4! (rewrite left_fold).
-        progress.
-        do 4! (rewrite left_distrib_g).
-        do 5! (rewrite left_distrib_add_g).
-        do 5! (rewrite left_assoc_mul_g).
-        do 16! (rewrite -RexpE).
-        do 27! (rewrite assoc_g).
-        do 11! (rewrite -assoc_g).
-        rewrite
-    (
-      g_comm
-      (
-        state_v{2} ^ 12 * vkLookupTableType{2} +
-        state_v{2} ^ 11 * vkLookupSelector{2} + state_v{2} ^ 9 * vkPermutation2{2} +
-        state_v{2} ^ 8 * vkPermutation1{2} + state_v{2} ^ 7 * vkPermutation0{2} +
-        state_v{2} ^ 6 * vkGateSelectors0{2} + state_v{2} ^ 4 * proofStatePolys2{2} +
-        state_v{2} ^ 3 * proofStatePolys1{2} + state_v{2} ^ 2 * proofStatePolys0{2}
-      )
-    ) -assoc_g.
-    do 19! (rewrite -(assoc_g queriesAtZ0{2})).
-        congr.
-        do 19! (rewrite -(assoc_g queriesAtZ1{2})).
-        congr.
-        have ->:
-        state_v{2} ^ 12 * vkLookupTableType{2} +
-        state_v{2} ^ 11 * vkLookupSelector{2} +
-        state_v{2} ^ 9 * vkPermutation2{2} +
-        state_v{2} ^ 8 * vkPermutation1{2} +
-        state_v{2} ^ 7 * vkPermutation0{2} +
-        state_v{2} ^ 6 * vkGateSelectors0{2} +
-        state_v{2} ^ 4 * proofStatePolys2{2} +
-        state_v{2} ^ 3 * proofStatePolys1{2} +
-        state_v{2} ^ 2 * proofStatePolys0{2} =
-        state_v{2} ^ 2 * proofStatePolys0{2} +
-        state_v{2} ^ 3 * proofStatePolys1{2} +
-        state_v{2} ^ 4 * proofStatePolys2{2} +
-        state_v{2} ^ 6 * vkGateSelectors0{2} +
-        state_v{2} ^ 7 * vkPermutation0{2} +
-        state_v{2} ^ 8 * vkPermutation1{2} +
-        state_v{2} ^ 9 * vkPermutation2{2} +
-        state_v{2} ^ 11 * vkLookupSelector{2} +
-        state_v{2} ^ 12 * vkLookupTableType{2}.
-        do 7! (rewrite -assoc_g).
-        do 10! (rewrite g_comm; congr).
-        rewrite
-    (
-      g_comm _
-      (
-        state_v{2} ^ 2 * proofStatePolys0{2} + state_v{2} ^ 3 * proofStatePolys1{2} +
-        state_v{2} ^ 4 * proofStatePolys2{2} + state_v{2} ^ 6 * vkGateSelectors0{2} +
-        state_v{2} ^ 7 * vkPermutation0{2} + state_v{2} ^ 8 * vkPermutation1{2} +
-        state_v{2} ^ 9 * vkPermutation2{2} + state_v{2} ^ 11 * vkLookupSelector{2} +
-        state_v{2} ^ 12 * vkLookupTableType{2}
-      )
-    ).
-        do 25! (rewrite -assoc_g).
-        do 9! congr.
-        smt.
-
-        rewrite x_mul_x_eq_pow_2 left_fold left_fold right_fold.
-        do 7! (rewrite left_fold). progress.
-        rewrite right_fold.
-        do 4! (rewrite left_fold).
-        progress.
-        congr.
-        smt.
-  qed.
-
 lemma prepareAggregatedCommitment_extracted_equiv_low:
     equiv [
       Verifier_1261.usr_prepareAggregatedCommitment ~ PrepareAggregatedCommitment.low:
@@ -4015,4 +3884,127 @@ lemma prepareAggregatedCommitment_mid_equiv_high :
         exact prepareAggregatedCommitment_mid_equiv_high_encapsulated.
         proc.
         inline PointAddIntoDest.high PointMulIntoDest.high UpdateAggregationChallenge.high UpdateAggregationChallenge_105.high. wp. skip. progress.
+  qed.
+
+lemma x_mul_x_eq_pow_2 (x : FieldR.F) : x * x = FieldR.exp x 2. smt (@Field). qed.
+
+lemma prepareAggregatedCommitment_high_equiv_super_high :
+  equiv [
+    PrepareAggregatedCommitment.high ~ PrepareAggregatedCommitment.super_high :
+      ={arg} ==> ={res}
+    ]. proof.
+        proc. wp. skip. progress.
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+    
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        do 9! (rewrite -RexpE).
+        do 10! (rewrite g_comm; congr).
+
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        do 11! (rewrite -RexpE).
+        do 2! (rewrite FieldR.ZrRing.addrC; congr).
+        congr.
+        do 4! (rewrite FieldR.ZrRing.addrC; congr).
+        congr.
+        do 4! (rewrite FieldR.ZrRing.addrC; congr).
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        do 7! (rewrite -RexpE).
+        do 4! (rewrite left_distrib_g).
+        do 5! (rewrite left_distrib_add_g).
+        do 5! (rewrite left_assoc_mul_g).
+        do 11! (rewrite assoc_g).
+        smt timeout=100.
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        smt (@Field).
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        do 4! (rewrite left_distrib_g).
+        do 5! (rewrite left_distrib_add_g).
+        do 5! (rewrite left_assoc_mul_g).
+        do 16! (rewrite -RexpE).
+        do 27! (rewrite assoc_g).
+        do 11! (rewrite -assoc_g).
+        rewrite
+    (
+      g_comm
+      (
+        state_v{2} ^ 12 * vkLookupTableType{2} +
+        state_v{2} ^ 11 * vkLookupSelector{2} + state_v{2} ^ 9 * vkPermutation2{2} +
+        state_v{2} ^ 8 * vkPermutation1{2} + state_v{2} ^ 7 * vkPermutation0{2} +
+        state_v{2} ^ 6 * vkGateSelectors0{2} + state_v{2} ^ 4 * proofStatePolys2{2} +
+        state_v{2} ^ 3 * proofStatePolys1{2} + state_v{2} ^ 2 * proofStatePolys0{2}
+      )
+    ) -assoc_g.
+    do 19! (rewrite -(assoc_g queriesAtZ0{2})).
+        congr.
+        do 19! (rewrite -(assoc_g queriesAtZ1{2})).
+        congr.
+        have ->:
+        state_v{2} ^ 12 * vkLookupTableType{2} +
+        state_v{2} ^ 11 * vkLookupSelector{2} +
+        state_v{2} ^ 9 * vkPermutation2{2} +
+        state_v{2} ^ 8 * vkPermutation1{2} +
+        state_v{2} ^ 7 * vkPermutation0{2} +
+        state_v{2} ^ 6 * vkGateSelectors0{2} +
+        state_v{2} ^ 4 * proofStatePolys2{2} +
+        state_v{2} ^ 3 * proofStatePolys1{2} +
+        state_v{2} ^ 2 * proofStatePolys0{2} =
+        state_v{2} ^ 2 * proofStatePolys0{2} +
+        state_v{2} ^ 3 * proofStatePolys1{2} +
+        state_v{2} ^ 4 * proofStatePolys2{2} +
+        state_v{2} ^ 6 * vkGateSelectors0{2} +
+        state_v{2} ^ 7 * vkPermutation0{2} +
+        state_v{2} ^ 8 * vkPermutation1{2} +
+        state_v{2} ^ 9 * vkPermutation2{2} +
+        state_v{2} ^ 11 * vkLookupSelector{2} +
+        state_v{2} ^ 12 * vkLookupTableType{2}.
+        do 7! (rewrite -assoc_g).
+        do 10! (rewrite g_comm; congr).
+        rewrite
+    (
+      g_comm _
+      (
+        state_v{2} ^ 2 * proofStatePolys0{2} + state_v{2} ^ 3 * proofStatePolys1{2} +
+        state_v{2} ^ 4 * proofStatePolys2{2} + state_v{2} ^ 6 * vkGateSelectors0{2} +
+        state_v{2} ^ 7 * vkPermutation0{2} + state_v{2} ^ 8 * vkPermutation1{2} +
+        state_v{2} ^ 9 * vkPermutation2{2} + state_v{2} ^ 11 * vkLookupSelector{2} +
+        state_v{2} ^ 12 * vkLookupTableType{2}
+      )
+    ).
+        do 25! (rewrite -assoc_g).
+        do 9! congr.
+        smt timeout=5.
+
+        rewrite x_mul_x_eq_pow_2.
+        do 2! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 7! (rewrite -FieldR.ZrField.exprS; progress).
+        rewrite -FieldR.ZrField.exprSr; progress.
+        do 4! (rewrite -FieldR.ZrField.exprS; progress).
+        congr.
+        smt.
   qed.

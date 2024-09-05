@@ -42,8 +42,8 @@ op on_curve_G2 : (FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F) -> bool.
 axiom aspoint_on_curve_G2 (p : g) : on_curve_G2 (aspoint_G2 p).
 axiom on_curve_as_point_G2 (x1 y1 x2 y2 : FieldQ.F) : on_curve_G2 ((x1, y1), (x2, y2)) => exists p, aspoint_G2 p = ((x1, y1), (x2, y2)).
 
-op ( + ) = G.( * ).
-op ( * ) (x: FieldR.F, y: g) = G.( ^ ) y (FieldR.asint x).
+op ( + ) = G.( * ) axiomatized by gaddE.
+op ( * ) (x: FieldR.F, y: g) = G.( ^ ) y (FieldR.asint x) axiomatized by gmulE.
 
 op e: g -> g -> g.
 
