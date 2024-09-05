@@ -3933,7 +3933,7 @@ lemma prepareAggregatedCommitment_high_equiv_super_high :
     
         do 7! (rewrite -FieldR.ZrField.exprS; progress).
         do 9! (rewrite -RexpE).
-        do 10! (rewrite g_comm; congr).
+        do 10! (rewrite Utils.g_comm; congr).
 
 
         rewrite x_mul_x_eq_pow_2.
@@ -3954,11 +3954,11 @@ lemma prepareAggregatedCommitment_high_equiv_super_high :
         rewrite -FieldR.ZrField.exprSr; progress.
         do 4! (rewrite -FieldR.ZrField.exprS; progress).
         do 7! (rewrite -RexpE).
-        do 4! (rewrite left_distrib_g).
-        do 5! (rewrite left_distrib_add_g).
-        do 5! (rewrite left_assoc_mul_g).
-        do 11! (rewrite assoc_g).
-        smt timeout=100.
+        do 4! (rewrite Utils.left_distrib_g).
+        do 5! (rewrite Utils.left_distrib_add_g).
+        do 5! (rewrite Utils.left_assoc_mul_g).
+        do 11! (rewrite Utils.assoc_g).
+        smt.
 
         rewrite x_mul_x_eq_pow_2.
         do 2! (rewrite -FieldR.ZrField.exprS; progress).
@@ -3974,15 +3974,15 @@ lemma prepareAggregatedCommitment_high_equiv_super_high :
         do 7! (rewrite -FieldR.ZrField.exprS; progress).
         rewrite -FieldR.ZrField.exprSr; progress.
         do 4! (rewrite -FieldR.ZrField.exprS; progress).
-        do 4! (rewrite left_distrib_g).
-        do 5! (rewrite left_distrib_add_g).
-        do 5! (rewrite left_assoc_mul_g).
+        do 4! (rewrite Utils.left_distrib_g).
+        do 5! (rewrite Utils.left_distrib_add_g).
+        do 5! (rewrite Utils.left_assoc_mul_g).
         do 16! (rewrite -RexpE).
-        do 27! (rewrite assoc_g).
-        do 11! (rewrite -assoc_g).
+        do 27! (rewrite Utils.assoc_g).
+        do 11! (rewrite -Utils.assoc_g).
         rewrite
     (
-      g_comm
+      Utils.g_comm
       (
         state_v{2} ^ 12 * vkLookupTableType{2} +
         state_v{2} ^ 11 * vkLookupSelector{2} + state_v{2} ^ 9 * vkPermutation2{2} +
@@ -3990,10 +3990,10 @@ lemma prepareAggregatedCommitment_high_equiv_super_high :
         state_v{2} ^ 6 * vkGateSelectors0{2} + state_v{2} ^ 4 * proofStatePolys2{2} +
         state_v{2} ^ 3 * proofStatePolys1{2} + state_v{2} ^ 2 * proofStatePolys0{2}
       )
-    ) -assoc_g.
-    do 19! (rewrite -(assoc_g queriesAtZ0{2})).
+    ) -Utils.assoc_g.
+    do 19! (rewrite -(Utils.assoc_g queriesAtZ0{2})).
         congr.
-        do 19! (rewrite -(assoc_g queriesAtZ1{2})).
+        do 19! (rewrite -(Utils.assoc_g queriesAtZ1{2})).
         congr.
         have ->:
         state_v{2} ^ 12 * vkLookupTableType{2} +
@@ -4014,11 +4014,11 @@ lemma prepareAggregatedCommitment_high_equiv_super_high :
         state_v{2} ^ 9 * vkPermutation2{2} +
         state_v{2} ^ 11 * vkLookupSelector{2} +
         state_v{2} ^ 12 * vkLookupTableType{2}.
-        do 7! (rewrite -assoc_g).
-        do 10! (rewrite g_comm; congr).
+        do 7! (rewrite -Utils.assoc_g).
+        do 10! (rewrite Utils.g_comm; congr).
         rewrite
     (
-      g_comm _
+      Utils.g_comm _
       (
         state_v{2} ^ 2 * proofStatePolys0{2} + state_v{2} ^ 3 * proofStatePolys1{2} +
         state_v{2} ^ 4 * proofStatePolys2{2} + state_v{2} ^ 6 * vkGateSelectors0{2} +
@@ -4027,9 +4027,9 @@ lemma prepareAggregatedCommitment_high_equiv_super_high :
         state_v{2} ^ 12 * vkLookupTableType{2}
       )
     ).
-        do 25! (rewrite -assoc_g).
+        do 25! (rewrite -Utils.assoc_g).
         do 9! congr.
-        smt timeout=5.
+        smt.
 
         rewrite x_mul_x_eq_pow_2.
         do 2! (rewrite -FieldR.ZrField.exprS; progress).
