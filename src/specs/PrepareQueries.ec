@@ -503,8 +503,433 @@ module PrepareQueries = {
         query_t_poly_aggregated
       );
   }
+  
+
+  (* /// @dev Here we compute the first and second parts of batched polynomial commitment
+  /// We use the formula:
+  ///     [D0] = [t_0] + z^n * [t_1] + z^{2n} * [t_2] + z^{3n} * [t_3]
+  /// and
+  ///     [D1] = main_gate_selector(z) * (                                        \
+  ///                a(z) * [q_a] + b(z) * [q_b] + c(z) * [q_c] + d(z) * [q_d] +  | - main gate contribution
+  ///                a(z) * b(z) * [q_ab] + a(z) * c(z) * [q_ac] +                |
+  ///                [q_const] + d(z*omega) * [q_{d_next}])                       /
+  ///
+  ///            + alpha * [custom_gate_selector] * (                             \
+  ///                (a(z)^2 - b(z))              +                               | - custom gate contribution
+  ///                (b(z)^2 - c(z))    * alpha   +                               |
+  ///                (a(z)*c(z) - d(z)) * alpha^2 )                               /
+  ///
+  ///            + alpha^4 * [z_perm] *                                           \
+  ///                (a(z) + beta * z      + gamma) *                             |
+  ///                (b(z) + beta * z * k0 + gamma) *                             |
+  ///                (c(z) + beta * z * k1 + gamma) *                             |
+  ///                (d(z) + beta * z * k2 + gamma)                               | - permutation contribution
+  ///            - alpha^4 * z_perm(z*omega) * beta * [sigma_3] *                 |
+  ///                (a(z) + beta * sigma_0(z) + gamma) *                         |
+  ///                (b(z) + beta * sigma_1(z) + gamma) *                         |
+  ///                (c(z) + beta * sigma_2(z) + gamma) *                         |
+  ///            + alpha^5 * L_0(z) * [z_perm]                                    /
+  ///
+  ///            - alpha^6 * (1 + beta') * (gamma' + f(z)) * (z - omega^{n-1}) *  \
+  ///                (gamma'(1 + beta') + t(z) + beta' * t(z*omega)) * [z_lookup] |
+  ///            + alpha^6 * z_lookup(z*omega) * (z - omega^{n-1}) * [s]          | - lookup contribution
+  ///            + alpha^7 * L_0(z) * [z_lookup]                                  |
+  ///            + alpha^8 * L_{n-1}(z) * [z_lookup]                              / *)
+  proc super_high(
+    vk_lookup_table_0: g,
+    vk_lookup_table_1: g,
+    vk_lookup_table_2: g,
+    vk_lookup_table_3: g,
+    state_eta: FieldR.F,
+    v: FieldR.F,
+    alpha: FieldR.F,
+    alpha2: FieldR.F,
+    alpha3: FieldR.F,
+    alpha4: FieldR.F,
+    alpha5: FieldR.F,
+    alpha6: FieldR.F,
+    alpha7: FieldR.F,
+    alpha8: FieldR.F,
+    state_beta: FieldR.F,
+    gamma: FieldR.F,
+    vk_permutation_3: g,
+    poly0_opening: FieldR.F,
+    poly1_opening: FieldR.F,
+    poly2_opening: FieldR.F,
+    proofLookupGrandProductOpeningAtZOmega: FieldR.F,
+    zMinusLastOmega: FieldR.F,
+    proofLookupTPolyOpeningAtZOmega: FieldR.F,
+    betaLookup: FieldR.F,
+    proofLookupTPolyOpeningAtZ: FieldR.F,
+    betaGammaPlusGamma: FieldR.F,
+    proofLookupTableTypePolyOpeningAtZ: FieldR.F,
+    proofLookupSelectorPolyOpeningAtZ: FieldR.F,
+    gammaLookup: FieldR.F,
+    betaPlusOne: FieldR.F,
+    lNMinusOneAtZ: FieldR.F,
+    beta_: FieldR.F, (* beta = state_beta, underscore added because beta is a keyword *)
+    z: FieldR.F, (* z = state_z *)
+    n: int,      (* n = Constants.DOMAIN_SIZE *)
+                 (* z^n = zInDomainSize *)
+    t_0: g,      (* [t_0] = quotient_poly_part_0 *)
+    t_1: g,      (* [t_1] = quotient_poly_part_1 *)
+    t_2: g,      (* [t_2] = quotient_poly_part_2 *)
+    t_3: g,      (* [t_3] = quotient_poly_part_3 *)
+    main_gate_selector_at_z: FieldR.F (* main_gate_selector(z) = gate_selector_0_opening *),
+    a_at_z: FieldR.F, (* a(z) = state_opening_0_at_z *)
+    b_at_z: FieldR.F, (* b(z) = state_opening_1_at_z *)
+    c_at_z: FieldR.F, (* c(z) = state_opening_2_at_z *)
+    d_at_z: FieldR.F, (* d(z) = state_opening_3_at_z *)
+    q_a: g,      (* [q_a] = vk_gate_setup_0 *)
+    q_b: g,      (* [q_b] = vk_gate_setup_1 *)
+    q_c: g,      (* [q_c] = vk_gate_setup_2 *)
+    q_d: g,      (* [q_d] = vk_gate_setup_3 *)
+    q_ab: g,     (* [q_ab] = vk_gate_setup_4 *)
+    q_ac: g,     (* [q_ac] = vk_gate_setup_5 *)
+    q_const: g,  (* [q_const] = vk_gate_setup_6 *)
+    q_d_next: g, (* [q_{d_next}] = vk_gate_setup_7 *)
+    d_at_z_omega: FieldR.F,     (* d(z*omega) = poly3_omega *)
+    custom_gate_selector: g,    (* [custom_gate_selector] = vk_gate_selector_1 *)
+    z_perm_at_z_omega: FieldR.F,(* z_perm(z*omega) = gp_omega *)
+    sigma_0_at_z: FieldR.F, (* sigma_0(z) = poly0_opening *)
+    sigma_1_at_z: FieldR.F, (* sigma_1(z) = poly1_opening *)
+    sigma_2_at_z: FieldR.F, (* sigma_2(z) = poly2_opening *)
+    sigma_3: g,             (* [sigma_3] = vk_permutation_3 *)
+    k0: FieldR.F,           (* k0 = Constants.NON_RESIDUE_0 *)
+    k1: FieldR.F,           (* k1 = Constants.NON_RESIDUE_1 *)
+    k2: FieldR.F,           (* k2 = Constants.NON_RESIDUE_2 *)
+    l_0_at_z: FieldR.F,     (* L_0(z) = l0AtZ *)
+    omega: FieldR.F,
+    z_lookup_at_z_omega: FieldR.F, (* z_lookup(z*omega) = proofLookupGrandProductOpeningAtZOmega *)
+    col_0: g, (* [col_0] = vk_lookup_table_0 *)
+    col_1: g, (* [col_1] = vk_lookup_table_0 *)
+    col_2: g, (* [col_2] = vk_lookup_table_0 *)
+    col_3: g, (* [col_3] = vk_lookup_table_0 *)
+    eta_: FieldR.F, (* eta_ = state_eta, underscore added because eta is a keyword *)
+    lookup_selector_at_z: FieldR.F, (* lookup_selector(z) = proofLookupSelectorPolyOpeningAtZ *)
+    table_type_at_z: FieldR.F, (* table_type(z) = proofLookupTableTypePolyOpeningAtZ *)
+    beta': FieldR.F, (* beta' = betaLookup *)
+    gamma': FieldR.F, (* gamma' = gammaLookup *)
+    t_at_z: FieldR.F, (* t(z) = proofLookupTPolyOpeningAtZ *)
+    t_at_z_omega: FieldR.F, (* t(z*omega) = proofLookupTPolyOpeningAtZOmega *)
+    l_n_minus_one_at_z: FieldR.F (* L_{n-1}(z) = lNMinusOneAtZ *)
+  ): (g * g * FieldR.F * FieldR.F * FieldR.F * g) = {
+      var f_at_z, copy_permutation_first_aggregated_commitment_coeff, lookupSFirstAggregatedCommitment, lookupGrandProductFirstAggregatedCoefficient: FieldR.F;
+      var d0, t, d1: g;
+
+      d0 <- t_0 +           (* [D0] = [t_0] + *)
+        ((z^n) * t_1) +     (*   z^n * [t_1] + *)
+        ((z^(2*n)) * t_2) + (*   z^2n * [t_2] + *)
+        ((z^(3*n)) * t_3);  (*   z^3n * [t_3] *)
+
+  
+      (* positive part of the permutation contribution in the comment *)
+      copy_permutation_first_aggregated_commitment_coeff <- (                                
+        alpha^4 * (z * beta_ + gamma + a_at_z) *                               
+        (z * beta_ * k0 + gamma + b_at_z) * 
+        (z * beta_ * k1 + gamma + c_at_z) * 
+        (z * beta_ * k2 + gamma + d_at_z) + 
+        l_0_at_z * alpha^5
+      ) * v;
+
+      d1 <- main_gate_selector_at_z * (
+          (a_at_z * q_a) +
+          (b_at_z * q_b) +
+          (c_at_z * q_c) +
+          (d_at_z * q_d) +
+          (a_at_z * b_at_z * q_ab) +
+          (a_at_z * c_at_z * q_ac) +
+          q_const +
+          (d_at_z_omega * q_d_next)
+        ) + 
+        alpha * (
+          (
+            (a_at_z^2 - b_at_z) +
+            (b_at_z^2 - c_at_z) * alpha +
+            (a_at_z * c_at_z - d_at_z) * alpha^2
+          )
+        )* custom_gate_selector + (*REVIEW: do we add a reversed G.( * ) so we can swap this round to match the comment exactly? *)
+        G.inv (alpha^4 * z_perm_at_z_omega * beta_ *
+          (sigma_0_at_z * beta_ + gamma + a_at_z) *
+          (sigma_1_at_z * beta_ + gamma + b_at_z) *
+          (sigma_2_at_z * beta_ + gamma + c_at_z) *
+          sigma_3);
+
+      lookupSFirstAggregatedCommitment <- alpha^6 * z_lookup_at_z_omega * (z - omega^(n-1));
+
+      f_at_z <- lookup_selector_at_z * (a_at_z + eta_ * b_at_z + eta_^2 * c_at_z + eta_^3 * table_type_at_z);
+ 
+
+      lookupGrandProductFirstAggregatedCoefficient <- (
+        - alpha^6 * (FieldR.one + beta') * (gamma' + f_at_z) * (z - omega^(n-1)) * (
+          gamma'*(FieldR.one + beta') + t_at_z + beta' * t_at_z_omega
+        )) +
+        alpha^7 * l_0_at_z +
+        alpha^8 * l_n_minus_one_at_z;
+  
+      t <- col_0 +
+        eta_ * col_1 +
+        eta_^2 * col_2 +
+        eta_^3 * col_3;
+        
+      return (
+        d0,
+        v * d1,
+        copy_permutation_first_aggregated_commitment_coeff,
+        v * lookupSFirstAggregatedCommitment,
+        lookupGrandProductFirstAggregatedCoefficient * v,
+        t
+      );
+  }
 }.
 
+lemma prepareQueries_high_equiv_super_high:
+    equiv [
+      PrepareQueries.high ~ PrepareQueries.super_high:
+      ={alpha} /\
+      alpha2{1} = alpha{2}^2 /\
+      alpha3{1} = alpha{2}^3 /\
+      alpha4{1} = alpha{2}^4 /\
+      alpha5{1} = alpha{2}^5 /\
+      alpha6{1} = alpha{2}^6 /\
+      alpha7{1} = alpha{2}^7 /\
+      alpha8{1} = alpha{2}^8 /\
+      state_beta{1} = beta_{2} /\
+      ={gamma} /\
+      ={v} /\
+      ={z} /\
+      zInDomainSize{1} = z{2}^n{2} /\
+      0 <= n{2} /\
+      quotient_poly_part_0{1} = t_0{2} /\
+      quotient_poly_part_1{1} = t_1{2} /\
+      quotient_poly_part_2{1} = t_2{2} /\
+      quotient_poly_part_3{1} = t_3{2} /\
+      gate_selector_0_opening{1} = main_gate_selector_at_z{2} /\
+      stateOpening0AtZ{1} = a_at_z{2} /\
+      stateOpening1AtZ{1} = b_at_z{2} /\
+      stateOpening2AtZ{1} = c_at_z{2} /\
+      stateOpening3AtZ{1} = d_at_z{2} /\
+      vk_gate_setup_0{1} = q_a{2} /\
+      vk_gate_setup_1{1} = q_b{2} /\
+      vk_gate_setup_2{1} = q_c{2} /\
+      vk_gate_setup_3{1} = q_d{2} /\
+      vk_gate_setup_4{1} = q_ab{2} /\
+      vk_gate_setup_5{1} = q_ac{2} /\
+      vk_gate_setup_6{1} = q_const{2} /\
+      vk_gate_setup_7{1} = q_d_next{2} /\
+      poly3_omega{1} = d_at_z_omega{2} /\
+      vk_gate_selector_1{1} = custom_gate_selector{2} /\
+      gp_omega{1} = z_perm_at_z_omega{2} /\
+      poly0_opening{1} = sigma_0_at_z{2} /\
+      poly1_opening{1} = sigma_1_at_z{2} /\
+      poly2_opening{1} = sigma_2_at_z{2} /\
+      vk_permutation_3{1} = sigma_3{2} /\
+      k0{2} = FieldR.inF Constants.NON_RESIDUE_0 /\
+      k1{2} = FieldR.inF Constants.NON_RESIDUE_1 /\
+      k2{2} = FieldR.inF Constants.NON_RESIDUE_2 /\
+      l0AtZ{1} = l_0_at_z{2} /\
+      zMinusLastOmega{1} = (z{2} - omega{2}^(n{2}-1)) /\
+      proofLookupGrandProductOpeningAtZOmega{1} = z_lookup_at_z_omega{2} /\
+      vk_lookup_table_0{1} = col_0{2} /\
+      vk_lookup_table_1{1} = col_1{2} /\
+      vk_lookup_table_2{1} = col_2{2} /\
+      vk_lookup_table_3{1} = col_3{2} /\
+      state_eta{1} = eta_{2} /\
+      proofLookupTPolyOpeningAtZOmega{1} = t_at_z_omega{2} /\
+      betaLookup{1} = beta'{2} /\
+      proofLookupTPolyOpeningAtZ{1} = t_at_z{2} /\
+      betaGammaPlusGamma{1} = gamma'{2}*(FieldR.one + beta'{2}) /\
+      betaPlusOne{1} = (FieldR.one + beta'{2}) /\
+      lNMinusOneAtZ{1} = l_n_minus_one_at_z{2} /\
+      gammaLookup{1} = gamma'{2} /\
+      proofLookupSelectorPolyOpeningAtZ{1} = lookup_selector_at_z{2} /\
+      proofLookupTableTypePolyOpeningAtZ{1} = table_type_at_z{2}
+      ==>
+      ={res}
+    ].
+    proof.
+      proc.
+      simplify.
+
+      seq 1 1: (
+        #pre /\
+        query_at_z_0{1} = d0{2}
+      ).
+        wp. skip. progress.
+        do rewrite RexpE.
+        have ->: (2*n{2}) = n{2} + n{2} by smt().
+        rewrite FieldR.ZrRing.exprD_nneg; [assumption| assumption|].
+        have ->: (3*n{2}) = n{2} + n{2} + n{2} by smt().
+        rewrite FieldR.ZrRing.exprD_nneg; [smt ()| assumption|].
+        rewrite FieldR.ZrRing.exprD_nneg; [assumption| assumption|].
+        reflexivity.
+
+      seq 1 1: (
+        #pre /\
+        ={copy_permutation_first_aggregated_commitment_coeff}
+      ).
+        wp. skip. by progress.
+
+      seq 1 1: (
+        #pre /\
+        query_at_z_1{1} = v{2} * d1{2}
+      ).
+        wp. skip. progress.
+        do rewrite RexpE.
+        do rewrite FieldR.ZrRing.expr2.
+        pose X1 := a_at_z{2} * a_at_z{2} + -b_at_z{2}.
+        pose X2 := b_at_z{2} * b_at_z{2} + -c_at_z{2}.
+        pose X3 := a_at_z{2} * c_at_z{2} + -d_at_z{2}.
+        have ->: c_at_z{2} * a_at_z{2} + -d_at_z{2} = X3 by
+          rewrite FieldR.ComRing.mulrC; reflexivity.
+        pose X4 := X1 * alpha{2} + X2 * (alpha{2} * alpha{2}) + X3 * (FieldR.exp alpha{2} 3).
+        have ->: alpha{2} * (X1 + X2 * alpha{2} + X3 * (alpha{2} * alpha{2})) = X4.
+          rewrite -FieldR.ZrRing.expr2.
+          rewrite FieldR.ZrRing.mulrDr.
+          rewrite FieldR.ZrRing.mulrDr.
+          have ->: alpha{2} * X1 = X1 * alpha{2} by
+            exact FieldR.ComRing.mulrC.
+          have ->: alpha{2} * (X2 * alpha{2}) = X2 * (alpha{2} * alpha{2}) by
+            rewrite FieldR.ZrField.MulMonoid.addmCA; reflexivity.
+          have ->: alpha{2} * (X3 * (FieldR.exp alpha{2} 2)) = X3 * (FieldR.exp alpha{2} 3) by
+            rewrite FieldR.ZrField.MulMonoid.addmCA;
+            rewrite -FieldR.ZrField.exprS;
+            trivial.
+          reflexivity.
+        pose X5 := (a_at_z{2} * q_a{2} + b_at_z{2} * q_b{2} + c_at_z{2} * q_c{2} +
+           d_at_z{2} * q_d{2} + a_at_z{2} * b_at_z{2} * q_ab{2} +
+           a_at_z{2} * c_at_z{2} * q_ac{2} + q_const{2} + d_at_z_omega{2} * q_d_next{2}).
+        do rewrite gmulE.
+        do rewrite gaddE.
+        pose X6 := sigma_0_at_z{2} * beta_{2} + gamma{2} + a_at_z{2}.
+        pose X7 := sigma_1_at_z{2} * beta_{2} + gamma{2} + b_at_z{2}.
+        pose X8 := sigma_2_at_z{2} * beta_{2} + gamma{2} + c_at_z{2}.
+        pose X9 := (FieldR.exp alpha{2} 4)%FieldR * beta_{2} * z_perm_at_z_omega{2} * X6 * X7 * X8.
+        have ->: (FieldR.exp alpha{2} 4)%FieldR  * z_perm_at_z_omega{2}* beta_{2} * X6 * X7 * X8 = X9 by
+          rewrite /X9; congr; congr; congr;
+          rewrite -FieldR.ComRing.mulrA;
+          rewrite (FieldR.ComRing.mulrC z_perm_at_z_omega{2});
+          exact FieldR.ComRing.mulrA.
+        pose X10v := G.(^) custom_gate_selector{2} (FieldR.asint (X4 * v{2})).
+        pose X11v := G.(^) X5 (FieldR.asint (v{2} * main_gate_selector_at_z{2})).
+        pose X12v := G.inv (G.(^) sigma_3{2} (FieldR.asint (X9 * v{2}))).
+        pose X10 := G.(^) custom_gate_selector{2} (FieldR.asint X4).
+        pose X11 := G.(^) X5 (FieldR.asint main_gate_selector_at_z{2}).
+        pose X12 := G.inv (G.(^) sigma_3{2} (FieldR.asint X9)).
+        rewrite G.expcM.
+        rewrite G.expcM. congr.
+        rewrite G.mulcC. congr.
+        rewrite /X11.
+        rewrite -G.expM.
+        rewrite /X11v.
+        have H_log := G.log_spec X5. case H_log.
+        rewrite /G.log_spec. progress.
+        rewrite -H2.
+        rewrite -G.expM.
+        rewrite -G.expM.
+        rewrite -G.expg_modz.
+        pose G1 := G.(^) G.g _.
+        rewrite -G.expg_modz.
+        rewrite /G1. congr.
+        rewrite FieldR.mulE.
+        rewrite -Constants.r_eq_fieldr_p -Constants.order_g.
+        rewrite modzMmr. congr. congr. congr.
+        rewrite mulrC. reflexivity.
+        rewrite /X10.
+        rewrite -G.expM.
+        rewrite /X10v.
+        have H_log := G.log_spec custom_gate_selector{2}. case H_log.
+        rewrite /G.log_spec. progress.
+        rewrite -G.expM.
+        rewrite -G.expM.
+        rewrite -G.expg_modz.
+        pose G1 := G.(^) G.g _.
+        rewrite -G.expg_modz.
+        rewrite /G1. congr.
+        rewrite FieldR.mulE.
+        rewrite -Constants.r_eq_fieldr_p -Constants.order_g.
+        rewrite modzMmr. reflexivity.
+        rewrite /X12.
+        rewrite -G.expcV.
+        rewrite -G.expM.
+        rewrite /X12v.
+        rewrite -G.expcV.
+        have H_log := G.log_spec (G.inv sigma_3{2}). case H_log.
+        rewrite /G.log_spec. progress.
+        rewrite -H2.
+        rewrite -G.expM.
+        rewrite -G.expM.
+        rewrite -G.expg_modz.
+        pose G1 := G.(^) G.g _.
+        rewrite -G.expg_modz.
+        rewrite /G1. congr.
+        rewrite FieldR.mulE.
+        rewrite -Constants.r_eq_fieldr_p -Constants.order_g.
+        rewrite modzMmr. reflexivity.
+
+      seq 1 1: (
+        #pre /\
+        lookupSFirstAggregatedCommitment{1} = v{2} * lookupSFirstAggregatedCommitment{2}
+      ).
+        wp. skip. progress. smt (FieldR.ComRing.mulrC FieldR.ComRing.mulrA).
+        
+
+      seq 1 2: (
+        #pre /\
+        lookupGrandProductFirstAggregatedCoefficient{1} = lookupGrandProductFirstAggregatedCoefficient{2} * v{2}
+      ).
+        wp. skip. progress.
+        congr. congr. congr.
+        pose X1 := (z{2} + - omega{2} ^ (n{2} - 1)).
+        pose X2 := (t_at_z_omega{2} * beta'{2}).
+        have ->: (beta'{2} * t_at_z_omega{2}) = X2 by
+          exact FieldR.ComRing.mulrC.
+        pose X3 := (FieldR.one + beta'{2}).
+        pose X4 := (X2 + t_at_z{2} + gamma'{2} * X3).
+        have ->: gamma'{2} * X3 + t_at_z{2} + X2 = X4.
+          rewrite FieldR.ZModule.addrC.
+          rewrite (FieldR.ZModule.addrC _ t_at_z{2}).
+          rewrite FieldR.ZModule.addrA.
+          reflexivity.
+        have ->: eta_{2} * eta_{2} = eta_{2}^2.
+          rewrite RexpE.
+          rewrite FieldR.ZrRing.expr2.
+          reflexivity.
+        have ->: eta_{2}^2*eta_{2} = eta_{2}^3.
+          rewrite RexpE RexpE.
+          rewrite -FieldR.ZrRing.exprSr. by trivial.
+          by trivial.
+        pose X5 := (a_at_z{2} + eta_{2} * b_at_z{2} + eta_{2} ^ 2 * c_at_z{2} +
+     eta_{2} ^ 3 * table_type_at_z{2}).
+        pose X6 := X5 * lookup_selector_at_z{2}.
+        have ->: lookup_selector_at_z{2} * X5 = X6 by
+          exact FieldR.ComRing.mulrC.
+        pose X7 := X6 + gamma'{2}.
+        have ->: gamma'{2} + X6 = X7 by
+          exact FieldR.ZModule.addrC.
+        pose X8 := alpha{2} ^ 6.
+        rewrite FieldR.ZrRing.mulNr.
+        rewrite FieldR.ZrRing.mulNr.
+        rewrite FieldR.ZrRing.mulNr.
+        congr.
+        smt (FieldR.ComRing.mulrC FieldR.ComRing.mulrA).
+
+      seq 1 1: (
+        #pre /\
+        query_t_poly_aggregated{1} = t{2}
+      ).
+        wp. skip. progress.
+        have ->: eta_{2}^3 = eta_{2}^2 * eta_{2}.
+          rewrite RexpE RexpE.
+          rewrite -FieldR.ZrRing.exprSr; by trivial.
+        rewrite RexpE.
+        rewrite -FieldR.ZrRing.expr2.
+        reflexivity.
+        
+      skip. by progress.
+qed.
+
+      
 lemma prepareQueries_extracted_equiv_low:
     equiv [
       Verifier_1261.usr_prepareQueries ~ PrepareQueries.low:
