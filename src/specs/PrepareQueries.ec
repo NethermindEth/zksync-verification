@@ -536,38 +536,10 @@ module PrepareQueries = {
   ///            + alpha^7 * L_0(z) * [z_lookup]                                  |
   ///            + alpha^8 * L_{n-1}(z) * [z_lookup]                              / *)
   proc super_high(
-    vk_lookup_table_0: g,
-    vk_lookup_table_1: g,
-    vk_lookup_table_2: g,
-    vk_lookup_table_3: g,
-    state_eta: FieldR.F,
-    v: FieldR.F,
     alpha: FieldR.F,
-    alpha2: FieldR.F,
-    alpha3: FieldR.F,
-    alpha4: FieldR.F,
-    alpha5: FieldR.F,
-    alpha6: FieldR.F,
-    alpha7: FieldR.F,
-    alpha8: FieldR.F,
-    state_beta: FieldR.F,
-    gamma: FieldR.F,
-    vk_permutation_3: g,
-    poly0_opening: FieldR.F,
-    poly1_opening: FieldR.F,
-    poly2_opening: FieldR.F,
-    proofLookupGrandProductOpeningAtZOmega: FieldR.F,
-    zMinusLastOmega: FieldR.F,
-    proofLookupTPolyOpeningAtZOmega: FieldR.F,
-    betaLookup: FieldR.F,
-    proofLookupTPolyOpeningAtZ: FieldR.F,
-    betaGammaPlusGamma: FieldR.F,
-    proofLookupTableTypePolyOpeningAtZ: FieldR.F,
-    proofLookupSelectorPolyOpeningAtZ: FieldR.F,
-    gammaLookup: FieldR.F,
-    betaPlusOne: FieldR.F,
-    lNMinusOneAtZ: FieldR.F,
     beta_: FieldR.F, (* beta = state_beta, underscore added because beta is a keyword *)
+    gamma: FieldR.F,
+    v: FieldR.F,
     z: FieldR.F, (* z = state_z *)
     n: int,      (* n = Constants.DOMAIN_SIZE *)
                  (* z^n = zInDomainSize *)
