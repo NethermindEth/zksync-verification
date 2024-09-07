@@ -574,9 +574,9 @@ module PrepareQueries = {
     omega: FieldR.F,
     z_lookup_at_z_omega: FieldR.F, (* z_lookup(z*omega) = proofLookupGrandProductOpeningAtZOmega *)
     col_0: g, (* [col_0] = vk_lookup_table_0 *)
-    col_1: g, (* [col_1] = vk_lookup_table_0 *)
-    col_2: g, (* [col_2] = vk_lookup_table_0 *)
-    col_3: g, (* [col_3] = vk_lookup_table_0 *)
+    col_1: g, (* [col_1] = vk_lookup_table_1 *)
+    col_2: g, (* [col_2] = vk_lookup_table_2 *)
+    col_3: g, (* [col_3] = vk_lookup_table_3 *)
     eta_: FieldR.F, (* eta_ = state_eta, underscore added because eta is a keyword *)
     lookup_selector_at_z: FieldR.F, (* lookup_selector(z) = proofLookupSelectorPolyOpeningAtZ *)
     table_type_at_z: FieldR.F, (* table_type(z) = proofLookupTableTypePolyOpeningAtZ *)
