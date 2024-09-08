@@ -82,7 +82,7 @@ axiom ecPairing_def (input1 input2 : ((FieldQ.F * FieldQ.F) * ((FieldQ.F * Field
     => aspoint_G1 p2 = fst input2
     => aspoint_G2 q1 = snd input1
     => aspoint_G2 q2 = snd input2
-    => Some (e (p1 + p2) (q1 + q2) = G.e) = ecPairing_precompile input1 input2.
+    => Some ((e p1 q1) + (e p2 q2) = G.e) = ecPairing_precompile input1 input2.
 
 axiom ecPairing_fail (input1 input2 : ((FieldQ.F * FieldQ.F) * ((FieldQ.F * FieldQ.F) * (FieldQ.F * FieldQ.F)))):
   !(on_curve (fst input1)) \/ !(on_curve (fst input2)) \/ !(on_curve_G2 (snd input1)) \/ !(on_curve_G2 (snd input2)) => ecPairing_precompile input1 input2 = None.    
