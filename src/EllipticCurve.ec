@@ -47,7 +47,10 @@ op ( * ) (x: FieldR.F, y: g) = G.( ^ ) y (FieldR.asint x) axiomatized by gmulE.
 
 op e: g -> g -> g.
 
-axiom e_bilin (m n : FieldR.F) (x1 x2 : g) : e (m * x1) (n * x2) = (FieldR.(+) m n) * (e x1 x2).
+axiom e_bilin_mul_1 (m : FieldR.F) (x1 x2 : g) : e (m * x1) x2 = m * (e x1 x2).
+axiom e_bilin_mul_2 (m : FieldR.F) (x1 x2 : g) : e x1 (m * x2) = m * (e x1 x2).
+axiom e_bilin_add_1 (p1 p2 p3: g) : e (p1 + p2) p3 = (e p1 p3) + (e p2 p3).
+axiom e_bilin_add_2 (p1 p2 p3: g) : e p1  (p2 + p3) = (e p1 p2) + (e p1 p3).
 axiom e_non_deg_1 (x : g) : x <> G.e => exists y, e x y <> G.e.
 axiom e_non_deg_2 (y : g) : y <> G.e => exists x, e x y <> G.e.
 
