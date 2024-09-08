@@ -180,8 +180,7 @@ lemma finalPairing_extracted_equiv_low:
       ={res, glob FinalPairing}
     ].
     proof.
-      admit.
-      (*proc.
+      proc.
       inline Primops.mstore Primops.mload.
       seq 39 22 : (#pre /\ usr_u{1} = u{2} /\ _3{1} = R_MOD /\ _7{1} = PAIRING_PAIR_WITH_GENERATOR_X_SLOT /\ _12{1} = PAIRING_PAIR_WITH_X_X_SLOT /\ _15{1} = PAIRING_PAIR_WITH_X_Y_SLOT).
       call pointNegate_extracted_equiv_low.
@@ -207,7 +206,36 @@ lemma finalPairing_extracted_equiv_low:
       inline*. wp. skip. by progress.
       exists* Primops.memory{1}.
       elim* => mem.
-      seq 1 1 : (#pre /\ tmp430{1} = success{2}).
+      progress.
+      seq 1 1 : (
+      (={Primops.reverted, Primops.memory} /\
+        usr_u{1} = u{2} /\
+        _3{1} = R_MOD /\
+        _7{1} = PAIRING_PAIR_WITH_GENERATOR_X_SLOT /\
+        _12{1} = PAIRING_PAIR_WITH_X_X_SLOT /\ _15{1} = PAIRING_PAIR_WITH_X_Y_SLOT) /\
+      _21{1} = W256.zero /\
+      _24{1} = (of_int 32)%W256 /\
+      _45{1} = (of_int 384)%W256 /\ _46{1} = (of_int 8)%W256 /\
+      tmp430{1} = success{2} /\
+       ( (success{2} = W256.one /\ Primops.memory{2} = (PurePrimops.mstore mem W256.zero
+            ((ConcretePrimops.ecPairing_precompile_unsafe_cast
+                ((PurePrimops.mload mem W256.zero)%PurePrimops,
+                  (PurePrimops.mload mem ((of_int 32))%W256)%PurePrimops)
+                ((PurePrimops.mload mem ((of_int 192))%W256)%PurePrimops,
+                  (PurePrimops.mload mem ((of_int 224))%W256)%PurePrimops)
+                (((PurePrimops.mload mem ((of_int 64))%W256)%PurePrimops,
+                    (PurePrimops.mload mem ((of_int 96))%W256)%PurePrimops),
+                  ((PurePrimops.mload mem ((of_int 128))%W256)%PurePrimops,
+                    (PurePrimops.mload mem ((of_int 160))%W256)%PurePrimops))
+                (((PurePrimops.mload mem ((of_int 256))%W256)%PurePrimops,
+                    (PurePrimops.mload mem ((of_int 288))%W256)%PurePrimops),
+                  ((PurePrimops.mload mem ((of_int 320))%W256)%PurePrimops,
+                    (PurePrimops.mload mem ((of_int 352))%W256)%PurePrimops)))))
+        ) \/
+        (
+          success{2} = W256.zero /\ Primops.memory{2} = mem
+        ))
+    ).
       progress.
       call{1} (ConcretePrimops.staticcall_ec_pairing_pspec mem (PurePrimops.mload mem W256.zero, PurePrimops.mload mem (W256.of_int 32))
          (PurePrimops.mload mem (W256.of_int 192), PurePrimops.mload mem (W256.of_int 224))
@@ -219,7 +247,7 @@ lemma finalPairing_extracted_equiv_low:
          ((PurePrimops.mload mem (W256.of_int 64), PurePrimops.mload mem (W256.of_int 96)), (PurePrimops.mload mem (W256.of_int 128), PurePrimops.mload mem (W256.of_int 160)))
          ((PurePrimops.mload mem (W256.of_int 256), PurePrimops.mload mem (W256.of_int 288)), (PurePrimops.mload mem (W256.of_int 320), PurePrimops.mload mem (W256.of_int 352)))
            W256.zero W256.zero).
-           progress. skip. progress.
+           progress. skip. progress. smt (). smt ().
       case ((ConcretePrimops.staticcall_ec_pairing_should_succeed
        ((PurePrimops.mload Primops.memory{2} W256.zero)%PurePrimops,
         (PurePrimops.mload Primops.memory{2} ((of_int 32))%W256)%PurePrimops)
@@ -233,29 +261,24 @@ lemma finalPairing_extracted_equiv_low:
          (PurePrimops.mload Primops.memory{2} ((of_int 288))%W256)%PurePrimops),
         ((PurePrimops.mload Primops.memory{2} ((of_int 320))%W256)%PurePrimops,
          (PurePrimops.mload Primops.memory{2} ((of_int 352))%W256)%PurePrimops)))%ConcretePrimops).
-      progress. smt(). 
-
-  
-      progress. 
-      inline*.
-      do 3! (rcondf{2} 9; first progress; first wp; first skip; first progress; first exact neq_small).
-      do 3! (rcondf{1} 10; first progress; first wp; first skip; first progress; first exact neq_small).
-      rcondt{1} 10. progress. wp. skip. by progress.
-      rcondt{2} 9. progress. wp. skip. by progress.
-      wp. skip. by progress.
-      sp.
-      if. by progress.
-      seq 2 1: #pre. sp. call revertWithMessage_extracted_equiv_low. skip. by progress.
-      sp.
-      if. by progress.
-      sp.
-      call revertWithMessage_extracted_equiv_low. skip. by progress.
-      skip. by progress.
-      sp.
-      if. by progress.
-      sp.
-      call revertWithMessage_extracted_equiv_low. skip. by progress.
-      skip. by progress.*)
+           progress. left. progress. smt (). smt (). 
+           progress. right. progress. smt (). smt ().
+           wp. skip. progress.
+           seq 1 0 : (#pre /\ _48{1} = PurePrimops.iszero usr_success{1}). wp. skip. progress.
+           if. progress. sp.
+           seq 1 1 :
+ (
+  (Primops.reverted{1}, Primops.memory{1}) =
+  (Primops.reverted{2}, Primops.memory{2}) /\ _21{1} = W256.zero
+ ).
+     call revertWithMessage_extracted_equiv_low.
+     skip. progress. sp.
+     if. progress. sp.
+     call revertWithMessage_extracted_equiv_low. skip. progress.
+     skip. progress.
+     sp. if. progress. sp.
+     call revertWithMessage_extracted_equiv_low. skip. progress.
+     skip. progress.
     qed.
 
 lemma finalPairing_low_pspec_revert:
