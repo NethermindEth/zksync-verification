@@ -53,7 +53,6 @@ module Primops = {
   }
 
   proc keccak256(off : uint256, size : uint256) : uint256 = {
-      (* TODO: relate to keccak_f *)
       var input : uint8 array;
       input <- Array.offun (fun (i: int) => memory.[off + (W256.of_int i)]) (W256.to_uint size);
       return PurePrimops.keccak256_f input;

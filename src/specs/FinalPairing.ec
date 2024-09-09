@@ -151,7 +151,7 @@ module FinalPairing = {
       pairing_pair_with_x <@ PointMulAndAddIntoDest.high(recursive_part_p2, u * u  , pairing_pair_with_x);
     }
 
-    return e (pairing_pair_with_generator + pairing_pair_with_x) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e;
+    return (e pairing_pair_with_generator Constants.G2_ELEMENT_0_G) + (e pairing_pair_with_x Constants.G2_ELEMENT_1_G) = G.e;
   }
 
   proc high(u: FieldR.F, z: FieldR.F, pairing_pair_with_generator: g, pairing_buffer_point: g, opening_proof_at_z: g, opening_proof_at_z_omega: g, vk_recursive_flag: bool, recursive_part_p1: g, recursive_part_p2: g): bool = {
@@ -169,7 +169,7 @@ module FinalPairing = {
       pairing_pair_with_x <- ((u * u) * recursive_part_p2) + pairing_pair_with_x;
     }
 
-    return e (pairing_pair_with_generator + pairing_pair_with_x) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e;
+    return (e pairing_pair_with_generator Constants.G2_ELEMENT_0_G) + (e pairing_pair_with_x Constants.G2_ELEMENT_1_G) = G.e;
   }
 }.
 
@@ -1816,7 +1816,7 @@ lemma finalPairing_mid_equiv_high_encapsulated:
       do rewrite FieldQ.asintK.
       pose pairing := ecPairing_precompile _ _.
       have H_pairing: pairing = ecPairing_precompile (aspoint_G1 pairing_pair_with_generator{2}, aspoint_G2 Constants.G2_ELEMENT_0_G) (aspoint_G1 pairing_pair_with_x{2}, aspoint_G2 Constants.G2_ELEMENT_1_G) by smt ().
-      have H_pairing_some: pairing = Some (e (pairing_pair_with_generator{2} + pairing_pair_with_x{2}) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e) by smt (ecPairing_def).
+      have H_pairing_some: pairing = Some ((e pairing_pair_with_generator{2} Constants.G2_ELEMENT_0_G) + (e pairing_pair_with_x{2} Constants.G2_ELEMENT_1_G) = G.e) by smt (ecPairing_def).
       rewrite H_pairing_some.
       by progress.
 
@@ -1837,7 +1837,7 @@ lemma finalPairing_mid_equiv_high_encapsulated:
       do rewrite FieldQ.asintK.
       pose pairing := ecPairing_precompile _ _.
       have H_pairing: pairing = ecPairing_precompile (aspoint_G1 pairing_pair_with_generator{2}, aspoint_G2 Constants.G2_ELEMENT_0_G) (aspoint_G1 pairing_pair_with_x{2}, aspoint_G2 Constants.G2_ELEMENT_1_G) by smt ().
-      have H_pairing_some: pairing = Some (e (pairing_pair_with_generator{2} + pairing_pair_with_x{2}) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G) = G.e) by smt (ecPairing_def).
+      have H_pairing_some: pairing = Some ((e pairing_pair_with_generator{2} Constants.G2_ELEMENT_0_G) + (e pairing_pair_with_x{2} Constants.G2_ELEMENT_1_G) = G.e) by smt (ecPairing_def).
       rewrite H_pairing_some.
       by progress.
 qed.

@@ -620,7 +620,7 @@ module PrepareQueries = {
             (b_at_z^2 - c_at_z) * alpha +
             (a_at_z * c_at_z - d_at_z) * alpha^2
           )
-        )* custom_gate_selector + (*REVIEW: do we add a reversed G.( * ) so we can swap this round to match the comment exactly? *)
+        )* custom_gate_selector +
         G.inv (alpha^4 * z_perm_at_z_omega * beta_ *
           (sigma_0_at_z * beta_ + gamma + a_at_z) *
           (sigma_1_at_z * beta_ + gamma + b_at_z) *

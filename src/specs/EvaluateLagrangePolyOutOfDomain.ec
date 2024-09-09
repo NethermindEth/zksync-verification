@@ -321,8 +321,7 @@ progress. elim H0. progress. by smt(). by smt().
 apply evaluateLagrangePolyOutOfDomain_low_equiv_mid'.
 proc. inline Modexp.mid. wp. skip. progress. by smt(). by smt(). qed.
 
-lemma lagrange (x: FieldR.F) : x ^ Constants.DOMAIN_SIZE <> FieldR.one => forall (n: int), x <> Constants.OMEGAFr ^ n. 
-proof. admit. qed.
+axiom lagrange (x: FieldR.F) : x ^ Constants.DOMAIN_SIZE <> FieldR.one => forall (n: int), x <> Constants.OMEGAFr ^ n. 
     
 lemma evaluateLagrangePolyOutOfDomain_mid_equiv_high (polyInt: int) (atF: FieldR.F):
 equiv [

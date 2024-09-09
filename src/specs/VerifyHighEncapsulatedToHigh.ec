@@ -1510,7 +1510,7 @@ lemma verify_high_encapsulated_equiv_high:
       (* prepare queries done *)
 
       (* prepare aggregated commitment *)
-      seq 1 5: (
+      seq 1 2: (
         (failed{1} /\ !isValid{2}) \/ (
         !failed{1} /\ isValid{2} /\
         !vk_recursive_flag{1} /\
@@ -1782,26 +1782,22 @@ lemma verify_high_encapsulated_equiv_high:
             v{2} ^ 17 * t_at_z_omega{2})) *
           g_gen /\
         e{2} = (quotient_poly_opening_at_z{2} (*t(z)*) + v{2} * r_at_z{2}
-          + (v{2}^2)*a_at_z{2} + (v{2}^3)+b_at_z{2} + (v{2}^4)*c_at_z{2} + (v{2}^5)*d_at_z{2}
+          + (v{2}^2)*a_at_z{2} + (v{2}^3)*b_at_z{2} + (v{2}^4)*c_at_z{2} + (v{2}^5)*d_at_z{2}
           + (v{2}^6)*main_gate_selector_at_z{2}
           + (v{2}^7)*sigma_0_at_z{2} + (v{2}^8)*sigma_1_at_z{2} + (v{2}^9)*sigma_2_at_z{2}
-          + (v{2}^10)*t_at_z{2} + (v{2}^11)*lookup_selector_at_z{2} * (v{2}^12)*table_type_at_z{2}
+          + (v{2}^10)*t_at_z{2} + (v{2}^11)*lookup_selector_at_z{2} + (v{2}^12)*table_type_at_z{2}
           + u{2} * ((v{2}^13)*z_perm_at_z_omega{2} + (v{2}^14)*d_at_z_omega{2}
             + (v{2}^15)*s_at_z_omega{2} + (v{2}^16)*z_lookup_at_z_omega{2} + (v{2}^17)*t_at_z_omega{2}
           )
         )* EllipticCurve.g_gen /\
         f{2} = d0{2} + v{2} * d1{2}
           + (v{2}^2)*a{2} + (v{2}^3)*b{2} + (v{2}^4)*c{2} + (v{2}^5)*d{2}
-          + (v{2}^6)*vk_permutation_0
+          + (v{2}^6)*vk_gate_selectors_0
           + (v{2}^7)*sigma_0{2} + (v{2}^8)*sigma_1{2} + (v{2}^9)*sigma_2{2}
           + (v{2}^10)*t{2} + (v{2}^11)*lookup_selector{2} + (v{2}^12)*table_type{2}
           + u{2} * ((v{2}^13)*z_perm{2} + (v{2}^14)*d{2}
           + (v{2}^15)*s{2} + (v{2}^16)*z_lookup{2} + (v{2}^17)*t{2}
-          ) /\
-        pairing_pair_with_generator{2} = (z{2} * w{2})
-          + u{2} * z{2} * omega{2} * w'{2}
-          + f{2} + (G.inv e{2}) /\
-        pairing_pair_with_x{2} = w{2} + u{2} * w'{2}
+          )
       )).
         case (failed{1}).
           conseq (_ : failed{1} /\ !isValid{2} ==> failed{1} /\ !isValid{2}).
@@ -2335,26 +2331,22 @@ lemma verify_high_encapsulated_equiv_high:
                   v{2} ^ 17 * t_at_z_omega{2})) *
                 g_gen /\
               e{2} = (quotient_poly_opening_at_z{2} (*t(z)*) + v{2} * r_at_z{2}
-                + (v{2}^2)*a_at_z{2} + (v{2}^3)+b_at_z{2} + (v{2}^4)*c_at_z{2} + (v{2}^5)*d_at_z{2}
+                + (v{2}^2)*a_at_z{2} + (v{2}^3)*b_at_z{2} + (v{2}^4)*c_at_z{2} + (v{2}^5)*d_at_z{2}
                 + (v{2}^6)*main_gate_selector_at_z{2}
                 + (v{2}^7)*sigma_0_at_z{2} + (v{2}^8)*sigma_1_at_z{2} + (v{2}^9)*sigma_2_at_z{2}
-                + (v{2}^10)*t_at_z{2} + (v{2}^11)*lookup_selector_at_z{2} * (v{2}^12)*table_type_at_z{2}
+                + (v{2}^10)*t_at_z{2} + (v{2}^11)*lookup_selector_at_z{2} + (v{2}^12)*table_type_at_z{2}
                 + u{2} * ((v{2}^13)*z_perm_at_z_omega{2} + (v{2}^14)*d_at_z_omega{2}
                   + (v{2}^15)*s_at_z_omega{2} + (v{2}^16)*z_lookup_at_z_omega{2} + (v{2}^17)*t_at_z_omega{2}
                 )
               )* EllipticCurve.g_gen /\
               f{2} = d0{2} + v{2} * d1{2}
                 + (v{2}^2)*a{2} + (v{2}^3)*b{2} + (v{2}^4)*c{2} + (v{2}^5)*d{2}
-                + (v{2}^6)*vk_permutation_0
+                + (v{2}^6)*vk_gate_selectors_0
                 + (v{2}^7)*sigma_0{2} + (v{2}^8)*sigma_1{2} + (v{2}^9)*sigma_2{2}
                 + (v{2}^10)*t{2} + (v{2}^11)*lookup_selector{2} + (v{2}^12)*table_type{2}
                 + u{2} * ((v{2}^13)*z_perm{2} + (v{2}^14)*d{2}
                 + (v{2}^15)*s{2} + (v{2}^16)*z_lookup{2} + (v{2}^17)*t{2}
-                ) /\
-              pairing_pair_with_generator{2} = (z{2} * w{2})
-                + u{2} * z{2} * omega{2} * w'{2}
-                + f{2} + (G.inv e{2}) /\
-              pairing_pair_with_x{2} = w{2} + u{2} * w'{2}
+                )
             ).
               progress.
                 exists _copy_permutation_grand_product{1}.
@@ -2448,9 +2440,8 @@ lemma verify_high_encapsulated_equiv_high:
 
       (* case !failed{1} *)
         inline FinalPairing.high. wp. skip. progress.
-        pose SUPER := e (pairing_pair_with_generator{2} + pairing_pair_with_x{2}) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G).
         case H. by progress. by progress.
-        pose SUPER := e (pairing_pair_with_generator{2} + pairing_pair_with_x{2}) (Constants.G2_ELEMENT_0_G + Constants.G2_ELEMENT_1_G).
+        pose SUPER := (e (w{2} + u{2} * w'{2}) Constants.G2_ELEMENT_1_G) = (e (z{2} * w{2} + u{2} * z{2} * omega{2} * w'{2} + f{2} + (G.inv e{2})) Constants.G2_ELEMENT_0_G).
         case H. by progress. progress. rewrite H H2. progress.
         pose u_z_omega_w' := u{2} * z{2} * Constants.OMEGAFr * w'{2}.
         have ->: z{2} * Constants.OMEGAFr * u{2} * w'{2} = u_z_omega_w'.
@@ -2486,10 +2477,23 @@ lemma verify_high_encapsulated_equiv_high:
           rewrite /d1_custom_gate.
           congr. congr. by progress.
         pose d1_permutation_contribution_neg := alpha{2}^4 * z_perm_at_z_omega{2} * beta_{2} *
+           (a_at_z{2} + beta_{2} * sigma_0_at_z{2} + gamma{2}) *
+           (b_at_z{2} + beta_{2} * sigma_1_at_z{2} + gamma{2}) *
+           (c_at_z{2} + beta_{2} * sigma_2_at_z{2} + gamma{2}) *
+           vk_permutation_3.
+        have ->: alpha{2}^4 * z_perm_at_z_omega{2} * beta_{2} *
            (sigma_0_at_z{2} * beta_{2} + gamma{2} + a_at_z{2}) *
            (sigma_1_at_z{2} * beta_{2} + gamma{2} + b_at_z{2}) *
            (sigma_2_at_z{2} * beta_{2} + gamma{2} + c_at_z{2}) *
-           vk_permutation_3.
+           vk_permutation_3 = d1_permutation_contribution_neg.
+           have H_rearrange: forall (a b c: FieldR.F), a + b + c = c + a + b by smt (@FieldR).
+           rewrite (H_rearrange _ _ a_at_z{2}).
+           rewrite (H_rearrange _ _ b_at_z{2}).
+           rewrite (H_rearrange _ _ c_at_z{2}).
+           rewrite (FieldR.ComRing.mulrC sigma_0_at_z{2}).
+           rewrite (FieldR.ComRing.mulrC sigma_1_at_z{2}).
+           rewrite (FieldR.ComRing.mulrC sigma_2_at_z{2}).
+           reflexivity.
         pose f_v_2 := v{2}^2 * a{2}.
         pose f_v_3 := v{2}^3 * b{2}.
         pose f_v_4 := v{2}^4 * c{2}.
@@ -2553,10 +2557,22 @@ lemma verify_high_encapsulated_equiv_high:
             rewrite FieldR.ComRing.mulrC.
             reflexivity.
           pose d1_permutation_contribution_4 := alpha{2} ^ 4 *
+            (a_at_z{2} + beta_{2}* z{2}                                        + gamma{2}) *
+            (b_at_z{2} + beta_{2}* z{2} * (FieldR.inF Constants.NON_RESIDUE_0) + gamma{2}) *
+            (c_at_z{2} + beta_{2}* z{2} * (FieldR.inF Constants.NON_RESIDUE_1) + gamma{2}) *
+            (d_at_z{2} + beta_{2}* z{2} * (FieldR.inF Constants.NON_RESIDUE_2) + gamma{2}) * z_perm{2}.
+          have ->: alpha{2} ^ 4 *
             (z{2} * beta_{2} + gamma{2} + a_at_z{2}) *
             (z{2} * beta_{2} * (FieldR.inF Constants.NON_RESIDUE_0) + gamma{2} + b_at_z{2}) *
             (z{2} * beta_{2} * (FieldR.inF Constants.NON_RESIDUE_1) + gamma{2} + c_at_z{2}) *
-            (z{2} * beta_{2} * (FieldR.inF Constants.NON_RESIDUE_2) + gamma{2} + d_at_z{2}) * z_perm{2}.
+            (z{2} * beta_{2} * (FieldR.inF Constants.NON_RESIDUE_2) + gamma{2} + d_at_z{2}) * z_perm{2} = d1_permutation_contribution_4.
+            rewrite (FieldR.ComRing.mulrC z{2}).
+            rewrite (FieldR.ZModule.addrC _ a_at_z{2}).
+            rewrite (FieldR.ZModule.addrC _ b_at_z{2}).
+            rewrite (FieldR.ZModule.addrC _ c_at_z{2}).
+            rewrite (FieldR.ZModule.addrC _ d_at_z{2}).
+            do 4! rewrite FieldR.ZModule.addrA.
+            reflexivity.
           pose d1 := d1_main_gate +
             d1_custom_gate +
             d1_permutation_contribution_4 +
@@ -2640,11 +2656,7 @@ lemma verify_high_encapsulated_equiv_high:
               v{2} ^ 17 * t_at_z_omega{2})) *
             g_gen).
 
-          rewrite e_bilin_add_1.
           rewrite assoc_g.
-          search G.(^).
-          rewrite -(G.exp1 (G.inv w_plus_u_w')).
-          rewrite G.expcV -G.expN.
           have H_inv: forall (p: g), (FieldR.inF (-1)) * p = G.inv p.
             progress.
             rewrite gmulE.
@@ -2660,18 +2672,7 @@ lemma verify_high_encapsulated_equiv_high:
             rewrite -G.expN.
             rewrite mulrN1.
             reflexivity.
-          have ->: (G.(^) w_plus_u_w' (-1)) = (FieldR.inF (-1)) * w_plus_u_w'.
-            rewrite gmulE.
-            rewrite FieldR.inFK.
-            rewrite -Constants.r_eq_fieldr_p -Constants.order_g.
-            have H_log := G.log_spec w_plus_u_w'.
-            case H_log. rewrite /log_spec. progress.
-            rewrite -H6.
-            rewrite -G.expM -G.expM.
-            rewrite -G.expg_modz.
-            rewrite -modzMmr.
-            rewrite G.expg_modz.
-            reflexivity.
+          rewrite -(H_inv w_plus_u_w').
           rewrite e_bilin_mul_1.
           rewrite H_inv.
           have ->: forall (a b: g), (a + G.inv b = G.e) = (a = b).
@@ -2698,32 +2699,16 @@ lemma verify_high_encapsulated_equiv_high:
               rewrite Constants.order_g /Constants.R.
               progress. exact modz_ge0. exact ltz_pmod.
               smt (@G @IntDiv @Utils @Constants).
-            pose lhs := z_w_plus_u_z_omega_w' + f + (G.inv e).
-            rewrite e_bilin_add_2.
-            rewrite e_bilin_add_2.
-            have ->: forall (a b c d: g), (a + b = c + d) = (a + G.inv d = c + G.inv b).
-              progress.
-              rewrite gaddE.
-              admit.
-
-(* /*////////////////////////////////////////////////////////////// *)
-    (*                             5. Pairing                           *)
-    (* //////////////////////////////////////////////////////////////*/ *)
-
-    (* /// @notice Checks the final pairing *)
-    (* /// @dev We should check the equation: *)
-    (* /// e([W] + u * [W'], [x]_2) = e(z * [W] + u * z * omega * [W'] + [F] - [E], [1]_2), *)
-    (* /// where [F] and [E] were computed previously *)
-    (* /// *)
-    (* /// Also we need to check that e([P1], [x]_2) = e([P2], [1]_2) *)
-    (* /// if we have the recursive part of the proof *)
-    (* /// where [P1] and [P2] are parts of the recursive proof *)
-    (* /// *)
-    (* /// We can aggregate both pairings into one for gas optimization: *)
-    (* /// e([W] + u * [W'] + u^2 * [P1], [x]_2) = *)
-    (* /// e(z * [W] + u * z * omega * [W'] + [F] - [E] + u^2 * [P2], [1]_2) *)
-    (* /// *)
-    (* /// u is a valid challenge for such aggregation, *)
-    (* /// because [P1] and [P2] are used in PI *)
-            
+          have ->: forall (a b: g), (a=b) = (b=a) by smt().
+          rewrite /SUPER.
+          rewrite /w_plus_u_w'.
+          rewrite /z_w_plus_u_z_omega_w'.
+          rewrite /u_z_omega_w'.
+          rewrite /f.
+          rewrite /d1.
+          rewrite /d1_main_gate /d1_custom_gate /d1_permutation_contribution_4 /d1_permutation_contribution_neg /d1_permutation_contribution_5 /d1_lookup_contribution_neg_6 /d1_lookup_contribution_6 /d1_lookup_contribution_7 /d1_lookup_contribution_8.
+          rewrite /f_v_2 /f_v_3 /f_v_4 /f_v_5 /f_v_6 /f_v_7 /f_v_8 /f_v_9 /f_v_10 /f_v_11 /f_v_12 /f_u.
+          rewrite /f_at_z.
+          rewrite /e.
+          by progress.         
 qed.      

@@ -81,8 +81,6 @@ op pointMulIntoDest_memory_footprint (mem_0: mem) (dest: uint256) (point result:
     let mem_3 = store mem_2 (W256.of_int 64) (W256.of_int factor) in
     let mem_4 = store mem_3 dest (W256.of_int result.`1) in
     store mem_4 (dest + W256.of_int 32) (W256.of_int result.`2).
-    
-(* TODO update this proof to use the memory footprint *)
 
 lemma pointMulIntoDest_low_equiv_mid (x1v y1v sv : int) (p1u destu : uint256) (memory0 : MemoryMap.mem) : equiv [
     PointMulIntoDest.low ~ PointMulIntoDest.mid :
